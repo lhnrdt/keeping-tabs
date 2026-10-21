@@ -10,7 +10,7 @@
 		: never;
 	type Props = Omit<PropsOf<typeof ListInput>, 'label' | 'inputId'> & { label: string };
 
-	let { label, ...rest }: Props = $props();
+	let { label, value = $bindable(), ...rest }: Props = $props();
 	const id = $props.id();
 </script>
 
@@ -18,4 +18,4 @@
 	<label for={id}>{label}</label>
 {/snippet}
 
-<ListInput label={labelElement} inputId={id} {...rest} />
+<ListInput label={labelElement} inputId={id} bind:value {...rest} />
