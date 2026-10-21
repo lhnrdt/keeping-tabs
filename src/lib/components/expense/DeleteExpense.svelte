@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Block, Button } from 'konsta/svelte';
+	import Icon from '#lib/components/Icon.svelte';
 	import FormDialog from '#lib/components/group/FormDialog.svelte';
 	import { m } from '#lib/paraglide/messages.js';
 
@@ -12,9 +13,10 @@
 		rounded
 		clear
 		type="button"
-		class="tone-destructive"
+		class="gap-2 tone-destructive"
 		onclick={() => (confirming = true)}
 	>
+		<Icon name="delete" />
 		{m.delete_expense()}
 	</Button>
 </Block>
