@@ -24,12 +24,15 @@ export const load: PageServerLoad = async ({ locals, parent }) => {
 	);
 	return {
 		balances: Object.fromEntries(totals),
-		expenses: expenses.map(({ id, title, amountCents, paidBy, date }) => ({
+		expenses: expenses.map(({ id, type, title, amountCents, paidBy, date, splits }) => ({
 			id,
+			type,
 			title,
 			amountCents,
 			paidBy,
-			date
+			date,
+			// A payment has exactly one split: its recipient
+			recipient: type === 'payment' ? splits[0]?.memberId : undefined
 		}))
 	};
 };

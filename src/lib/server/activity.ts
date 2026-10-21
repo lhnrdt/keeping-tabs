@@ -1,7 +1,7 @@
 import type { Db } from './db';
 import { activityLog } from './db/schema';
 
-type Action =
+export type Action =
 	| 'group.create'
 	| 'group.update'
 	| 'group.regenerate_link'
@@ -9,7 +9,10 @@ type Action =
 	| 'member.rename'
 	| 'expense.create'
 	| 'expense.update'
-	| 'expense.delete';
+	| 'expense.delete'
+	| 'payment.create'
+	| 'payment.update'
+	| 'payment.delete';
 
 /** Activity log entry (L-1); a query to run inside the caller's batch. */
 export const log = (

@@ -43,7 +43,7 @@ export const members = sqliteTable(
 			.references(() => groups.id),
 		name: text('name').notNull(),
 		createdAt: createdAt(),
-		// Removed members stay referenced by past expenses (M-4)
+		// Removed members stay referenced by past expenses (M-6)
 		deletedAt: deletedAt()
 	},
 	(t) => [

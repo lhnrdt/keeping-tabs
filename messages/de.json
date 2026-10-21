@@ -70,5 +70,18 @@
 	"new_member": "Neues Mitglied",
 	"group_details": "Details",
 	"choose_member": "Wähle, wer du bist",
-	"link_actions": "Link"
+	"link_actions": "Link",
+	"error_recipient_invalid": "Wähle, wer das Geld bekommen hat.",
+	"error_payment_same_member": "Niemand kann sich selbst bezahlen.",
+	"settle_title": "Ausgleichen",
+	"settle_done": "Alles ausgeglichen. Ganz entspannt.",
+	"settle_pays": "{from} zahlt {to}",
+	"record_payment": "Zahlung erfassen",
+	"edit_payment": "Zahlung bearbeiten",
+	"delete_payment": "Zahlung löschen",
+	"delete_payment_confirm": "Diese Zahlung löschen?",
+	"field_payment_from": "Von",
+	"field_payment_to": "An",
+	"payment_title": "{from} hat {to} bezahlt",
+	"error_payment_not_found": "Diese Zahlung gibt es nicht mehr."
 }

@@ -32,9 +32,12 @@
 		{/snippet}
 	</Navbar>
 
-	<div class="mx-auto w-full max-w-2xl pb-24">
+	<div class="mx-auto w-full max-w-2xl">
 		{@render children()}
 	</div>
 
-	<VersionFooter />
+	<!-- Bottom space keeps the footer clear of a fixed tab bar -->
+	<div class="pb-24">
+		<VersionFooter />
+	</div>
 </Page>

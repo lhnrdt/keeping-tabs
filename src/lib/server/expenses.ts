@@ -1,7 +1,7 @@
 import { and, desc, eq, isNull } from 'drizzle-orm';
 import { splitEqual } from '#lib/money.ts';
 import type { ExpenseInput } from '#lib/validation.ts';
-import { log } from './activity';
+import { log, type Action } from './activity';
 import type { Db } from './db';
 import { expenses, expenseSplits } from './db/schema';
 
@@ -14,7 +14,8 @@ const expenseColumns = {
 	date: expenses.date
 };
 
-const active = (groupId: string) => and(eq(expenses.groupId, groupId), isNull(expenses.deletedAt));
+export const active = (groupId: string) =>
+	and(eq(expenses.groupId, groupId), isNull(expenses.deletedAt));
 
 /** Current expenses with their splits, newest first (E-9). */
 export async function listExpenses(db: Db, groupId: string) {
@@ -103,13 +104,19 @@ export async function updateExpense(
 	]);
 }
 
-/** Soft delete (E-7); the splits stay so the expense can be restored later (L-3). */
-export async function deleteExpense(db: Db, groupId: string, actorId: string | null, id: string) {
+/** Soft delete (E-7) of an expense or payment; the splits stay for restoring later (L-3). */
+export async function softDeleteEntry(
+	db: Db,
+	groupId: string,
+	actorId: string | null,
+	id: string,
+	action: Extract<Action, 'expense.delete' | 'payment.delete'>
+) {
 	await db.batch([
 		db
 			.update(expenses)
 			.set({ deletedAt: new Date() })
 			.where(and(eq(expenses.id, id), active(groupId))),
-		log(db, groupId, actorId, 'expense.delete', { expenseId: id })
+		log(db, groupId, actorId, action, { expenseId: id })
 	]);
 }
