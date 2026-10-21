@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { Path } from '$app/types';
-	import { version } from '$app/env';
 	import { onNavigate } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
@@ -35,10 +34,6 @@
 
 <App theme={data.theme} dark safeAreas>
 	{@render children()}
-
-	<footer class="mx-auto max-w-md p-4 text-center text-xs text-gray-400">
-		<span data-testid="app-version">v{version}</span>
-	</footer>
 </App>
 
 <div style="display:none">

@@ -5,7 +5,7 @@ test('create a group, manage members and replace its link', async ({ page }) => 
 	await page.getByLabel('Group name').fill('Ski trip');
 	await page.getByLabel('Currency').selectOption('CHF');
 	await page.getByLabel('Your name').fill('Anna');
-	await page.getByRole('textbox', { name: 'Name', exact: true }).first().fill('Ben');
+	await page.getByLabel('Name 1').fill('Ben');
 	await page.getByRole('button', { name: 'Create group' }).click();
 
 	// The creator lands on the group and is remembered as Anna
@@ -54,9 +54,8 @@ test('expenses update the balances', async ({ page }) => {
 	await page.getByLabel('Group name').fill('Dinner club');
 	await page.getByLabel('Currency').selectOption('EUR');
 	await page.getByLabel('Your name').fill('Anna');
-	const others = page.getByRole('textbox', { name: 'Name', exact: true });
-	await others.nth(0).fill('Ben');
-	await others.nth(1).fill('Cara');
+	await page.getByLabel('Name 1').fill('Ben');
+	await page.getByLabel('Name 2').fill('Cara');
 	await page.getByRole('button', { name: 'Create group' }).click();
 	await expect(page.getByText('You are Anna.')).toBeVisible();
 
