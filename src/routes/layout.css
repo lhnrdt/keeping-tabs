@@ -2,7 +2,6 @@
 @import 'konsta/svelte/theme.css';
 /* Self-hosted, so no request goes to a third party (N-5) */
 @import '@fontsource-variable/roboto';
-@plugin '@tailwindcss/forms';
 
 @theme {
 	--font-material: 'Roboto Variable', Roboto, system-ui, Noto, Helvetica, Arial, sans-serif;
