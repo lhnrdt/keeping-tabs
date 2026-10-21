@@ -23,6 +23,13 @@
 		// `wrangler deploy --env staging` → app-staging.keeping-tabs.workers.dev
 		"staging": {
 			"name": "app-staging",
+			// Password-protected wrapper around the SvelteKit worker (see worker/staging.ts)
+			"main": "worker/staging.ts",
+			"assets": {
+				"binding": "ASSETS",
+				"directory": ".svelte-kit/cloudflare",
+				"run_worker_first": true
+			},
 			// Bindings aren't inherited by environments, so D1 is repeated here
 			"d1_databases": [
 				{
