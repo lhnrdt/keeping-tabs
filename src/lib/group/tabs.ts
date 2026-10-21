@@ -10,3 +10,6 @@ export function currentTab(url: { searchParams: { get(name: string): string | nu
 
 /** Form action URL that keeps the tab, so a non-JS submit returns to the same tab. */
 export const tabAction = (action: string, tab: GroupTab) => `?/${action}&tab=${tab}`;
+
+/** Path to a tab of a group, e.g. for redirects after saving. */
+export const groupTabUrl = (groupPath: string, tab: GroupTab) => `${groupPath}?tab=${tab}`;
