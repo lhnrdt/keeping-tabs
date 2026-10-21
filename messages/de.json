@@ -10,7 +10,6 @@
 	"field_your_name": "Dein Name",
 	"field_other_members": "Wer ist noch in der Gruppe?",
 	"field_member_name": "Name",
-	"add_another": "Weitere Person",
 	"create_submit": "Gruppe erstellen",
 	"members_title": "Mitglieder",
 	"member_you": "du",
@@ -83,5 +82,8 @@
 	"field_payment_from": "Von",
 	"field_payment_to": "An",
 	"payment_title": "{from} hat {to} bezahlt",
-	"error_payment_not_found": "Diese Zahlung gibt es nicht mehr."
+	"error_payment_not_found": "Diese Zahlung gibt es nicht mehr.",
+	"add_person": "Person hinzufügen",
+	"add_person_button": "Hinzufügen",
+	"remove_person": "{name} entfernen"
 }

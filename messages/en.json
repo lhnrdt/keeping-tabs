@@ -10,7 +10,6 @@
 	"field_your_name": "Your name",
 	"field_other_members": "Who else is in the group?",
 	"field_member_name": "Name",
-	"add_another": "Add another",
 	"create_submit": "Create group",
 	"members_title": "Members",
 	"member_you": "you",
@@ -83,5 +82,8 @@
 	"field_payment_from": "From",
 	"field_payment_to": "To",
 	"payment_title": "{from} paid {to}",
-	"error_payment_not_found": "This payment doesn't exist anymore."
+	"error_payment_not_found": "This payment doesn't exist anymore.",
+	"add_person": "Add a person",
+	"add_person_button": "Add",
+	"remove_person": "Remove {name}"
 }

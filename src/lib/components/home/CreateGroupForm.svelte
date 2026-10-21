@@ -8,7 +8,7 @@
 	import { Submission } from '#lib/forms/submission.svelte.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { LIMITS } from '#lib/validation.ts';
-	import MemberNameFields from './MemberNameFields.svelte';
+	import MemberChips from './MemberChips.svelte';
 
 	type Values = {
 		name: string;
@@ -66,7 +66,7 @@
 
 		<BlockTitle>{m.field_other_members()}</BlockTitle>
 		<List strong inset>
-			<MemberNameFields names={values?.members} />
+			<MemberChips names={values?.members} />
 		</List>
 
 		<FormError {error} />

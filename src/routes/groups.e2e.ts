@@ -1,11 +1,18 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+
+/** Opens a page and waits until it's interactive (hydrated), like a user would. */
+async function open(page: Page, url: string) {
+	await page.goto(url);
+	await page.waitForLoadState('networkidle');
+}
 
 test('create a group, manage members and replace its link', async ({ page }) => {
-	await page.goto('/');
+	await open(page, '/');
 	await page.getByLabel('Group name').fill('Ski trip');
 	await page.getByLabel('Currency').selectOption('CHF');
 	await page.getByLabel('Your name').fill('Anna');
-	await page.getByLabel('Name 1').fill('Ben');
+	// A typed name counts even without pressing Add
+	await page.getByLabel('Add a person').fill('Ben');
 	await page.getByRole('button', { name: 'Create group' }).click();
 
 	// The creator lands on the group and is remembered as Anna
@@ -35,7 +42,7 @@ test('create a group, manage members and replace its link', async ({ page }) => 
 	// Survives a reload, and the home page lists the group
 	await page.reload();
 	await expect(members.getByText('Benedikt')).toBeVisible();
-	await page.goto('/');
+	await open(page, '/');
 	await expect(page.getByRole('link', { name: 'Ski trip' })).toBeVisible();
 
 	// A new link replaces the old one
@@ -54,12 +61,20 @@ test('create a group, manage members and replace its link', async ({ page }) => 
 });
 
 test('expenses update the balances', async ({ page }) => {
-	await page.goto('/');
+	await open(page, '/');
 	await page.getByLabel('Group name').fill('Dinner club');
 	await page.getByLabel('Currency').selectOption('EUR');
 	await page.getByLabel('Your name').fill('Anna');
-	await page.getByLabel('Name 1').fill('Ben');
-	await page.getByLabel('Name 2').fill('Cara');
+	await page.getByLabel('Add a person').fill('Ben');
+	await page.getByLabel('Add a person').press('Enter');
+	await page.getByLabel('Add a person').fill('Dora');
+	await page.getByRole('button', { name: 'Add', exact: true }).click();
+	await page.getByRole('button', { name: 'Remove Dora' }).click();
+	await page.getByLabel('Add a person').fill('Cara');
+	await page.getByLabel('Add a person').press('Enter');
+	await expect(page.getByRole('list', { name: 'Who else is in the group?' })).toHaveText(
+		/Ben\s*Cara/
+	);
 	await page.getByRole('button', { name: 'Create group' }).click();
 	await expect(page.getByTestId('identity')).toHaveText('Anna');
 	const groupUrl = page.url();
@@ -117,11 +132,11 @@ test('expenses update the balances', async ({ page }) => {
 });
 
 test('settle up with suggested payments', async ({ page }) => {
-	await page.goto('/');
+	await open(page, '/');
 	await page.getByLabel('Group name').fill('Flat');
 	await page.getByLabel('Currency').selectOption('EUR');
 	await page.getByLabel('Your name').fill('Anna');
-	await page.getByLabel('Name 1').fill('Ben');
+	await page.getByLabel('Add a person').fill('Ben');
 	await page.getByRole('button', { name: 'Create group' }).click();
 	await expect(page.getByTestId('identity')).toHaveText('Anna');
 	const groupUrl = page.url();
