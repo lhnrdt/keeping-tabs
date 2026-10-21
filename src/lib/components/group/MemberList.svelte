@@ -26,6 +26,7 @@
 		<ListItem
 			link
 			linkComponent="button"
+			class="[&>button]:w-full [&>button]:text-start"
 			linkProps={{ type: 'button', 'aria-label': m.rename_member({ name: member.name }) }}
 			title={member.name}
 			after={member.id === identity.memberId ? m.member_you() : ''}
