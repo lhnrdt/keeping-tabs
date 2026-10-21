@@ -33,3 +33,12 @@
 		animation: none !important;
 	}
 }
+
+/* Same-page updates (see in-place-transition.ts): only named elements animate */
+:root[data-transition='in-place']::view-transition-old(root),
+:root[data-transition='in-place']::view-transition-new(root) {
+	animation: none;
+}
+::view-transition-group(*) {
+	animation-duration: 250ms;
+}

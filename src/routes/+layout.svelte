@@ -14,11 +14,12 @@
 
 	const depth = (url: URL | undefined) => url?.pathname.split('/').filter(Boolean).length ?? 0;
 
-	// Page transitions (N-12): slide forward into deeper pages, back out of them
+	// Page transitions (N-12)
 	onNavigate((navigation) => {
 		if (!document.startViewTransition || prefersReducedMotion.current) return;
-		const back = depth(navigation.to?.url) < depth(navigation.from?.url);
-		document.documentElement.style.setProperty('--vt-direction', back ? '-1' : '1');
+		// 1 = deeper (slide forward), -1 = back up, 0 = same level such as tabs (fade)
+		const direction = Math.sign(depth(navigation.to?.url) - depth(navigation.from?.url));
+		document.documentElement.style.setProperty('--vt-direction', String(direction));
 		return new Promise((resolve) => {
 			document.startViewTransition(async () => {
 				resolve();

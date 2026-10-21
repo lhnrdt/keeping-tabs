@@ -1,8 +1,10 @@
 import type { ActionResult, SubmitFunction } from '$app/forms';
+import { inPlaceTransition } from '#lib/motion/in-place-transition.ts';
 
 /**
  * Pending state for a progressively enhanced form (N-11): pass `submission.enhance`
- * to `use:enhance` and read `submission.pending` for the busy UI.
+ * to `use:enhance` and read `submission.pending` for the busy UI. Same-page results
+ * are applied with an in-place transition; redirects get the page transition.
  */
 export class Submission {
 	pending = $state(false);
@@ -13,7 +15,7 @@ export class Submission {
 		this.pending = true;
 		return async ({ result, update }) => {
 			try {
-				await update();
+				await (result.type === 'redirect' ? update() : inPlaceTransition(() => update()));
 			} finally {
 				this.pending = false;
 			}
