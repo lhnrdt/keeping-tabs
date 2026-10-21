@@ -11,11 +11,14 @@
 		children: Snippet;
 	};
 
-	let { title, back, right, children }: Props = $props();
+	let { title: heading, back, right, children }: Props = $props();
 </script>
 
 <Page>
-	<Navbar {title} {right}>
+	<Navbar {right}>
+		{#snippet title()}
+			<h1>{heading}</h1>
+		{/snippet}
 		{#snippet left()}
 			{#if back}
 				<NavbarBackLink href={back.href} text={back.label} showText />
