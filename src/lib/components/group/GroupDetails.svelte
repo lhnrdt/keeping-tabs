@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { List, ListButton, ListItem } from 'konsta/svelte';
+	import Icon from '#lib/components/Icon.svelte';
 	import Field from '#lib/components/Field.svelte';
 	import FormDialog from './FormDialog.svelte';
 	import FormError from '#lib/components/FormError.svelte';
@@ -21,7 +22,10 @@
 		<ListItem title={m.field_description()} text={group.description} />
 	{/if}
 	<ListItem title={m.field_currency()} after={group.currency} />
-	<ListButton type="button" onclick={() => (editing = true)}>{m.edit_group()}</ListButton>
+	<ListButton type="button" onclick={() => (editing = true)}>
+		<Icon name="edit" />
+		{m.edit_group()}
+	</ListButton>
 </List>
 
 <FormDialog
