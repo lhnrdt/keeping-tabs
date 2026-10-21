@@ -10,7 +10,7 @@
 	import favicon from '#lib/assets/favicon.svg';
 	import type { LayoutProps } from './$types';
 
-	let { data, children }: LayoutProps = $props();
+	let { children }: LayoutProps = $props();
 
 	const depth = (url: URL | undefined) => url?.pathname.split('/').filter(Boolean).length ?? 0;
 
@@ -33,7 +33,7 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-<App theme={data.theme} dark safeAreas>
+<App theme="ios" dark safeAreas>
 	{@render children()}
 </App>
 
