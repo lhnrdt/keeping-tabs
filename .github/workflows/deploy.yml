@@ -1,0 +1,115 @@
+name: Deploy
+
+# staging → app-staging (release candidate), master → app (release, tagged)
+on:
+  push:
+    branches: [staging, master]
+
+concurrency:
+  group: deploy-${{ github.ref_name }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write # release tags and GitHub releases
+
+jobs:
+  deploy:
+    name: Deploy ${{ github.ref_name }}
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref_name == 'master' && 'production' || 'staging' }}
+      url: ${{ steps.version.outputs.url }}
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: jdx/mise-action@v5
+
+      - name: Only merged PRs are deployed
+        run: |
+          if [ "$(git rev-list --parents -n 1 HEAD | wc -w)" -ne 3 ]; then
+            echo "::error::$GITHUB_SHA is not a PR merge commit; refusing to deploy"
+            exit 1
+          fi
+
+      - name: Version
+        id: version
+        run: |
+          if [ "$GITHUB_REF_NAME" = master ]; then
+            # The release merge's second parent is the staging commit being shipped
+            version=$(node scripts/version.ts release HEAD^2)
+            if git rev-parse -q --verify "refs/tags/v$version" >/dev/null; then
+              echo "::error::v$version is already released"
+              exit 1
+            fi
+            echo "env_args=" >> "$GITHUB_OUTPUT"
+            echo "url=https://app.keeping-tabs.workers.dev" >> "$GITHUB_OUTPUT"
+          else
+            version=$(node scripts/version.ts rc HEAD)
+            echo "env_args=--env staging" >> "$GITHUB_OUTPUT"
+            echo "url=https://app-staging.keeping-tabs.workers.dev" >> "$GITHUB_OUTPUT"
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "Deploying v$version" >> "$GITHUB_STEP_SUMMARY"
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check
+      - run: pnpm exec vitest --run --project server
+
+      - name: Migrate database
+        run: pnpm exec wrangler d1 migrations apply DB --remote ${{ steps.version.outputs.env_args }}
+
+      - name: Build
+        env:
+          APP_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          pnpm build
+          built=$(node -p "require('./.svelte-kit/cloudflare/_app/version.json').version")
+          if [ "$built" != "$APP_VERSION" ]; then
+            echo "::error::Build is stamped $built, expected $APP_VERSION"
+            exit 1
+          fi
+
+      - name: Deploy
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: >-
+          pnpm exec wrangler deploy ${{ steps.version.outputs.env_args }}
+          --tag "v$VERSION" --message "$(git log -1 --format=%s | cut -c1-100)"
+
+      - name: Live site serves this version
+        env:
+          URL: ${{ steps.version.outputs.url }}
+          VERSION: ${{ steps.version.outputs.version }}
+          STAGING_PASSWORD: ${{ secrets.STAGING_PASSWORD }}
+        run: |
+          auth=()
+          if [ "$GITHUB_REF_NAME" = staging ]; then auth=(-u "deploy:$STAGING_PASSWORD"); fi
+          for attempt in $(seq 1 12); do
+            served=$(curl -sS -o /dev/null -D - "${auth[@]}" "$URL/" | tr -d '\r' | awk -F': ' 'tolower($1) == "x-app-version" { print $2 }')
+            if [ "$served" = "$VERSION" ]; then
+              echo "$URL serves v$VERSION"
+              exit 0
+            fi
+            echo "Attempt $attempt: serving '${served:-nothing}', waiting for v$VERSION"
+            sleep 5
+          done
+          echo "::error::$URL does not serve v$VERSION"
+          exit 1
+
+      - name: Tag release
+        if: github.ref_name == 'master'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          previous=$(git tag --list 'v*' --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1 || true)
+          range=${previous:+$previous..}HEAD^2
+          notes=$(git log --merges --first-parent --format='- %s' "$range")
+          git tag "v$VERSION" HEAD
+          git push origin "v$VERSION"
+          gh release create "v$VERSION" --title "v$VERSION" --notes "$notes"

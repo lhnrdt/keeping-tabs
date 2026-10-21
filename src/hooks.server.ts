@@ -1,4 +1,5 @@
 import { env } from 'cloudflare:workers';
+import { version } from '$app/env';
 import type { Handle } from '@sveltejs/kit/hooks';
 import { sequence } from '@sveltejs/kit/hooks';
 import { getTextDirection } from '#lib/paraglide/runtime.js';
@@ -23,4 +24,11 @@ const handleDb: Handle = ({ event, resolve }) => {
 	return resolve(event);
 };
 
-export const handle: Handle = sequence(handleDb, handleParaglide);
+/** Every dynamic response says which release served it. */
+const handleVersion: Handle = async ({ event, resolve }) => {
+	const response = await resolve(event);
+	response.headers.set('x-app-version', version);
+	return response;
+};
+
+export const handle: Handle = sequence(handleVersion, handleDb, handleParaglide);

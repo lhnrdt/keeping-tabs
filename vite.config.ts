@@ -5,6 +5,12 @@ import { playwright } from '@vitest/browser-playwright';
 import adapter from '@sveltejs/adapter-cloudflare';
 import { sveltekit } from '@sveltejs/kit/vite';
 
+// Set by the deploy workflow (see scripts/version.ts); local builds are "0.0.0-dev"
+const appVersion = process.env.APP_VERSION || '0.0.0-dev';
+if (!/^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$/.test(appVersion)) {
+	throw new Error(`APP_VERSION is not a semantic version: ${appVersion}`);
+}
+
 export default defineConfig({
 	plugins: [
 		tailwindcss(),
@@ -14,7 +20,9 @@ export default defineConfig({
 				runes: ({ filename }) =>
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
 			},
-			adapter: adapter()
+			adapter: adapter(),
+			// Also sent as the x-sveltekit-version header and in /_app/version.json
+			version: { name: appVersion }
 		}),
 
 		paraglideVitePlugin({
@@ -45,7 +53,7 @@ export default defineConfig({
 				test: {
 					name: 'server',
 					environment: 'node',
-					include: ['src/**/*.{test,spec}.{js,ts}'],
+					include: ['src/**/*.{test,spec}.{js,ts}', 'scripts/**/*.spec.ts'],
 					exclude: ['src/**/*.svelte.{test,spec}.{js,ts}']
 				}
 			}
