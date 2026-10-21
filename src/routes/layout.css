@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import 'konsta/svelte/theme.css';
+@import '../lib/styles/theme.css';
 
 /* Page transitions (see +layout.svelte); --vt-direction is 1 forward, -1 back */
 ::view-transition-old(root) {
