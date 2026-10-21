@@ -25,7 +25,7 @@
 				<NavbarBackLink
 					href={back.href}
 					text={back.label}
-					showText
+					showText={false}
 					aria-label={m.back_to_group({ name: back.label })}
 				/>
 			{/if}
