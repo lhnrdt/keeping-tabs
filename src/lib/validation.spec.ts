@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
 	normalizeText,
+	parseDate,
+	parseExpense,
 	parseCurrency,
 	parseDescription,
 	parseGroupName,
@@ -63,5 +65,55 @@ describe('parseMemberNames', () => {
 
 	it('needs at least one name', () => {
 		expect(parseMemberNames(['', ' '])).toEqual({ ok: false, error: 'member_name_required' });
+	});
+});
+
+describe('parseDate', () => {
+	it('accepts real ISO dates only', () => {
+		expect(parseDate('2026-02-28')).toEqual({ ok: true, value: '2026-02-28' });
+		expect(parseDate('2026-02-30')).toEqual({ ok: false, error: 'date_invalid' });
+		expect(parseDate('28.02.2026')).toEqual({ ok: false, error: 'date_invalid' });
+	});
+});
+
+describe('parseExpense', () => {
+	const group = { memberIds: ['a', 'b', 'c'], currency: 'EUR' };
+	const values = {
+		title: ' Dinner ',
+		amount: '30,00',
+		date: '2026-10-21',
+		paidBy: 'b',
+		participants: ['c', 'a']
+	};
+
+	it('returns participants in member order', () => {
+		expect(parseExpense(values, group)).toEqual({
+			ok: true,
+			value: {
+				title: 'Dinner',
+				amountCents: 3000,
+				date: '2026-10-21',
+				paidBy: 'b',
+				participants: ['a', 'c']
+			}
+		});
+	});
+
+	it('rejects payers and participants outside the group', () => {
+		expect(parseExpense({ ...values, paidBy: 'x' }, group)).toEqual({
+			ok: false,
+			error: 'payer_invalid'
+		});
+		expect(parseExpense({ ...values, participants: ['x'] }, group)).toEqual({
+			ok: false,
+			error: 'participants_required'
+		});
+	});
+
+	it('rejects invalid amounts', () => {
+		expect(parseExpense({ ...values, amount: '0' }, group)).toEqual({
+			ok: false,
+			error: 'amount_invalid'
+		});
 	});
 });

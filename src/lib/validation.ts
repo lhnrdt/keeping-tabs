@@ -1,6 +1,12 @@
 import type { ErrorCode } from './errors';
+import { parseAmount } from './money';
 
-export const LIMITS = { groupName: 60, description: 280, memberName: 40 } as const;
+export const LIMITS = {
+	groupName: 60,
+	description: 280,
+	memberName: 40,
+	expenseTitle: 80
+} as const;
 
 type Result<T> = { ok: true; value: T } | { ok: false; error: ErrorCode };
 
@@ -56,4 +62,52 @@ export function parseMemberNames(values: unknown[]): Result<string[]> {
 	}
 	if (names.length === 0) return { ok: false, error: 'member_name_required' };
 	return { ok: true, value: names };
+}
+
+export type ExpenseInput = {
+	title: string;
+	amountCents: number;
+	date: string;
+	paidBy: string;
+	/** In member order, so equal-split remainders are deterministic */
+	participants: string[];
+};
+
+export function parseDate(value: unknown): Result<string> {
+	const date = normalizeText(value);
+	const valid =
+		/^\d{4}-\d{2}-\d{2}$/.test(date) &&
+		new Date(`${date}T00:00:00Z`).toISOString().startsWith(date);
+	return valid ? { ok: true, value: date } : { ok: false, error: 'date_invalid' };
+}
+
+/** Validates an equal-split expense against the group's current members. */
+export function parseExpense(
+	values: {
+		title: unknown;
+		amount: unknown;
+		date: unknown;
+		paidBy: unknown;
+		participants: unknown[];
+	},
+	group: { memberIds: readonly string[]; currency: string }
+): Result<ExpenseInput> {
+	const title = normalizeText(values.title);
+	if (!title) return { ok: false, error: 'expense_title_required' };
+	if (title.length > LIMITS.expenseTitle) return { ok: false, error: 'expense_title_too_long' };
+
+	const amountCents = parseAmount(normalizeText(values.amount), group.currency);
+	if (amountCents === null) return { ok: false, error: 'amount_invalid' };
+
+	const date = parseDate(values.date);
+	if (!date.ok) return date;
+
+	const paidBy = normalizeText(values.paidBy);
+	if (!group.memberIds.includes(paidBy)) return { ok: false, error: 'payer_invalid' };
+
+	const chosen = new Set(values.participants.map(normalizeText));
+	const participants = group.memberIds.filter((id) => chosen.has(id));
+	if (participants.length === 0) return { ok: false, error: 'participants_required' };
+
+	return { ok: true, value: { title, amountCents, date: date.value, paidBy, participants } };
 }

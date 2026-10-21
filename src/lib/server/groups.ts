@@ -1,18 +1,8 @@
 import { and, asc, eq, isNull } from 'drizzle-orm';
+import { log } from './activity';
 import type { Db } from './db';
-import { activityLog, groups, members } from './db/schema';
+import { groups, members } from './db/schema';
 import { newShareToken, SHARE_TOKEN_PATTERN } from './token';
-
-type Action =
-	'group.create' | 'group.update' | 'group.regenerate_link' | 'member.add' | 'member.rename';
-
-const log = (
-	db: Db,
-	groupId: string,
-	memberId: string | null,
-	action: Action,
-	payload: Record<string, unknown>
-) => db.insert(activityLog).values({ groupId, memberId, action, payload });
 
 export async function findGroupByToken(db: Db, token: string) {
 	if (!SHARE_TOKEN_PATTERN.test(token)) return undefined;

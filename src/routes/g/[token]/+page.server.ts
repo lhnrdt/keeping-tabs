@@ -1,37 +1,42 @@
-import { error, fail, redirect } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
 import type { ErrorCode } from '#lib/errors.ts';
-import { m } from '#lib/paraglide/messages.js';
+import { balances } from '#lib/money.ts';
+import { formContext as context, requireGroup } from '#lib/server/context.ts';
+import { listExpenses } from '#lib/server/expenses.ts';
 import {
 	addMember,
-	findGroupByToken,
 	isUniqueViolation,
 	listMembers,
 	regenerateShareToken,
 	renameMember,
-	resolveActor,
 	updateGroup
 } from '#lib/server/groups.ts';
 import { parseDescription, parseGroupName, parseMemberName } from '#lib/validation.ts';
 import type { Actions, PageServerLoad } from './$types';
 
-async function loadGroup(db: App.Locals['db'], token: string) {
-	const group = await findGroupByToken(db, token);
-	if (!group) error(404, m.error_not_found());
-	return group;
-}
-
-/** Group and acting member for a form submission. */
-async function context(locals: App.Locals, token: string, request: Request) {
-	const form = await request.formData();
-	const group = await loadGroup(locals.db, token);
-	const actorId = await resolveActor(locals.db, group.id, form.get('actor'));
-	return { form, group, actorId };
-}
-
 export const load: PageServerLoad = async ({ locals, params }) => {
-	const group = await loadGroup(locals.db, params.token);
-	return { group, members: await listMembers(locals.db, group.id) };
+	const group = await requireGroup(locals.db, params.token);
+	const [members, expenses] = await Promise.all([
+		listMembers(locals.db, group.id),
+		listExpenses(locals.db, group.id)
+	]);
+	const totals = balances(
+		members.map((member) => member.id),
+		expenses
+	);
+	return {
+		group,
+		members,
+		balances: Object.fromEntries(totals),
+		expenses: expenses.map(({ id, title, amountCents, paidBy, date }) => ({
+			id,
+			title,
+			amountCents,
+			paidBy,
+			date
+		}))
+	};
 };
 
 export const actions: Actions = {

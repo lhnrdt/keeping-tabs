@@ -7,7 +7,9 @@
 	import { onMount } from 'svelte';
 	import { getMe, rememberGroup, setMe } from '#lib/device.ts';
 	import { errorMessage } from '#lib/errors.ts';
+	import { formatAmount } from '#lib/money.ts';
 	import { m } from '#lib/paraglide/messages.js';
+	import { getLocale } from '#lib/paraglide/runtime.js';
 	import { LIMITS } from '#lib/validation.ts';
 	import type { PageProps } from './$types';
 
@@ -21,6 +23,12 @@
 	let copied = $state(false);
 
 	const me = $derived(data.members.find((member) => member.id === meId));
+	const locale = getLocale();
+	const money = (amount: number) => formatAmount(amount, data.group.currency, locale);
+	const memberName = $derived(new Map(data.members.map((member) => [member.id, member.name])));
+	const dateFormat = new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeZone: 'UTC' });
+	const formatDate = (date: string) => dateFormat.format(new Date(`${date}T00:00:00Z`));
+
 	const shareUrl = $derived(
 		new URL(resolve('/g/[token]', { token: data.group.shareToken }), page.url.origin).href
 	);
@@ -165,6 +173,65 @@
 			</button>
 		</p>
 	{/if}
+
+	<section aria-labelledby="balances" class="space-y-2">
+		<h2 id="balances" class="text-lg font-semibold">{m.balances_title()}</h2>
+		<ul class="divide-y rounded-lg border">
+			{#each data.members as member (member.id)}
+				{@const balance = data.balances[member.id] ?? 0}
+				<li class="flex justify-between gap-2 p-3">
+					<span>{member.name}</span>
+					{#if balance > 0}
+						<span class="text-green-700">{m.balance_owed({ amount: money(balance) })}</span>
+					{:else if balance < 0}
+						<span class="text-red-700">{m.balance_owes({ amount: money(-balance) })}</span>
+					{:else}
+						<span class="text-gray-500">{m.balance_settled()}</span>
+					{/if}
+				</li>
+			{/each}
+		</ul>
+	</section>
+
+	<section aria-labelledby="expenses" class="space-y-2">
+		<div class="flex items-center justify-between">
+			<h2 id="expenses" class="text-lg font-semibold">{m.expenses_title()}</h2>
+			<a
+				class="rounded-md bg-blue-700 px-3 py-1.5 text-white"
+				href={resolve('/g/[token]/expenses/new', { token: data.group.shareToken })}
+			>
+				{m.add_expense()}
+			</a>
+		</div>
+		{#if data.expenses.length}
+			<ul class="divide-y rounded-lg border">
+				{#each data.expenses as expense (expense.id)}
+					<li>
+						<a
+							class="flex justify-between gap-2 p-3 hover:bg-gray-50"
+							href={resolve('/g/[token]/expenses/[id]', {
+								token: data.group.shareToken,
+								id: expense.id
+							})}
+						>
+							<span>
+								<span class="block">{expense.title}</span>
+								<span class="block text-sm text-gray-500">
+									{formatDate(expense.date)} · {m.expense_paid_by({
+										name: memberName.get(expense.paidBy) ?? '?',
+										amount: money(expense.amountCents)
+									})}
+								</span>
+							</span>
+							<span class="shrink-0 font-medium">{money(expense.amountCents)}</span>
+						</a>
+					</li>
+				{/each}
+			</ul>
+		{:else}
+			<p class="text-gray-500">{m.expenses_empty()}</p>
+		{/if}
+	</section>
 
 	<section aria-labelledby="members" class="space-y-3">
 		<h2 id="members" class="text-lg font-semibold">{m.members_title()}</h2>

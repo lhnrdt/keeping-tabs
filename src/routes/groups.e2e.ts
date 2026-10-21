@@ -15,7 +15,7 @@ test('create a group, manage members and replace its link', async ({ page }) => 
 	await expect(page.getByText('Currency: CHF')).toBeVisible();
 	const groupUrl = page.url();
 
-	const members = page.getByRole('list').filter({ hasText: 'Anna' });
+	const members = page.getByRole('region', { name: 'Members' });
 	const nameInput = page.getByRole('textbox', { name: 'Name', exact: true });
 
 	await nameInput.fill('Cara');
@@ -47,4 +47,58 @@ test('create a group, manage members and replace its link', async ({ page }) => 
 	const response = await page.goto(groupUrl);
 	expect(response?.status()).toBe(404);
 	await expect(page.getByText("This group doesn't exist")).toBeVisible();
+});
+
+test('expenses update the balances', async ({ page }) => {
+	await page.goto('/');
+	await page.getByLabel('Group name').fill('Dinner club');
+	await page.getByLabel('Currency').selectOption('EUR');
+	await page.getByLabel('Your name').fill('Anna');
+	const others = page.getByRole('textbox', { name: 'Name', exact: true });
+	await others.nth(0).fill('Ben');
+	await others.nth(1).fill('Cara');
+	await page.getByRole('button', { name: 'Create group' }).click();
+	await expect(page.getByText('You are Anna.')).toBeVisible();
+
+	const balances = page.getByRole('region', { name: 'Balances' });
+	const balanceOf = (name: string) => balances.getByRole('listitem').filter({ hasText: name });
+
+	// Paid by Anna (the default payer), split between everyone
+	await page.getByRole('link', { name: 'Add expense' }).click();
+	await page.getByLabel('What was it for?').fill('Pizza');
+	await page.getByLabel('Amount').fill('30,01');
+	await page.getByRole('button', { name: 'Add expense' }).click();
+
+	await expect(page.getByRole('link', { name: /Pizza/ })).toContainText('Anna paid €30.01');
+	await expect(balanceOf('Anna')).toContainText('gets back €20.00');
+	await expect(balanceOf('Ben')).toContainText('owes €10.00');
+	// The extra cent goes to the first participant (Anna)
+	await expect(balanceOf('Cara')).toContainText('owes €10.00');
+
+	// Leave Cara out
+	await page.getByRole('link', { name: /Pizza/ }).click();
+	await expect(page.getByLabel('Amount')).toHaveValue('30.01');
+	await page.getByRole('checkbox', { name: 'Cara' }).uncheck();
+	await page.getByRole('button', { name: 'Save' }).click();
+	await expect(balanceOf('Anna')).toContainText('gets back €15.00');
+	await expect(balanceOf('Ben')).toContainText('owes €15.00');
+	await expect(balanceOf('Cara')).toContainText('settled up');
+
+	// Validation keeps the input
+	await page.getByRole('link', { name: 'Add expense' }).click();
+	await page.getByLabel('What was it for?').fill('Drinks');
+	await page.getByLabel('Amount').fill('0');
+	await page.getByRole('button', { name: 'Add expense' }).click();
+	await expect(page.getByRole('alert')).toHaveText(
+		'Enter an amount greater than zero, like 12.50.'
+	);
+	await expect(page.getByLabel('What was it for?')).toHaveValue('Drinks');
+	await page.getByRole('link', { name: 'Back to Dinner club' }).click();
+
+	// Delete
+	await page.getByRole('link', { name: /Pizza/ }).click();
+	page.once('dialog', (dialog) => dialog.accept());
+	await page.getByRole('button', { name: 'Delete expense' }).click();
+	await expect(page.getByText('No expenses yet.')).toBeVisible();
+	await expect(balanceOf('Anna')).toContainText('settled up');
 });
