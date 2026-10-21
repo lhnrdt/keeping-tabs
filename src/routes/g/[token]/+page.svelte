@@ -3,6 +3,7 @@
 	import { page } from '$app/state';
 	import { BlockTitle, Fab } from 'konsta/svelte';
 	import AppPage from '#lib/components/AppPage.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 	import AddMemberForm from '#lib/components/group/AddMemberForm.svelte';
 	import BalanceList from '#lib/components/group/BalanceList.svelte';
 	import ExpenseList from '#lib/components/group/ExpenseList.svelte';
@@ -47,9 +48,7 @@
 			role="link"
 		>
 			{#snippet icon()}
-				<svg viewBox="0 0 24 24" class="h-6 w-6" aria-hidden="true">
-					<path d="M11 5h2v14h-2zM5 11h14v2H5z" fill="currentColor" />
-				</svg>
+				<Icon name="add" size={24} />
 			{/snippet}
 		</Fab>
 	{:else if tab === 'balances'}

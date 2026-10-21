@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { ListButton } from 'konsta/svelte';
+	import Icon from '#lib/components/Icon.svelte';
 	import { slide } from 'svelte/transition';
 	import Field from '#lib/components/Field.svelte';
 	import { m } from '#lib/paraglide/messages.js';
@@ -23,4 +24,7 @@
 		/>
 	</div>
 {/each}
-<ListButton type="button" onclick={() => extraRows++}>{m.add_another()}</ListButton>
+<ListButton type="button" onclick={() => extraRows++}>
+	<Icon name="add" />
+	{m.add_another()}
+</ListButton>

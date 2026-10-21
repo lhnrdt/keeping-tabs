@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { Block, List, ListItem } from 'konsta/svelte';
+	import IconBadge from '#lib/components/IconBadge.svelte';
 	import AnimatedAmount from '#lib/components/AnimatedAmount.svelte';
 	import { namesById, type Member } from '#lib/group/members.ts';
 	import { transitionName } from '#lib/motion/in-place-transition.ts';
@@ -32,6 +33,9 @@
 				})}`}
 				style={transitionName('expense', expense.id)}
 			>
+				{#snippet media()}
+					<IconBadge name="expense" />
+				{/snippet}
 				{#snippet after()}
 					<AnimatedAmount amount={expense.amountCents} {currency} />
 				{/snippet}

@@ -2,6 +2,7 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { Block, Button, List, ListButton, ListItem, Toast } from 'konsta/svelte';
+	import Icon from '#lib/components/Icon.svelte';
 	import FormDialog from './FormDialog.svelte';
 	import { tabAction } from '#lib/group/tabs.ts';
 	import { m } from '#lib/paraglide/messages.js';
@@ -34,11 +35,15 @@
 <List strong inset>
 	<ListItem title={shareUrl} titleWrapClass="truncate select-all" aria-label={m.share_title()} />
 	<ListButton type="button" class="tone-destructive" onclick={() => (confirmingRegenerate = true)}>
+		<Icon name="newLink" />
 		{m.regenerate_link()}
 	</ListButton>
 </List>
 <Block>
-	<Button large rounded type="button" onclick={share}>{m.share_button()}</Button>
+	<Button large rounded type="button" class="gap-2" onclick={share}>
+		<Icon name="share" />
+		{m.share_button()}
+	</Button>
 </Block>
 
 <Toast position="center" opened={copied}>{m.share_copied()}</Toast>

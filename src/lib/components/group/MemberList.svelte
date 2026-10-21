@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { List, ListItem } from 'konsta/svelte';
+	import IconBadge from '#lib/components/IconBadge.svelte';
 	import Field from '#lib/components/Field.svelte';
 	import FormDialog from './FormDialog.svelte';
 	import FormError from '#lib/components/FormError.svelte';
@@ -32,7 +33,11 @@
 			after={member.id === identity.memberId ? m.member_you() : ''}
 			style={transitionName('member', member.id)}
 			onclick={() => (renaming = lastRenamed = member)}
-		/>
+		>
+			{#snippet media()}
+				<IconBadge name="member" />
+			{/snippet}
+		</ListItem>
 	{/each}
 </List>
 

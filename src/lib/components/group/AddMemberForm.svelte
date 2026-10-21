@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { List, ListButton } from 'konsta/svelte';
+	import Icon from '#lib/components/Icon.svelte';
 	import Field from '#lib/components/Field.svelte';
 	import FormError from '#lib/components/FormError.svelte';
 	import ActorInput from './ActorInput.svelte';
@@ -25,7 +26,10 @@
 			maxlength={LIMITS.memberName}
 			autocomplete="off"
 		/>
-		<ListButton type="submit" aria-busy={submission.pending}>{m.add_member()}</ListButton>
+		<ListButton type="submit" aria-busy={submission.pending}>
+			<Icon name="addMember" />
+			{m.add_member()}
+		</ListButton>
 	</List>
 	<FormError {error} />
 </form>
