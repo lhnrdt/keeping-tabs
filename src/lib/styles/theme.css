@@ -45,6 +45,17 @@
 	--color-ios-dark-surface-3: var(--color-surface-night);
 	--color-ios-dark-surface-variant: var(--color-surface-muted-night);
 
+	/* Konsta: flatten iOS "liquid glass" (navbar buttons, FAB, dialogs, sheets): solid paper
+	   with a hairline instead of glossy 3D highlights; only the FAB keeps a soft shadow */
+	--color-ios-light-glass: var(--color-surface);
+	--color-ios-dark-glass: var(--color-surface-muted-night);
+	--shadow-ios-light-glass: 0 0 0 1px rgb(37 40 34 / 0.08);
+	--shadow-ios-dark-glass: 0 0 0 1px rgb(236 237 232 / 0.08);
+	--shadow-ios-light-glass-fab: 0 8px 20px rgb(37 40 34 / 0.14);
+	--shadow-ios-dark-glass-fab: 0 8px 20px rgb(0 0 0 / 0.3);
+	--shadow-ios-light-glass-thumb: 0 1px 3px rgb(37 40 34 / 0.15);
+	--shadow-ios-dark-glass-thumb: 0 1px 3px rgb(0 0 0 / 0.4);
+
 	/* Konsta writes text-black / dark:text-white: make those warm ink and paper */
 	--color-black: var(--color-ink);
 	--color-white: var(--color-surface);
