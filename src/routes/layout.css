@@ -7,3 +7,30 @@
 @theme {
 	--font-material: 'Roboto Variable', Roboto, system-ui, Noto, Helvetica, Arial, sans-serif;
 }
+
+/* Page transitions (see +layout.svelte); --vt-direction is 1 forward, -1 back */
+::view-transition-old(root) {
+	animation: 180ms ease-in both page-out;
+}
+::view-transition-new(root) {
+	animation: 240ms ease-out both page-in;
+}
+@keyframes page-out {
+	to {
+		opacity: 0;
+		transform: translateX(calc(var(--vt-direction, 1) * -2rem));
+	}
+}
+@keyframes page-in {
+	from {
+		opacity: 0;
+		transform: translateX(calc(var(--vt-direction, 1) * 2rem));
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	::view-transition-group(*),
+	::view-transition-old(*),
+	::view-transition-new(*) {
+		animation: none !important;
+	}
+}
