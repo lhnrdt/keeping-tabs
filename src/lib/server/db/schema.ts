@@ -28,6 +28,8 @@ export const groups = sqliteTable('groups', {
 	shareToken: text('share_token').notNull().unique(),
 	name: text('name').notNull(),
 	description: text('description'),
+	// ISO 4217 code; one currency per group (S-1)
+	currency: text('currency').notNull().default('EUR'),
 	createdAt: createdAt(),
 	deletedAt: deletedAt()
 });

@@ -8,6 +8,13 @@
       "when": 1792603931918,
       "tag": "0000_far_jamie_braddock",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1792604377569,
+      "tag": "0001_group_currency",
+      "breakpoints": true
     }
   ]
 }

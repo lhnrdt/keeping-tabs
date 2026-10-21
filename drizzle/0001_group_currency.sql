@@ -1,0 +1,1 @@
+ALTER TABLE `groups` ADD `currency` text DEFAULT 'EUR' NOT NULL;
