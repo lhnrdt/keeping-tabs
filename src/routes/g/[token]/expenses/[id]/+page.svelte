@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import AppPage from '#lib/components/AppPage.svelte';
-	import DeleteExpense from '#lib/components/expense/DeleteExpense.svelte';
+	import DeleteEntry from '#lib/components/group/DeleteEntry.svelte';
 	import ExpenseForm from '#lib/components/expense/ExpenseForm.svelte';
 	import { amountInputValue } from '#lib/money.ts';
 	import { m } from '#lib/paraglide/messages.js';
@@ -35,5 +35,5 @@
 		error={form?.error}
 		submitLabel={m.save()}
 	/>
-	<DeleteExpense />
+	<DeleteEntry label={m.delete_expense()} question={m.delete_expense_confirm()} />
 </AppPage>

@@ -2,7 +2,7 @@
 	// Bottom tab bar, in thumb reach (N-9). Plain links, so it works without JS.
 	import { Tabbar, TabbarLink } from 'konsta/svelte';
 	import Icon from '#lib/components/Icon.svelte';
-	import type { GroupTab } from '#lib/group/tabs.ts';
+	import { groupTabUrl, type GroupTab } from '#lib/group/tabs.ts';
 	import type { IconName } from '#lib/icons.ts';
 	import { m } from '#lib/paraglide/messages.js';
 
@@ -21,7 +21,7 @@
 			active={tab.id === active}
 			label={tab.label()}
 			linkProps={{
-				href: `?tab=${tab.id}`,
+				href: groupTabUrl('', tab.id),
 				'aria-current': tab.id === active ? 'page' : undefined,
 				'data-sveltekit-replacestate': '',
 				'data-sveltekit-noscroll': ''

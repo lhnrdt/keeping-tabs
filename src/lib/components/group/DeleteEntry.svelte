@@ -1,8 +1,10 @@
 <script lang="ts">
+	// Delete button with confirmation for an expense or payment (action "?/delete").
 	import { Block, Button } from 'konsta/svelte';
 	import Icon from '#lib/components/Icon.svelte';
-	import FormDialog from '#lib/components/group/FormDialog.svelte';
-	import { m } from '#lib/paraglide/messages.js';
+	import FormDialog from './FormDialog.svelte';
+
+	let { label, question }: { label: string; question: string } = $props();
 
 	let confirming = $state(false);
 </script>
@@ -17,17 +19,17 @@
 		onclick={() => (confirming = true)}
 	>
 		<Icon name="delete" />
-		{m.delete_expense()}
+		{label}
 	</Button>
 </Block>
 
 <FormDialog
 	opened={confirming}
-	title={m.delete_expense()}
+	title={label}
 	action="?/delete"
-	submitLabel={m.delete_expense()}
+	submitLabel={label}
 	destructive
 	onClose={() => (confirming = false)}
 >
-	<p>{m.delete_expense_confirm()}</p>
+	<p>{question}</p>
 </FormDialog>

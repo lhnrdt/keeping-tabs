@@ -11,6 +11,7 @@
 	import GroupTabs from '#lib/components/group/GroupTabs.svelte';
 	import IdentityButton from '#lib/components/group/IdentityButton.svelte';
 	import MemberList from '#lib/components/group/MemberList.svelte';
+	import SettleUp from '#lib/components/group/SettleUp.svelte';
 	import ShareLink from '#lib/components/group/ShareLink.svelte';
 	import WhoAreYouSheet from '#lib/components/group/WhoAreYouSheet.svelte';
 	import { currentTab } from '#lib/group/tabs.ts';
@@ -54,6 +55,13 @@
 	{:else if tab === 'balances'}
 		<BlockTitle>{m.balances_title()}</BlockTitle>
 		<BalanceList currency={data.group.currency} members={data.members} balances={data.balances} />
+		<BlockTitle>{m.settle_title()}</BlockTitle>
+		<SettleUp
+			token={data.group.shareToken}
+			currency={data.group.currency}
+			members={data.members}
+			balances={data.balances}
+		/>
 	{:else}
 		<BlockTitle>{m.members_title()}</BlockTitle>
 		<MemberList members={data.members} renameError={errorFor('renameMember')} />

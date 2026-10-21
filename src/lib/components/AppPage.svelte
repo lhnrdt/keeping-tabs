@@ -15,26 +15,31 @@
 	let { title: heading, back, right, children }: Props = $props();
 </script>
 
+{#snippet backLink()}
+	{#if back}
+		<NavbarBackLink
+			href={back.href}
+			text={back.label}
+			showText={false}
+			aria-label={m.back_to_group({ name: back.label })}
+		/>
+	{/if}
+{/snippet}
+
 <Page>
-	<Navbar {right}>
+	<!-- No left slot without a back link, or the navbar draws an empty button -->
+	<Navbar {right} left={back ? backLink : undefined}>
 		{#snippet title()}
 			<h1>{heading}</h1>
 		{/snippet}
-		{#snippet left()}
-			{#if back}
-				<NavbarBackLink
-					href={back.href}
-					text={back.label}
-					showText={false}
-					aria-label={m.back_to_group({ name: back.label })}
-				/>
-			{/if}
-		{/snippet}
 	</Navbar>
 
-	<div class="mx-auto w-full max-w-2xl pb-24">
+	<div class="mx-auto w-full max-w-2xl">
 		{@render children()}
 	</div>
 
-	<VersionFooter />
+	<!-- Bottom space keeps the footer clear of a fixed tab bar -->
+	<div class="pb-24">
+		<VersionFooter />
+	</div>
 </Page>

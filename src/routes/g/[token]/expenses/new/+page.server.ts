@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
 import { formContext } from '#lib/server/context.ts';
-import { readExpenseForm } from '#lib/server/expense-form.ts';
+import { readExpenseForm } from '#lib/server/group-forms.ts';
 import { createExpense } from '#lib/server/expenses.ts';
 import type { Actions } from './$types';
 
