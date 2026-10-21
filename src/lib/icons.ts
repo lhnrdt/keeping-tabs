@@ -12,6 +12,7 @@ import IconUser from '@tabler/icons-svelte-runes/icons/user';
 import IconUserCircle from '@tabler/icons-svelte-runes/icons/user-circle';
 import IconUserPlus from '@tabler/icons-svelte-runes/icons/user-plus';
 import IconUsersGroup from '@tabler/icons-svelte-runes/icons/users-group';
+import IconX from '@tabler/icons-svelte-runes/icons/x';
 
 export const icons = {
 	add: IconPlus,
@@ -26,6 +27,7 @@ export const icons = {
 	payment: IconCash,
 	settled: IconCircleCheck,
 	newLink: IconRefresh,
+	remove: IconX,
 	share: IconShare
 };
 
