@@ -7,8 +7,6 @@
 		"dev": "vite dev",
 		"build": "wrangler types && vite build",
 		"preview": "wrangler dev .svelte-kit/cloudflare/_worker.js --port 4173",
-		"deploy:staging": "pnpm build && wrangler deploy --env staging",
-		"deploy:production": "pnpm build && wrangler deploy",
 		"prepare": "wrangler types && paraglide-js compile --project ./project.inlang --outdir ./src/lib/paraglide && svelte-kit sync || echo ''",
 		"check": "wrangler types && paraglide-js compile --project ./project.inlang --outdir ./src/lib/paraglide && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",

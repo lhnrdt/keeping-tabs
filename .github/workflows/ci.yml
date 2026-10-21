@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  rules:
+    name: PR rules
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: jdx/mise-action@v5
+
+      - name: Release PRs go from staging to master
+        if: github.event.pull_request.base.ref == 'master'
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          if [ "$HEAD_REF" != staging ]; then
+            echo "::error::Only staging can be merged into master (got $HEAD_REF)"
+            exit 1
+          fi
+          expected="release: v$(node scripts/version.ts release origin/staging)"
+          if [ "$TITLE" != "$expected" ]; then
+            echo "::error::Release PR title must be \"$expected\""
+            exit 1
+          fi
+
+      - name: Feature PR title is conventional
+        if: github.event.pull_request.base.ref != 'master'
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: node scripts/version.ts check-title "$TITLE"
+
+      - name: Commits are single-line and not merges
+        if: github.event.pull_request.base.ref != 'master'
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          status=0
+          for commit in $(git rev-list "$BASE..$HEAD"); do
+            if [ "$(git rev-list --parents -n 1 "$commit" | wc -w)" -gt 2 ]; then
+              echo "::error::$commit is a merge commit; rebase onto the base branch instead"
+              status=1
+            fi
+            if [ -n "$(git log -1 --format=%b "$commit")" ]; then
+              echo "::error::$commit has a message body or trailers; commit messages are one line"
+              status=1
+            fi
+          done
+          exit $status
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v5
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm check
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm exec vitest --run
+      - run: pnpm db:migrate:local
+      - run: pnpm exec playwright test
