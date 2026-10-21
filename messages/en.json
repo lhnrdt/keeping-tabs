@@ -70,5 +70,18 @@
 	"new_member": "New member",
 	"group_details": "Details",
 	"choose_member": "Choose who you are",
-	"link_actions": "Link"
+	"link_actions": "Link",
+	"error_recipient_invalid": "Choose who received the money.",
+	"error_payment_same_member": "Someone can't pay themselves.",
+	"settle_title": "Settle up",
+	"settle_done": "All settled. Nice and easy.",
+	"settle_pays": "{from} pays {to}",
+	"record_payment": "Record payment",
+	"edit_payment": "Edit payment",
+	"delete_payment": "Delete payment",
+	"delete_payment_confirm": "Delete this payment?",
+	"field_payment_from": "From",
+	"field_payment_to": "To",
+	"payment_title": "{from} paid {to}",
+	"error_payment_not_found": "This payment doesn't exist anymore."
 }

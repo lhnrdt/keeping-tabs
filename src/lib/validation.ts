@@ -8,7 +8,7 @@ export const LIMITS = {
 	expenseTitle: 80
 } as const;
 
-type Result<T> = { ok: true; value: T } | { ok: false; error: ErrorCode };
+export type Result<T> = { ok: true; value: T } | { ok: false; error: ErrorCode };
 
 /** Trims and collapses inner whitespace. */
 export const normalizeText = (value: unknown): string =>
@@ -110,4 +110,26 @@ export function parseExpense(
 	if (participants.length === 0) return { ok: false, error: 'participants_required' };
 
 	return { ok: true, value: { title, amountCents, date: date.value, paidBy, participants } };
+}
+
+export type PaymentInput = { from: string; to: string; amountCents: number; date: string };
+
+/** Validates a payment between two members (B-3). */
+export function parsePayment(
+	values: { from: unknown; to: unknown; amount: unknown; date: unknown },
+	group: { memberIds: readonly string[]; currency: string }
+): Result<PaymentInput> {
+	const from = normalizeText(values.from);
+	if (!group.memberIds.includes(from)) return { ok: false, error: 'payer_invalid' };
+	const to = normalizeText(values.to);
+	if (!group.memberIds.includes(to)) return { ok: false, error: 'recipient_invalid' };
+	if (from === to) return { ok: false, error: 'payment_same_member' };
+
+	const amountCents = parseAmount(normalizeText(values.amount), group.currency);
+	if (amountCents === null) return { ok: false, error: 'amount_invalid' };
+
+	const date = parseDate(values.date);
+	if (!date.ok) return date;
+
+	return { ok: true, value: { from, to, amountCents, date: date.value } };
 }

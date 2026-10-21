@@ -115,3 +115,44 @@ test('expenses update the balances', async ({ page }) => {
 	await expect(page.getByText('No expenses yet.')).toBeVisible();
 	await expectBalances({ Anna: 'settled up' });
 });
+
+test('settle up with suggested payments', async ({ page }) => {
+	await page.goto('/');
+	await page.getByLabel('Group name').fill('Flat');
+	await page.getByLabel('Currency').selectOption('EUR');
+	await page.getByLabel('Your name').fill('Anna');
+	await page.getByLabel('Name 1').fill('Ben');
+	await page.getByRole('button', { name: 'Create group' }).click();
+	await expect(page.getByTestId('identity')).toHaveText('Anna');
+	const groupUrl = page.url();
+
+	await page.getByRole('link', { name: 'Add expense' }).click();
+	await page.getByLabel('What was it for?').fill('Rent');
+	await page.getByLabel('Amount').fill('1000');
+	await page.getByRole('button', { name: 'Add expense' }).click();
+	await expect(page).toHaveURL(groupUrl);
+
+	// Ben owes half; the suggestion opens a pre-filled payment
+	await page.goto(`${groupUrl}?tab=balances`);
+	const settle = page.getByRole('region', { name: 'Settle up' });
+	await expect(settle).toContainText('Ben pays Anna');
+	await expect(settle).toContainText('€500.00');
+	await settle.getByRole('link', { name: /Ben pays Anna/ }).click();
+	await expect(page.getByLabel('From')).toHaveValue(/.+/);
+	await expect(page.getByLabel('Amount')).toHaveValue('500.00');
+	await page.getByRole('button', { name: 'Record payment' }).click();
+
+	// Back on balances: everyone settled, the group keeps running (B-5)
+	await expect(page.getByRole('status')).toHaveText('All settled. Nice and easy.');
+	await page.goto(groupUrl);
+	await expect(page.getByRole('link', { name: /Ben paid Anna/ })).toBeVisible();
+
+	// Deleting the payment brings the debt back
+	await page.getByRole('link', { name: /Ben paid Anna/ }).click();
+	await page.getByRole('button', { name: 'Delete payment' }).click();
+	await page
+		.getByRole('dialog', { name: 'Delete payment' })
+		.getByRole('button', { name: 'Delete payment' })
+		.click();
+	await expect(page.getByRole('region', { name: 'Settle up' })).toContainText('Ben pays Anna');
+});

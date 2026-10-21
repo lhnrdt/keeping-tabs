@@ -3,6 +3,7 @@ import {
 	normalizeText,
 	parseDate,
 	parseExpense,
+	parsePayment,
 	parseCurrency,
 	parseDescription,
 	parseGroupName,
@@ -114,6 +115,29 @@ describe('parseExpense', () => {
 		expect(parseExpense({ ...values, amount: '0' }, group)).toEqual({
 			ok: false,
 			error: 'amount_invalid'
+		});
+	});
+});
+
+describe('parsePayment', () => {
+	const group = { memberIds: ['a', 'b'], currency: 'EUR' };
+	const values = { from: 'b', to: 'a', amount: '21,40', date: '2026-10-21' };
+
+	it('accepts a payment between two members', () => {
+		expect(parsePayment(values, group)).toEqual({
+			ok: true,
+			value: { from: 'b', to: 'a', amountCents: 2140, date: '2026-10-21' }
+		});
+	});
+
+	it('rejects paying yourself and unknown members', () => {
+		expect(parsePayment({ ...values, to: 'b' }, group)).toEqual({
+			ok: false,
+			error: 'payment_same_member'
+		});
+		expect(parsePayment({ ...values, to: 'x' }, group)).toEqual({
+			ok: false,
+			error: 'recipient_invalid'
 		});
 	});
 });
