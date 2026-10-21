@@ -2,8 +2,18 @@
 <html lang="%paraglide.lang%" dir="%paraglide.dir%">
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 		<meta name="text-scale" content="scale" />
+		<meta name="color-scheme" content="light dark" />
+		<script>
+			// Konsta's dark styles hang off a .dark class; set it before first paint
+			(() => {
+				const query = matchMedia('(prefers-color-scheme: dark)');
+				const apply = () => document.documentElement.classList.toggle('dark', query.matches);
+				apply();
+				query.addEventListener('change', apply);
+			})();
+		</script>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">
