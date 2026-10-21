@@ -2,7 +2,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
 import type { ErrorCode } from '#lib/errors.ts';
 import { balances } from '#lib/money.ts';
-import { formContext as context, requireGroup } from '#lib/server/context.ts';
+import { formContext as context } from '#lib/server/context.ts';
 import { listExpenses } from '#lib/server/expenses.ts';
 import {
 	addMember,
@@ -15,19 +15,14 @@ import {
 import { parseDescription, parseGroupName, parseMemberName } from '#lib/validation.ts';
 import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ locals, params }) => {
-	const group = await requireGroup(locals.db, params.token);
-	const [members, expenses] = await Promise.all([
-		listMembers(locals.db, group.id),
-		listExpenses(locals.db, group.id)
-	]);
+export const load: PageServerLoad = async ({ locals, parent }) => {
+	const { group, members } = await parent();
+	const expenses = await listExpenses(locals.db, group.id);
 	const totals = balances(
 		members.map((member) => member.id),
 		expenses
 	);
 	return {
-		group,
-		members,
 		balances: Object.fromEntries(totals),
 		expenses: expenses.map(({ id, title, amountCents, paidBy, date }) => ({
 			id,

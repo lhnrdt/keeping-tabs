@@ -1,6 +1,7 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
 import type { ErrorCode } from '#lib/errors.ts';
+import { CREATOR_COOKIE_OPTIONS, creatorCookieName } from '#lib/group/creator-handoff.ts';
 import { getLocale } from '#lib/paraglide/runtime.js';
 import { currencyOptions, DEFAULT_CURRENCY } from '#lib/server/currencies.ts';
 import { createGroup } from '#lib/server/groups.ts';
@@ -19,7 +20,7 @@ export const load: PageServerLoad = () => ({
 });
 
 export const actions: Actions = {
-	default: async ({ request, locals }) => {
+	default: async ({ request, locals, cookies }) => {
 		const form = await request.formData();
 		const values = {
 			name: String(form.get('name') ?? ''),
@@ -41,12 +42,13 @@ export const actions: Actions = {
 		const memberNames = parseMemberNames([values.you, ...values.members]);
 		if (!memberNames.ok) return invalid(memberNames.error);
 
-		const { shareToken, creatorId } = await createGroup(locals.db, {
+		const { groupId, shareToken, creatorId } = await createGroup(locals.db, {
 			name: name.value,
 			description: description.value,
 			currency: currency.value,
 			memberNames: memberNames.value
 		});
-		redirect(303, `${resolve('/g/[token]', { token: shareToken })}?me=${creatorId}`);
+		cookies.set(creatorCookieName(groupId), creatorId, CREATOR_COOKIE_OPTIONS);
+		redirect(303, resolve('/g/[token]', { token: shareToken }));
 	}
 };

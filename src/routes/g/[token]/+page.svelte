@@ -1,324 +1,70 @@
 <script lang="ts">
-	import type { SubmitFunction } from '$app/forms';
-	import { enhance } from '$app/forms';
-	import { replaceState } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-	import { onMount } from 'svelte';
-	import { getMe, rememberGroup, setMe } from '#lib/device.ts';
-	import { errorMessage } from '#lib/errors.ts';
-	import { formatAmount } from '#lib/money.ts';
+	import { BlockTitle, Fab } from 'konsta/svelte';
+	import AppPage from '#lib/components/AppPage.svelte';
+	import AddMemberForm from '#lib/components/group/AddMemberForm.svelte';
+	import BalanceList from '#lib/components/group/BalanceList.svelte';
+	import ExpenseList from '#lib/components/group/ExpenseList.svelte';
+	import GroupDetails from '#lib/components/group/GroupDetails.svelte';
+	import GroupTabs from '#lib/components/group/GroupTabs.svelte';
+	import IdentityButton from '#lib/components/group/IdentityButton.svelte';
+	import MemberList from '#lib/components/group/MemberList.svelte';
+	import ShareLink from '#lib/components/group/ShareLink.svelte';
+	import WhoAreYouSheet from '#lib/components/group/WhoAreYouSheet.svelte';
+	import { currentTab } from '#lib/group/tabs.ts';
 	import { m } from '#lib/paraglide/messages.js';
-	import { getLocale } from '#lib/paraglide/runtime.js';
-	import { LIMITS } from '#lib/validation.ts';
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();
 
-	let mounted = $state(false);
-	let meId = $state<string | null>(null);
-	let choosing = $state(false);
-	let editingGroup = $state(false);
-	let renamingId = $state<string | null>(null);
-	let copied = $state(false);
-
-	const me = $derived(data.members.find((member) => member.id === meId));
-	const locale = getLocale();
-	const money = (amount: number) => formatAmount(amount, data.group.currency, locale);
-	const memberName = $derived(new Map(data.members.map((member) => [member.id, member.name])));
-	const dateFormat = new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeZone: 'UTC' });
-	const formatDate = (date: string) => dateFormat.format(new Date(`${date}T00:00:00Z`));
-
-	const shareUrl = $derived(
-		new URL(resolve('/g/[token]', { token: data.group.shareToken }), page.url.origin).href
-	);
-
-	onMount(() => {
-		// The creator arrives with ?me=<id> after creating the group
-		const fromLink = page.url.searchParams.get('me');
-		if (fromLink) {
-			setMe(data.group.id, fromLink);
-			replaceState(resolve('/g/[token]', { token: data.group.shareToken }), page.state);
-		}
-		meId = getMe(data.group.id);
-		mounted = true;
-	});
-
-	$effect(() => {
-		rememberGroup({ id: data.group.id, token: data.group.shareToken, name: data.group.name });
-	});
-
-	function pick(memberId: string) {
-		setMe(data.group.id, memberId);
-		meId = memberId;
-		choosing = false;
-	}
-
-	async function share() {
-		if (navigator.share) {
-			try {
-				await navigator.share({ title: data.group.name, url: shareUrl });
-			} catch {
-				// Dismissed by the user
-			}
-			return;
-		}
-		await navigator.clipboard.writeText(shareUrl);
-		copied = true;
-		setTimeout(() => (copied = false), 2000);
-	}
-
-	/** Default enhance behaviour, then closes the inline editor if the action succeeded. */
-	const closeOnSuccess =
-		(close: () => void): SubmitFunction =>
-		() =>
-		async ({ result, update }) => {
-			await update();
-			if (result.type === 'success') close();
-		};
-
-	const confirmRegenerate: SubmitFunction = ({ cancel }) => {
-		if (!confirm(m.regenerate_confirm())) cancel();
-	};
+	const tab = $derived(currentTab(page.url));
+	const errorFor = (action: string) => (form?.action === action ? form.error : undefined);
 </script>
 
 <svelte:head>
 	<title>{data.group.name} – {m.app_name()}</title>
 </svelte:head>
 
-{#snippet actor()}
-	<input type="hidden" name="actor" value={meId ?? ''} />
-{/snippet}
+<AppPage title={data.group.name} back={{ href: resolve('/'), label: m.app_name() }}>
+	{#snippet right()}
+		<IdentityButton members={data.members} />
+	{/snippet}
 
-{#snippet error(action: string, memberId?: string)}
-	{#if form?.action === action && (!memberId || form.memberId === memberId)}
-		<p class="text-sm text-red-700" role="alert">{errorMessage(form.error)}</p>
-	{/if}
-{/snippet}
-
-<main class="mx-auto max-w-md space-y-8 p-4">
-	<header class="space-y-1">
-		<a class="text-sm text-blue-700 underline" href={resolve('/')}>{m.app_name()}</a>
-		{#if editingGroup}
-			<form
-				method="POST"
-				action="?/updateGroup"
-				class="space-y-3"
-				use:enhance={closeOnSuccess(() => (editingGroup = false))}
-			>
-				{@render actor()}
-				<label class="block">
-					<span class="text-sm font-medium">{m.field_group_name()}</span>
-					<input
-						class="mt-1 block w-full rounded-md"
-						name="name"
-						required
-						maxlength={LIMITS.groupName}
-						value={data.group.name}
-					/>
-				</label>
-				<label class="block">
-					<span class="text-sm font-medium">{m.field_description()}</span>
-					<textarea
-						class="mt-1 block w-full rounded-md"
-						name="description"
-						rows="2"
-						maxlength={LIMITS.description}
-						value={data.group.description ?? ''}></textarea>
-				</label>
-				{@render error('updateGroup')}
-				<div class="flex gap-2">
-					<button class="rounded-md bg-blue-700 px-3 py-1.5 text-white">{m.save()}</button>
-					<button type="button" class="px-3 py-1.5" onclick={() => (editingGroup = false)}>
-						{m.cancel()}
-					</button>
-				</div>
-			</form>
-		{:else}
-			<h1 class="text-2xl font-bold">{data.group.name}</h1>
-			{#if data.group.description}
-				<p class="whitespace-pre-line text-gray-600">{data.group.description}</p>
-			{/if}
-			<p class="text-sm text-gray-500">{m.field_currency()}: {data.group.currency}</p>
-			<button class="text-sm text-blue-700 underline" onclick={() => (editingGroup = true)}>
-				{m.edit_group()}
-			</button>
-		{/if}
-	</header>
-
-	{#if mounted && (!me || choosing)}
-		<section
-			aria-labelledby="who"
-			class="space-y-2 rounded-lg border border-blue-200 bg-blue-50 p-4"
-		>
-			<h2 id="who" class="font-semibold">{m.who_are_you()}</h2>
-			<p class="text-sm text-gray-600">{m.who_are_you_hint()}</p>
-			<div class="flex flex-wrap gap-2">
-				{#each data.members as member (member.id)}
-					<button
-						class="rounded-full border bg-white px-3 py-1"
-						aria-pressed={member.id === meId}
-						onclick={() => pick(member.id)}
-					>
-						{member.name}
-					</button>
-				{/each}
-			</div>
-		</section>
-	{:else if me}
-		<p class="text-sm">
-			{m.you_are({ name: me.name })}
-			<button class="text-blue-700 underline" onclick={() => (choosing = true)}>
-				{m.switch_member()}
-			</button>
-		</p>
-	{/if}
-
-	<section aria-labelledby="balances" class="space-y-2">
-		<h2 id="balances" class="text-lg font-semibold">{m.balances_title()}</h2>
-		<ul class="divide-y rounded-lg border">
-			{#each data.members as member (member.id)}
-				{@const balance = data.balances[member.id] ?? 0}
-				<li class="flex justify-between gap-2 p-3">
-					<span>{member.name}</span>
-					{#if balance > 0}
-						<span class="text-green-700">{m.balance_owed({ amount: money(balance) })}</span>
-					{:else if balance < 0}
-						<span class="text-red-700">{m.balance_owes({ amount: money(-balance) })}</span>
-					{:else}
-						<span class="text-gray-500">{m.balance_settled()}</span>
-					{/if}
-				</li>
-			{/each}
-		</ul>
-	</section>
-
-	<section aria-labelledby="expenses" class="space-y-2">
-		<div class="flex items-center justify-between">
-			<h2 id="expenses" class="text-lg font-semibold">{m.expenses_title()}</h2>
-			<a
-				class="rounded-md bg-blue-700 px-3 py-1.5 text-white"
-				href={resolve('/g/[token]/expenses/new', { token: data.group.shareToken })}
-			>
-				{m.add_expense()}
-			</a>
-		</div>
-		{#if data.expenses.length}
-			<ul class="divide-y rounded-lg border">
-				{#each data.expenses as expense (expense.id)}
-					<li>
-						<a
-							class="flex justify-between gap-2 p-3 hover:bg-gray-50"
-							href={resolve('/g/[token]/expenses/[id]', {
-								token: data.group.shareToken,
-								id: expense.id
-							})}
-						>
-							<span>
-								<span class="block">{expense.title}</span>
-								<span class="block text-sm text-gray-500">
-									{formatDate(expense.date)} · {m.expense_paid_by({
-										name: memberName.get(expense.paidBy) ?? '?',
-										amount: money(expense.amountCents)
-									})}
-								</span>
-							</span>
-							<span class="shrink-0 font-medium">{money(expense.amountCents)}</span>
-						</a>
-					</li>
-				{/each}
-			</ul>
-		{:else}
-			<p class="text-gray-500">{m.expenses_empty()}</p>
-		{/if}
-	</section>
-
-	<section aria-labelledby="members" class="space-y-3">
-		<h2 id="members" class="text-lg font-semibold">{m.members_title()}</h2>
-		<ul class="divide-y rounded-lg border">
-			{#each data.members as member (member.id)}
-				<li class="p-3">
-					{#if renamingId === member.id}
-						<form
-							method="POST"
-							action="?/renameMember"
-							class="space-y-2"
-							use:enhance={closeOnSuccess(() => (renamingId = null))}
-						>
-							{@render actor()}
-							<input type="hidden" name="memberId" value={member.id} />
-							<input
-								class="block w-full rounded-md"
-								name="name"
-								aria-label={m.rename_member({ name: member.name })}
-								required
-								maxlength={LIMITS.memberName}
-								value={member.name}
-							/>
-							{@render error('renameMember', member.id)}
-							<div class="flex gap-2">
-								<button class="rounded-md bg-blue-700 px-3 py-1.5 text-white">{m.save()}</button>
-								<button type="button" class="px-3 py-1.5" onclick={() => (renamingId = null)}>
-									{m.cancel()}
-								</button>
-							</div>
-						</form>
-					{:else}
-						<div class="flex items-center justify-between gap-2">
-							<span>
-								{member.name}
-								{#if member.id === meId}
-									<span class="text-sm text-gray-500">({m.member_you()})</span>
-								{/if}
-							</span>
-							<button
-								class="text-sm text-blue-700 underline"
-								aria-label={m.rename_member({ name: member.name })}
-								onclick={() => (renamingId = member.id)}
-							>
-								{m.rename()}
-							</button>
-						</div>
-					{/if}
-				</li>
-			{/each}
-		</ul>
-
-		<form method="POST" action="?/addMember" use:enhance class="space-y-2">
-			{@render actor()}
-			<div class="flex gap-2">
-				<input
-					class="block w-full rounded-md"
-					name="name"
-					aria-label={m.field_member_name()}
-					required
-					maxlength={LIMITS.memberName}
-				/>
-				<button class="shrink-0 rounded-md bg-blue-700 px-3 py-1.5 text-white">
-					{m.add_member()}
-				</button>
-			</div>
-			{@render error('addMember')}
-		</form>
-	</section>
-
-	<section aria-labelledby="share" class="space-y-2">
-		<h2 id="share" class="text-lg font-semibold">{m.share_title()}</h2>
-		<p class="text-sm text-gray-600">{m.share_hint()}</p>
-		<input
-			class="block w-full rounded-md bg-gray-50 text-sm"
-			readonly
-			value={shareUrl}
-			aria-label={m.share_title()}
-			onfocus={(event) => event.currentTarget.select()}
+	{#if tab === 'expenses'}
+		<BlockTitle>{m.expenses_title()}</BlockTitle>
+		<ExpenseList
+			token={data.group.shareToken}
+			currency={data.group.currency}
+			members={data.members}
+			expenses={data.expenses}
 		/>
-		<button class="rounded-md bg-blue-700 px-3 py-1.5 text-white" onclick={share}>
-			{copied ? m.share_copied() : m.share_button()}
-		</button>
-		<form method="POST" action="?/regenerateLink" use:enhance={confirmRegenerate} class="pt-2">
-			{@render actor()}
-			<button class="text-sm text-red-700 underline">{m.regenerate_link()}</button>
-			<p class="text-xs text-gray-500">{m.regenerate_hint()}</p>
-		</form>
-	</section>
-</main>
+		<!-- Konsta sets role="button" on its Fab even when it's a link -->
+		<Fab
+			class="fixed right-4 bottom-[calc(var(--k-safe-area-bottom,0px)+6rem)] z-20"
+			href={resolve('/g/[token]/expenses/new', { token: data.group.shareToken })}
+			text={m.add_expense()}
+			role="link"
+		>
+			{#snippet icon()}
+				<svg viewBox="0 0 24 24" class="h-6 w-6" aria-hidden="true">
+					<path d="M11 5h2v14h-2zM5 11h14v2H5z" fill="currentColor" />
+				</svg>
+			{/snippet}
+		</Fab>
+	{:else if tab === 'balances'}
+		<BlockTitle>{m.balances_title()}</BlockTitle>
+		<BalanceList currency={data.group.currency} members={data.members} balances={data.balances} />
+	{:else}
+		<BlockTitle>{m.members_title()}</BlockTitle>
+		<MemberList members={data.members} renameError={errorFor('renameMember')} />
+		<AddMemberForm error={errorFor('addMember')} />
+		<BlockTitle>{m.group_details()}</BlockTitle>
+		<GroupDetails group={data.group} error={errorFor('updateGroup')} />
+		<BlockTitle>{m.share_title()}</BlockTitle>
+		<ShareLink token={data.group.shareToken} groupName={data.group.name} />
+	{/if}
+
+	<GroupTabs active={tab} />
+	<WhoAreYouSheet members={data.members} />
+</AppPage>
