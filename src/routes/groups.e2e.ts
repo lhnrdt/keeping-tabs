@@ -87,7 +87,9 @@ test('expenses update the balances', async ({ page }) => {
 	// Leave Cara out
 	await page.getByRole('link', { name: /Pizza/ }).click();
 	await expect(page.getByLabel('Amount')).toHaveValue('30.01');
-	await page.getByRole('checkbox', { name: 'Cara' }).uncheck();
+	// Konsta draws its own checkbox over the real input, so tap the row like a user
+	await page.getByRole('group', { name: 'Split equally between' }).getByText('Cara').click();
+	await expect(page.getByRole('checkbox', { name: 'Cara' })).not.toBeChecked();
 	await page.getByRole('button', { name: 'Save' }).click();
 	await expect(page).toHaveURL(groupUrl);
 	await expectBalances({ Anna: 'gets back €15.00', Ben: 'owes €15.00', Cara: 'settled up' });
@@ -105,8 +107,11 @@ test('expenses update the balances', async ({ page }) => {
 
 	// Delete
 	await page.getByRole('link', { name: /Pizza/ }).click();
-	page.once('dialog', (dialog) => dialog.accept());
 	await page.getByRole('button', { name: 'Delete expense' }).click();
+	await page
+		.getByRole('dialog', { name: 'Delete expense' })
+		.getByRole('button', { name: 'Delete expense' })
+		.click();
 	await expect(page.getByText('No expenses yet.')).toBeVisible();
 	await expectBalances({ Anna: 'settled up' });
 });

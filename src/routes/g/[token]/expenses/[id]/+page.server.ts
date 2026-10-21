@@ -1,20 +1,16 @@
 import { error, redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
 import { m } from '#lib/paraglide/messages.js';
-import { formContext, requireGroup } from '#lib/server/context.ts';
+import { formContext } from '#lib/server/context.ts';
 import { readExpenseForm } from '#lib/server/expense-form.ts';
 import { deleteExpense, findExpense, updateExpense } from '#lib/server/expenses.ts';
-import { listMembers } from '#lib/server/groups.ts';
 import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ locals, params }) => {
-	const group = await requireGroup(locals.db, params.token);
-	const [members, expense] = await Promise.all([
-		listMembers(locals.db, group.id),
-		findExpense(locals.db, group.id, params.id)
-	]);
+export const load: PageServerLoad = async ({ locals, params, parent }) => {
+	const { group } = await parent();
+	const expense = await findExpense(locals.db, group.id, params.id);
 	if (!expense) error(404, m.error_expense_not_found());
-	return { group, members, expense };
+	return { expense };
 };
 
 export const actions: Actions = {

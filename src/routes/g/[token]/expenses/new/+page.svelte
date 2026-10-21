@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import ExpenseForm from '#lib/components/ExpenseForm.svelte';
+	import AppPage from '#lib/components/AppPage.svelte';
+	import ExpenseForm from '#lib/components/expense/ExpenseForm.svelte';
 	import { m } from '#lib/paraglide/messages.js';
 	import type { PageProps } from './$types';
 
@@ -22,23 +23,15 @@
 	<title>{m.add_expense()} – {data.group.name}</title>
 </svelte:head>
 
-<main class="mx-auto max-w-md space-y-6 p-4">
-	<header class="space-y-1">
-		<a
-			class="text-sm text-blue-700 underline"
-			href={resolve('/g/[token]', { token: data.group.shareToken })}
-		>
-			{m.back_to_group({ name: data.group.name })}
-		</a>
-		<h1 class="text-2xl font-bold">{m.add_expense()}</h1>
-	</header>
-
+<AppPage
+	title={m.add_expense()}
+	back={{ href: resolve('/g/[token]', { token: data.group.shareToken }), label: data.group.name }}
+>
 	<ExpenseForm
-		groupId={data.group.id}
 		members={data.members}
 		currency={data.group.currency}
 		{values}
 		error={form?.error}
 		submitLabel={m.add_expense()}
 	/>
-</main>
+</AppPage>

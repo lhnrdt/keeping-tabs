@@ -2,6 +2,7 @@
 	// Shell for every screen: Konsta page, navbar with optional back link, version footer.
 	import { Navbar, NavbarBackLink, Page } from 'konsta/svelte';
 	import type { Snippet } from 'svelte';
+	import { m } from '#lib/paraglide/messages.js';
 	import VersionFooter from './VersionFooter.svelte';
 
 	type Props = {
@@ -21,7 +22,12 @@
 		{/snippet}
 		{#snippet left()}
 			{#if back}
-				<NavbarBackLink href={back.href} text={back.label} showText />
+				<NavbarBackLink
+					href={back.href}
+					text={back.label}
+					showText
+					aria-label={m.back_to_group({ name: back.label })}
+				/>
 			{/if}
 		{/snippet}
 	</Navbar>
