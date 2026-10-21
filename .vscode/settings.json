@@ -1,0 +1,42 @@
+{
+	// Runtime: Node + pnpm come from mise.toml. The mise extension injects that
+	// environment into VS Code, so terminals, tasks and debug sessions use it too.
+	"mise.updateEnvAutomatically": true,
+	"mise.updateEnvAutomaticallyIncludePath": true,
+	"npm.packageManager": "pnpm",
+
+	// Libraries: always use the workspace versions from node_modules, never the
+	// copies bundled with VS Code or its extensions.
+	"typescript.tsdk": "node_modules/typescript/lib",
+	"typescript.enablePromptUseWorkspaceTsdk": true,
+	"prettier.requireConfig": true,
+	"prettier.resolveGlobalModules": false,
+	"eslint.validate": ["javascript", "typescript", "svelte"],
+
+	// Formatting
+	"editor.formatOnSave": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": "explicit"
+	},
+	"files.associations": {
+		"*.css": "tailwindcss"
+	},
+
+	// Generated files: hidden from search, read-only in the editor
+	"search.exclude": {
+		"**/.svelte-kit": true,
+		"**/.wrangler": true,
+		"src/lib/paraglide": true,
+		"worker-configuration.d.ts": true,
+		"pnpm-lock.yaml": true
+	},
+	"files.watcherExclude": {
+		"**/.svelte-kit/**": true,
+		"**/.wrangler/**": true
+	},
+	"files.readonlyInclude": {
+		"src/lib/paraglide/**": true,
+		"worker-configuration.d.ts": true
+	}
+}

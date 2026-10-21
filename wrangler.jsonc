@@ -1,0 +1,37 @@
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	// Top level is production: `wrangler deploy` → app.keeping-tabs.workers.dev
+	"name": "app",
+	"compatibility_date": "2026-10-21",
+	"compatibility_flags": ["nodejs_als"],
+	"main": ".svelte-kit/cloudflare/_worker.js",
+	"assets": {
+		"binding": "ASSETS",
+		"directory": ".svelte-kit/cloudflare"
+	},
+	"workers_dev": true,
+	"preview_urls": true,
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "keeping-tabs-db",
+			"database_id": "6438fd98-1eca-41a2-9340-09da5463b93f",
+			"migrations_dir": "drizzle"
+		}
+	],
+	"env": {
+		// `wrangler deploy --env staging` → app-staging.keeping-tabs.workers.dev
+		"staging": {
+			"name": "app-staging",
+			// Bindings aren't inherited by environments, so D1 is repeated here
+			"d1_databases": [
+				{
+					"binding": "DB",
+					"database_name": "keeping-tabs-db-staging",
+					"database_id": "b8397c08-c301-442f-a626-b6bf0fe14f73",
+					"migrations_dir": "drizzle"
+				}
+			]
+		}
+	}
+}
