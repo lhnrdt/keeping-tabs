@@ -49,6 +49,9 @@
 	--color-black: var(--color-ink);
 	--color-white: var(--color-surface);
 
+	/* Motion: calm ease-out (style guide); svelte/easing's quintOut is the same curve */
+	--ease-calm: cubic-bezier(0.22, 1, 0.36, 1);
+
 	--font-ios: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 

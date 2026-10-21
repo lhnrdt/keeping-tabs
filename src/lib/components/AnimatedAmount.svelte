@@ -1,7 +1,8 @@
 <script lang="ts">
 	// A money amount that counts to its new value when it changes (N-12).
 	import { prefersReducedMotion, Tween } from 'svelte/motion';
-	import { cubicOut } from 'svelte/easing';
+	// Same curve as --ease-calm in theme.css
+	import { quintOut } from 'svelte/easing';
 	import { formatAmount } from '#lib/money.ts';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 
@@ -15,8 +16,8 @@
 	let { amount, currency, label = (text) => text }: Props = $props();
 
 	const tween = Tween.of(() => amount, {
-		duration: () => (prefersReducedMotion.current ? 0 : 400),
-		easing: cubicOut
+		duration: () => (prefersReducedMotion.current ? 0 : 320),
+		easing: quintOut
 	});
 </script>
 

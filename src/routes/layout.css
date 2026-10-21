@@ -4,10 +4,10 @@
 
 /* Page transitions (see +layout.svelte); --vt-direction is 1 forward, -1 back */
 ::view-transition-old(root) {
-	animation: 180ms ease-in both page-out;
+	animation: 160ms var(--ease-calm) both page-out;
 }
 ::view-transition-new(root) {
-	animation: 240ms ease-out both page-in;
+	animation: 220ms var(--ease-calm) both page-in;
 }
 @keyframes page-out {
 	to {
@@ -35,5 +35,6 @@
 	animation: none;
 }
 ::view-transition-group(*) {
-	animation-duration: 250ms;
+	animation-duration: 220ms;
+	animation-timing-function: var(--ease-calm);
 }
