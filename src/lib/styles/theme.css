@@ -72,3 +72,24 @@
 	background-color: var(--color-canvas-night);
 	color: var(--color-ink-night);
 }
+
+/* Meaning-based text colors. Debts are muted clay, never alarm red (style guide); red is
+   only for destructive actions and errors. */
+@utility tone-positive {
+	color: var(--color-forest);
+	&:where(.dark, .dark *) {
+		color: var(--color-forest-night);
+	}
+}
+@utility tone-negative {
+	color: var(--color-clay);
+	&:where(.dark, .dark *) {
+		color: var(--color-clay-night);
+	}
+}
+@utility tone-destructive {
+	color: var(--color-destructive);
+	&:where(.dark, .dark *) {
+		color: var(--color-destructive-night);
+	}
+}

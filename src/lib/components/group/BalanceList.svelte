@@ -16,7 +16,7 @@
 		<ListItem title={member.name} style={transitionName('balance', member.id)}>
 			{#snippet after()}
 				{#if balance > 0}
-					<span class="text-green-700 dark:text-green-400">
+					<span class="tone-positive tabular-nums">
 						<AnimatedAmount
 							amount={balance}
 							{currency}
@@ -24,7 +24,7 @@
 						/>
 					</span>
 				{:else if balance < 0}
-					<span class="text-red-700 dark:text-red-400">
+					<span class="tone-negative tabular-nums">
 						<AnimatedAmount
 							amount={-balance}
 							{currency}

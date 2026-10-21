@@ -12,7 +12,7 @@
 		rounded
 		clear
 		type="button"
-		class="text-red-600 dark:text-red-400"
+		class="tone-destructive"
 		onclick={() => (confirming = true)}
 	>
 		{m.delete_expense()}

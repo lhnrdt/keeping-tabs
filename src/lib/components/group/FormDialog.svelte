@@ -49,7 +49,7 @@
 			form={formId}
 			strong
 			disabled={submission.pending}
-			class={destructive ? 'text-red-600 dark:text-red-400' : ''}
+			class={destructive ? 'tone-destructive' : ''}
 		>
 			{submitLabel}
 		</DialogButton>
