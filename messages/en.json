@@ -22,8 +22,6 @@
 	"edit_group": "Edit group",
 	"who_are_you": "Who are you?",
 	"who_are_you_hint": "Pick your name. This device will remember it.",
-	"you_are": "You are {name}.",
-	"switch_member": "Not you?",
 	"share_title": "Share",
 	"share_hint": "Anyone with this link can view and edit the group.",
 	"share_button": "Share link",
@@ -65,5 +63,12 @@
 	"error_date_invalid": "Choose a valid date.",
 	"error_payer_invalid": "Choose who paid.",
 	"error_participants_required": "Choose at least one person to split with.",
-	"error_expense_not_found": "This expense doesn't exist anymore."
+	"error_expense_not_found": "This expense doesn't exist anymore.",
+	"tab_expenses": "Expenses",
+	"tab_balances": "Balances",
+	"tab_group": "Group",
+	"new_member": "New member",
+	"group_details": "Details",
+	"choose_member": "Choose who you are",
+	"link_actions": "Link"
 }
