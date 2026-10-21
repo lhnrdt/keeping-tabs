@@ -1,15 +1,9 @@
 import { redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
-import { formContext, requireGroup } from '#lib/server/context.ts';
+import { formContext } from '#lib/server/context.ts';
 import { readExpenseForm } from '#lib/server/expense-form.ts';
 import { createExpense } from '#lib/server/expenses.ts';
-import { listMembers } from '#lib/server/groups.ts';
-import type { Actions, PageServerLoad } from './$types';
-
-export const load: PageServerLoad = async ({ locals, params }) => {
-	const group = await requireGroup(locals.db, params.token);
-	return { group, members: await listMembers(locals.db, group.id) };
-};
+import type { Actions } from './$types';
 
 export const actions: Actions = {
 	save: async ({ locals, params, request }) => {

@@ -1,0 +1,109 @@
+/*
+ * Design tokens: the single place for colors and type. Mood per docs/ui-style-guide.md:
+ * cosy Scandinavian, stone, moss, clay and paper; muted, warm, calm.
+ * Imported after Konsta's theme, so these override its defaults.
+ */
+@import '@fontsource-variable/inter';
+
+@theme {
+	/* Palette */
+	--color-canvas: #f4f1ea;
+	--color-surface: #fbf9f5;
+	--color-surface-muted: #ece8df;
+	--color-ink: #252822;
+	--color-ink-muted: #6e7168;
+	--color-forest: #526a58;
+	--color-forest-dark: #394c3f;
+	--color-sage: #aebeaa;
+	--color-clay: #a65f4b;
+	--color-destructive: #b34f46;
+
+	--color-canvas-night: #1d211d;
+	--color-surface-night: #252a25;
+	--color-surface-muted-night: #303630;
+	--color-ink-night: #ecede8;
+	--color-forest-night: #90a88e;
+	--color-clay-night: #c8846d;
+	--color-destructive-night: #d9776d;
+
+	/* Konsta: primary color (iOS tint, buttons, links, FAB) */
+	--color-brand-primary: #526a58;
+
+	/* Konsta: iOS surfaces → canvas and paper instead of grey and pure white */
+	--color-ios-light-surface: var(--color-canvas);
+	--color-ios-light-surface-1: var(--color-surface);
+	--color-ios-light-surface-1-shade: var(--color-surface-muted);
+	--color-ios-light-surface-1-tint: var(--color-surface);
+	--color-ios-light-surface-2: var(--color-surface);
+	--color-ios-light-surface-3: var(--color-surface);
+	--color-ios-light-surface-variant: var(--color-surface-muted);
+	--color-ios-dark-surface: var(--color-canvas-night);
+	--color-ios-dark-surface-1: var(--color-surface-night);
+	--color-ios-dark-surface-1-shade: var(--color-canvas-night);
+	--color-ios-dark-surface-1-tint: var(--color-surface-muted-night);
+	--color-ios-dark-surface-2: var(--color-surface-night);
+	--color-ios-dark-surface-3: var(--color-surface-night);
+	--color-ios-dark-surface-variant: var(--color-surface-muted-night);
+
+	/* Konsta: flatten iOS "liquid glass" (navbar buttons, FAB, dialogs, sheets): solid paper
+	   with a hairline instead of glossy 3D highlights; only the FAB keeps a soft shadow */
+	--color-ios-light-glass: var(--color-surface);
+	--color-ios-dark-glass: var(--color-surface-muted-night);
+	--shadow-ios-light-glass: 0 0 0 1px rgb(37 40 34 / 0.08);
+	--shadow-ios-dark-glass: 0 0 0 1px rgb(236 237 232 / 0.08);
+	--shadow-ios-light-glass-fab: 0 8px 20px rgb(37 40 34 / 0.14);
+	--shadow-ios-dark-glass-fab: 0 8px 20px rgb(0 0 0 / 0.3);
+	--shadow-ios-light-glass-thumb: 0 1px 3px rgb(37 40 34 / 0.15);
+	--shadow-ios-dark-glass-thumb: 0 1px 3px rgb(0 0 0 / 0.4);
+
+	/* Konsta writes text-black / dark:text-white: make those warm ink and paper */
+	--color-black: var(--color-ink);
+	--color-white: var(--color-surface);
+
+	/* Motion: calm ease-out (style guide); svelte/easing's quintOut is the same curve */
+	--ease-calm: cubic-bezier(0.22, 1, 0.36, 1);
+
+	--font-ios: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+:root {
+	--k-hairline-color: rgb(37 40 34 / 0.1);
+	color-scheme: light;
+	background-color: var(--color-canvas);
+	color: var(--color-ink);
+	letter-spacing: -0.01em;
+}
+
+/* Konsta paints .dark pure black; keep it warm and green-tinted instead */
+.dark {
+	--k-hairline-color: rgb(236 237 232 / 0.1);
+	/* A lighter forest so the primary stays readable on dark surfaces */
+	--k-color-primary: rgb(144 168 142);
+	--k-color-ios-primary: rgb(144 168 142);
+	--k-color-ios-primary-tint: rgb(164 186 162);
+	--k-color-ios-primary-shade: rgb(124 150 122);
+	color-scheme: dark;
+	background-color: var(--color-canvas-night);
+	color: var(--color-ink-night);
+}
+
+/* Meaning-based text colors. Debts are muted clay, never alarm red (style guide); red is
+   only for destructive actions and errors. */
+@utility tone-positive {
+	color: var(--color-forest);
+	&:where(.dark, .dark *) {
+		color: var(--color-forest-night);
+	}
+}
+@utility tone-negative {
+	color: var(--color-clay);
+	&:where(.dark, .dark *) {
+		color: var(--color-clay-night);
+	}
+}
+@utility tone-destructive {
+	color: var(--color-destructive);
+	&:where(.dark, .dark *) {
+		color: var(--color-destructive-night);
+	}
+}

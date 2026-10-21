@@ -1,2 +1,40 @@
 @import 'tailwindcss';
-@plugin '@tailwindcss/forms';
+@import 'konsta/svelte/theme.css';
+@import '../lib/styles/theme.css';
+
+/* Page transitions (see +layout.svelte); --vt-direction is 1 forward, -1 back */
+::view-transition-old(root) {
+	animation: 160ms var(--ease-calm) both page-out;
+}
+::view-transition-new(root) {
+	animation: 220ms var(--ease-calm) both page-in;
+}
+@keyframes page-out {
+	to {
+		opacity: 0;
+		transform: translateX(calc(var(--vt-direction, 1) * -2rem));
+	}
+}
+@keyframes page-in {
+	from {
+		opacity: 0;
+		transform: translateX(calc(var(--vt-direction, 1) * 2rem));
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	::view-transition-group(*),
+	::view-transition-old(*),
+	::view-transition-new(*) {
+		animation: none !important;
+	}
+}
+
+/* Same-page updates (see in-place-transition.ts): only named elements animate */
+:root[data-transition='in-place']::view-transition-old(root),
+:root[data-transition='in-place']::view-transition-new(root) {
+	animation: none;
+}
+::view-transition-group(*) {
+	animation-duration: 220ms;
+	animation-timing-function: var(--ease-calm);
+}

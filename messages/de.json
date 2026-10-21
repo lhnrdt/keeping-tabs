@@ -22,8 +22,6 @@
 	"edit_group": "Gruppe bearbeiten",
 	"who_are_you": "Wer bist du?",
 	"who_are_you_hint": "Wähle deinen Namen. Dieses Gerät merkt ihn sich.",
-	"you_are": "Du bist {name}.",
-	"switch_member": "Nicht du?",
 	"share_title": "Teilen",
 	"share_hint": "Alle mit diesem Link können die Gruppe sehen und bearbeiten.",
 	"share_button": "Link teilen",
@@ -65,5 +63,12 @@
 	"error_date_invalid": "Wähle ein gültiges Datum.",
 	"error_payer_invalid": "Wähle, wer bezahlt hat.",
 	"error_participants_required": "Wähle mindestens eine Person zum Aufteilen.",
-	"error_expense_not_found": "Diese Ausgabe gibt es nicht mehr."
+	"error_expense_not_found": "Diese Ausgabe gibt es nicht mehr.",
+	"tab_expenses": "Ausgaben",
+	"tab_balances": "Salden",
+	"tab_group": "Gruppe",
+	"new_member": "Neues Mitglied",
+	"group_details": "Details",
+	"choose_member": "Wähle, wer du bist",
+	"link_actions": "Link"
 }

@@ -57,7 +57,7 @@ export async function createGroup(
 		})
 	]);
 
-	return { shareToken, creatorId };
+	return { groupId, shareToken, creatorId };
 }
 
 export async function updateGroup(
