@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
 	parseCategory,
+	parseSplit,
 	normalizeText,
 	parseDate,
 	parseExpense,
@@ -88,10 +89,12 @@ describe('parseExpense', () => {
 		date: '2026-10-21',
 		paidBy: 'b',
 		participants: ['c', 'a'],
-		category: ''
+		category: '',
+		splitMode: '',
+		inputs: {}
 	};
 
-	it('returns participants in member order', () => {
+	it('splits equally between the participants, in member order', () => {
 		expect(parseExpense(values, group)).toEqual({
 			ok: true,
 			value: {
@@ -99,8 +102,12 @@ describe('parseExpense', () => {
 				amountCents: 3000,
 				date: '2026-10-21',
 				paidBy: 'b',
-				participants: ['a', 'c'],
-				category: null
+				category: null,
+				splitMode: 'equal',
+				shares: [
+					{ memberId: 'a', shareCents: 1500, input: null },
+					{ memberId: 'c', shareCents: 1500, input: null }
+				]
 			}
 		});
 	});
@@ -169,5 +176,29 @@ describe('parseCategory', () => {
 	it('accepts known categories only', () => {
 		expect(parseCategory('dining')).toEqual({ ok: true, value: 'dining' });
 		expect(parseCategory('caviar')).toEqual({ ok: false, error: 'category_invalid' });
+	});
+});
+
+describe('parseSplit', () => {
+	const group = { memberIds: ['a', 'b'], currency: 'EUR' };
+	const split = (splitMode: string, inputs: Record<string, string>) =>
+		parseSplit({ splitMode, participants: [], inputs }, 3000, group);
+
+	it("reads each member's input for the mode", () => {
+		expect(split('percent', { a: '25', b: '75' })).toEqual({
+			ok: true,
+			value: {
+				splitMode: 'percent',
+				shares: [
+					{ memberId: 'a', shareCents: 750, input: 2500 },
+					{ memberId: 'b', shareCents: 2250, input: 7500 }
+				]
+			}
+		});
+	});
+
+	it('rejects unknown modes and invalid inputs', () => {
+		expect(split('thirds', {})).toEqual({ ok: false, error: 'split_mode_invalid' });
+		expect(split('exact', { a: 'lots' })).toEqual({ ok: false, error: 'split_input_invalid' });
 	});
 });

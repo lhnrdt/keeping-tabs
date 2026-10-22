@@ -1,4 +1,5 @@
 import { fail } from '@sveltejs/kit';
+import { readSplitInputs } from '#lib/split/form.ts';
 import { parseExpense, parsePayment, type Result } from '#lib/validation.ts';
 import type { Db } from './db';
 import { listMembers } from './groups';
@@ -34,7 +35,9 @@ export const readExpenseForm = (db: Db, group: Group, form: FormData) =>
 			date: text(form, 'date'),
 			paidBy: text(form, 'paidBy'),
 			participants: form.getAll('participants').map(String),
-			category: text(form, 'category')
+			category: text(form, 'category'),
+			splitMode: text(form, 'splitMode'),
+			inputs: readSplitInputs(form)
 		},
 		parseExpense
 	);
