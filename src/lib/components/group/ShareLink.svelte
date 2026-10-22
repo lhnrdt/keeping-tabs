@@ -6,6 +6,7 @@
 	import FormDialog from './FormDialog.svelte';
 	import { tabAction } from '#lib/group/tabs.ts';
 	import { m } from '#lib/paraglide/messages.js';
+	import { shareOrCopy } from '#lib/share.ts';
 
 	let { token, groupName }: { token: string; groupName: string } = $props();
 
@@ -13,17 +14,8 @@
 	let copied = $state(false);
 	let confirmingRegenerate = $state(false);
 
-	/** System share sheet where available (G-4), otherwise copy to the clipboard. */
 	async function share() {
-		if (navigator.share) {
-			try {
-				await navigator.share({ title: groupName, url: shareUrl });
-			} catch {
-				// Dismissed by the user
-			}
-			return;
-		}
-		await navigator.clipboard.writeText(shareUrl);
+		if ((await shareOrCopy(groupName, shareUrl)) !== 'copied') return;
 		copied = true;
 		setTimeout(() => (copied = false), 2000);
 	}

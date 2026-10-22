@@ -1,9 +1,9 @@
 <script lang="ts">
 	// Suggested payments to settle the group (B-2); each opens a pre-filled payment.
 	import { resolve } from '$app/paths';
-	import { Block, List, ListItem } from 'konsta/svelte';
+	import { List, ListItem } from 'konsta/svelte';
+	import EmptyState from '#lib/components/EmptyState.svelte';
 	import AnimatedAmount from '#lib/components/AnimatedAmount.svelte';
-	import Icon from '#lib/components/Icon.svelte';
 	import IconBadge from '#lib/components/IconBadge.svelte';
 	import { namesById, type Member } from '#lib/group/members.ts';
 	import { transitionName } from '#lib/motion/in-place-transition.ts';
@@ -55,8 +55,5 @@
 		{/each}
 	</List>
 {:else}
-	<Block class="flex items-center justify-center gap-2 tone-positive" role="status">
-		<Icon name="settled" />
-		{m.settle_done()}
-	</Block>
+	<EmptyState illustration="hills" text={m.settle_done()} role="status" />
 {/if}

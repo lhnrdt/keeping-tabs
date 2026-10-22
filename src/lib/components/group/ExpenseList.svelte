@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import { Block, List, ListItem } from 'konsta/svelte';
+	import { List, ListItem } from 'konsta/svelte';
+	import EmptyState from '#lib/components/EmptyState.svelte';
 	import IconBadge from '#lib/components/IconBadge.svelte';
 	import AnimatedAmount from '#lib/components/AnimatedAmount.svelte';
 	import { namesById, type Member } from '#lib/group/members.ts';
@@ -67,5 +68,5 @@
 		{/each}
 	</List>
 {:else}
-	<Block class="text-center opacity-60">{m.expenses_empty()}</Block>
+	<EmptyState illustration="plant" text={m.expenses_empty()} />
 {/if}

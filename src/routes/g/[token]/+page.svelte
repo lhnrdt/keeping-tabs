@@ -8,6 +8,7 @@
 	import BalanceList from '#lib/components/group/BalanceList.svelte';
 	import ExpenseList from '#lib/components/group/ExpenseList.svelte';
 	import GroupDetails from '#lib/components/group/GroupDetails.svelte';
+	import GroupHero from '#lib/components/group/GroupHero.svelte';
 	import GroupTabs from '#lib/components/group/GroupTabs.svelte';
 	import IdentityButton from '#lib/components/group/IdentityButton.svelte';
 	import MemberList from '#lib/components/group/MemberList.svelte';
@@ -30,7 +31,10 @@
 
 <AppPage title={data.group.name} back={{ href: resolve('/'), label: m.app_name() }}>
 	{#snippet right()}
-		<IdentityButton members={data.members} />
+		<IdentityButton />
+	{/snippet}
+	{#snippet hero()}
+		<GroupHero group={data.group} members={data.members} balances={data.balances} />
 	{/snippet}
 
 	{#if tab === 'expenses'}
@@ -73,5 +77,5 @@
 	{/if}
 
 	<GroupTabs active={tab} />
-	<WhoAreYouSheet members={data.members} />
+	<WhoAreYouSheet members={data.members} {tab} error={errorFor('claimMember')} />
 </AppPage>

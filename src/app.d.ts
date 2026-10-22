@@ -7,6 +7,8 @@ declare global {
 		// interface Error {}
 		interface Locals {
 			db: Db;
+			/** This browser's secret identity key (A-12) */
+			deviceKey: string;
 		}
 		// interface PageData {}
 		// interface PageState {}

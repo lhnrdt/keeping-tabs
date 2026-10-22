@@ -3,6 +3,7 @@ import { resolve } from '$app/paths';
 import type { ErrorCode } from '#lib/errors.ts';
 import { balances } from '#lib/money.ts';
 import { formContext as context } from '#lib/server/context.ts';
+import { claimMember, releaseMember } from '#lib/server/claims.ts';
 import { listExpenses } from '#lib/server/expenses.ts';
 import {
 	addMember,
@@ -12,6 +13,7 @@ import {
 	renameMember,
 	updateGroup
 } from '#lib/server/groups.ts';
+import { ensurePerson, setProfileName } from '#lib/server/people.ts';
 import { parseDescription, parseGroupName, parseMemberName } from '#lib/validation.ts';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -100,5 +102,25 @@ export const actions: Actions = {
 		const { group, actorId } = await context(locals, params.token, request);
 		const token = await regenerateShareToken(locals.db, group.id, actorId);
 		redirect(303, resolve('/g/[token]', { token }));
+	},
+
+	claimMember: async ({ locals, params, request }) => {
+		const { form, group } = await context(locals, params.token, request);
+		const person = await ensurePerson(locals.db, locals.deviceKey);
+		const memberId = String(form.get('memberId') ?? '');
+		const name = await claimMember(locals.db, group.id, person.id, memberId);
+		if (name === null) {
+			return fail(400, { action: 'claimMember' as const, error: 'member_taken' as ErrorCode });
+		}
+		// The first name you pick becomes your profile name (A-13)
+		if (!person.name) await setProfileName(locals.db, person.id, name);
+	},
+
+	/** Any member of the group may free a claimed member, e.g. after a lost device (A-15) */
+	releaseMember: async ({ locals, params, request }) => {
+		const { form, group, actorId } = await context(locals, params.token, request);
+		if (!actorId)
+			return fail(403, { action: 'releaseMember' as const, error: 'not_a_member' as ErrorCode });
+		await releaseMember(locals.db, group.id, actorId, String(form.get('memberId') ?? ''));
 	}
 };
