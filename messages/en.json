@@ -85,5 +85,10 @@
 	"error_payment_not_found": "This payment doesn't exist anymore.",
 	"add_person": "Add a person",
 	"add_person_button": "Add",
-	"remove_person": "Remove {name}"
+	"remove_person": "Remove {name}",
+	"hero_get_back": "You get back",
+	"hero_owe": "You owe",
+	"hero_settled": "You're all square",
+	"hero_owes_you": "{name} owes you {amount}",
+	"hero_you_owe": "You owe {name} {amount}"
 }

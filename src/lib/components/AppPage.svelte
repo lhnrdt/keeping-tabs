@@ -1,5 +1,6 @@
 <script lang="ts">
-	// Shell for every screen: Konsta page, navbar with optional back link, version footer.
+	// Shell for every screen: Konsta page, navbar with optional back link, optional hero
+	// (which then carries the page's h1 instead of the navbar), version footer.
 	import { Navbar, NavbarBackLink, Page } from 'konsta/svelte';
 	import type { Snippet } from 'svelte';
 	import { m } from '#lib/paraglide/messages.js';
@@ -9,10 +10,11 @@
 		title: string;
 		back?: { href: string; label: string };
 		right?: Snippet;
+		hero?: Snippet;
 		children: Snippet;
 	};
 
-	let { title: heading, back, right, children }: Props = $props();
+	let { title: heading, back, right, hero, children }: Props = $props();
 </script>
 
 {#snippet backLink()}
@@ -30,9 +32,13 @@
 	<!-- No left slot without a back link, or the navbar draws an empty button -->
 	<Navbar {right} left={back ? backLink : undefined}>
 		{#snippet title()}
-			<h1 class="font-display text-[1.35rem] font-semibold">{heading}</h1>
+			{#if !hero}
+				<h1 class="font-display text-[1.35rem] font-semibold">{heading}</h1>
+			{/if}
 		{/snippet}
 	</Navbar>
+
+	{@render hero?.()}
 
 	<div class="mx-auto w-full max-w-2xl">
 		{@render children()}

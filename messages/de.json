@@ -85,5 +85,10 @@
 	"error_payment_not_found": "Diese Zahlung gibt es nicht mehr.",
 	"add_person": "Person hinzufügen",
 	"add_person_button": "Hinzufügen",
-	"remove_person": "{name} entfernen"
+	"remove_person": "{name} entfernen",
+	"hero_get_back": "Du bekommst zurück",
+	"hero_owe": "Du schuldest",
+	"hero_settled": "Ihr seid quitt",
+	"hero_owes_you": "{name} schuldet dir {amount}",
+	"hero_you_owe": "Du schuldest {name} {amount}"
 }
