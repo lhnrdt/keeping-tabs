@@ -4,6 +4,9 @@
 	import EmptyState from '#lib/components/EmptyState.svelte';
 	import IconBadge from '#lib/components/IconBadge.svelte';
 	import AnimatedAmount from '#lib/components/AnimatedAmount.svelte';
+	import type { ExpenseCategory } from '#lib/expense/categories.ts';
+	import { categoryOf } from '#lib/expense/categorize.ts';
+	import { categoryIcons } from '#lib/expense/category-style.ts';
 	import { namesById, type Member } from '#lib/group/members.ts';
 	import { transitionName } from '#lib/motion/in-place-transition.ts';
 	import { m } from '#lib/paraglide/messages.js';
@@ -18,6 +21,7 @@
 		paidBy: string;
 		date: string;
 		recipient?: string;
+		category: ExpenseCategory | null;
 	};
 
 	type Props = { token: string; currency: string; members: Member[]; expenses: Entry[] };
@@ -59,7 +63,9 @@
 				class={expense.type === 'payment' ? 'italic' : ''}
 			>
 				{#snippet media()}
-					<IconBadge name={expense.type === 'payment' ? 'payment' : 'expense'} />
+					<IconBadge
+						name={expense.type === 'payment' ? 'payment' : categoryIcons[categoryOf(expense)]}
+					/>
 				{/snippet}
 				{#snippet after()}
 					<AnimatedAmount amount={expense.amountCents} {currency} />
