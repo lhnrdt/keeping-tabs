@@ -48,10 +48,12 @@ test('without JavaScript, older entries are a link away', async ({ browser }) =>
 	await setup.getByRole('button', { name: 'Import' }).click();
 	await expect(setup).toHaveURL(groupUrl);
 
+	// Joining works without JavaScript too (a plain form)
+	await page.goto(groupUrl);
+	await page.getByRole('button', { name: "I'm Ben" }).click();
 	await page.goto(groupUrl);
 	const entries = page.getByRole('region', { name: 'Expenses' }).getByRole('listitem');
 	await expect(entries).toHaveCount(50);
-	// Follow the link (a visitor who hasn't picked a member sees the "Who are you?" sheet)
 	const older = page.getByRole('link', { name: 'Show older' });
 	await page.goto((await older.getAttribute('href'))!);
 	await expect(entries).toHaveCount(60);
