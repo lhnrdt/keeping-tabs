@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { BlockTitle, List, ListItem } from 'konsta/svelte';
-	import IconBadge from '#lib/components/IconBadge.svelte';
+	import GroupTile from '#lib/components/GroupTile.svelte';
 	import { onMount } from 'svelte';
 	import { getRecentGroups, type RecentGroup } from '#lib/device.ts';
 	import { m } from '#lib/paraglide/messages.js';
@@ -20,7 +20,7 @@
 			{#each groups as group (group.id)}
 				<ListItem link title={group.name} href={resolve('/g/[token]', { token: group.token })}>
 					{#snippet media()}
-						<IconBadge name="group" />
+						<GroupTile id={group.id} />
 					{/snippet}
 				</ListItem>
 			{/each}
