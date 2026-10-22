@@ -11,16 +11,21 @@
 			href="%sveltekit.assets%/manifest.webmanifest"
 			crossorigin="use-credentials"
 		/>
-		<meta name="theme-color" content="#f4f1ea" media="(prefers-color-scheme: light)" />
-		<meta name="theme-color" content="#1d211d" media="(prefers-color-scheme: dark)" />
+		<!-- Colors the phone's status and navigation bars; switched with the theme below -->
+		<meta name="theme-color" content="#f4f1ea" />
 		<link rel="apple-touch-icon" href="%sveltekit.assets%/icons/apple-touch-icon.png" />
 		<meta name="apple-mobile-web-app-title" content="Keeping Tabs" />
 		<meta name="mobile-web-app-capable" content="yes" />
 		<script>
-			// Konsta's dark styles hang off a .dark class; set it before first paint
+			// Konsta's dark styles hang off a .dark class; set it before first paint, together with
+			// the system bars' color (installed apps on Android ignore media on theme-color)
 			(() => {
 				const query = matchMedia('(prefers-color-scheme: dark)');
-				const apply = () => document.documentElement.classList.toggle('dark', query.matches);
+				const themeColor = document.querySelector('meta[name="theme-color"]');
+				const apply = () => {
+					document.documentElement.classList.toggle('dark', query.matches);
+					themeColor.content = query.matches ? '#1d211d' : '#f4f1ea';
+				};
 				apply();
 				query.addEventListener('change', apply);
 			})();
