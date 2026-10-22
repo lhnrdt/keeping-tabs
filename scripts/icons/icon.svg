@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+	<!-- Keeping Tabs app icon: a paper tab on a forest-green map with contour lines.
+	     Source for scripts/icons/generate.ts; the corner radius is filled in per output. -->
+	<rect width="512" height="512" rx="RADIUS" fill="#526a58" />
+	<g fill="none" stroke="#aebeaa" stroke-opacity="0.5" stroke-width="9" stroke-linecap="round">
+		<path d="M256 52c92-6 176 44 196 132 22 96-30 196-118 236-90 40-206 18-262-62-52-74-40-178 22-246 42-46 98-58 162-60z" />
+		<path d="M262 96c72-2 136 36 150 104 16 76-24 150-92 178-70 28-158 10-198-52-36-56-26-132 22-182 32-34 70-46 118-48z" />
+		<path d="M-20 470c60-30 120-26 170 4" />
+		<path d="M380 -10c10 40 50 60 150 50" />
+	</g>
+	<g transform="rotate(-14 256 256) translate(256 256) scale(1.18) translate(-256 -256)">
+		<path
+			d="M200 180h132a30 30 0 0 1 30 30v92a30 30 0 0 1-30 30H200l-64-76z"
+			fill="#f4f1ea"
+			stroke="#f4f1ea"
+			stroke-width="8"
+			stroke-linejoin="round"
+		/>
+		<circle cx="184" cy="256" r="15" fill="#526a58" />
+		<path d="M232 232h92M232 280h60" stroke="#526a58" stroke-width="16" stroke-linecap="round" />
+	</g>
+</svg>
