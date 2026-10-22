@@ -5,6 +5,7 @@ export type Action =
 	| 'group.create'
 	| 'group.update'
 	| 'group.regenerate_link'
+	| 'group.import'
 	| 'member.add'
 	| 'member.rename'
 	| 'member.claim'
