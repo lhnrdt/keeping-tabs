@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { categorize } from './categorize';
+import { buildDatasetIndex } from './dataset/index';
 
 describe('categorize', () => {
 	it.each([
@@ -44,5 +45,11 @@ describe('categorize', () => {
 
 	it('does not guess from short words with typos', () => {
 		expect(categorize('Bat')).toBe('other');
+	});
+
+	it('uses the dataset after hand-written keywords', () => {
+		const dataset = buildDatasetIndex({ groceries: ['netto marken discount'], lodging: ['rent'] });
+		expect(categorize('Netto Marken-Discount', dataset)).toBe('groceries');
+		expect(categorize('Rent', dataset)).toBe('home');
 	});
 });

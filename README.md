@@ -14,6 +14,7 @@ Keeping Tabs is a calm, mobile-first web app for keeping track of who paid what 
 
 - **Groups without accounts:** create a group, share its unguessable link, regenerate the link if it reaches the wrong people.
 - **Expenses and payments:** equal splits between any members, payments shown separately, edit and delete.
+- **Categories with icons:** guessed from the title (keywords, thousands of brands and place names in many European languages, typo tolerant, learns your group's choices) unless you pick one.
 - **Balances and settling up:** everyone's balance, suggested payments (at most _n−1_), "All settled. Nice and easy."
 - **Your total balance:** what you get back or owe, overall and per group, on the start screen.
 - **Identity without signup:** each browser gets a private device identity. You claim your member in a group, and nobody else can pick it. Your name and avatar color follow you across groups.
@@ -23,7 +24,7 @@ Keeping Tabs is a calm, mobile-first web app for keeping track of who paid what 
 
 ## Privacy
 
-No tracking, no analytics, no third-party requests (fonts and icons are bundled). The only personal data is the names you type in. Device keys, link tokens and recovery keys are stored only as hashes.
+No tracking, no analytics, no third-party requests (fonts, icons and category keywords are bundled). The only personal data is the names you type in. Device keys, link tokens and recovery keys are stored only as hashes.
 
 ## Tech stack
 
@@ -54,15 +55,16 @@ The dev server uses a local D1 database through Wrangler; no Cloudflare login is
 
 ### Useful scripts
 
-| Script                      | What it does                                                      |
-| --------------------------- | ----------------------------------------------------------------- |
-| `pnpm dev`                  | Dev server with hot reload                                        |
-| `pnpm check`                | Worker types, translations, then type-check (must be 0 errors)    |
-| `pnpm lint`                 | Prettier and ESLint                                               |
-| `pnpm exec vitest --run`    | Unit tests                                                        |
-| `pnpm exec playwright test` | End-to-end tests (builds and runs the production worker locally)  |
-| `pnpm db:generate`          | Generate a migration after changing `src/lib/server/db/schema.ts` |
-| `pnpm db:migrate:local`     | Apply migrations to the local database                            |
+| Script                      | What it does                                                         |
+| --------------------------- | -------------------------------------------------------------------- |
+| `pnpm dev`                  | Dev server with hot reload                                           |
+| `pnpm check`                | Worker types, translations, then type-check (must be 0 errors)       |
+| `pnpm lint`                 | Prettier and ESLint                                                  |
+| `pnpm exec vitest --run`    | Unit tests                                                           |
+| `pnpm exec playwright test` | End-to-end tests (builds and runs the production worker locally)     |
+| `pnpm keywords:generate`    | Rebuild the category keywords from the pinned OpenStreetMap datasets |
+| `pnpm db:generate`          | Generate a migration after changing `src/lib/server/db/schema.ts`    |
+| `pnpm db:migrate:local`     | Apply migrations to the local database                               |
 
 ## Project structure
 
@@ -75,7 +77,7 @@ src/
   lib/*.ts                pure logic with unit tests (money, settle, validation, tints)
 drizzle/                  SQL migrations
 worker/staging.ts         password protection for the staging environment
-scripts/                  release versioning
+scripts/                  release versioning, category keyword generator
 ```
 
 ## Workflow and releases

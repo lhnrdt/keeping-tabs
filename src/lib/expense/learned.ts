@@ -2,6 +2,7 @@
 // marked as groceries, later "Netto run" expenses are groceries too.
 import type { ExpenseCategory } from './categories';
 import { categorize } from './categorize';
+import type { DatasetIndex } from './dataset/index';
 import { normalizeTitle } from './normalize';
 
 type Entry = { title: string; category: ExpenseCategory | null };
@@ -19,9 +20,9 @@ export function learnCategories(expenses: readonly Entry[]): Learned {
 }
 
 /** What "Automatic" means for a title: the group's own choice, else the keyword guess. */
-export const guessCategory = (title: string, learned: Learned) =>
-	learned.get(normalizeTitle(title)) ?? categorize(title);
+export const guessCategory = (title: string, learned: Learned, dataset?: DatasetIndex) =>
+	learned.get(normalizeTitle(title)) ?? categorize(title, dataset);
 
 /** An expense's category: chosen by hand, else guessed. */
-export const categoryOf = (expense: Entry, learned: Learned) =>
-	expense.category ?? guessCategory(expense.title, learned);
+export const categoryOf = (expense: Entry, learned: Learned, dataset?: DatasetIndex) =>
+	expense.category ?? guessCategory(expense.title, learned, dataset);
