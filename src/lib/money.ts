@@ -65,3 +65,14 @@ export function balances(memberIds: readonly string[], expenses: readonly Balanc
 	}
 	return result;
 }
+
+/** Adds up balances per currency; currencies are never mixed. Sorted by currency code. */
+export function totalsByCurrency(items: readonly { currency: string; balance: number }[]) {
+	const totals = new Map<string, number>();
+	for (const { currency, balance } of items) {
+		totals.set(currency, (totals.get(currency) ?? 0) + balance);
+	}
+	return [...totals]
+		.sort(([a], [b]) => a.localeCompare(b))
+		.map(([currency, amount]) => ({ currency, amount }));
+}
