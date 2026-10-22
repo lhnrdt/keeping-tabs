@@ -14,7 +14,8 @@
 			date: '',
 			paidBy: '',
 			// E-4: everyone takes part by default
-			participants: data.members.map((member) => member.id)
+			participants: data.members.map((member) => member.id),
+			category: ''
 		}
 	);
 </script>
