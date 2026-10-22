@@ -1,4 +1,5 @@
 import type { ErrorCode } from './errors';
+import { isExpenseCategory, type ExpenseCategory } from './expense/categories';
 import { DEFAULT_GROUP_KIND, isGroupKind, type GroupKind } from './group/kinds';
 import { parseAmount } from './money';
 import { isTint, type Tint } from './tints';
@@ -73,6 +74,8 @@ export type ExpenseInput = {
 	paidBy: string;
 	/** In member order, so equal-split remainders are deterministic */
 	participants: string[];
+	/** Chosen by hand; null follows the title */
+	category: ExpenseCategory | null;
 };
 
 export function parseDate(value: unknown): Result<string> {
@@ -91,6 +94,7 @@ export function parseExpense(
 		date: unknown;
 		paidBy: unknown;
 		participants: unknown[];
+		category: unknown;
 	},
 	group: { memberIds: readonly string[]; currency: string }
 ): Result<ExpenseInput> {
@@ -111,7 +115,13 @@ export function parseExpense(
 	const participants = group.memberIds.filter((id) => chosen.has(id));
 	if (participants.length === 0) return { ok: false, error: 'participants_required' };
 
-	return { ok: true, value: { title, amountCents, date: date.value, paidBy, participants } };
+	const category = parseCategory(values.category);
+	if (!category.ok) return category;
+
+	return {
+		ok: true,
+		value: { title, amountCents, date: date.value, paidBy, participants, category: category.value }
+	};
 }
 
 export type PaymentInput = { from: string; to: string; amountCents: number; date: string };
@@ -147,4 +157,13 @@ export function parseTint(value: unknown): Result<Tint | null> {
 	const tint = normalizeText(value);
 	if (!tint) return { ok: true, value: null };
 	return isTint(tint) ? { ok: true, value: tint } : { ok: false, error: 'tint_invalid' };
+}
+
+/** A chosen expense category; empty means automatic (derived from the title). */
+export function parseCategory(value: unknown): Result<ExpenseCategory | null> {
+	const category = normalizeText(value);
+	if (!category) return { ok: true, value: null };
+	return isExpenseCategory(category)
+		? { ok: true, value: category }
+		: { ok: false, error: 'category_invalid' };
 }

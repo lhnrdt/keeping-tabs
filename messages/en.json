@@ -151,5 +151,19 @@
 	"tint_moss": "Moss",
 	"tint_sky": "Sky",
 	"error_kind_invalid": "Choose a type for the group.",
-	"error_tint_invalid": "Choose one of the colors."
+	"error_tint_invalid": "Choose one of the colors.",
+	"field_category": "Category",
+	"category_auto": "Automatic",
+	"category_other": "Other",
+	"category_groceries": "Groceries",
+	"category_dining": "Eating out",
+	"category_drinks": "Drinks",
+	"category_transport": "Transport",
+	"category_lodging": "Stay",
+	"category_home": "Home",
+	"category_fun": "Fun",
+	"category_shopping": "Shopping",
+	"category_gifts": "Gifts",
+	"category_health": "Health",
+	"error_category_invalid": "Choose one of the categories."
 }

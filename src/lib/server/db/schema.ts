@@ -1,4 +1,5 @@
 import { sql } from 'drizzle-orm';
+import type { ExpenseCategory } from '#lib/expense/categories.ts';
 import type { GroupKind } from '#lib/group/kinds.ts';
 import type { Tint } from '#lib/tints.ts';
 import {
@@ -137,7 +138,7 @@ export const expenses = sqliteTable(
 			.notNull()
 			.default('equal'),
 		notes: text('notes'),
-		category: text('category'),
+		category: text('category').$type<ExpenseCategory>(),
 		createdAt: createdAt(),
 		updatedAt: integer('updated_at', { mode: 'timestamp_ms' })
 			.notNull()

@@ -33,7 +33,8 @@ export const readExpenseForm = (db: Db, group: Group, form: FormData) =>
 			amount: text(form, 'amount'),
 			date: text(form, 'date'),
 			paidBy: text(form, 'paidBy'),
-			participants: form.getAll('participants').map(String)
+			participants: form.getAll('participants').map(String),
+			category: text(form, 'category')
 		},
 		parseExpense
 	);

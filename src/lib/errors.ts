@@ -24,7 +24,8 @@ export const errorMessages = {
 	recovery_key_invalid: m.error_recovery_key_invalid,
 	passkey_failed: m.error_passkey_failed,
 	kind_invalid: m.error_kind_invalid,
-	tint_invalid: m.error_tint_invalid
+	tint_invalid: m.error_tint_invalid,
+	category_invalid: m.error_category_invalid
 } satisfies Record<string, () => string>;
 
 export type ErrorCode = keyof typeof errorMessages;
