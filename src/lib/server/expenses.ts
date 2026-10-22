@@ -1,5 +1,5 @@
 import { and, desc, eq, isNotNull, isNull } from 'drizzle-orm';
-import { splitEqual } from '#lib/money.ts';
+
 import type { ExpenseInput } from '#lib/validation.ts';
 import { log, type Action } from './activity';
 import type { Db } from './db';
@@ -52,11 +52,15 @@ export function listChosenCategories(db: Db, groupId: string) {
 export async function findExpense(db: Db, groupId: string, id: string) {
 	const [rows, splits] = await db.batch([
 		db
-			.select(expenseColumns)
+			.select({ ...expenseColumns, splitMode: expenses.splitMode })
 			.from(expenses)
 			.where(and(eq(expenses.id, id), active(groupId))),
 		db
-			.select({ memberId: expenseSplits.memberId, shareCents: expenseSplits.shareCents })
+			.select({
+				memberId: expenseSplits.memberId,
+				shareCents: expenseSplits.shareCents,
+				input: expenseSplits.input
+			})
 			.from(expenseSplits)
 			.where(eq(expenseSplits.expenseId, id))
 	]);
@@ -64,7 +68,7 @@ export async function findExpense(db: Db, groupId: string, id: string) {
 }
 
 const splitRows = (expenseId: string, input: ExpenseInput) =>
-	splitEqual(input.amountCents, input.participants).map((split) => ({ expenseId, ...split }));
+	input.shares.map((share) => ({ expenseId, ...share }));
 
 export async function createExpense(
 	db: Db,
@@ -78,7 +82,7 @@ export async function createExpense(
 			id,
 			groupId,
 			type: 'expense',
-			splitMode: 'equal',
+			splitMode: input.splitMode,
 			title: input.title,
 			amountCents: input.amountCents,
 			paidBy: input.paidBy,
@@ -107,7 +111,7 @@ export async function updateExpense(
 				paidBy: input.paidBy,
 				date: input.date,
 				category: input.category,
-				splitMode: 'equal'
+				splitMode: input.splitMode
 			})
 			.where(and(eq(expenses.id, id), active(groupId))),
 		db.delete(expenseSplits).where(eq(expenseSplits.expenseId, id)),

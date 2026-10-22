@@ -1,4 +1,5 @@
 import { sql } from 'drizzle-orm';
+import { SPLIT_MODES } from '#lib/split/modes.ts';
 import type { ExpenseCategory } from '#lib/expense/categories.ts';
 import type { GroupKind } from '#lib/group/kinds.ts';
 import type { Tint } from '#lib/tints.ts';
@@ -134,9 +135,7 @@ export const expenses = sqliteTable(
 			.references(() => members.id),
 		// ISO date (YYYY-MM-DD), no time zone
 		date: text('date').notNull(),
-		splitMode: text('split_mode', { enum: ['equal', 'exact', 'percent', 'shares'] })
-			.notNull()
-			.default('equal'),
+		splitMode: text('split_mode', { enum: SPLIT_MODES }).notNull().default('equal'),
 		notes: text('notes'),
 		category: text('category').$type<ExpenseCategory>(),
 		createdAt: createdAt(),
@@ -163,8 +162,9 @@ export const expenseSplits = sqliteTable(
 			.references(() => members.id),
 		// Resolved amount; splits of an expense always sum to its amount (E-5)
 		shareCents: integer('share_cents').notNull(),
-		// What the user entered, so the split can be edited again:
-		// exact → cents, percent → basis points, shares → weight, equal → null
+		// What the user entered, so the split can be edited again (src/lib/split/inputs.ts):
+		// exact and adjust → minor units, percent → hundredths of a percent,
+		// shares → hundredths of a part, equal → null
 		input: integer('input')
 	},
 	(t) => [
