@@ -1,6 +1,7 @@
 import { and, eq, gt, isNull } from 'drizzle-orm';
 import type { Db } from './db';
 import { deviceLinks, devices, people } from './db/schema';
+import { newRecoveryKey, normalizeRecoveryKey } from './recovery-key';
 import { hashSecret, randomSecret } from './secrets';
 
 // People are created lazily: a device only gets a person once it claims or creates something.
@@ -66,10 +67,39 @@ export async function useDeviceLink(db: Db, token: string, deviceKey: string): P
 		.returning({ personId: deviceLinks.personId });
 	if (!link) return false;
 
-	const keyHash = await hashSecret(deviceKey);
+	await attachDevice(db, deviceKey, link.personId);
+	return true;
+}
+
+/** Makes this device belong to a person (moving it away from any previous one). */
+async function attachDevice(db: Db, deviceKey: string, personId: string) {
 	await db
 		.insert(devices)
-		.values({ keyHash, personId: link.personId })
-		.onConflictDoUpdate({ target: devices.keyHash, set: { personId: link.personId } });
+		.values({ keyHash: await hashSecret(deviceKey), personId })
+		.onConflictDoUpdate({ target: devices.keyHash, set: { personId } });
+}
+
+/** Creates a new recovery key for the person, replacing any previous one (A-16). */
+export async function createRecoveryKey(db: Db, personId: string): Promise<string> {
+	const key = newRecoveryKey();
+	const recoveryHash = await hashSecret(normalizeRecoveryKey(key)!);
+	await db.update(people).set({ recoveryHash }).where(eq(people.id, personId));
+	return key;
+}
+
+/** Makes this device the person behind a recovery key. Returns false for unknown keys. */
+export async function restoreWithRecoveryKey(
+	db: Db,
+	input: string,
+	deviceKey: string
+): Promise<boolean> {
+	const normalized = normalizeRecoveryKey(input);
+	if (!normalized) return false;
+	const person = await db.query.people.findFirst({
+		columns: { id: true },
+		where: eq(people.recoveryHash, await hashSecret(normalized))
+	});
+	if (!person) return false;
+	await attachDevice(db, deviceKey, person.id);
 	return true;
 }
