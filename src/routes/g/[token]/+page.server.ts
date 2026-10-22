@@ -14,7 +14,13 @@ import {
 	updateGroup
 } from '#lib/server/groups.ts';
 import { ensurePerson, setProfileName } from '#lib/server/people.ts';
-import { parseDescription, parseGroupName, parseMemberName } from '#lib/validation.ts';
+import {
+	parseDescription,
+	parseGroupName,
+	parseKind,
+	parseMemberName,
+	parseTint
+} from '#lib/validation.ts';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, parent }) => {
@@ -48,10 +54,16 @@ export const actions: Actions = {
 		if (!name.ok) return invalid(name.error);
 		const description = parseDescription(form.get('description'));
 		if (!description.ok) return invalid(description.error);
+		const kind = parseKind(form.get('kind'));
+		if (!kind.ok) return invalid(kind.error);
+		const tint = parseTint(form.get('tint'));
+		if (!tint.ok) return invalid(tint.error);
 
 		await updateGroup(locals.db, group.id, actorId, {
 			name: name.value,
-			description: description.value
+			description: description.value,
+			kind: kind.value,
+			tint: tint.value
 		});
 	},
 

@@ -8,6 +8,8 @@ import { ensurePerson, findPerson, setProfileName } from '#lib/server/people.ts'
 import {
 	normalizeText,
 	parseCurrency,
+	parseKind,
+	parseTint,
 	parseDescription,
 	parseGroupName,
 	parseMemberNames
@@ -31,6 +33,8 @@ export const actions: Actions = {
 			name: String(form.get('name') ?? ''),
 			description: String(form.get('description') ?? ''),
 			currency: String(form.get('currency') ?? ''),
+			kind: String(form.get('kind') ?? ''),
+			tint: String(form.get('tint') ?? ''),
 			you: String(form.get('you') ?? ''),
 			members: form.getAll('member').map(String)
 		};
@@ -42,6 +46,10 @@ export const actions: Actions = {
 		if (!description.ok) return invalid(description.error);
 		const currency = parseCurrency(values.currency);
 		if (!currency.ok) return invalid(currency.error);
+		const kind = parseKind(values.kind);
+		if (!kind.ok) return invalid(kind.error);
+		const tint = parseTint(values.tint);
+		if (!tint.ok) return invalid(tint.error);
 		// The creator comes first, so they become the acting member
 		if (!normalizeText(values.you)) return invalid('member_name_required');
 		const memberNames = parseMemberNames([values.you, ...values.members]);
@@ -53,6 +61,8 @@ export const actions: Actions = {
 			name: name.value,
 			description: description.value,
 			currency: currency.value,
+			kind: kind.value,
+			tint: tint.value,
 			memberNames: memberNames.value,
 			creatorPersonId: person.id
 		});

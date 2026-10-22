@@ -1,4 +1,6 @@
 import { sql } from 'drizzle-orm';
+import type { GroupKind } from '#lib/group/kinds.ts';
+import type { Tint } from '#lib/tints.ts';
 import {
 	check,
 	index,
@@ -30,6 +32,10 @@ export const groups = sqliteTable('groups', {
 	description: text('description'),
 	// ISO 4217 code; one currency per group (S-1)
 	currency: text('currency').notNull().default('EUR'),
+	// What the group is for, shown as its icon (SP-18); see src/lib/group/kinds.ts
+	kind: text('kind').$type<GroupKind>().notNull().default('other'),
+	// Chosen color; null = derived from the id (src/lib/tints.ts)
+	tint: text('tint').$type<Tint>(),
 	createdAt: createdAt(),
 	deletedAt: deletedAt()
 });

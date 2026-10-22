@@ -9,10 +9,13 @@
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import { suggestTransfers } from '#lib/settle.ts';
-	import { tintClass } from '#lib/tints.ts';
+	import Icon from '#lib/components/Icon.svelte';
+	import { kindIcons } from '#lib/group/kind-style.ts';
+	import type { GroupKind } from '#lib/group/kinds.ts';
+	import { tintClass, type Tint } from '#lib/tints.ts';
 
 	type Props = {
-		group: { id: string; name: string; currency: string };
+		group: { id: string; name: string; currency: string; kind: GroupKind; tint: Tint | null };
 		members: Member[];
 		balances: Record<string, number>;
 	};
@@ -38,11 +41,13 @@
 
 <header
 	class="{tintClass(
-		group.id
+		group.id,
+		group.tint
 	)} relative mx-4 mt-2 overflow-hidden rounded-3xl bg-(--tint-bg) px-5 pt-5 pb-6 text-(--tint-fg)"
 >
 	<Topography />
 	<div class="relative">
+		<Icon name={kindIcons[group.kind]} size={28} />
 		<h1 class="font-display text-4xl leading-tight font-semibold">{group.name}</h1>
 		{#if myBalance !== null}
 			<p class="mt-4 text-sm font-medium opacity-80">

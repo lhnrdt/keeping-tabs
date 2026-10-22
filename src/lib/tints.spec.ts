@@ -15,3 +15,10 @@ describe('tintFor', () => {
 		expect(tintClass('x')).toMatch(/^tint-(sage|clay|sand|moss|sky)$/);
 	});
 });
+
+describe('tintClass with a chosen tint', () => {
+	it('uses the chosen tint over the derived one', () => {
+		expect(tintClass('x', 'clay')).toBe('tint-clay');
+		expect(tintClass('x', null)).toBe(tintClass('x'));
+	});
+});

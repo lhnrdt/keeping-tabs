@@ -2,14 +2,27 @@
 	import { List, ListButton, ListItem } from 'konsta/svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import Field from '#lib/components/Field.svelte';
+	import KindPicker from '#lib/components/pickers/KindPicker.svelte';
+	import TintPicker from '#lib/components/pickers/TintPicker.svelte';
 	import FormDialog from './FormDialog.svelte';
 	import FormError from '#lib/components/FormError.svelte';
 	import type { ErrorCode } from '#lib/errors.ts';
+	import { kindIcons, kindLabels } from '#lib/group/kind-style.ts';
+	import type { GroupKind } from '#lib/group/kinds.ts';
 	import { tabAction } from '#lib/group/tabs.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { LIMITS } from '#lib/validation.ts';
 
-	type Group = { name: string; description: string | null; currency: string };
+	import type { Tint } from '#lib/tints.ts';
+
+	type Group = {
+		id: string;
+		name: string;
+		description: string | null;
+		currency: string;
+		kind: GroupKind;
+		tint: Tint | null;
+	};
 
 	let { group, error }: { group: Group; error?: ErrorCode } = $props();
 
@@ -21,6 +34,11 @@
 	{#if group.description}
 		<ListItem title={m.field_description()} text={group.description} />
 	{/if}
+	<ListItem title={m.field_group_kind()} after={kindLabels[group.kind]()}>
+		{#snippet media()}
+			<Icon name={kindIcons[group.kind]} />
+		{/snippet}
+	</ListItem>
 	<ListItem title={m.field_currency()} after={group.currency} />
 	<ListButton type="button" onclick={() => (editing = true)}>
 		<Icon name="edit" />
@@ -51,5 +69,9 @@
 			value={group.description ?? ''}
 		/>
 	</List>
+	<div class="-mx-4">
+		<KindPicker value={group.kind} />
+		<TintPicker value={group.tint ?? ''} id={group.id} />
+	</div>
 	<FormError {error} />
 </FormDialog>

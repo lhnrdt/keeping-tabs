@@ -26,4 +26,9 @@ describe('mergeGroups', () => {
 		);
 		expect(merged.map((g) => g.id)).toEqual(['c', 'd', 'a', 'b']);
 	});
+
+	it('keeps the kind and color of groups only opened here', () => {
+		const local = { ...group('a'), kind: 'trip' as const, tint: 'sky' as const, openedAt: 1 };
+		expect(mergeGroups([], [local])).toEqual([{ ...group('a'), kind: 'trip', tint: 'sky' }]);
+	});
 });

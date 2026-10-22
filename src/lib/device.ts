@@ -1,7 +1,9 @@
 // Per-device memory of opened groups (A-6). Storage can be unavailable (private mode, blocked
 // site data), so every access is guarded and the app works without it.
 
-export type RecentGroup = { id: string; token: string; name: string; openedAt: number };
+import type { GroupLink } from './group/your-groups';
+
+export type RecentGroup = GroupLink & { openedAt: number };
 
 const RECENT_KEY = 'keeping-tabs:groups';
 
