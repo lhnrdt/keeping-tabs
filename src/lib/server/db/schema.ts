@@ -67,6 +67,24 @@ export const deviceLinks = sqliteTable('device_links', {
 	usedAt: integer('used_at', { mode: 'timestamp_ms' })
 });
 
+/** Passkeys that let a person come back on any device (A-18). */
+export const passkeys = sqliteTable(
+	'passkeys',
+	{
+		// WebAuthn credential id, base64url
+		id: text('id').primaryKey(),
+		personId: text('person_id')
+			.notNull()
+			.references(() => people.id),
+		// COSE public key, base64url
+		publicKey: text('public_key').notNull(),
+		counter: integer('counter').notNull().default(0),
+		transports: text('transports', { mode: 'json' }).$type<string[]>(),
+		createdAt: createdAt()
+	},
+	(t) => [index('passkeys_person_idx').on(t.personId)]
+);
+
 export const members = sqliteTable(
 	'members',
 	{
