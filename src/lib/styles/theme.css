@@ -119,3 +119,55 @@
 		'opsz' 72;
 	letter-spacing: -0.02em;
 }
+
+/* Tints (see src/lib/tints.ts): background, foreground and pattern line color */
+@utility tint-sage {
+	--tint-bg: #dce4d9;
+	--tint-fg: #394c3f;
+	--tint-line: rgb(57 76 63 / 0.14);
+	&:where(.dark, .dark *) {
+		--tint-bg: #2f3a31;
+		--tint-fg: #b9cbb6;
+		--tint-line: rgb(185 203 182 / 0.12);
+	}
+}
+@utility tint-clay {
+	--tint-bg: #f0e1da;
+	--tint-fg: #8a4b39;
+	--tint-line: rgb(138 75 57 / 0.13);
+	&:where(.dark, .dark *) {
+		--tint-bg: #3d2e29;
+		--tint-fg: #e0b4a4;
+		--tint-line: rgb(224 180 164 / 0.12);
+	}
+}
+@utility tint-sand {
+	--tint-bg: #efe6d3;
+	--tint-fg: #6e5a35;
+	--tint-line: rgb(110 90 53 / 0.14);
+	&:where(.dark, .dark *) {
+		--tint-bg: #3a3428;
+		--tint-fg: #d9c7a2;
+		--tint-line: rgb(217 199 162 / 0.12);
+	}
+}
+@utility tint-moss {
+	--tint-bg: #e2e7d6;
+	--tint-fg: #4e5c3a;
+	--tint-line: rgb(78 92 58 / 0.14);
+	&:where(.dark, .dark *) {
+		--tint-bg: #343a2b;
+		--tint-fg: #c3cfa8;
+		--tint-line: rgb(195 207 168 / 0.12);
+	}
+}
+@utility tint-sky {
+	--tint-bg: #dde6e6;
+	--tint-fg: #3f5a5b;
+	--tint-line: rgb(63 90 91 / 0.14);
+	&:where(.dark, .dark *) {
+		--tint-bg: #2b3738;
+		--tint-fg: #b3c9ca;
+		--tint-line: rgb(179 201 202 / 0.12);
+	}
+}
