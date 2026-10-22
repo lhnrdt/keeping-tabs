@@ -5,6 +5,7 @@
 	import KindPicker from '#lib/components/pickers/KindPicker.svelte';
 	import TintPicker from '#lib/components/pickers/TintPicker.svelte';
 	import FormDialog from './FormDialog.svelte';
+	import SimplifyDebtsField from './SimplifyDebtsField.svelte';
 	import FormError from '#lib/components/FormError.svelte';
 	import type { ErrorCode } from '#lib/errors.ts';
 	import { kindIcons, kindLabels } from '#lib/group/kind-style.ts';
@@ -22,6 +23,7 @@
 		currency: string;
 		kind: GroupKind;
 		tint: Tint | null;
+		simplifyDebts: boolean;
 	};
 
 	let { group, error }: { group: Group; error?: ErrorCode } = $props();
@@ -40,6 +42,7 @@
 		{/snippet}
 	</ListItem>
 	<ListItem title={m.field_currency()} after={group.currency} />
+	<ListItem title={m.field_simplify_debts()} after={group.simplifyDebts ? m.on() : m.off()} />
 	<ListButton type="button" onclick={() => (editing = true)}>
 		<Icon name="edit" />
 		{m.edit_group()}
@@ -68,6 +71,7 @@
 			maxlength={LIMITS.description}
 			value={group.description ?? ''}
 		/>
+		<SimplifyDebtsField checked={group.simplifyDebts} />
 	</List>
 	<div class="-mx-4">
 		<KindPicker value={group.kind} />
