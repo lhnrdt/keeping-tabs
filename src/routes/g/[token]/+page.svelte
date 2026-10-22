@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-	import { BlockTitle, Fab } from 'konsta/svelte';
+	import { BlockTitle, Fab, List, ListItem } from 'konsta/svelte';
 	import AppPage from '#lib/components/AppPage.svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import AddMemberForm from '#lib/components/group/AddMemberForm.svelte';
@@ -48,7 +48,8 @@
 			token={data.group.shareToken}
 			currency={data.group.currency}
 			members={data.members}
-			expenses={data.expenses}
+			entries={data.entries}
+			hasMore={data.hasMore}
 		/>
 		<!-- Konsta sets role="button" on its Fab even when it's a link -->
 		<Fab
@@ -79,6 +80,17 @@
 		<GroupDetails group={data.group} error={errorFor('updateGroup')} />
 		<BlockTitle>{m.share_title()}</BlockTitle>
 		<ShareLink token={data.group.shareToken} groupName={data.group.name} />
+		<List strong inset>
+			<ListItem
+				link
+				title={m.import_link()}
+				href={resolve('/g/[token]/import', { token: data.group.shareToken })}
+			>
+				{#snippet media()}
+					<Icon name="import" />
+				{/snippet}
+			</ListItem>
+		</List>
 	{/if}
 
 	<GroupTabs active={tab} />

@@ -1,12 +1,12 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
 import type { ErrorCode } from '#lib/errors.ts';
-import { loadDataset } from '#lib/expense/dataset/load.ts';
-import { categoryOf, learnCategories } from '#lib/expense/learned.ts';
+import { shownCount } from '#lib/group/expense-pages.ts';
 import { balances } from '#lib/money.ts';
 import { settleTransfers } from '#lib/settle.ts';
 import { formContext as context } from '#lib/server/context.ts';
 import { claimMember, releaseMember } from '#lib/server/claims.ts';
+import { entryPage } from '#lib/server/expense-entries.ts';
 import { listExpenses } from '#lib/server/expenses.ts';
 import {
 	addMember,
@@ -26,26 +26,20 @@ import {
 } from '#lib/validation.ts';
 import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ locals, parent }) => {
+export const load: PageServerLoad = async ({ locals, parent, url }) => {
 	const { group, members } = await parent();
-	const [expenses, dataset] = await Promise.all([listExpenses(locals.db, group.id), loadDataset()]);
-	// Newest first, so the latest hand-chosen category per title wins
-	const learned = learnCategories(expenses);
+	const shown = shownCount(url.searchParams.get('show'));
+	// Balances and settling up need everything; the list only its first page(s)
+	const [expenses, page] = await Promise.all([
+		listExpenses(locals.db, group.id),
+		entryPage(locals.db, group.id, 0, shown)
+	]);
 	const memberIds = members.map((member) => member.id);
 	return {
 		balances: Object.fromEntries(balances(memberIds, expenses)),
 		transfers: settleTransfers(group.simplifyDebts, memberIds, expenses),
-		expenses: expenses.map(({ id, type, title, amountCents, paidBy, date, category, splits }) => ({
-			id,
-			type,
-			title,
-			amountCents,
-			paidBy,
-			date,
-			category: type === 'expense' ? categoryOf({ title, category }, learned, dataset) : null,
-			// A payment has exactly one split: its recipient
-			recipient: type === 'payment' ? splits[0]?.memberId : undefined
-		}))
+		entries: page.entries,
+		hasMore: page.hasMore
 	};
 };
 

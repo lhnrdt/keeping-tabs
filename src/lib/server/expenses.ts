@@ -1,4 +1,4 @@
-import { and, desc, eq, isNotNull, isNull } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNotNull, isNull } from 'drizzle-orm';
 
 import type { ExpenseInput } from '#lib/validation.ts';
 import { log, type Action } from './activity';
@@ -38,6 +38,29 @@ export async function listExpenses(db: Db, groupId: string) {
 	]);
 	const byExpense = Map.groupBy(splits, (split) => split.expenseId);
 	return rows.map((row) => ({ ...row, splits: byExpense.get(row.id) ?? [] }));
+}
+
+/**
+ * A page of the expense list, newest first: only these rows (not the group's whole
+ * history), plus each payment's recipient.
+ */
+export async function listEntryPage(db: Db, groupId: string, offset: number, limit: number) {
+	const rows = await db
+		.select(expenseColumns)
+		.from(expenses)
+		.where(active(groupId))
+		.orderBy(desc(expenses.date), desc(expenses.createdAt))
+		.limit(limit)
+		.offset(offset);
+	const paymentIds = rows.filter((row) => row.type === 'payment').map((row) => row.id);
+	const recipients = paymentIds.length
+		? await db
+				.select({ expenseId: expenseSplits.expenseId, memberId: expenseSplits.memberId })
+				.from(expenseSplits)
+				.where(inArray(expenseSplits.expenseId, paymentIds))
+		: [];
+	const recipientOf = new Map(recipients.map((split) => [split.expenseId, split.memberId]));
+	return rows.map((row) => ({ ...row, recipient: recipientOf.get(row.id) }));
 }
 
 /** Categories chosen by hand in a group, newest first: what its automatic guess learns from. */
