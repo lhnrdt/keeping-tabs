@@ -4,6 +4,8 @@
  * Imported after Konsta's theme, so these override its defaults.
  */
 @import '@fontsource-variable/inter';
+/* Display serif for big titles and hero amounts only (soft axis = rounded serifs) */
+@import '@fontsource-variable/fraunces/soft.css';
 
 @theme {
 	/* Palette */
@@ -63,6 +65,8 @@
 	/* Motion: calm ease-out (style guide); svelte/easing's quintOut is the same curve */
 	--ease-calm: cubic-bezier(0.22, 1, 0.36, 1);
 
+	--font-display: 'Fraunces Variable', ui-serif, Georgia, serif;
+
 	--font-ios: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
@@ -106,4 +110,12 @@
 	&:where(.dark, .dark *) {
 		color: var(--color-destructive-night);
 	}
+}
+
+/* Fraunces at its softest and with display optical size: friendly, not formal */
+.font-display {
+	font-variation-settings:
+		'SOFT' 100,
+		'opsz' 72;
+	letter-spacing: -0.02em;
 }

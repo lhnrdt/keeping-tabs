@@ -30,7 +30,7 @@
 	<!-- No left slot without a back link, or the navbar draws an empty button -->
 	<Navbar {right} left={back ? backLink : undefined}>
 		{#snippet title()}
-			<h1>{heading}</h1>
+			<h1 class="font-display text-[1.35rem] font-semibold">{heading}</h1>
 		{/snippet}
 	</Navbar>
 
