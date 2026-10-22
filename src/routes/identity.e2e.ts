@@ -12,6 +12,8 @@ const whoAreYou = (page: Page) => page.getByRole('dialog', { name: 'Who are you?
 test('members can only be claimed once, freed up, and identities move between devices and recover', async ({
 	browser
 }) => {
+	// Several devices and many steps: more than the default 30 s under load
+	test.setTimeout(60_000);
 	// Anna creates the group and is its first member
 	const anna = await newDevice(browser);
 	await open(anna, '/new');
