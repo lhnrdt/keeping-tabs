@@ -15,7 +15,9 @@
 			paidBy: '',
 			// E-4: everyone takes part by default
 			participants: data.members.map((member) => member.id),
-			category: ''
+			category: '',
+			splitMode: '',
+			inputs: {}
 		}
 	);
 </script>
