@@ -4,6 +4,8 @@ import {
 	parseDate,
 	parseExpense,
 	parsePayment,
+	parseKind,
+	parseTint,
 	parseCurrency,
 	parseDescription,
 	parseGroupName,
@@ -139,5 +141,19 @@ describe('parsePayment', () => {
 			ok: false,
 			error: 'recipient_invalid'
 		});
+	});
+});
+
+describe('parseKind and parseTint', () => {
+	it('defaults the type and treats an empty color as automatic', () => {
+		expect(parseKind('')).toEqual({ ok: true, value: 'other' });
+		expect(parseKind('trip')).toEqual({ ok: true, value: 'trip' });
+		expect(parseTint('')).toEqual({ ok: true, value: null });
+		expect(parseTint('clay')).toEqual({ ok: true, value: 'clay' });
+	});
+
+	it('rejects unknown values', () => {
+		expect(parseKind('yacht')).toEqual({ ok: false, error: 'kind_invalid' });
+		expect(parseTint('red')).toEqual({ ok: false, error: 'tint_invalid' });
 	});
 });

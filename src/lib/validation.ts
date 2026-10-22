@@ -1,5 +1,7 @@
 import type { ErrorCode } from './errors';
+import { DEFAULT_GROUP_KIND, isGroupKind, type GroupKind } from './group/kinds';
 import { parseAmount } from './money';
+import { isTint, type Tint } from './tints';
 
 export const LIMITS = {
 	groupName: 60,
@@ -132,4 +134,17 @@ export function parsePayment(
 	if (!date.ok) return date;
 
 	return { ok: true, value: { from, to, amountCents, date: date.value } };
+}
+
+/** A group type; missing means the default (SP-18). */
+export function parseKind(value: unknown): Result<GroupKind> {
+	const kind = normalizeText(value) || DEFAULT_GROUP_KIND;
+	return isGroupKind(kind) ? { ok: true, value: kind } : { ok: false, error: 'kind_invalid' };
+}
+
+/** A chosen color; empty means automatic (derived from the group). */
+export function parseTint(value: unknown): Result<Tint | null> {
+	const tint = normalizeText(value);
+	if (!tint) return { ok: true, value: null };
+	return isTint(tint) ? { ok: true, value: tint } : { ok: false, error: 'tint_invalid' };
 }
