@@ -39,6 +39,8 @@ export const people = sqliteTable('people', {
 	id: id(),
 	// Profile name, pre-filled when creating groups or claiming members
 	name: text('name'),
+	// Hash of the person's recovery key, if they created one (A-16)
+	recoveryHash: text('recovery_hash').unique(),
 	createdAt: createdAt()
 });
 
