@@ -81,6 +81,19 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: pnpm check
+      # Unit tests include a browser project, so this job needs Chromium too. The browser is
+      # cached per lockfile; the runner image already has Chromium's system libraries
+      # (Google Chrome is preinstalled), so no slow apt install (--with-deps)
+      - &browser-cache
+        name: Cache Playwright browsers
+        id: browsers
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+      - &browser-install
+        if: steps.browsers.outputs.cache-hit != 'true'
+        run: pnpm exec playwright install chromium
       - run: pnpm exec vitest --run
 
   e2e:
@@ -92,16 +105,8 @@ jobs:
       - uses: jdx/mise-action@v5
       - *pnpm-cache
       - run: pnpm install --frozen-lockfile
-      # The browser is cached per lockfile; the runner image already has Chromium's system
-      # libraries (Google Chrome is preinstalled), so no slow apt install (--with-deps)
-      - name: Cache Playwright browsers
-        id: browsers
-        uses: actions/cache@v6
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
-      - if: steps.browsers.outputs.cache-hit != 'true'
-        run: pnpm exec playwright install chromium
+      - *browser-cache
+      - *browser-install
       - run: pnpm db:migrate:local
       - run: pnpm exec playwright test
 
