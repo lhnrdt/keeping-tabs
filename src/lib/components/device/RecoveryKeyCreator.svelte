@@ -40,7 +40,7 @@
 	<form method="POST" action="?/createRecoveryKey" use:enhance={submission.enhance}>
 		<Block>
 			<p class="mb-3 text-sm opacity-70">{m.recovery_replace_hint()}</p>
-			<SubmitButton pending={submission.pending}>{m.recovery_create()}</SubmitButton>
+			<SubmitButton pending={submission.pending} tonal>{m.recovery_create()}</SubmitButton>
 		</Block>
 	</form>
 {/if}

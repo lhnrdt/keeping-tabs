@@ -120,5 +120,15 @@
 	"field_recovery_key": "Wiederherstellungsschlüssel",
 	"restore_button": "Wiederherstellen",
 	"restore_done": "Willkommen zurück. Deine Gruppen sind auf der Startseite.",
-	"error_recovery_key_invalid": "Dieser Schlüssel passt nicht. Prüfe ihn auf Tippfehler."
+	"error_recovery_key_invalid": "Dieser Schlüssel passt nicht. Prüfe ihn auf Tippfehler.",
+	"passkey_title": "Passkey",
+	"passkey_intro": "Der einfachste Weg zurück: Speichere einen Passkey mit Fingerabdruck, Gesicht oder Bildschirmsperre. Dein Handy oder Passwort-Manager synchronisiert ihn, so machst du auf jedem neuen Gerät einfach damit weiter. Kein Konto, kein Passwort.",
+	"passkey_save": "Als Passkey speichern",
+	"passkey_save_another": "Weiteren Passkey speichern",
+	"passkey_saved": "{count} Passkey(s) gespeichert",
+	"passkey_continue": "Mit Passkey fortfahren",
+	"passkey_unsupported": "Dieser Browser unterstützt keine Passkeys. Nutze stattdessen einen Wiederherstellungsschlüssel.",
+	"error_passkey_failed": "Das hat nicht geklappt. Falls du abgebrochen hast, versuch es einfach nochmal.",
+	"new_group": "Neue Gruppe",
+	"home_empty": "Noch keine Gruppen. Starte eine und teile den Link mit den Leuten, mit denen du Kosten teilst."
 }

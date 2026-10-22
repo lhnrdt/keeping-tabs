@@ -120,5 +120,15 @@
 	"field_recovery_key": "Recovery key",
 	"restore_button": "Restore",
 	"restore_done": "Welcome back. Your groups are on the start screen.",
-	"error_recovery_key_invalid": "That recovery key doesn't match. Check it for typos."
+	"error_recovery_key_invalid": "That recovery key doesn't match. Check it for typos.",
+	"passkey_title": "Passkey",
+	"passkey_intro": "The easiest way back: save a passkey with your fingerprint, face or screen lock. Your phone or password manager keeps it in sync, so on any new device you just continue with it. No account, no password.",
+	"passkey_save": "Save as passkey",
+	"passkey_save_another": "Save another passkey",
+	"passkey_saved": "{count} passkey(s) saved",
+	"passkey_continue": "Continue with passkey",
+	"passkey_unsupported": "This browser doesn't support passkeys. Use a recovery key instead.",
+	"error_passkey_failed": "That didn't work. If you cancelled, just try again.",
+	"new_group": "New group",
+	"home_empty": "No groups yet. Start one and share the link with the people you split costs with."
 }
