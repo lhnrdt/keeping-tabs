@@ -184,5 +184,9 @@
 	"split_left": "{assigned} of {total}, {left} left",
 	"split_over": "{assigned} of {total}, {over} too much",
 	"split_all_assigned": "All assigned",
-	"offline_banner": "You're offline. Saved pages can be viewed; changes need a connection."
+	"offline_banner": "You're offline. Saved pages can be viewed; changes need a connection.",
+	"field_simplify_debts": "Simplify debts",
+	"simplify_debts_hint": "Settle up with the fewest payments: if Anna owes Ben and Ben owes Cara, Anna pays Cara directly.",
+	"on": "On",
+	"off": "Off"
 }

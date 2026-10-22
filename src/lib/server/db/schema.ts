@@ -38,6 +38,9 @@ export const groups = sqliteTable('groups', {
 	kind: text('kind').$type<GroupKind>().notNull().default('other'),
 	// Chosen color; null = derived from the id (src/lib/tints.ts)
 	tint: text('tint').$type<Tint>(),
+	// Settle up via the fewest payments (A owes B, B owes C → A pays C) instead of paying
+	// back each person directly (B-6)
+	simplifyDebts: integer('simplify_debts', { mode: 'boolean' }).notNull().default(true),
 	createdAt: createdAt(),
 	deletedAt: deletedAt()
 });

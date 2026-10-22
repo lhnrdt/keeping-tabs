@@ -34,7 +34,12 @@
 		<IdentityButton />
 	{/snippet}
 	{#snippet hero()}
-		<GroupHero group={data.group} members={data.members} balances={data.balances} />
+		<GroupHero
+			group={data.group}
+			members={data.members}
+			balances={data.balances}
+			transfers={data.transfers}
+		/>
 	{/snippet}
 
 	{#if tab === 'expenses'}
@@ -64,7 +69,7 @@
 			token={data.group.shareToken}
 			currency={data.group.currency}
 			members={data.members}
-			balances={data.balances}
+			transfers={data.transfers}
 		/>
 	{:else}
 		<BlockTitle>{m.members_title()}</BlockTitle>

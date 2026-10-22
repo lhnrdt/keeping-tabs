@@ -184,5 +184,9 @@
 	"split_left": "{assigned} von {total}, noch {left}",
 	"split_over": "{assigned} von {total}, {over} zu viel",
 	"split_all_assigned": "Alles verteilt",
-	"offline_banner": "Du bist offline. Gespeicherte Seiten kannst du ansehen; Änderungen brauchen eine Verbindung."
+	"offline_banner": "Du bist offline. Gespeicherte Seiten kannst du ansehen; Änderungen brauchen eine Verbindung.",
+	"field_simplify_debts": "Schulden vereinfachen",
+	"simplify_debts_hint": "Mit möglichst wenigen Zahlungen ausgleichen: Schuldet Anna Ben und Ben Cara, zahlt Anna direkt an Cara.",
+	"on": "An",
+	"off": "Aus"
 }

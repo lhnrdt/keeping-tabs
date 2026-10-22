@@ -1,4 +1,5 @@
-// Suggested payments to settle a group (B-2).
+// Suggested payments to settle a group (B-2), simplified or direct (B-6).
+import { balances, type BalanceInput } from './money';
 
 export type Transfer = { from: string; to: string; amountCents: number };
 
@@ -33,3 +34,39 @@ export function suggestTransfers(balances: ReadonlyMap<string, number>): Transfe
 	}
 	return transfers;
 }
+
+/**
+ * Who pays whom back without rerouting (B-6 off): each member pays each person they owe
+ * directly, netted per pair. Payments count like expenses: the recipient's split means
+ * the payer is owed less. Ordered by member order, so the result is deterministic.
+ */
+export function directTransfers(
+	memberIds: readonly string[],
+	entries: readonly BalanceInput[]
+): Transfer[] {
+	const owes = new Map<string, number>();
+	const key = (from: string, to: string) => `${from}>${to}`;
+	for (const { paidBy, splits } of entries) {
+		for (const { memberId, shareCents } of splits) {
+			if (memberId === paidBy) continue;
+			owes.set(key(memberId, paidBy), (owes.get(key(memberId, paidBy)) ?? 0) + shareCents);
+		}
+	}
+	const transfers: Transfer[] = [];
+	memberIds.forEach((a, i) => {
+		for (const b of memberIds.slice(i + 1)) {
+			const net = (owes.get(key(a, b)) ?? 0) - (owes.get(key(b, a)) ?? 0);
+			if (net > 0) transfers.push({ from: a, to: b, amountCents: net });
+			if (net < 0) transfers.push({ from: b, to: a, amountCents: -net });
+		}
+	});
+	return transfers;
+}
+
+/** The group's payments to settle up, following its "simplify debts" setting. */
+export const settleTransfers = (
+	simplify: boolean,
+	memberIds: readonly string[],
+	entries: readonly BalanceInput[]
+) =>
+	simplify ? suggestTransfers(balances(memberIds, entries)) : directTransfers(memberIds, entries);

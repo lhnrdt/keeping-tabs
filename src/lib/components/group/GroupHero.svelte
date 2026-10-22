@@ -8,7 +8,7 @@
 	import { formatAmount } from '#lib/money.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
-	import { suggestTransfers } from '#lib/settle.ts';
+	import type { Transfer } from '#lib/settle.ts';
 	import Icon from '#lib/components/Icon.svelte';
 	import { kindIcons } from '#lib/group/kind-style.ts';
 	import type { GroupKind } from '#lib/group/kinds.ts';
@@ -18,9 +18,11 @@
 		group: { id: string; name: string; currency: string; kind: GroupKind; tint: Tint | null };
 		members: Member[];
 		balances: Record<string, number>;
+		/** The group's payments to settle up */
+		transfers: Transfer[];
 	};
 
-	let { group, members, balances }: Props = $props();
+	let { group, members, balances, transfers }: Props = $props();
 
 	const identity = useIdentity();
 	const names = $derived(namesById(members));
@@ -29,7 +31,7 @@
 
 	/** Suggested payments you're part of, phrased from your side */
 	const myTransfers = $derived(
-		suggestTransfers(new Map(members.map((member) => [member.id, balances[member.id] ?? 0])))
+		transfers
 			.filter((t) => t.from === identity.memberId || t.to === identity.memberId)
 			.map((t) =>
 				t.to === identity.memberId

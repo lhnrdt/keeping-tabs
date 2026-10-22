@@ -49,7 +49,7 @@ export function splitEqual(amount: number, participantIds: readonly string[]) {
 	}));
 }
 
-type BalanceInput = {
+export type BalanceInput = {
 	paidBy: string;
 	amountCents: number;
 	splits: readonly { memberId: string; shareCents: number }[];
