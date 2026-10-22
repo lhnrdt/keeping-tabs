@@ -5,21 +5,22 @@
 	import FormDialog from './FormDialog.svelte';
 	import FormError from '#lib/components/FormError.svelte';
 	import type { ErrorCode } from '#lib/errors.ts';
-	import { useIdentity } from '#lib/group/identity.svelte.ts';
-	import type { Member } from '#lib/group/members.ts';
+	import type { GroupMember } from '#lib/group/members.ts';
 	import { transitionName } from '#lib/motion/in-place-transition.ts';
 	import { tabAction } from '#lib/group/tabs.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { LIMITS } from '#lib/validation.ts';
 
-	type Props = { members: Member[]; renameError?: ErrorCode };
+	type Props = { members: GroupMember[]; renameError?: ErrorCode };
 
 	let { members, renameError }: Props = $props();
 
-	const identity = useIdentity();
-	let renaming = $state<Member | null>(null);
+	let renaming = $state<GroupMember | null>(null);
 	// Keeps the dialog's content while it animates closed
-	let lastRenamed = $state<Member | null>(null);
+	let lastRenamed = $state<GroupMember | null>(null);
+
+	const statusOf = (member: GroupMember) =>
+		member.mine ? m.member_you() : member.claimed ? m.member_joined() : '';
 </script>
 
 <List strong inset role="region" aria-label={m.members_title()}>
@@ -30,12 +31,12 @@
 			class="[&>button]:w-full [&>button]:text-start"
 			linkProps={{ type: 'button', 'aria-label': m.rename_member({ name: member.name }) }}
 			title={member.name}
-			after={member.id === identity.memberId ? m.member_you() : ''}
+			after={statusOf(member)}
 			style={transitionName('member', member.id)}
 			onclick={() => (renaming = lastRenamed = member)}
 		>
 			{#snippet media()}
-				<Avatar id={member.id} name={member.name} />
+				<Avatar id={member.avatarId} name={member.name} />
 			{/snippet}
 		</ListItem>
 	{/each}
@@ -45,6 +46,9 @@
 	opened={renaming !== null}
 	title={m.rename_member({ name: lastRenamed?.name ?? '' })}
 	action={tabAction('renameMember', 'group')}
+	secondary={lastRenamed?.claimed && !lastRenamed.mine
+		? { label: m.release_member(), action: tabAction('releaseMember', 'group') }
+		: undefined}
 	submitLabel={m.save()}
 	onClose={() => (renaming = null)}
 >
@@ -59,6 +63,9 @@
 				value={lastRenamed.name}
 			/>
 		</List>
+		{#if lastRenamed.claimed && !lastRenamed.mine}
+			<p class="mt-3 text-sm opacity-70">{m.release_member_hint({ name: lastRenamed.name })}</p>
+		{/if}
 		<FormError error={renameError} />
 	{/if}
 </FormDialog>

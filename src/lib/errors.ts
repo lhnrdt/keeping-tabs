@@ -17,7 +17,10 @@ export const errorMessages = {
 	payer_invalid: m.error_payer_invalid,
 	participants_required: m.error_participants_required,
 	recipient_invalid: m.error_recipient_invalid,
-	payment_same_member: m.error_payment_same_member
+	payment_same_member: m.error_payment_same_member,
+	member_taken: m.error_member_taken,
+	not_a_member: m.error_not_a_member,
+	device_link_invalid: m.error_device_link_invalid
 } satisfies Record<string, () => string>;
 
 export type ErrorCode = keyof typeof errorMessages;

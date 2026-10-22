@@ -14,30 +14,45 @@ export async function findGroupByToken(db: Db, token: string) {
 
 export function listMembers(db: Db, groupId: string) {
 	return db.query.members.findMany({
-		columns: { id: true, name: true },
+		columns: { id: true, name: true, personId: true },
 		where: and(eq(members.groupId, groupId), isNull(members.deletedAt)),
 		orderBy: [asc(members.createdAt), asc(members.name)]
 	});
 }
 
-/** Returns the member id if it belongs to the group, so a forged actor is logged as unknown. */
-export async function resolveActor(db: Db, groupId: string, memberId: unknown) {
-	if (typeof memberId !== 'string' || !memberId) return null;
+/** The member a person has claimed in a group, if any: who is acting (A-5). */
+export async function memberOf(db: Db, groupId: string, personId: string | undefined) {
+	if (!personId) return null;
 	const member = await db.query.members.findFirst({
 		columns: { id: true },
-		where: and(eq(members.id, memberId), eq(members.groupId, groupId), isNull(members.deletedAt))
+		where: and(
+			eq(members.groupId, groupId),
+			eq(members.personId, personId),
+			isNull(members.deletedAt)
+		)
 	});
 	return member?.id ?? null;
 }
 
-/** Creates the group with its members; the first member is the creator. */
+/** Creates the group with its members; the first member is the creator, claimed by them. */
 export async function createGroup(
 	db: Db,
-	input: { name: string; description: string | null; currency: string; memberNames: string[] }
+	input: {
+		name: string;
+		description: string | null;
+		currency: string;
+		memberNames: string[];
+		creatorPersonId: string;
+	}
 ) {
 	const groupId = crypto.randomUUID();
 	const shareToken = newShareToken();
-	const memberRows = input.memberNames.map((name) => ({ id: crypto.randomUUID(), groupId, name }));
+	const memberRows = input.memberNames.map((name, i) => ({
+		id: crypto.randomUUID(),
+		groupId,
+		name,
+		personId: i === 0 ? input.creatorPersonId : null
+	}));
 	const creatorId = memberRows[0].id;
 
 	// D1 runs a batch as one transaction
@@ -57,7 +72,7 @@ export async function createGroup(
 		})
 	]);
 
-	return { groupId, shareToken, creatorId };
+	return { shareToken };
 }
 
 export async function updateGroup(

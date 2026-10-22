@@ -1,5 +1,5 @@
 <script lang="ts">
-	// Shell for a full-screen group form: acting member, error, pending submit button.
+	// Shell for a full-screen group form: error and pending submit button.
 	import { enhance } from '$app/forms';
 	import { Block } from 'konsta/svelte';
 	import type { Snippet } from 'svelte';
@@ -7,7 +7,6 @@
 	import SubmitButton from '#lib/components/SubmitButton.svelte';
 	import type { ErrorCode } from '#lib/errors.ts';
 	import { Submission } from '#lib/forms/submission.svelte.ts';
-	import ActorInput from './ActorInput.svelte';
 
 	type Props = { error?: ErrorCode; submitLabel: string; children: Snippet };
 
@@ -17,7 +16,6 @@
 </script>
 
 <form method="POST" action="?/save" use:enhance={submission.enhance}>
-	<ActorInput />
 	{@render children()}
 	<FormError {error} />
 	<Block>

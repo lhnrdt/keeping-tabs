@@ -90,5 +90,21 @@
 	"hero_owe": "Du schuldest",
 	"hero_settled": "Ihr seid quitt",
 	"hero_owes_you": "{name} schuldet dir {amount}",
-	"hero_you_owe": "Du schuldest {name} {amount}"
+	"hero_you_owe": "Du schuldest {name} {amount}",
+	"error_member_taken": "Jemand anderes ist bereits dieses Mitglied.",
+	"error_not_a_member": "Wähle zuerst, wer du in dieser Gruppe bist.",
+	"member_joined": "beigetreten",
+	"release_member": "Freigeben",
+	"release_member_hint": "{name} gehört jemandem auf einem anderen Gerät. Gib es frei, falls der Zugriff verloren ging, damit es wieder gewählt werden kann.",
+	"member_taken_label": "{name} (vergeben)",
+	"device_title": "Auf einem anderen Gerät nutzen",
+	"device_intro": "Erstelle einen Link und öffne ihn innerhalb von 15 Minuten auf deinem anderen Handy oder Computer. Er funktioniert einmal, danach bist du auch dort in all deinen Gruppen du selbst.",
+	"device_create_link": "Link erstellen",
+	"device_link_label": "Einmal-Link",
+	"device_none": "Tritt zuerst auf diesem Gerät einer Gruppe bei oder erstelle eine.",
+	"device_adopt_title": "Dieses Gerät verwenden",
+	"device_adopt_intro": "Dieses Gerät wird in all deinen Gruppen du sein, genau wie das Gerät, das den Link erstellt hat.",
+	"device_adopt_button": "Dieses Gerät verwenden",
+	"error_device_link_invalid": "Dieser Link ist abgelaufen oder wurde schon benutzt. Erstelle auf deinem anderen Gerät einen neuen.",
+	"home_other_device": "Auf einem anderen Gerät nutzen"
 }

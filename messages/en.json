@@ -90,5 +90,21 @@
 	"hero_owe": "You owe",
 	"hero_settled": "You're all square",
 	"hero_owes_you": "{name} owes you {amount}",
-	"hero_you_owe": "You owe {name} {amount}"
+	"hero_you_owe": "You owe {name} {amount}",
+	"error_member_taken": "Someone else is already this member.",
+	"error_not_a_member": "Choose who you are in this group first.",
+	"member_joined": "joined",
+	"release_member": "Free up",
+	"release_member_hint": "{name} is someone's member on another device. Free it up if they lost access, so it can be chosen again.",
+	"member_taken_label": "{name} (taken)",
+	"device_title": "Use on another device",
+	"device_intro": "Create a link and open it on your other phone or computer within 15 minutes. It works once, and that device will then be you in all your groups.",
+	"device_create_link": "Create link",
+	"device_link_label": "One-time link",
+	"device_none": "Join or create a group on this device first.",
+	"device_adopt_title": "Use this device",
+	"device_adopt_intro": "This device will be you in all your groups, just like the one that created the link.",
+	"device_adopt_button": "Use this device",
+	"error_device_link_invalid": "This link has expired or was already used. Create a new one on your other device.",
+	"home_other_device": "Use on another device"
 }

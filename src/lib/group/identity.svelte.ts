@@ -1,27 +1,24 @@
 import { getContext, setContext } from 'svelte';
-import { getMe, setMe } from '#lib/device.ts';
+import type { GroupMember } from './members';
 
 const KEY = Symbol('identity');
 
-/** Which member this device acts as in a group (A-4, A-5). */
+/**
+ * Which member this device is in a group (A-4, A-5). The server decides (device identity,
+ * A-12); this only exposes it to the group's components and holds the "switching" state.
+ */
 export class Identity {
-	memberId = $state<string | null>(null);
-	/** False until read from device storage, so nothing flashes during SSR/hydration */
-	ready = $state(false);
 	/** The visitor asked to switch member */
 	switching = $state(false);
 
-	constructor(readonly groupId: string) {}
+	constructor(private readonly members: () => GroupMember[]) {}
 
-	load() {
-		this.memberId = getMe(this.groupId);
-		this.ready = true;
+	get me(): GroupMember | null {
+		return this.members().find((member) => member.mine) ?? null;
 	}
 
-	choose(memberId: string) {
-		setMe(this.groupId, memberId);
-		this.memberId = memberId;
-		this.switching = false;
+	get memberId(): string | null {
+		return this.me?.id ?? null;
 	}
 }
 

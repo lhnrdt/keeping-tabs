@@ -4,7 +4,6 @@
 	import Icon from '#lib/components/Icon.svelte';
 	import Field from '#lib/components/Field.svelte';
 	import FormError from '#lib/components/FormError.svelte';
-	import ActorInput from './ActorInput.svelte';
 	import type { ErrorCode } from '#lib/errors.ts';
 	import { Submission } from '#lib/forms/submission.svelte.ts';
 	import { tabAction } from '#lib/group/tabs.ts';
@@ -17,7 +16,6 @@
 </script>
 
 <form method="POST" action={tabAction('addMember', 'group')} use:enhance={submission.enhance}>
-	<ActorInput />
 	<List strong inset>
 		<Field
 			label={m.new_member()}

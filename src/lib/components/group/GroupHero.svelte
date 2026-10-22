@@ -44,7 +44,7 @@
 	<Topography />
 	<div class="relative">
 		<h1 class="font-display text-4xl leading-tight font-semibold">{group.name}</h1>
-		{#if identity.ready && myBalance !== null}
+		{#if myBalance !== null}
 			<p class="mt-4 text-sm font-medium opacity-80">
 				{myBalance > 0 ? m.hero_get_back() : myBalance < 0 ? m.hero_owe() : m.hero_settled()}
 			</p>
