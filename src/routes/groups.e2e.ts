@@ -162,6 +162,11 @@ test('settle up with suggested payments', async ({ page }) => {
 	await settle.getByRole('link', { name: /Ben pays Anna/ }).click();
 	await expect(page.getByLabel('From')).toHaveValue(/.+/);
 	await expect(page.getByLabel('Amount')).toHaveValue('500.00');
+	// Before paying, the home screen shows what Anna gets back overall and per group (SP-5)
+	await open(page, '/');
+	await expect(page.getByTestId('overall-balance')).toHaveText('You get back €500.00');
+	await expect(page.getByRole('link', { name: /Flat/ })).toContainText('You get back €500.00');
+	await page.goBack();
 	await page.getByRole('button', { name: 'Record payment' }).click();
 
 	// Back on balances: everyone settled, the group keeps running (B-5)
