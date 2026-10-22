@@ -5,6 +5,8 @@ export const TINTS = ['sage', 'clay', 'sand', 'moss', 'sky'] as const;
 
 export type Tint = (typeof TINTS)[number];
 
+export const isTint = (value: unknown): value is Tint => TINTS.includes(value as Tint);
+
 /** The same id always gets the same tint. */
 export function tintFor(id: string): Tint {
 	let hash = 0;
@@ -21,5 +23,5 @@ const TINT_CLASSES: Record<Tint, string> = {
 	sky: 'tint-sky'
 };
 
-/** Class that sets --tint-bg, --tint-fg and --tint-line for this id. */
-export const tintClass = (id: string) => TINT_CLASSES[tintFor(id)];
+/** Class that sets --tint-bg, --tint-fg and --tint-line: the chosen tint, else one derived from the id. */
+export const tintClass = (id: string, chosen?: Tint | null) => TINT_CLASSES[chosen ?? tintFor(id)];
