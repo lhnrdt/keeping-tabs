@@ -4,6 +4,7 @@ import type { ErrorCode } from '#lib/errors.ts';
 import { loadDataset } from '#lib/expense/dataset/load.ts';
 import { categoryOf, learnCategories } from '#lib/expense/learned.ts';
 import { balances } from '#lib/money.ts';
+import { settleTransfers } from '#lib/settle.ts';
 import { formContext as context } from '#lib/server/context.ts';
 import { claimMember, releaseMember } from '#lib/server/claims.ts';
 import { listExpenses } from '#lib/server/expenses.ts';
@@ -30,12 +31,10 @@ export const load: PageServerLoad = async ({ locals, parent }) => {
 	const [expenses, dataset] = await Promise.all([listExpenses(locals.db, group.id), loadDataset()]);
 	// Newest first, so the latest hand-chosen category per title wins
 	const learned = learnCategories(expenses);
-	const totals = balances(
-		members.map((member) => member.id),
-		expenses
-	);
+	const memberIds = members.map((member) => member.id);
 	return {
-		balances: Object.fromEntries(totals),
+		balances: Object.fromEntries(balances(memberIds, expenses)),
+		transfers: settleTransfers(group.simplifyDebts, memberIds, expenses),
 		expenses: expenses.map(({ id, type, title, amountCents, paidBy, date, category, splits }) => ({
 			id,
 			type,
@@ -68,7 +67,9 @@ export const actions: Actions = {
 			name: name.value,
 			description: description.value,
 			kind: kind.value,
-			tint: tint.value
+			tint: tint.value,
+			// A checkbox: present when on
+			simplifyDebts: form.get('simplifyDebts') === 'on'
 		});
 	},
 

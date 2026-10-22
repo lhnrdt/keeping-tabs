@@ -1,5 +1,5 @@
 <script lang="ts">
-	// Suggested payments to settle the group (B-2); each opens a pre-filled payment.
+	// Payments to settle the group (B-2, B-6); each opens a pre-filled payment.
 	import { resolve } from '$app/paths';
 	import { List, ListItem } from 'konsta/svelte';
 	import EmptyState from '#lib/components/EmptyState.svelte';
@@ -8,21 +8,19 @@
 	import { namesById, type Member } from '#lib/group/members.ts';
 	import { transitionName } from '#lib/motion/in-place-transition.ts';
 	import { m } from '#lib/paraglide/messages.js';
-	import { suggestTransfers } from '#lib/settle.ts';
+	import type { Transfer } from '#lib/settle.ts';
 
 	type Props = {
 		token: string;
 		currency: string;
 		members: Member[];
-		balances: Record<string, number>;
+		transfers: Transfer[];
 	};
 
-	let { token, currency, members, balances }: Props = $props();
+	let { token, currency, members, transfers }: Props = $props();
 
 	const names = $derived(namesById(members));
-	const transfers = $derived(
-		suggestTransfers(new Map(members.map((member) => [member.id, balances[member.id] ?? 0])))
-	);
+
 	const paymentHref = (from: string, to: string, amountCents: number) =>
 		`${resolve('/g/[token]/payments/new', { token })}?${new URLSearchParams({
 			from,
