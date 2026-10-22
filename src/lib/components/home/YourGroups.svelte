@@ -32,7 +32,7 @@
 			{#each groups as group (group.id)}
 				<ListItem link title={group.name} href={resolve('/g/[token]', { token: group.token })}>
 					{#snippet media()}
-						<GroupTile id={group.id} />
+						<GroupTile id={group.id} kind={group.kind} tint={group.tint} />
 					{/snippet}
 					{#snippet subtitle()}
 						{#if 'balance' in group}
