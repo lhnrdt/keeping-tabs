@@ -18,7 +18,7 @@ test('members can only be claimed once, freed up, and identities move between de
 }) => {
 	// Anna creates the group and is its first member
 	const anna = await newDevice(browser);
-	await open(anna, '/');
+	await open(anna, '/new');
 	await anna.getByLabel('Group name').fill('Flat');
 	await anna.getByLabel('Your name').fill('Anna');
 	await anna.getByLabel('Add a person').fill('Ben');
@@ -83,7 +83,7 @@ test('members can only be claimed once, freed up, and identities move between de
 	await expect(newPhone.getByTestId('identity')).toHaveText('Anna');
 
 	// Anna's name is remembered for her next group (A-13)
-	await open(anna, '/');
+	await open(anna, '/new');
 	await expect(anna.getByLabel('Your name')).toHaveValue('Anna');
 });
 
@@ -107,7 +107,7 @@ async function addAuthenticator(page: Page) {
 test('a synced passkey brings you and your groups back on a new device', async ({ browser }) => {
 	const phone = await newDevice(browser);
 	const phoneKeys = await addAuthenticator(phone);
-	await open(phone, '/');
+	await open(phone, '/new');
 	await phone.getByLabel('Group name').fill('Holiday');
 	await phone.getByLabel('Your name').fill('Mia');
 	await phone.getByRole('button', { name: 'Create group' }).click();

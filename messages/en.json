@@ -128,5 +128,7 @@
 	"passkey_saved": "{count} passkey(s) saved",
 	"passkey_continue": "Continue with passkey",
 	"passkey_unsupported": "This browser doesn't support passkeys. Use a recovery key instead.",
-	"error_passkey_failed": "That didn't work. If you cancelled, just try again."
+	"error_passkey_failed": "That didn't work. If you cancelled, just try again.",
+	"new_group": "New group",
+	"home_empty": "No groups yet. Start one and share the link with the people you split costs with."
 }
