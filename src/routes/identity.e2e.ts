@@ -13,7 +13,7 @@ async function open(page: Page, url: string) {
 
 const whoAreYou = (page: Page) => page.getByRole('dialog', { name: 'Who are you?' });
 
-test('members can only be claimed once, freed up, and identities move between devices', async ({
+test('members can only be claimed once, freed up, and identities move between devices and recover', async ({
 	browser
 }) => {
 	// Anna creates the group and is its first member
@@ -57,6 +57,8 @@ test('members can only be claimed once, freed up, and identities move between de
 	await open(annasLaptop, link.trim());
 	await annasLaptop.getByRole('button', { name: 'Use this device' }).click();
 	await expect(annasLaptop).toHaveURL(/\/$/);
+	// Her groups come along from the server (A-17)
+	await expect(annasLaptop.getByRole('link', { name: 'Flat' })).toBeVisible();
 	await open(annasLaptop, groupUrl);
 	await expect(annasLaptop.getByTestId('identity')).toHaveText('Anna');
 
@@ -65,6 +67,20 @@ test('members can only be claimed once, freed up, and identities move between de
 	await open(stranger, link.trim());
 	await stranger.getByRole('button', { name: 'Use this device' }).click();
 	await expect(stranger.getByRole('alert')).toContainText('expired or was already used');
+
+	// A recovery key brings Anna back on a fresh browser after losing everything (A-16)
+	await open(anna, '/device');
+	await anna.getByRole('button', { name: 'Create recovery key' }).click();
+	const recoveryKey = (await anna.getByTestId('recovery-key').innerText()).trim();
+	const newPhone = await newDevice(browser);
+	await open(newPhone, '/device');
+	await newPhone.getByLabel('Recovery key').fill(recoveryKey.toLowerCase().replace(/-/g, ' '));
+	await newPhone.getByRole('button', { name: 'Restore' }).click();
+	await expect(newPhone.getByRole('status')).toContainText('Welcome back');
+	await open(newPhone, '/');
+	await expect(newPhone.getByRole('link', { name: 'Flat' })).toBeVisible();
+	await open(newPhone, groupUrl);
+	await expect(newPhone.getByTestId('identity')).toHaveText('Anna');
 
 	// Anna's name is remembered for her next group (A-13)
 	await open(anna, '/');
