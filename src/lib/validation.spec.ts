@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+	parseCategory,
 	normalizeText,
 	parseDate,
 	parseExpense,
@@ -86,7 +87,8 @@ describe('parseExpense', () => {
 		amount: '30,00',
 		date: '2026-10-21',
 		paidBy: 'b',
-		participants: ['c', 'a']
+		participants: ['c', 'a'],
+		category: ''
 	};
 
 	it('returns participants in member order', () => {
@@ -97,7 +99,8 @@ describe('parseExpense', () => {
 				amountCents: 3000,
 				date: '2026-10-21',
 				paidBy: 'b',
-				participants: ['a', 'c']
+				participants: ['a', 'c'],
+				category: null
 			}
 		});
 	});
@@ -155,5 +158,16 @@ describe('parseKind and parseTint', () => {
 	it('rejects unknown values', () => {
 		expect(parseKind('yacht')).toEqual({ ok: false, error: 'kind_invalid' });
 		expect(parseTint('red')).toEqual({ ok: false, error: 'tint_invalid' });
+	});
+});
+
+describe('parseCategory', () => {
+	it('treats empty as automatic', () => {
+		expect(parseCategory('')).toEqual({ ok: true, value: null });
+	});
+
+	it('accepts known categories only', () => {
+		expect(parseCategory('dining')).toEqual({ ok: true, value: 'dining' });
+		expect(parseCategory('caviar')).toEqual({ ok: false, error: 'category_invalid' });
 	});
 });

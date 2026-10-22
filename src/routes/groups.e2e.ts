@@ -3,7 +3,7 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 /** Picks an option in a tile picker by tapping its tile, like a user would. */
 async function choose(scope: Page | Locator, picker: string, option: string) {
 	await scope.getByRole('group', { name: picker }).getByText(option, { exact: true }).click();
-	await expect(scope.getByRole('radio', { name: option })).toBeChecked();
+	await expect(scope.getByRole('radio', { name: option, exact: true })).toBeChecked();
 }
 
 /** Opens a page and waits until it's interactive (hydrated), like a user would. */
@@ -218,4 +218,37 @@ test('choose a type and color for a group, then change them', async ({ page }) =
 	await open(page, '/');
 	const tile = page.getByRole('link', { name: 'Lake house' }).locator('.tint-moss');
 	await expect(tile).toBeVisible();
+});
+
+test('expenses get a category from their title unless one is chosen', async ({ page }) => {
+	await open(page, '/new');
+	await page.getByLabel('Group name').fill('Flat');
+	await page.getByLabel('Your name').fill('Anna');
+	await page.getByLabel('Add a person').fill('Ben');
+	await page.getByRole('button', { name: 'Create group' }).click();
+	await expect(page.getByTestId('identity')).toHaveText('Anna');
+
+	// "Automatic" shows its guess while typing
+	await page.getByRole('link', { name: 'Add expense' }).click();
+	const automatic = page.getByRole('group', { name: 'Category' }).locator('label').first();
+	await page.getByLabel('What was it for?').fill('Lidl');
+	await expect(automatic).toContainText('Groceries');
+	await page.getByLabel('What was it for?').fill('Taxi home');
+	await expect(automatic).toContainText('Transport');
+	await page.getByLabel('Amount').fill('20');
+	await page.getByRole('button', { name: 'Add expense' }).click();
+
+	// A category chosen by hand sticks
+	await page.getByRole('link', { name: /Taxi home/ }).click();
+	await expect(page.getByRole('radio', { name: /Automatic/ })).toBeChecked();
+	await choose(page, 'Category', 'Drinks');
+	await page.getByRole('button', { name: 'Save' }).click();
+	await page.getByRole('link', { name: /Taxi home/ }).click();
+	await expect(page.getByRole('radio', { name: 'Drinks', exact: true })).toBeChecked();
+
+	// …and the group's choice becomes the guess for the same title
+	await page.goBack();
+	await page.getByRole('link', { name: 'Add expense' }).click();
+	await page.getByLabel('What was it for?').fill('taxi HOME');
+	await expect(automatic).toContainText('Drinks');
 });

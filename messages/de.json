@@ -151,5 +151,19 @@
 	"tint_moss": "Moos",
 	"tint_sky": "Himmel",
 	"error_kind_invalid": "Wähle eine Art für die Gruppe.",
-	"error_tint_invalid": "Wähle eine der Farben."
+	"error_tint_invalid": "Wähle eine der Farben.",
+	"field_category": "Kategorie",
+	"category_auto": "Automatisch",
+	"category_other": "Sonstiges",
+	"category_groceries": "Einkauf",
+	"category_dining": "Essen gehen",
+	"category_drinks": "Getränke",
+	"category_transport": "Unterwegs",
+	"category_lodging": "Unterkunft",
+	"category_home": "Zuhause",
+	"category_fun": "Freizeit",
+	"category_shopping": "Shopping",
+	"category_gifts": "Geschenke",
+	"category_health": "Gesundheit",
+	"error_category_invalid": "Wähle eine der Kategorien."
 }

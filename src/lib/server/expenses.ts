@@ -1,4 +1,4 @@
-import { and, desc, eq, isNull } from 'drizzle-orm';
+import { and, desc, eq, isNotNull, isNull } from 'drizzle-orm';
 import { splitEqual } from '#lib/money.ts';
 import type { ExpenseInput } from '#lib/validation.ts';
 import { log, type Action } from './activity';
@@ -11,7 +11,8 @@ const expenseColumns = {
 	title: expenses.title,
 	amountCents: expenses.amountCents,
 	paidBy: expenses.paidBy,
-	date: expenses.date
+	date: expenses.date,
+	category: expenses.category
 };
 
 export const active = (groupId: string) =>
@@ -37,6 +38,15 @@ export async function listExpenses(db: Db, groupId: string) {
 	]);
 	const byExpense = Map.groupBy(splits, (split) => split.expenseId);
 	return rows.map((row) => ({ ...row, splits: byExpense.get(row.id) ?? [] }));
+}
+
+/** Categories chosen by hand in a group, newest first: what its automatic guess learns from. */
+export function listChosenCategories(db: Db, groupId: string) {
+	return db
+		.select({ title: expenses.title, category: expenses.category })
+		.from(expenses)
+		.where(and(active(groupId), isNotNull(expenses.category)))
+		.orderBy(desc(expenses.date), desc(expenses.createdAt));
 }
 
 export async function findExpense(db: Db, groupId: string, id: string) {
@@ -72,7 +82,8 @@ export async function createExpense(
 			title: input.title,
 			amountCents: input.amountCents,
 			paidBy: input.paidBy,
-			date: input.date
+			date: input.date,
+			category: input.category
 		}),
 		db.insert(expenseSplits).values(splitRows(id, input)),
 		log(db, groupId, actorId, 'expense.create', { expenseId: id, ...input })
@@ -95,6 +106,7 @@ export async function updateExpense(
 				amountCents: input.amountCents,
 				paidBy: input.paidBy,
 				date: input.date,
+				category: input.category,
 				splitMode: 'equal'
 			})
 			.where(and(eq(expenses.id, id), active(groupId))),

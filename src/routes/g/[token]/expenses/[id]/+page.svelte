@@ -15,7 +15,8 @@
 			amount: amountInputValue(data.expense.amountCents, data.group.currency),
 			date: data.expense.date,
 			paidBy: data.expense.paidBy,
-			participants: data.expense.splits.map((split) => split.memberId)
+			participants: data.expense.splits.map((split) => split.memberId),
+			category: data.expense.category ?? ''
 		}
 	);
 </script>
@@ -30,6 +31,7 @@
 >
 	<ExpenseForm
 		members={data.members}
+		chosen={data.chosen}
 		currency={data.group.currency}
 		{values}
 		error={form?.error}

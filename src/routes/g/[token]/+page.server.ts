@@ -32,13 +32,14 @@ export const load: PageServerLoad = async ({ locals, parent }) => {
 	);
 	return {
 		balances: Object.fromEntries(totals),
-		expenses: expenses.map(({ id, type, title, amountCents, paidBy, date, splits }) => ({
+		expenses: expenses.map(({ id, type, title, amountCents, paidBy, date, category, splits }) => ({
 			id,
 			type,
 			title,
 			amountCents,
 			paidBy,
 			date,
+			category,
 			// A payment has exactly one split: its recipient
 			recipient: type === 'payment' ? splits[0]?.memberId : undefined
 		}))
