@@ -15,7 +15,15 @@
 	];
 </script>
 
-<Tabbar labels icons class="fixed bottom-0 left-0 z-20" aria-label={m.app_name()}>
+<!-- Solid canvas instead of Konsta's fade, so list text never shows through the labels -->
+<Tabbar
+	labels
+	icons
+	outline
+	class="fixed bottom-0 left-0 z-20"
+	colors={{ bgIos: 'bg-canvas dark:bg-canvas-night' }}
+	aria-label={m.app_name()}
+>
 	{#each tabs as tab (tab.id)}
 		<TabbarLink
 			active={tab.id === active}
