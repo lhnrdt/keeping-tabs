@@ -4,14 +4,18 @@ import type { GroupMember } from './members';
 const KEY = Symbol('identity');
 
 /**
- * Which member this device is in a group (A-4, A-5). The server decides (device identity,
- * A-12); this only exposes it to the group's components and holds the "switching" state.
+ * Which member you are in a group (A-4, A-5). The server decides (device identity, A-12);
+ * this only exposes it to the group's components.
  */
 export class Identity {
-	/** The visitor asked to switch member */
-	switching = $state(false);
+	/** "Not you?" sheet is open */
+	showing = $state(false);
 
-	constructor(private readonly members: () => GroupMember[]) {}
+	constructor(
+		private readonly members: () => GroupMember[],
+		/** Whether you can still step back (you haven't added or changed anything) */
+		private readonly stepBack: () => boolean
+	) {}
 
 	get me(): GroupMember | null {
 		return this.members().find((member) => member.mine) ?? null;
@@ -19,6 +23,10 @@ export class Identity {
 
 	get memberId(): string | null {
 		return this.me?.id ?? null;
+	}
+
+	get canStepBack(): boolean {
+		return this.stepBack();
 	}
 }
 
