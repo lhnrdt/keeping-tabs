@@ -5,6 +5,7 @@ import { sequence } from '@sveltejs/kit/hooks';
 import { getTextDirection } from '#lib/paraglide/runtime.js';
 import { paraglideMiddleware } from '#lib/paraglide/server.js';
 import { getDb } from '#lib/server/db/index.ts';
+import { ensureDeviceKey } from '#lib/server/device.ts';
 
 const handleParaglide: Handle = ({ event, resolve }) =>
 	paraglideMiddleware(event.request, ({ request, locale }) => {
@@ -24,6 +25,11 @@ const handleDb: Handle = ({ event, resolve }) => {
 	return resolve(event);
 };
 
+const handleDevice: Handle = ({ event, resolve }) => {
+	event.locals.deviceKey = ensureDeviceKey(event.cookies);
+	return resolve(event);
+};
+
 /** Every dynamic response says which release served it. */
 const handleVersion: Handle = async ({ event, resolve }) => {
 	const response = await resolve(event);
@@ -31,4 +37,4 @@ const handleVersion: Handle = async ({ event, resolve }) => {
 	return response;
 };
 
-export const handle: Handle = sequence(handleVersion, handleDb, handleParaglide);
+export const handle: Handle = sequence(handleVersion, handleDb, handleDevice, handleParaglide);
