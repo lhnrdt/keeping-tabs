@@ -183,5 +183,6 @@
 	"split_input_adjust": "Differenz für {name}",
 	"split_left": "{assigned} von {total}, noch {left}",
 	"split_over": "{assigned} von {total}, {over} zu viel",
-	"split_all_assigned": "Alles verteilt"
+	"split_all_assigned": "Alles verteilt",
+	"offline_banner": "Du bist offline. Gespeicherte Seiten kannst du ansehen; Änderungen brauchen eine Verbindung."
 }
