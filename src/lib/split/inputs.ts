@@ -1,6 +1,7 @@
 // What people type per member, as integers so no float math is involved (E-2):
 // exact and adjust in minor units, percent in hundredths of a percent, shares in
 // hundredths of a part.
+import { parseDecimal } from '#lib/decimal.ts';
 import { minorDigits } from '#lib/money.ts';
 import type { SplitMode } from './modes';
 
@@ -11,20 +12,9 @@ const SHARES_DIGITS = 2;
 const digitsFor = (mode: SplitMode, currency: string) =>
 	mode === 'percent' ? PERCENT_DIGITS : mode === 'shares' ? SHARES_DIGITS : minorDigits(currency);
 
-/** "12,5" with 2 digits → 1250; empty → 0; null when not a number. */
-function parseScaled(text: string, digits: number, signed: boolean): number | null {
-	const match = /^([+-]?)(\d{0,12})(?:[.,](\d*))?$/.exec(text.trim());
-	if (!match) return null;
-	const [, sign, whole, fraction = ''] = match;
-	if (sign && !signed) return null;
-	if (fraction.length > digits || (!whole && !fraction && text.trim() !== '')) return null;
-	const value = Number((whole || '0') + fraction.padEnd(digits, '0'));
-	return sign === '-' ? -value : value;
-}
-
 /** A member's typed input for a mode; empty counts as 0, null means invalid. */
 export const parseSplitInput = (mode: SplitMode, text: string, currency: string) =>
-	parseScaled(text, digitsFor(mode, currency), mode === 'adjust');
+	parseDecimal(text, digitsFor(mode, currency), mode === 'adjust');
 
 /** Back to text for editing: 1250 → "12.5" (percent, shares) or "12.50" (money). */
 export function formatSplitInput(mode: SplitMode, value: number, currency: string): string {
