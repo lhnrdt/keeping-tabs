@@ -33,8 +33,7 @@
 	const currency = $derived(values?.currency || defaultCurrency);
 </script>
 
-<section aria-labelledby="create">
-	<BlockTitle id="create">{m.create_title()}</BlockTitle>
+<section>
 	<form method="POST" use:enhance={submission.enhance}>
 		<List strong inset>
 			<Field

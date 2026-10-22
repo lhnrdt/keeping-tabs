@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { BlockTitle, List, ListItem } from 'konsta/svelte';
+	import EmptyState from '#lib/components/EmptyState.svelte';
 	import GroupTile from '#lib/components/GroupTile.svelte';
 	import { onMount } from 'svelte';
 	import { getRecentGroups } from '#lib/device.ts';
@@ -12,10 +13,12 @@
 
 	// Server groups render right away; groups only opened in this browser join after mount
 	let local = $state<ReturnType<typeof getRecentGroups>>([]);
+	let mounted = $state(false);
 	const groups = $derived(mergeGroups(memberOf, local));
 
 	onMount(() => {
 		local = getRecentGroups();
+		mounted = true;
 	});
 </script>
 
@@ -32,4 +35,7 @@
 			{/each}
 		</List>
 	</section>
+{:else if mounted}
+	<!-- Only once this browser's own list is known, so returning visitors don't see a flash -->
+	<EmptyState illustration="plant" text={m.home_empty()} />
 {/if}

@@ -6,8 +6,15 @@ async function open(page: Page, url: string) {
 	await page.waitForLoadState('networkidle');
 }
 
-test('create a group, manage members and replace its link', async ({ page }) => {
+test('a new visitor starts from the empty home screen', async ({ page }) => {
 	await open(page, '/');
+	await expect(page.getByText('No groups yet')).toBeVisible();
+	await page.getByRole('link', { name: 'New group' }).click();
+	await expect(page.getByRole('heading', { name: 'Start a group' })).toBeVisible();
+});
+
+test('create a group, manage members and replace its link', async ({ page }) => {
+	await open(page, '/new');
 	await page.getByLabel('Group name').fill('Ski trip');
 	await page.getByLabel('Currency').selectOption('CHF');
 	await page.getByLabel('Your name').fill('Anna');
@@ -61,7 +68,7 @@ test('create a group, manage members and replace its link', async ({ page }) => 
 });
 
 test('expenses update the balances', async ({ page }) => {
-	await open(page, '/');
+	await open(page, '/new');
 	await page.getByLabel('Group name').fill('Dinner club');
 	await page.getByLabel('Currency').selectOption('EUR');
 	await page.getByLabel('Your name').fill('Anna');
@@ -132,7 +139,7 @@ test('expenses update the balances', async ({ page }) => {
 });
 
 test('settle up with suggested payments', async ({ page }) => {
-	await open(page, '/');
+	await open(page, '/new');
 	await page.getByLabel('Group name').fill('Flat');
 	await page.getByLabel('Currency').selectOption('EUR');
 	await page.getByLabel('Your name').fill('Anna');
