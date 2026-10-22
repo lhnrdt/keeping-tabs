@@ -8,6 +8,7 @@
 		"types": ["$app/types", "node", "./worker-configuration.d.ts"]
 	},
 	"include": ["src", "scripts", "vite.config.ts", "playwright.config.ts", "drizzle.config.ts"],
-	// generated code; imports resolve to its .d.ts files instead
-	"exclude": ["node_modules", "src/lib/paraglide"]
+	// generated code (imports resolve to its .d.ts files instead); the service worker has its
+	// own tsconfig with the WebWorker types
+	"exclude": ["node_modules", "src/lib/paraglide", "src/service-worker"]
 }

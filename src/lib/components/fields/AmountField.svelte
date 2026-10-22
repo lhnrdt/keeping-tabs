@@ -2,7 +2,7 @@
 	import Field from '#lib/components/Field.svelte';
 	import { m } from '#lib/paraglide/messages.js';
 
-	let { value, currency }: { value: string; currency: string } = $props();
+	let { value = $bindable(), currency }: { value: string; currency: string } = $props();
 </script>
 
 <Field
@@ -11,5 +11,5 @@
 	inputmode="decimal"
 	autocomplete="off"
 	required
-	{value}
+	bind:value
 />

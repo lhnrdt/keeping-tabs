@@ -4,6 +4,9 @@
 	import EmptyState from '#lib/components/EmptyState.svelte';
 	import IconBadge from '#lib/components/IconBadge.svelte';
 	import AnimatedAmount from '#lib/components/AnimatedAmount.svelte';
+	import type { ExpenseCategory } from '#lib/expense/categories.ts';
+
+	import { categoryIcons } from '#lib/expense/category-style.ts';
 	import { namesById, type Member } from '#lib/group/members.ts';
 	import { transitionName } from '#lib/motion/in-place-transition.ts';
 	import { m } from '#lib/paraglide/messages.js';
@@ -18,6 +21,8 @@
 		paidBy: string;
 		date: string;
 		recipient?: string;
+		/** Chosen or guessed; null for payments */
+		category: ExpenseCategory | null;
 	};
 
 	type Props = { token: string; currency: string; members: Member[]; expenses: Entry[] };
@@ -25,6 +30,7 @@
 	let { token, currency, members, expenses }: Props = $props();
 
 	const names = $derived(namesById(members));
+
 	const dateFormat = new Intl.DateTimeFormat(getLocale(), { dateStyle: 'medium', timeZone: 'UTC' });
 	const formatDate = (date: string) => dateFormat.format(new Date(`${date}T00:00:00Z`));
 	const nameOf = (id: string | undefined) => (id && names.get(id)) || '?';
@@ -59,7 +65,11 @@
 				class={expense.type === 'payment' ? 'italic' : ''}
 			>
 				{#snippet media()}
-					<IconBadge name={expense.type === 'payment' ? 'payment' : 'expense'} />
+					<IconBadge
+						name={expense.type === 'payment'
+							? 'payment'
+							: categoryIcons[expense.category ?? 'other']}
+					/>
 				{/snippet}
 				{#snippet after()}
 					<AnimatedAmount amount={expense.amountCents} {currency} />

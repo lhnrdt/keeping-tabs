@@ -1,0 +1,55 @@
+import { describe, expect, it } from 'vitest';
+import { categorize } from './categorize';
+import { buildDatasetIndex } from './dataset/index';
+
+describe('categorize', () => {
+	it.each([
+		['Lidl', 'groceries'],
+		['Wocheneinkauf', 'groceries'],
+		['Dinner at Luigi’s', 'dining'],
+		['Frühstück', 'dining'],
+		['Pizzaabend', 'dining'],
+		['Beers at the pub', 'drinks'],
+		['Taxi to the airport', 'transport'],
+		['Tanken', 'transport'],
+		['Airbnb Lisbon', 'lodging'],
+		['Rent October', 'home'],
+		['Strom', 'home'],
+		['Cinema tickets', 'fun'],
+		['Birthday present for Cara', 'gifts'],
+		['Apotheke', 'health'],
+		['Something else', 'other']
+	] as const)('%s → %s', (title, category) => {
+		expect(categorize(title)).toBe(category);
+	});
+
+	it('only matches short keywords as whole words', () => {
+		expect(categorize('Barbecue coal')).toBe('other');
+		expect(categorize('Business lunch')).toBe('dining');
+	});
+
+	it('prefers the earlier category when several match', () => {
+		expect(categorize('Hotel breakfast')).toBe('lodging');
+	});
+
+	it('tolerates one typo in longer keywords', () => {
+		expect(categorize('Resturant')).toBe('dining');
+		expect(categorize('Supermakt')).toBe('groceries');
+		expect(categorize('Pizaa')).toBe('dining');
+	});
+
+	it('prefers an exact match over a typo match', () => {
+		expect(categorize('Hostel, resturant')).toBe('lodging');
+		expect(categorize('Taxi')).toBe('transport');
+	});
+
+	it('does not guess from short words with typos', () => {
+		expect(categorize('Bat')).toBe('other');
+	});
+
+	it('uses the dataset after hand-written keywords', () => {
+		const dataset = buildDatasetIndex({ groceries: ['netto marken discount'], lodging: ['rent'] });
+		expect(categorize('Netto Marken-Discount', dataset)).toBe('groceries');
+		expect(categorize('Rent', dataset)).toBe('home');
+	});
+});

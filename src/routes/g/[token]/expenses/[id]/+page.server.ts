@@ -3,14 +3,22 @@ import { resolve } from '$app/paths';
 import { m } from '#lib/paraglide/messages.js';
 import { formContext } from '#lib/server/context.ts';
 import { readExpenseForm } from '#lib/server/group-forms.ts';
-import { findExpense, softDeleteEntry, updateExpense } from '#lib/server/expenses.ts';
+import {
+	findExpense,
+	listChosenCategories,
+	softDeleteEntry,
+	updateExpense
+} from '#lib/server/expenses.ts';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, params, parent }) => {
 	const { group } = await parent();
-	const expense = await findExpense(locals.db, group.id, params.id);
+	const [expense, chosen] = await Promise.all([
+		findExpense(locals.db, group.id, params.id),
+		listChosenCategories(locals.db, group.id)
+	]);
 	if (expense?.type !== 'expense') error(404, m.error_expense_not_found());
-	return { expense };
+	return { expense, chosen };
 };
 
 export const actions: Actions = {

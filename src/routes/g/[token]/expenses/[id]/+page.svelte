@@ -4,6 +4,7 @@
 	import DeleteEntry from '#lib/components/group/DeleteEntry.svelte';
 	import ExpenseForm from '#lib/components/expense/ExpenseForm.svelte';
 	import { amountInputValue } from '#lib/money.ts';
+	import { splitInputValues } from '#lib/split/inputs.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import type { PageProps } from './$types';
 
@@ -15,7 +16,10 @@
 			amount: amountInputValue(data.expense.amountCents, data.group.currency),
 			date: data.expense.date,
 			paidBy: data.expense.paidBy,
-			participants: data.expense.splits.map((split) => split.memberId)
+			participants: data.expense.splits.map((split) => split.memberId),
+			category: data.expense.category ?? '',
+			splitMode: data.expense.splitMode,
+			inputs: splitInputValues(data.expense, data.group.currency)
 		}
 	);
 </script>
@@ -30,6 +34,7 @@
 >
 	<ExpenseForm
 		members={data.members}
+		chosen={data.chosen}
 		currency={data.group.currency}
 		{values}
 		error={form?.error}

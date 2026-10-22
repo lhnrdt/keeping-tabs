@@ -1,5 +1,5 @@
-import { and, desc, eq, isNull } from 'drizzle-orm';
-import { splitEqual } from '#lib/money.ts';
+import { and, desc, eq, isNotNull, isNull } from 'drizzle-orm';
+
 import type { ExpenseInput } from '#lib/validation.ts';
 import { log, type Action } from './activity';
 import type { Db } from './db';
@@ -11,7 +11,8 @@ const expenseColumns = {
 	title: expenses.title,
 	amountCents: expenses.amountCents,
 	paidBy: expenses.paidBy,
-	date: expenses.date
+	date: expenses.date,
+	category: expenses.category
 };
 
 export const active = (groupId: string) =>
@@ -39,14 +40,27 @@ export async function listExpenses(db: Db, groupId: string) {
 	return rows.map((row) => ({ ...row, splits: byExpense.get(row.id) ?? [] }));
 }
 
+/** Categories chosen by hand in a group, newest first: what its automatic guess learns from. */
+export function listChosenCategories(db: Db, groupId: string) {
+	return db
+		.select({ title: expenses.title, category: expenses.category })
+		.from(expenses)
+		.where(and(active(groupId), isNotNull(expenses.category)))
+		.orderBy(desc(expenses.date), desc(expenses.createdAt));
+}
+
 export async function findExpense(db: Db, groupId: string, id: string) {
 	const [rows, splits] = await db.batch([
 		db
-			.select(expenseColumns)
+			.select({ ...expenseColumns, splitMode: expenses.splitMode })
 			.from(expenses)
 			.where(and(eq(expenses.id, id), active(groupId))),
 		db
-			.select({ memberId: expenseSplits.memberId, shareCents: expenseSplits.shareCents })
+			.select({
+				memberId: expenseSplits.memberId,
+				shareCents: expenseSplits.shareCents,
+				input: expenseSplits.input
+			})
 			.from(expenseSplits)
 			.where(eq(expenseSplits.expenseId, id))
 	]);
@@ -54,7 +68,7 @@ export async function findExpense(db: Db, groupId: string, id: string) {
 }
 
 const splitRows = (expenseId: string, input: ExpenseInput) =>
-	splitEqual(input.amountCents, input.participants).map((split) => ({ expenseId, ...split }));
+	input.shares.map((share) => ({ expenseId, ...share }));
 
 export async function createExpense(
 	db: Db,
@@ -68,11 +82,12 @@ export async function createExpense(
 			id,
 			groupId,
 			type: 'expense',
-			splitMode: 'equal',
+			splitMode: input.splitMode,
 			title: input.title,
 			amountCents: input.amountCents,
 			paidBy: input.paidBy,
-			date: input.date
+			date: input.date,
+			category: input.category
 		}),
 		db.insert(expenseSplits).values(splitRows(id, input)),
 		log(db, groupId, actorId, 'expense.create', { expenseId: id, ...input })
@@ -95,7 +110,8 @@ export async function updateExpense(
 				amountCents: input.amountCents,
 				paidBy: input.paidBy,
 				date: input.date,
-				splitMode: 'equal'
+				category: input.category,
+				splitMode: input.splitMode
 			})
 			.where(and(eq(expenses.id, id), active(groupId))),
 		db.delete(expenseSplits).where(eq(expenseSplits.expenseId, id)),

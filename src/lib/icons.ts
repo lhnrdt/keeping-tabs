@@ -1,4 +1,12 @@
 // The app's icons by meaning: one family (Tabler, outline), one place to swap them.
+import IconBed from '@tabler/icons-svelte-runes/icons/bed';
+import IconBeer from '@tabler/icons-svelte-runes/icons/beer';
+import IconBus from '@tabler/icons-svelte-runes/icons/bus';
+import IconFirstAidKit from '@tabler/icons-svelte-runes/icons/first-aid-kit';
+import IconGift from '@tabler/icons-svelte-runes/icons/gift';
+import IconShoppingBag from '@tabler/icons-svelte-runes/icons/shopping-bag';
+import IconShoppingCart from '@tabler/icons-svelte-runes/icons/shopping-cart';
+import IconTicket from '@tabler/icons-svelte-runes/icons/ticket';
 import IconCar from '@tabler/icons-svelte-runes/icons/car';
 import IconConfetti from '@tabler/icons-svelte-runes/icons/confetti';
 import IconGlassFull from '@tabler/icons-svelte-runes/icons/glass-full';
@@ -45,7 +53,18 @@ export const icons = {
 	kindFriends: IconGlassFull,
 	kindFood: IconToolsKitchen2,
 	kindEvent: IconConfetti,
-	kindCar: IconCar
+	kindCar: IconCar,
+	// Expense categories (src/lib/expense/categories.ts)
+	categoryGroceries: IconShoppingCart,
+	categoryDining: IconToolsKitchen2,
+	categoryDrinks: IconBeer,
+	categoryTransport: IconBus,
+	categoryLodging: IconBed,
+	categoryHome: IconHome,
+	categoryFun: IconTicket,
+	categoryShopping: IconShoppingBag,
+	categoryGifts: IconGift,
+	categoryHealth: IconFirstAidKit
 };
 
 export type IconName = keyof typeof icons;

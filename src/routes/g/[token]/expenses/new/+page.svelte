@@ -14,7 +14,10 @@
 			date: '',
 			paidBy: '',
 			// E-4: everyone takes part by default
-			participants: data.members.map((member) => member.id)
+			participants: data.members.map((member) => member.id),
+			category: '',
+			splitMode: '',
+			inputs: {}
 		}
 	);
 </script>
@@ -29,6 +32,7 @@
 >
 	<ExpenseForm
 		members={data.members}
+		chosen={data.chosen}
 		currency={data.group.currency}
 		{values}
 		error={form?.error}

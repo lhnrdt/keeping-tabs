@@ -1,6 +1,8 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
 import type { ErrorCode } from '#lib/errors.ts';
+import { loadDataset } from '#lib/expense/dataset/load.ts';
+import { categoryOf, learnCategories } from '#lib/expense/learned.ts';
 import { balances } from '#lib/money.ts';
 import { formContext as context } from '#lib/server/context.ts';
 import { claimMember, releaseMember } from '#lib/server/claims.ts';
@@ -25,20 +27,23 @@ import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, parent }) => {
 	const { group, members } = await parent();
-	const expenses = await listExpenses(locals.db, group.id);
+	const [expenses, dataset] = await Promise.all([listExpenses(locals.db, group.id), loadDataset()]);
+	// Newest first, so the latest hand-chosen category per title wins
+	const learned = learnCategories(expenses);
 	const totals = balances(
 		members.map((member) => member.id),
 		expenses
 	);
 	return {
 		balances: Object.fromEntries(totals),
-		expenses: expenses.map(({ id, type, title, amountCents, paidBy, date, splits }) => ({
+		expenses: expenses.map(({ id, type, title, amountCents, paidBy, date, category, splits }) => ({
 			id,
 			type,
 			title,
 			amountCents,
 			paidBy,
 			date,
+			category: type === 'expense' ? categoryOf({ title, category }, learned, dataset) : null,
 			// A payment has exactly one split: its recipient
 			recipient: type === 'payment' ? splits[0]?.memberId : undefined
 		}))

@@ -1,6 +1,10 @@
 import type { ErrorCode } from './errors';
+import { isExpenseCategory, type ExpenseCategory } from './expense/categories';
 import { DEFAULT_GROUP_KIND, isGroupKind, type GroupKind } from './group/kinds';
 import { parseAmount } from './money';
+import { computeShares, type Share, type SplitEntry } from './split/compute';
+import { parseSplitInput } from './split/inputs';
+import { isSplitMode, type SplitMode } from './split/modes';
 import { isTint, type Tint } from './tints';
 
 export const LIMITS = {
@@ -66,13 +70,44 @@ export function parseMemberNames(values: unknown[]): Result<string[]> {
 	return { ok: true, value: names };
 }
 
+/** How an expense is split (E-3): the mode and the resulting share of each member. */
+export function parseSplit(
+	values: { splitMode: unknown; participants: unknown[]; inputs: Record<string, unknown> },
+	amountCents: number,
+	group: { memberIds: readonly string[]; currency: string }
+): Result<{ splitMode: SplitMode; shares: Share[] }> {
+	const splitMode = normalizeText(values.splitMode) || 'equal';
+	if (!isSplitMode(splitMode)) return { ok: false, error: 'split_mode_invalid' };
+
+	const entries: SplitEntry[] = [];
+	if (splitMode === 'equal') {
+		const chosen = new Set(values.participants.map(normalizeText));
+		for (const memberId of group.memberIds) {
+			if (chosen.has(memberId)) entries.push({ memberId, input: 0 });
+		}
+	} else {
+		for (const memberId of group.memberIds) {
+			const text = normalizeText(values.inputs[memberId]);
+			const input = parseSplitInput(splitMode, text, group.currency);
+			if (input === null) return { ok: false, error: 'split_input_invalid' };
+			entries.push({ memberId, input });
+		}
+	}
+
+	const shares = computeShares(splitMode, amountCents, entries);
+	return shares.ok ? { ok: true, value: { splitMode, shares: shares.value } } : shares;
+}
+
 export type ExpenseInput = {
 	title: string;
 	amountCents: number;
 	date: string;
 	paidBy: string;
-	/** In member order, so equal-split remainders are deterministic */
-	participants: string[];
+	/** Chosen by hand; null follows the title */
+	category: ExpenseCategory | null;
+	splitMode: SplitMode;
+	/** Each member's share, in member order; they add up to the amount */
+	shares: Share[];
 };
 
 export function parseDate(value: unknown): Result<string> {
@@ -90,7 +125,12 @@ export function parseExpense(
 		amount: unknown;
 		date: unknown;
 		paidBy: unknown;
+		category: unknown;
+		splitMode: unknown;
+		/** For an equal split: who takes part */
 		participants: unknown[];
+		/** For the other modes: each member's input, by member id */
+		inputs: Record<string, unknown>;
 	},
 	group: { memberIds: readonly string[]; currency: string }
 ): Result<ExpenseInput> {
@@ -107,11 +147,23 @@ export function parseExpense(
 	const paidBy = normalizeText(values.paidBy);
 	if (!group.memberIds.includes(paidBy)) return { ok: false, error: 'payer_invalid' };
 
-	const chosen = new Set(values.participants.map(normalizeText));
-	const participants = group.memberIds.filter((id) => chosen.has(id));
-	if (participants.length === 0) return { ok: false, error: 'participants_required' };
+	const split = parseSplit(values, amountCents, group);
+	if (!split.ok) return split;
 
-	return { ok: true, value: { title, amountCents, date: date.value, paidBy, participants } };
+	const category = parseCategory(values.category);
+	if (!category.ok) return category;
+
+	return {
+		ok: true,
+		value: {
+			title,
+			amountCents,
+			date: date.value,
+			paidBy,
+			category: category.value,
+			...split.value
+		}
+	};
 }
 
 export type PaymentInput = { from: string; to: string; amountCents: number; date: string };
@@ -147,4 +199,13 @@ export function parseTint(value: unknown): Result<Tint | null> {
 	const tint = normalizeText(value);
 	if (!tint) return { ok: true, value: null };
 	return isTint(tint) ? { ok: true, value: tint } : { ok: false, error: 'tint_invalid' };
+}
+
+/** A chosen expense category; empty means automatic (derived from the title). */
+export function parseCategory(value: unknown): Result<ExpenseCategory | null> {
+	const category = normalizeText(value);
+	if (!category) return { ok: true, value: null };
+	return isExpenseCategory(category)
+		? { ok: true, value: category }
+		: { ok: false, error: 'category_invalid' };
 }

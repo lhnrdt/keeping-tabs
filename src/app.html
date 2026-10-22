@@ -5,6 +5,17 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 		<meta name="text-scale" content="scale" />
 		<meta name="color-scheme" content="light dark" />
+		<!-- Installable app (N-3); colors match the canvas tokens in src/lib/styles/theme.css -->
+		<link
+			rel="manifest"
+			href="%sveltekit.assets%/manifest.webmanifest"
+			crossorigin="use-credentials"
+		/>
+		<meta name="theme-color" content="#f4f1ea" media="(prefers-color-scheme: light)" />
+		<meta name="theme-color" content="#1d211d" media="(prefers-color-scheme: dark)" />
+		<link rel="apple-touch-icon" href="%sveltekit.assets%/icons/apple-touch-icon.png" />
+		<meta name="apple-mobile-web-app-title" content="Keeping Tabs" />
+		<meta name="mobile-web-app-capable" content="yes" />
 		<script>
 			// Konsta's dark styles hang off a .dark class; set it before first paint
 			(() => {

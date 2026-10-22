@@ -1,0 +1,22 @@
+{
+	"id": "/",
+	"name": "Keeping Tabs",
+	"short_name": "Keeping Tabs",
+	"description": "Split shared expenses with friends, flatmates and partners. No signup.",
+	"start_url": "/",
+	"scope": "/",
+	"display": "standalone",
+	"background_color": "#f4f1ea",
+	"theme_color": "#f4f1ea",
+	"categories": ["finance", "utilities"],
+	"icons": [
+		{ "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+		{ "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+		{
+			"src": "/icons/icon-maskable-512.png",
+			"sizes": "512x512",
+			"type": "image/png",
+			"purpose": "maskable"
+		}
+	]
+}
