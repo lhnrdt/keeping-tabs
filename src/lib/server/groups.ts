@@ -1,4 +1,4 @@
-import { and, asc, eq, isNull } from 'drizzle-orm';
+import { and, asc, desc, eq, isNull } from 'drizzle-orm';
 import { log } from './activity';
 import type { Db } from './db';
 import { groups, members } from './db/schema';
@@ -126,3 +126,13 @@ export async function renameMember(
 /** D1 reports constraint violations only in the error message. */
 export const isUniqueViolation = (error: unknown) =>
 	error instanceof Error && /UNIQUE constraint failed/.test(error.message + String(error.cause));
+
+/** Groups where a person has claimed a member: "your groups" on every device (A-17). */
+export async function listGroupsOf(db: Db, personId: string) {
+	return db
+		.select({ id: groups.id, name: groups.name, token: groups.shareToken })
+		.from(members)
+		.innerJoin(groups, eq(members.groupId, groups.id))
+		.where(and(eq(members.personId, personId), isNull(members.deletedAt), isNull(groups.deletedAt)))
+		.orderBy(desc(groups.createdAt));
+}

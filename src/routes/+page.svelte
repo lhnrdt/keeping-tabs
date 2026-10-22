@@ -19,7 +19,7 @@
 	{#snippet hero()}
 		<HomeHero />
 	{/snippet}
-	<RecentGroups />
+	<RecentGroups memberOf={data.yourGroups} />
 	<CreateGroupForm
 		currencies={data.currencies}
 		defaultCurrency={data.defaultCurrency}

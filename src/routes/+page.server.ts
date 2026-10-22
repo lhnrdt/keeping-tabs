@@ -3,7 +3,7 @@ import { resolve } from '$app/paths';
 import type { ErrorCode } from '#lib/errors.ts';
 import { getLocale } from '#lib/paraglide/runtime.js';
 import { currencyOptions, DEFAULT_CURRENCY } from '#lib/server/currencies.ts';
-import { createGroup } from '#lib/server/groups.ts';
+import { createGroup, listGroupsOf } from '#lib/server/groups.ts';
 import { ensurePerson, findPerson, setProfileName } from '#lib/server/people.ts';
 import {
 	normalizeText,
@@ -21,7 +21,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 		defaultCurrency: DEFAULT_CURRENCY,
 		// Pre-fills "Your name" (A-13)
 		profileName: person?.name ?? '',
-		hasIdentity: Boolean(person)
+		hasIdentity: Boolean(person),
+		// On every device of this person (A-17)
+		yourGroups: person ? await listGroupsOf(locals.db, person.id) : []
 	};
 };
 
