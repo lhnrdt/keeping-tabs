@@ -14,9 +14,20 @@ export type PlannedEntry = {
 	/** Person indices, as in the export's columns */
 	paidBy: number;
 	shares: { person: number; shareCents: number }[];
+	/** Splitwise doesn't export how a row was split: equal when the shares are */
+	splitMode: 'equal' | 'exact';
 	category: ExpenseCategory | null;
 	key: string;
 };
+
+/**
+ * Equal when everyone's share is the same, give or take the odd cent: the stored shares stay
+ * exactly Splitwise's; only editing it later may move that cent to someone else.
+ */
+function splitModeOf(shares: PlannedEntry['shares']): PlannedEntry['splitMode'] {
+	const cents = shares.map((share) => share.shareCents);
+	return Math.max(...cents) - Math.min(...cents) <= 1 ? 'equal' : 'exact';
+}
 
 const debtorsOf = (nets: number[]) =>
 	nets.flatMap((net, person) => (net < 0 ? [{ person, owes: -net }] : []));
@@ -29,13 +40,15 @@ function singlePayer(row: SplitwiseRow, payer: number): PlannedEntry {
 		...(payerShare > 0 ? [{ person: payer, shareCents: payerShare }] : []),
 		...debtors.map(({ person, owes }) => ({ person, shareCents: owes }))
 	].sort((a, b) => a.person - b.person);
+	const amountCents = isPayment ? row.nets[payer] : row.costCents;
 	return {
 		type: isPayment ? 'payment' : 'expense',
 		title: isPayment ? '' : row.title,
 		date: row.date,
-		amountCents: isPayment ? row.nets[payer] : row.costCents,
+		amountCents,
 		paidBy: payer,
 		shares,
+		splitMode: isPayment ? 'exact' : splitModeOf(shares),
 		category: isPayment ? null : fromSplitwiseCategory(row.category),
 		key: row.key
 	};
@@ -61,6 +74,7 @@ function perPayer(row: SplitwiseRow, payers: number[]): PlannedEntry[] {
 			amountCents: row.nets[payer],
 			paidBy: payer,
 			shares,
+			splitMode: splitModeOf(shares),
 			category: fromSplitwiseCategory(row.category),
 			key: `${row.key}:${i + 1}`
 		};

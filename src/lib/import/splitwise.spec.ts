@@ -77,6 +77,7 @@ describe('planRow', () => {
 					{ person: 1, shareCents: 1000 },
 					{ person: 2, shareCents: 1000 }
 				],
+				splitMode: 'equal',
 				category: 'dining',
 				key: 'k'
 			}
@@ -99,5 +100,17 @@ describe('planRow', () => {
 			[0, 1000, [{ person: 2, shareCents: 1000 }]],
 			[1, 500, [{ person: 2, shareCents: 500 }]]
 		]);
+	});
+
+	it('knows equal splits, also when one person owes it all, and keeps the rest exact', () => {
+		expect(planRow(row([1500, -1500]))[0].splitMode).toBe('equal');
+		expect(planRow(row([3000, -3000]))[0]).toMatchObject({
+			splitMode: 'equal',
+			shares: [{ person: 1, shareCents: 3000 }]
+		});
+		// The odd cent can sit with either person
+		expect(planRow(row([1000, -1000], { costCents: 2001 }))[0].splitMode).toBe('equal');
+		expect(planRow(row([1001, -1001], { costCents: 2001 }))[0].splitMode).toBe('equal');
+		expect(planRow(row([1200, -1200]))[0].splitMode).toBe('exact');
 	});
 });

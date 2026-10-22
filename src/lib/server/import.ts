@@ -19,17 +19,18 @@ export type ImportInput = {
 const INSERT_EXPENSES = `
 	insert into expenses (id, group_id, type, split_mode, title, amount_cents, paid_by, date,
 		category, import_key, created_at, updated_at)
-	select json_extract(value, '$.id'), ?1, json_extract(value, '$.type'), 'exact',
+	select json_extract(value, '$.id'), ?1, json_extract(value, '$.type'),
+		json_extract(value, '$.splitMode'),
 		json_extract(value, '$.title'), json_extract(value, '$.amount'),
 		json_extract(value, '$.paidBy'), json_extract(value, '$.date'),
 		json_extract(value, '$.category'), json_extract(value, '$.key'), ?2, ?3
 	from json_each(?4)`;
 
-/** Exact splits keep each share as what was "entered", so they can be edited */
+/** Exact splits keep each share as what was "entered", so they can be edited; equal ones need none */
 const INSERT_SPLITS = `
 	insert into expense_splits (expense_id, member_id, share_cents, input)
 	select json_extract(value, '$.expenseId'), json_extract(value, '$.memberId'),
-		json_extract(value, '$.share'), json_extract(value, '$.share')
+		json_extract(value, '$.share'), json_extract(value, '$.input')
 	from json_each(?1)`;
 
 /** Import keys the group already has: those rows were imported before. */
@@ -62,6 +63,7 @@ export async function importEntries(
 		rows.map((row) => ({
 			id: row.id,
 			type: row.type,
+			splitMode: row.splitMode,
 			title: row.title,
 			amount: row.amountCents,
 			paidBy: memberIds[row.paidBy],
@@ -75,7 +77,8 @@ export async function importEntries(
 			row.shares.map((share) => ({
 				expenseId: row.id,
 				memberId: memberIds[share.person],
-				share: share.shareCents
+				share: share.shareCents,
+				input: row.splitMode === 'exact' ? share.shareCents : null
 			}))
 		)
 	);
