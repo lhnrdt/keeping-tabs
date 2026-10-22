@@ -21,6 +21,7 @@
 	icons
 	outline
 	class="fixed bottom-0 left-0 z-20"
+	innerClass="mx-auto max-w-app w-full"
 	colors={{ bgIos: 'bg-canvas dark:bg-canvas-night' }}
 	aria-label={m.app_name()}
 >

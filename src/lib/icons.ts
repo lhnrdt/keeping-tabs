@@ -1,4 +1,11 @@
 // The app's icons by meaning: one family (Tabler, outline), one place to swap them.
+import IconCar from '@tabler/icons-svelte-runes/icons/car';
+import IconConfetti from '@tabler/icons-svelte-runes/icons/confetti';
+import IconGlassFull from '@tabler/icons-svelte-runes/icons/glass-full';
+import IconHeart from '@tabler/icons-svelte-runes/icons/heart';
+import IconHome from '@tabler/icons-svelte-runes/icons/home';
+import IconPlane from '@tabler/icons-svelte-runes/icons/plane';
+import IconToolsKitchen2 from '@tabler/icons-svelte-runes/icons/tools-kitchen-2';
 import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
 import IconCash from '@tabler/icons-svelte-runes/icons/cash';
 import IconFingerprint from '@tabler/icons-svelte-runes/icons/fingerprint';
@@ -30,7 +37,15 @@ export const icons = {
 	newLink: IconRefresh,
 	passkey: IconFingerprint,
 	remove: IconX,
-	share: IconShare
+	share: IconShare,
+	// Group types (src/lib/group/kinds.ts)
+	kindTrip: IconPlane,
+	kindHome: IconHome,
+	kindPartner: IconHeart,
+	kindFriends: IconGlassFull,
+	kindFood: IconToolsKitchen2,
+	kindEvent: IconConfetti,
+	kindCar: IconCar
 };
 
 export type IconName = keyof typeof icons;

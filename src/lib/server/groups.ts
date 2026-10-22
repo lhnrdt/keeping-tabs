@@ -1,4 +1,6 @@
 import { and, asc, desc, eq, isNull } from 'drizzle-orm';
+import type { GroupKind } from '#lib/group/kinds.ts';
+import type { Tint } from '#lib/tints.ts';
 import { log } from './activity';
 import type { Db } from './db';
 import { groups, members } from './db/schema';
@@ -7,7 +9,15 @@ import { newShareToken, SHARE_TOKEN_PATTERN } from './token';
 export async function findGroupByToken(db: Db, token: string) {
 	if (!SHARE_TOKEN_PATTERN.test(token)) return undefined;
 	return db.query.groups.findFirst({
-		columns: { id: true, shareToken: true, name: true, description: true, currency: true },
+		columns: {
+			id: true,
+			shareToken: true,
+			name: true,
+			description: true,
+			currency: true,
+			kind: true,
+			tint: true
+		},
 		where: and(eq(groups.shareToken, token), isNull(groups.deletedAt))
 	});
 }
@@ -41,6 +51,8 @@ export async function createGroup(
 		name: string;
 		description: string | null;
 		currency: string;
+		kind: GroupKind;
+		tint: Tint | null;
 		memberNames: string[];
 		creatorPersonId: string;
 	}
@@ -62,7 +74,9 @@ export async function createGroup(
 			shareToken,
 			name: input.name,
 			description: input.description,
-			currency: input.currency
+			currency: input.currency,
+			kind: input.kind,
+			tint: input.tint
 		}),
 		db.insert(members).values(memberRows),
 		log(db, groupId, creatorId, 'group.create', {
@@ -79,7 +93,7 @@ export async function updateGroup(
 	db: Db,
 	groupId: string,
 	actorId: string | null,
-	changes: { name: string; description: string | null }
+	changes: { name: string; description: string | null; kind: GroupKind; tint: Tint | null }
 ) {
 	await db.batch([
 		db.update(groups).set(changes).where(eq(groups.id, groupId)),
@@ -130,7 +144,15 @@ export const isUniqueViolation = (error: unknown) =>
 /** Groups where a person has claimed a member: "your groups" on every device (A-17). */
 export async function listGroupsOf(db: Db, personId: string) {
 	return db
-		.select({ id: groups.id, name: groups.name, token: groups.shareToken })
+		.select({
+			id: groups.id,
+			name: groups.name,
+			token: groups.shareToken,
+			currency: groups.currency,
+			kind: groups.kind,
+			tint: groups.tint,
+			memberId: members.id
+		})
 		.from(members)
 		.innerJoin(groups, eq(members.groupId, groups.id))
 		.where(and(eq(members.personId, personId), isNull(members.deletedAt), isNull(groups.deletedAt)))

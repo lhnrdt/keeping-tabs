@@ -36,6 +36,13 @@
       "when": 1792647038152,
       "tag": "0004_passkeys",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1792650826054,
+      "tag": "0005_group_kind_tint",
+      "breakpoints": true
     }
   ]
 }

@@ -5,7 +5,8 @@ import {
 	formatAmount,
 	minorDigits,
 	parseAmount,
-	splitEqual
+	splitEqual,
+	totalsByCurrency
 } from './money';
 
 describe('minorDigits', () => {
@@ -95,5 +96,20 @@ describe('balances', () => {
 			[{ paidBy: 'a', amountCents: 1001, splits: splitEqual(1001, ['a', 'b']) }]
 		);
 		expect([...result.values()].reduce((x, y) => x + y, 0)).toBe(0);
+	});
+});
+
+describe('totalsByCurrency', () => {
+	it('adds up per currency without mixing them', () => {
+		expect(
+			totalsByCurrency([
+				{ currency: 'EUR', balance: 1500 },
+				{ currency: 'CHF', balance: -200 },
+				{ currency: 'EUR', balance: -500 }
+			])
+		).toEqual([
+			{ currency: 'CHF', amount: -200 },
+			{ currency: 'EUR', amount: 1000 }
+		]);
 	});
 });

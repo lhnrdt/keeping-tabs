@@ -3,13 +3,16 @@
 	import { BlockTitle, List, ListItem } from 'konsta/svelte';
 	import EmptyState from '#lib/components/EmptyState.svelte';
 	import GroupTile from '#lib/components/GroupTile.svelte';
+	import YourBalance from '#lib/components/YourBalance.svelte';
 	import { onMount } from 'svelte';
 	import { getRecentGroups } from '#lib/device.ts';
 	import { mergeGroups, type GroupLink } from '#lib/group/your-groups.ts';
 	import { m } from '#lib/paraglide/messages.js';
 
 	/** Groups you're a member of, from the server */
-	let { memberOf }: { memberOf: GroupLink[] } = $props();
+	type MemberGroup = GroupLink & { currency: string; balance: number };
+
+	let { memberOf }: { memberOf: MemberGroup[] } = $props();
 
 	// Server groups render right away; groups only opened in this browser join after mount
 	let local = $state<ReturnType<typeof getRecentGroups>>([]);
@@ -29,7 +32,12 @@
 			{#each groups as group (group.id)}
 				<ListItem link title={group.name} href={resolve('/g/[token]', { token: group.token })}>
 					{#snippet media()}
-						<GroupTile id={group.id} />
+						<GroupTile id={group.id} kind={group.kind} tint={group.tint} />
+					{/snippet}
+					{#snippet subtitle()}
+						{#if 'balance' in group}
+							<YourBalance amount={group.balance} currency={group.currency} />
+						{/if}
 					{/snippet}
 				</ListItem>
 			{/each}

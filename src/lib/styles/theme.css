@@ -67,6 +67,9 @@
 
 	--font-display: 'Fraunces Variable', ui-serif, Georgia, serif;
 
+	/* Width of the app column on wide screens (N-10): content, header, navbar row, tab bar */
+	--container-app: 42rem;
+
 	--font-ios: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
