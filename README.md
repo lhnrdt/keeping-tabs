@@ -80,7 +80,7 @@ scripts/                  release versioning
 
 ## Workflow and releases
 
-- **`staging`** (default branch) deploys automatically to a password-protected staging environment; **`master`** deploys to production.
+- **`master`** (default branch) deploys to production; **`staging`** deploys automatically to a password-protected staging environment.
 - Every change goes through a pull request into `staging`, with a conventional title (`feat: …`, `fix: …`). CI checks the title, one-line commits, lint, types, unit and end-to-end tests.
 - After each staging deploy a **release PR** (`staging → master`) is opened or updated; merging it ships to production, tags the release and creates a [GitHub release](https://github.com/lhnrdt/keeping-tabs/releases).
 - **Versioning:** semantic versions from PR titles. `feat` raises the minor version, everything else the patch; breaking changes raise the minor version while the major version is 0. Staging builds are release candidates (`0.7.0-rc.2`).
