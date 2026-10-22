@@ -1,0 +1,8 @@
+Datum,Beschreibung,Kategorie,Kosten,Währung,Anna,Ben Becker
+
+2026-01-03,Rewe,Lebensmittel,40.00,EUR,20.00,-20.00
+2026-01-05,Bahnticket,Allgemein,30.00,EUR,-15.00,15.00
+2026-01-07,"Pizza, Wein",Restaurant,50.00,EUR,25.00,-25.00
+2026-01-10,Ben B. zahlte Anna,Zahlung,10.00,EUR,-10.00,10.00
+
+2026-01-10,Gesamtbilanz, , ,EUR,20.00,-20.00

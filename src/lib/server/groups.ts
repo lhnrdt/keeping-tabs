@@ -16,7 +16,8 @@ export async function findGroupByToken(db: Db, token: string) {
 			description: true,
 			currency: true,
 			kind: true,
-			tint: true
+			tint: true,
+			simplifyDebts: true
 		},
 		where: and(eq(groups.shareToken, token), isNull(groups.deletedAt))
 	});
@@ -93,7 +94,13 @@ export async function updateGroup(
 	db: Db,
 	groupId: string,
 	actorId: string | null,
-	changes: { name: string; description: string | null; kind: GroupKind; tint: Tint | null }
+	changes: {
+		name: string;
+		description: string | null;
+		kind: GroupKind;
+		tint: Tint | null;
+		simplifyDebts: boolean;
+	}
 ) {
 	await db.batch([
 		db.update(groups).set(changes).where(eq(groups.id, groupId)),

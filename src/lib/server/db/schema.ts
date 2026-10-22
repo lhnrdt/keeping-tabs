@@ -38,6 +38,9 @@ export const groups = sqliteTable('groups', {
 	kind: text('kind').$type<GroupKind>().notNull().default('other'),
 	// Chosen color; null = derived from the id (src/lib/tints.ts)
 	tint: text('tint').$type<Tint>(),
+	// Settle up via the fewest payments (A owes B, B owes C → A pays C) instead of paying
+	// back each person directly (B-6)
+	simplifyDebts: integer('simplify_debts', { mode: 'boolean' }).notNull().default(true),
 	createdAt: createdAt(),
 	deletedAt: deletedAt()
 });
@@ -138,6 +141,8 @@ export const expenses = sqliteTable(
 		splitMode: text('split_mode', { enum: SPLIT_MODES }).notNull().default('equal'),
 		notes: text('notes'),
 		category: text('category').$type<ExpenseCategory>(),
+		// Where an imported row came from (e.g. "sw:…" for Splitwise), so re-imports skip it (I-3)
+		importKey: text('import_key'),
 		createdAt: createdAt(),
 		updatedAt: integer('updated_at', { mode: 'timestamp_ms' })
 			.notNull()
@@ -147,6 +152,7 @@ export const expenses = sqliteTable(
 	},
 	(t) => [
 		index('expenses_group_date_idx').on(t.groupId, t.date),
+		uniqueIndex('expenses_group_import_key_idx').on(t.groupId, t.importKey),
 		check('expenses_amount_positive', sql`${t.amountCents} > 0`)
 	]
 );

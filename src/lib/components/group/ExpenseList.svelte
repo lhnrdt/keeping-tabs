@@ -4,30 +4,40 @@
 	import EmptyState from '#lib/components/EmptyState.svelte';
 	import IconBadge from '#lib/components/IconBadge.svelte';
 	import AnimatedAmount from '#lib/components/AnimatedAmount.svelte';
-	import type { ExpenseCategory } from '#lib/expense/categories.ts';
+	import { whenVisible } from '#lib/actions/when-visible.ts';
 
 	import { categoryIcons } from '#lib/expense/category-style.ts';
+	import { EXPENSES_PER_PAGE } from '#lib/group/expense-pages.ts';
 	import { namesById, type Member } from '#lib/group/members.ts';
+	import { OlderEntries } from '#lib/group/older-entries.svelte.ts';
+	import { uniqueById } from '#lib/unique.ts';
+	import type { ListEntry } from '#lib/server/expense-entries.ts';
 	import { transitionName } from '#lib/motion/in-place-transition.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import { formatAmount } from '#lib/money.ts';
 
-	type Entry = {
-		id: string;
-		type: 'expense' | 'payment';
-		title: string;
-		amountCents: number;
-		paidBy: string;
-		date: string;
-		recipient?: string;
-		/** Chosen or guessed; null for payments */
-		category: ExpenseCategory | null;
+	type Entry = ListEntry;
+
+	type Props = {
+		token: string;
+		currency: string;
+		members: Member[];
+		/** The newest entries, from the server */
+		entries: Entry[];
+		/** Whether there are older entries */
+		hasMore: boolean;
 	};
 
-	type Props = { token: string; currency: string; members: Member[]; expenses: Entry[] };
+	let { token, currency, members, entries, hasMore }: Props = $props();
 
-	let { token, currency, members, expenses }: Props = $props();
+	// Older pages load while scrolling (seamless); the link is the fallback without JS
+	const older = new OlderEntries(
+		(offset) => `${resolve('/g/[token]/entries', { token })}?offset=${offset}`
+	);
+	const expenses = $derived(uniqueById([...entries, ...older.items]));
+	const more = $derived(older.more ?? hasMore);
+	const loadOlder = () => older.load(expenses.length);
 
 	const names = $derived(namesById(members));
 
@@ -77,6 +87,32 @@
 			</ListItem>
 		{/each}
 	</List>
+	{#if more}
+		<p
+			class="-mt-4 mb-8 text-center text-sm"
+			aria-live="polite"
+			use:whenVisible={{ onVisible: loadOlder, key: expenses.length }}
+		>
+			{#if older.loading}
+				<span class="opacity-60">{m.expenses_loading()}</span>
+			{:else}
+				<!-- A plain link without JS (?show= renders more on the server); the href is
+				     resolve() plus a query string, which the lint rule can't see -->
+				<!-- eslint-disable svelte/no-navigation-without-resolve -->
+				<a
+					href={`${resolve('/g/[token]', { token })}?show=${expenses.length + EXPENSES_PER_PAGE}`}
+					class="inline-block rounded-full px-4 py-2 font-medium text-forest dark:text-forest-night"
+					data-sveltekit-noscroll
+					data-sveltekit-replacestate
+					onclick={(event) => {
+						event.preventDefault();
+						loadOlder();
+					}}>{older.failed ? m.expenses_retry() : m.expenses_show_more()}</a
+				>
+				<!-- eslint-enable svelte/no-navigation-without-resolve -->
+			{/if}
+		</p>
+	{/if}
 {:else}
 	<EmptyState illustration="plant" text={m.expenses_empty()} />
 {/if}

@@ -41,3 +41,15 @@ test('groups seen online can be viewed offline', async ({ page, context }) => {
 
 	await context.setOffline(false);
 });
+
+test('the system bars follow the light or dark theme', async ({ browser }) => {
+	for (const [colorScheme, color] of [
+		['light', '#f4f1ea'],
+		['dark', '#1d211d']
+	] as const) {
+		const page = await browser.newPage({ colorScheme });
+		await open(page, '/');
+		await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', color);
+		await page.close();
+	}
+});

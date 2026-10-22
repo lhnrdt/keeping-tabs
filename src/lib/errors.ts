@@ -30,7 +30,12 @@ export const errorMessages = {
 	split_input_invalid: m.error_split_input_invalid,
 	split_amounts_mismatch: m.error_split_amounts_mismatch,
 	split_percent_mismatch: m.error_split_percent_mismatch,
-	split_adjust_too_large: m.error_split_adjust_too_large
+	split_adjust_too_large: m.error_split_adjust_too_large,
+	import_not_splitwise: m.error_import_not_splitwise,
+	import_empty: m.error_import_empty,
+	import_file_missing: m.error_import_file_missing,
+	import_too_large: m.error_import_too_large,
+	import_people_invalid: m.error_import_people_invalid
 } satisfies Record<string, () => string>;
 
 export type ErrorCode = keyof typeof errorMessages;

@@ -43,6 +43,20 @@
       "when": 1792650826054,
       "tag": "0005_group_kind_tint",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1792697493194,
+      "tag": "0006_group_simplify_debts",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1792698677420,
+      "tag": "0007_expense_import_key",
+      "breakpoints": true
     }
   ]
 }

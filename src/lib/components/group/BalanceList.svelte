@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { List, ListItem } from 'konsta/svelte';
 	import Avatar from '#lib/components/Avatar.svelte';
-	import AnimatedAmount from '#lib/components/AnimatedAmount.svelte';
+	import MemberBalance from '#lib/components/MemberBalance.svelte';
 	import type { GroupMember } from '#lib/group/members.ts';
 	import { transitionName } from '#lib/motion/in-place-transition.ts';
 	import { m } from '#lib/paraglide/messages.js';
@@ -19,25 +19,7 @@
 				<Avatar id={member.avatarId} name={member.name} />
 			{/snippet}
 			{#snippet after()}
-				{#if balance > 0}
-					<span class="tone-positive tabular-nums">
-						<AnimatedAmount
-							amount={balance}
-							{currency}
-							label={(amount) => m.balance_owed({ amount })}
-						/>
-					</span>
-				{:else if balance < 0}
-					<span class="tone-negative tabular-nums">
-						<AnimatedAmount
-							amount={-balance}
-							{currency}
-							label={(amount) => m.balance_owes({ amount })}
-						/>
-					</span>
-				{:else}
-					<span class="opacity-60">{m.balance_settled()}</span>
-				{/if}
+				<MemberBalance {balance} {currency} />
 			{/snippet}
 		</ListItem>
 	{/each}
