@@ -1,14 +1,10 @@
 import { expect, test, type Browser, type Page } from '@playwright/test';
+import { open } from './e2e-helpers';
 
 // Each browser context is a separate device with its own identity cookie (A-12).
 
 async function newDevice(browser: Browser) {
 	return (await browser.newContext()).newPage();
-}
-
-async function open(page: Page, url: string) {
-	await page.goto(url);
-	await page.waitForLoadState('networkidle');
 }
 
 const whoAreYou = (page: Page) => page.getByRole('dialog', { name: 'Who are you?' });
