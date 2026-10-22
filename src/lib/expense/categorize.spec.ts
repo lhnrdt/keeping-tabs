@@ -30,4 +30,19 @@ describe('categorize', () => {
 	it('prefers the earlier category when several match', () => {
 		expect(categorize('Hotel breakfast')).toBe('lodging');
 	});
+
+	it('tolerates one typo in longer keywords', () => {
+		expect(categorize('Resturant')).toBe('dining');
+		expect(categorize('Supermakt')).toBe('groceries');
+		expect(categorize('Pizaa')).toBe('dining');
+	});
+
+	it('prefers an exact match over a typo match', () => {
+		expect(categorize('Hostel, resturant')).toBe('lodging');
+		expect(categorize('Taxi')).toBe('transport');
+	});
+
+	it('does not guess from short words with typos', () => {
+		expect(categorize('Bat')).toBe('other');
+	});
 });

@@ -1,10 +1,13 @@
 // Guesses an expense's category from its title (English and German), e.g. "Lidl" → groceries.
+import { withinOneEdit } from '#lib/text/typo.ts';
 import type { ExpenseCategory } from './categories';
+import { normalizeTitle } from './normalize';
 
 /**
  * Keywords per category, lowercase without accents. Earlier categories win when several
  * match. Up to 3 letters must be the whole word ("bar", not "barbecue"), 4 letters start a
- * word ("rent" in "rental"), longer ones may appear anywhere ("einkauf" in "Wocheneinkauf").
+ * word ("rent" in "rental"), longer ones may appear anywhere ("einkauf" in "Wocheneinkauf")
+ * and tolerate one typo.
  */
 const KEYWORDS: [Exclude<ExpenseCategory, 'other'>, string[]][] = [
 	[
@@ -235,31 +238,35 @@ const KEYWORDS: [Exclude<ExpenseCategory, 'other'>, string[]][] = [
 	]
 ];
 
-/** Lowercase words without accents ("Frühstück" → "fruhstuck"). */
-const normalize = (text: string) =>
-	text
-		.normalize('NFD')
-		.replace(/\p{Diacritic}/gu, '')
-		.toLowerCase()
-		.replace(/[^\p{L}\p{N}]+/gu, ' ')
-		.trim();
+/** Keywords this long also match with one typo, e.g. "resturant". */
+const TYPO_MIN_LENGTH = 5;
 
-function matches(text: string, words: string[], keyword: string) {
+function matchesExactly(text: string, words: string[], keyword: string) {
 	if (keyword.includes(' ')) return ` ${text} `.includes(` ${keyword} `);
 	if (keyword.length <= 3) return words.includes(keyword);
 	if (keyword.length === 4) return words.some((word) => word.startsWith(keyword));
 	return text.includes(keyword);
 }
 
-export function categorize(title: string): ExpenseCategory {
-	const text = normalize(title);
-	const words = text.split(' ');
-	const found = KEYWORDS.find(([, keywords]) =>
-		keywords.some((keyword) => matches(text, words, keyword))
+/** A word, or its start (for plurals and compounds), is the keyword with one typo. */
+function matchesWithTypo(words: string[], keyword: string) {
+	if (keyword.length < TYPO_MIN_LENGTH || keyword.includes(' ')) return false;
+	return words.some((word) =>
+		[-1, 0, 1].some((delta) => withinOneEdit(word.slice(0, keyword.length + delta), keyword))
 	);
-	return found?.[0] ?? 'other';
 }
 
-/** The chosen category, else the one guessed from the title. */
-export const categoryOf = (expense: { category: ExpenseCategory | null; title: string }) =>
-	expense.category ?? categorize(expense.title);
+function firstMatch(matches: (keyword: string) => boolean) {
+	return KEYWORDS.find(([, keywords]) => keywords.some(matches))?.[0];
+}
+
+/** Exact matches win over typo matches; earlier categories win over later ones. */
+export function categorize(title: string): ExpenseCategory {
+	const text = normalizeTitle(title);
+	const words = text.split(' ');
+	return (
+		firstMatch((keyword) => matchesExactly(text, words, keyword)) ??
+		firstMatch((keyword) => matchesWithTypo(words, keyword)) ??
+		'other'
+	);
+}
