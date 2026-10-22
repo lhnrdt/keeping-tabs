@@ -38,7 +38,7 @@
 {:else}
 	<form method="POST" action="?/createLink" use:enhance={submission.enhance}>
 		<Block>
-			<SubmitButton pending={submission.pending}>{m.device_create_link()}</SubmitButton>
+			<SubmitButton pending={submission.pending} tonal>{m.device_create_link()}</SubmitButton>
 		</Block>
 	</form>
 {/if}

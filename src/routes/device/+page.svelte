@@ -3,6 +3,8 @@
 	import { Block, BlockTitle } from 'konsta/svelte';
 	import AppPage from '#lib/components/AppPage.svelte';
 	import DeviceLinkCreator from '#lib/components/device/DeviceLinkCreator.svelte';
+	import PasskeyRestore from '#lib/components/device/PasskeyRestore.svelte';
+	import PasskeySave from '#lib/components/device/PasskeySave.svelte';
 	import RecoveryKeyCreator from '#lib/components/device/RecoveryKeyCreator.svelte';
 	import RestoreForm from '#lib/components/device/RestoreForm.svelte';
 	import { m } from '#lib/paraglide/messages.js';
@@ -17,6 +19,10 @@
 
 <AppPage title={m.identity_title()} back={{ href: resolve('/'), label: m.app_name() }}>
 	{#if data.hasIdentity}
+		<BlockTitle>{m.passkey_title()}</BlockTitle>
+		<Block><p class="opacity-80">{m.passkey_intro()}</p></Block>
+		<PasskeySave count={data.passkeyCount} />
+
 		<BlockTitle>{m.device_title()}</BlockTitle>
 		<Block><p class="opacity-80">{m.device_intro()}</p></Block>
 		<DeviceLinkCreator link={form && 'link' in form ? form.link : undefined} />
@@ -30,6 +36,7 @@
 
 	<BlockTitle>{m.restore_title()}</BlockTitle>
 	<Block><p class="opacity-80">{m.restore_intro()}</p></Block>
+	<PasskeyRestore />
 	<RestoreForm
 		error={form && 'error' in form ? form.error : undefined}
 		restored={form && 'restored' in form ? form.restored : undefined}

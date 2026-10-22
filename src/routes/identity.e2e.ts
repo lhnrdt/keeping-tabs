@@ -86,3 +86,55 @@ test('members can only be claimed once, freed up, and identities move between de
 	await open(anna, '/');
 	await expect(anna.getByLabel('Your name')).toHaveValue('Anna');
 });
+
+/** A simulated platform authenticator with a fingerprint reader (Chromium's WebAuthn emulation). */
+async function addAuthenticator(page: Page) {
+	const cdp = await page.context().newCDPSession(page);
+	await cdp.send('WebAuthn.enable');
+	const { authenticatorId } = await cdp.send('WebAuthn.addVirtualAuthenticator', {
+		options: {
+			protocol: 'ctap2',
+			transport: 'internal',
+			hasResidentKey: true,
+			hasUserVerification: true,
+			isUserVerified: true,
+			automaticPresenceSimulation: true
+		}
+	});
+	return { cdp, authenticatorId };
+}
+
+test('a synced passkey brings you and your groups back on a new device', async ({ browser }) => {
+	const phone = await newDevice(browser);
+	const phoneKeys = await addAuthenticator(phone);
+	await open(phone, '/');
+	await phone.getByLabel('Group name').fill('Holiday');
+	await phone.getByLabel('Your name').fill('Mia');
+	await phone.getByRole('button', { name: 'Create group' }).click();
+	await expect(phone.getByTestId('identity')).toHaveText('Mia');
+	const groupUrl = phone.url();
+
+	await open(phone, '/device');
+	await phone.getByRole('button', { name: 'Save as passkey' }).click();
+	await expect(phone.getByRole('status')).toContainText('1 passkey');
+
+	// The platform syncs the passkey to Mia's new laptop (A-18)
+	const { credentials } = await phoneKeys.cdp.send('WebAuthn.getCredentials', {
+		authenticatorId: phoneKeys.authenticatorId
+	});
+	const laptop = await newDevice(browser);
+	const laptopKeys = await addAuthenticator(laptop);
+	for (const credential of credentials) {
+		await laptopKeys.cdp.send('WebAuthn.addCredential', {
+			authenticatorId: laptopKeys.authenticatorId,
+			credential
+		});
+	}
+
+	await open(laptop, '/device');
+	await laptop.getByRole('button', { name: 'Continue with passkey' }).click();
+	await expect(laptop).toHaveURL(/\/$/);
+	await expect(laptop.getByRole('link', { name: 'Holiday' })).toBeVisible();
+	await open(laptop, groupUrl);
+	await expect(laptop.getByTestId('identity')).toHaveText('Mia');
+});
