@@ -34,6 +34,37 @@ export const groups = sqliteTable('groups', {
 	deletedAt: deletedAt()
 });
 
+/** A person across groups and devices, without an account (A-12, A-13). */
+export const people = sqliteTable('people', {
+	id: id(),
+	// Profile name, pre-filled when creating groups or claiming members
+	name: text('name'),
+	createdAt: createdAt()
+});
+
+/** A browser of a person, identified by the hash of its secret cookie key. */
+export const devices = sqliteTable(
+	'devices',
+	{
+		keyHash: text('key_hash').primaryKey(),
+		personId: text('person_id')
+			.notNull()
+			.references(() => people.id),
+		createdAt: createdAt()
+	},
+	(t) => [index('devices_person_idx').on(t.personId)]
+);
+
+/** Short-lived, single-use links to use the same identity on another device (A-14). */
+export const deviceLinks = sqliteTable('device_links', {
+	tokenHash: text('token_hash').primaryKey(),
+	personId: text('person_id')
+		.notNull()
+		.references(() => people.id),
+	expiresAt: integer('expires_at', { mode: 'timestamp_ms' }).notNull(),
+	usedAt: integer('used_at', { mode: 'timestamp_ms' })
+});
+
 export const members = sqliteTable(
 	'members',
 	{
@@ -42,6 +73,8 @@ export const members = sqliteTable(
 			.notNull()
 			.references(() => groups.id),
 		name: text('name').notNull(),
+		// The person who claimed this member (A-4); null until claimed or after release (A-15)
+		personId: text('person_id').references(() => people.id),
 		createdAt: createdAt(),
 		// Removed members stay referenced by past expenses (M-6)
 		deletedAt: deletedAt()
@@ -50,7 +83,11 @@ export const members = sqliteTable(
 		// M-5: unique among current members only
 		uniqueIndex('members_group_name_unique')
 			.on(t.groupId, t.name)
-			.where(sql`${t.deletedAt} is null`)
+			.where(sql`${t.deletedAt} is null`),
+		// A person is at most one current member per group
+		uniqueIndex('members_group_person_unique')
+			.on(t.groupId, t.personId)
+			.where(sql`${t.deletedAt} is null and ${t.personId} is not null`)
 	]
 );
 
