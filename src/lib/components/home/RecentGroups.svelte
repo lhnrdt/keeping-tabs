@@ -3,13 +3,19 @@
 	import { BlockTitle, List, ListItem } from 'konsta/svelte';
 	import GroupTile from '#lib/components/GroupTile.svelte';
 	import { onMount } from 'svelte';
-	import { getRecentGroups, type RecentGroup } from '#lib/device.ts';
+	import { getRecentGroups } from '#lib/device.ts';
+	import { mergeGroups, type GroupLink } from '#lib/group/your-groups.ts';
 	import { m } from '#lib/paraglide/messages.js';
 
-	let groups = $state<RecentGroup[]>([]);
+	/** Groups you're a member of, from the server */
+	let { memberOf }: { memberOf: GroupLink[] } = $props();
+
+	// Server groups render right away; groups only opened in this browser join after mount
+	let local = $state<ReturnType<typeof getRecentGroups>>([]);
+	const groups = $derived(mergeGroups(memberOf, local));
 
 	onMount(() => {
-		groups = getRecentGroups();
+		local = getRecentGroups();
 	});
 </script>
 

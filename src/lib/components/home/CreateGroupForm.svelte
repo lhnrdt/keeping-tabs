@@ -23,9 +23,11 @@
 		defaultCurrency: string;
 		values?: Values;
 		error?: ErrorCode;
+		/** Pre-fills "Your name" (A-13) */
+		profileName: string;
 	};
 
-	let { currencies, defaultCurrency, values, error }: Props = $props();
+	let { currencies, defaultCurrency, values, error, profileName }: Props = $props();
 
 	const submission = new Submission();
 	const currency = $derived(values?.currency || defaultCurrency);
@@ -60,7 +62,7 @@
 				required
 				maxlength={LIMITS.memberName}
 				autocomplete="given-name"
-				value={values?.you ?? ''}
+				value={values?.you ?? profileName}
 			/>
 		</List>
 

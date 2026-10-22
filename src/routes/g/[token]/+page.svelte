@@ -31,7 +31,7 @@
 
 <AppPage title={data.group.name} back={{ href: resolve('/'), label: m.app_name() }}>
 	{#snippet right()}
-		<IdentityButton members={data.members} />
+		<IdentityButton />
 	{/snippet}
 	{#snippet hero()}
 		<GroupHero group={data.group} members={data.members} balances={data.balances} />
@@ -77,5 +77,5 @@
 	{/if}
 
 	<GroupTabs active={tab} />
-	<WhoAreYouSheet members={data.members} />
+	<WhoAreYouSheet members={data.members} {tab} error={errorFor('claimMember')} />
 </AppPage>

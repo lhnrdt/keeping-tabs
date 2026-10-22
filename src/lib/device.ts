@@ -1,10 +1,9 @@
-// Per-device memory (A-4, A-6). Storage can be unavailable (private mode, blocked
+// Per-device memory of opened groups (A-6). Storage can be unavailable (private mode, blocked
 // site data), so every access is guarded and the app works without it.
 
 export type RecentGroup = { id: string; token: string; name: string; openedAt: number };
 
 const RECENT_KEY = 'keeping-tabs:groups';
-const meKey = (groupId: string) => `keeping-tabs:me:${groupId}`;
 
 function read<T>(key: string, fallback: T): T {
 	try {
@@ -32,7 +31,3 @@ export function rememberGroup(group: Omit<RecentGroup, 'openedAt'>) {
 	const others = getRecentGroups().filter((g) => g.id !== group.id);
 	write(RECENT_KEY, [{ ...group, openedAt: Date.now() }, ...others]);
 }
-
-export const getMe = (groupId: string) => read<string | null>(meKey(groupId), null);
-
-export const setMe = (groupId: string, memberId: string) => write(meKey(groupId), memberId);

@@ -1,9 +1,9 @@
 <script lang="ts">
-	// A Konsta dialog around one form action; closes itself when the action succeeds.
+	// A Konsta dialog around a form action (plus an optional second one, e.g. a destructive
+	// alternative); closes itself when the action succeeds.
 	import { enhance } from '$app/forms';
 	import { Dialog, DialogButton } from 'konsta/svelte';
 	import type { Snippet } from 'svelte';
-	import ActorInput from './ActorInput.svelte';
 	import { Submission } from '#lib/forms/submission.svelte.ts';
 	import { m } from '#lib/paraglide/messages.js';
 
@@ -14,6 +14,8 @@
 		action: string;
 		submitLabel: string;
 		destructive?: boolean;
+		/** Another action on the same form, shown as an extra button */
+		secondary?: { label: string; action: string };
 		onClose: () => void;
 		children?: Snippet;
 	};
@@ -24,6 +26,7 @@
 		action,
 		submitLabel,
 		destructive = false,
+		secondary,
 		onClose,
 		children
 	}: Props = $props();
@@ -38,12 +41,23 @@
 	<!-- Konsta 5.5.0's Dialog crashes on string titles (missing printText import), so pass a snippet -->
 	{#snippet title()}{heading}{/snippet}
 	<form id={formId} method="POST" {action} use:enhance={submission.enhance}>
-		<ActorInput />
 		{@render children?.()}
 	</form>
 
 	{#snippet buttons()}
 		<DialogButton type="button" onclick={onClose}>{m.cancel()}</DialogButton>
+		{#if secondary}
+			<DialogButton
+				type="submit"
+				form={formId}
+				formaction={secondary.action}
+				formnovalidate
+				disabled={submission.pending}
+				class="tone-destructive"
+			>
+				{secondary.label}
+			</DialogButton>
+		{/if}
 		<DialogButton
 			type="submit"
 			form={formId}

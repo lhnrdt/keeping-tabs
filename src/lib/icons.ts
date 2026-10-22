@@ -1,4 +1,5 @@
 // The app's icons by meaning: one family (Tabler, outline), one place to swap them.
+import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
 import IconCash from '@tabler/icons-svelte-runes/icons/cash';
 import IconPencil from '@tabler/icons-svelte-runes/icons/pencil';
 import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
@@ -16,6 +17,7 @@ import IconX from '@tabler/icons-svelte-runes/icons/x';
 export const icons = {
 	add: IconPlus,
 	addMember: IconUserPlus,
+	copy: IconCopy,
 	balances: IconScale,
 	delete: IconTrash,
 	edit: IconPencil,

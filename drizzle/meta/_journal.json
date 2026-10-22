@@ -15,6 +15,20 @@
       "when": 1792604377569,
       "tag": "0001_group_currency",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1792645648153,
+      "tag": "0002_device_identity",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1792646372745,
+      "tag": "0003_recovery_key",
+      "breakpoints": true
     }
   ]
 }

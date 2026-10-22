@@ -6,7 +6,7 @@
 </script>
 
 {#key data.group.id}
-	<GroupScope group={data.group} creatorId={data.creatorId}>
+	<GroupScope group={data.group} members={data.members}>
 		{@render children()}
 	</GroupScope>
 {/key}

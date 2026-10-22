@@ -7,6 +7,8 @@ export type Action =
 	| 'group.regenerate_link'
 	| 'member.add'
 	| 'member.rename'
+	| 'member.claim'
+	| 'member.release'
 	| 'expense.create'
 	| 'expense.update'
 	| 'expense.delete'
