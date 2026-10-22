@@ -35,7 +35,10 @@ export const errorMessages = {
 	import_empty: m.error_import_empty,
 	import_file_missing: m.error_import_file_missing,
 	import_too_large: m.error_import_too_large,
-	import_people_invalid: m.error_import_people_invalid
+	import_people_invalid: m.error_import_people_invalid,
+	already_member: m.error_already_member,
+	member_has_taken_part: m.error_member_has_taken_part,
+	member_not_settled: m.error_member_not_settled
 } satisfies Record<string, () => string>;
 
 export type ErrorCode = keyof typeof errorMessages;
