@@ -6,6 +6,7 @@
 	import LinkButton from '#lib/components/LinkButton.svelte';
 	import HomeHero from '#lib/components/home/HomeHero.svelte';
 	import YourGroups from '#lib/components/home/YourGroups.svelte';
+	import { totalsByCurrency } from '#lib/money.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import type { PageProps } from './$types';
 
@@ -18,7 +19,7 @@
 
 <AppPage title={m.app_name()}>
 	{#snippet hero()}
-		<HomeHero />
+		<HomeHero totals={totalsByCurrency(data.yourGroups)} />
 	{/snippet}
 	<YourGroups memberOf={data.yourGroups} />
 	<Block>

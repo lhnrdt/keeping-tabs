@@ -130,7 +130,13 @@ export const isUniqueViolation = (error: unknown) =>
 /** Groups where a person has claimed a member: "your groups" on every device (A-17). */
 export async function listGroupsOf(db: Db, personId: string) {
 	return db
-		.select({ id: groups.id, name: groups.name, token: groups.shareToken })
+		.select({
+			id: groups.id,
+			name: groups.name,
+			token: groups.shareToken,
+			currency: groups.currency,
+			memberId: members.id
+		})
 		.from(members)
 		.innerJoin(groups, eq(members.groupId, groups.id))
 		.where(and(eq(members.personId, personId), isNull(members.deletedAt), isNull(groups.deletedAt)))

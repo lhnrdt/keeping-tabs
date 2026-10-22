@@ -7,15 +7,18 @@ export type GroupLink = { id: string; name: string; token: string };
  * Server groups win for name and link (they're current, e.g. after a new link); groups
  * opened recently come first, the rest keep the server's order.
  */
-export function mergeGroups(
-	server: readonly GroupLink[],
+export function mergeGroups<Server extends GroupLink>(
+	server: readonly Server[],
 	local: readonly (GroupLink & { openedAt: number })[]
-): GroupLink[] {
+): (Server | GroupLink)[] {
 	const openedAt = new Map(local.map((group) => [group.id, group.openedAt]));
 	const serverIds = new Set(server.map((group) => group.id));
-	const merged = [...server, ...local.filter((group) => !serverIds.has(group.id))];
+	const localOnly = local
+		.filter((group) => !serverIds.has(group.id))
+		.map(({ id, name, token }): GroupLink => ({ id, name, token }));
+	const merged: (Server | GroupLink)[] = [...server, ...localOnly];
 	return merged
 		.map((group, index) => ({ group, index, opened: openedAt.get(group.id) ?? 0 }))
 		.sort((a, b) => b.opened - a.opened || a.index - b.index)
-		.map(({ group: { id, name, token } }) => ({ id, name, token }));
+		.map(({ group }) => group);
 }
