@@ -76,9 +76,7 @@
 		</List>
 
 		<BlockTitle>{m.field_other_members()}</BlockTitle>
-		<List strong inset>
-			<MemberChips names={values?.members} />
-		</List>
+		<MemberChips names={values?.members} />
 
 		<FormError {error} />
 
