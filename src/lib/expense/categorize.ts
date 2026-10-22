@@ -1,245 +1,25 @@
-// Guesses an expense's category from its title (English and German), e.g. "Lidl" → groceries.
-import { withinOneEdit } from '#lib/text/typo.ts';
+// Guesses an expense's category from its title, e.g. "Lidl" → groceries.
+import { buildTypoIndex, findWithTypo } from '#lib/text/typo-index.ts';
 import type { ExpenseCategory } from './categories';
+import { matchDataset, type DatasetIndex } from './dataset/index';
+import { KEYWORDS } from './keywords';
 import { normalizeTitle } from './normalize';
-
-/**
- * Keywords per category, lowercase without accents. Earlier categories win when several
- * match. Up to 3 letters must be the whole word ("bar", not "barbecue"), 4 letters start a
- * word ("rent" in "rental"), longer ones may appear anywhere ("einkauf" in "Wocheneinkauf")
- * and tolerate one typo.
- */
-const KEYWORDS: [Exclude<ExpenseCategory, 'other'>, string[]][] = [
-	[
-		'lodging',
-		[
-			'hotel',
-			'hostel',
-			'airbnb',
-			'motel',
-			'booking',
-			'unterkunft',
-			'ferienwohnung',
-			'apartment',
-			'cabin',
-			'hutte',
-			'camping',
-			'accommodation'
-		]
-	],
-	[
-		'transport',
-		[
-			'taxi',
-			'uber',
-			'bolt',
-			'train',
-			'zug',
-			'bahn',
-			'bus',
-			'tram',
-			'metro',
-			'ubahn',
-			'sbahn',
-			'flight',
-			'flug',
-			'ferry',
-			'fahre',
-			'fuel',
-			'petrol',
-			'benzin',
-			'diesel',
-			'tanken',
-			'parking',
-			'parken',
-			'parkhaus',
-			'toll',
-			'maut',
-			'vignette',
-			'mietwagen',
-			'rental car',
-			'car hire',
-			'sixt',
-			'europcar'
-		]
-	],
-	[
-		'groceries',
-		[
-			'groceries',
-			'grocery',
-			'supermarket',
-			'supermarkt',
-			'einkauf',
-			'lebensmittel',
-			'aldi',
-			'lidl',
-			'rewe',
-			'edeka',
-			'kaufland',
-			'netto',
-			'penny',
-			'tesco',
-			'migros',
-			'coop',
-			'spar',
-			'billa',
-			'hofer',
-			'market',
-			'markt'
-		]
-	],
-	[
-		'drinks',
-		[
-			'bar',
-			'pub',
-			'beer',
-			'bier',
-			'wine',
-			'wein',
-			'drinks',
-			'getranke',
-			'cocktail',
-			'shots',
-			'kneipe'
-		]
-	],
-	[
-		'dining',
-		[
-			'restaurant',
-			'dinner',
-			'lunch',
-			'breakfast',
-			'brunch',
-			'pizza',
-			'sushi',
-			'burger',
-			'kebab',
-			'doner',
-			'cafe',
-			'coffee',
-			'kaffee',
-			'bakery',
-			'backerei',
-			'takeaway',
-			'takeout',
-			'lieferando',
-			'essen',
-			'fruhstuck',
-			'imbiss',
-			'food',
-			'meal',
-			'snack',
-			'eis',
-			'ice cream'
-		]
-	],
-	[
-		'home',
-		[
-			'rent',
-			'miete',
-			'electricity',
-			'strom',
-			'utilities',
-			'nebenkosten',
-			'internet',
-			'wifi',
-			'wlan',
-			'heating',
-			'heizung',
-			'water bill',
-			'cleaning',
-			'putzmittel',
-			'furniture',
-			'mobel',
-			'ikea',
-			'household',
-			'haushalt',
-			'toilet paper',
-			'klopapier'
-		]
-	],
-	[
-		'fun',
-		[
-			'cinema',
-			'kino',
-			'movie',
-			'film',
-			'concert',
-			'konzert',
-			'museum',
-			'theater',
-			'theatre',
-			'festival',
-			'party',
-			'tickets',
-			'eintritt',
-			'bowling',
-			'skipass',
-			'ski pass',
-			'lift pass',
-			'netflix',
-			'spotify',
-			'game',
-			'spiel',
-			'zoo'
-		]
-	],
-	[
-		'shopping',
-		[
-			'clothes',
-			'kleidung',
-			'shoes',
-			'schuhe',
-			'amazon',
-			'zalando',
-			'shopping',
-			'mall',
-			'electronics'
-		]
-	],
-	[
-		'gifts',
-		[
-			'gift',
-			'present',
-			'geschenk',
-			'birthday',
-			'geburtstag',
-			'flowers',
-			'blumen',
-			'wedding',
-			'hochzeit'
-		]
-	],
-	[
-		'health',
-		[
-			'pharmacy',
-			'apotheke',
-			'doctor',
-			'arzt',
-			'medicine',
-			'medikament',
-			'dentist',
-			'zahnarzt',
-			'hospital',
-			'krankenhaus',
-			'gym',
-			'fitness',
-			'sunscreen',
-			'sonnencreme'
-		]
-	]
-];
 
 /** Keywords this long also match with one typo, e.g. "resturant". */
 const TYPO_MIN_LENGTH = 5;
+
+/** Category order: earlier categories win when several match */
+const rank = new Map(KEYWORDS.map(([category], i) => [category, i]));
+const categoryOfKeyword = new Map(
+	KEYWORDS.flatMap(([category, keywords]) =>
+		keywords.map((keyword) => [keyword, category] as const)
+	)
+);
+const typoIndex = buildTypoIndex(
+	[...categoryOfKeyword.keys()].filter(
+		(keyword) => keyword.length >= TYPO_MIN_LENGTH && !keyword.includes(' ')
+	)
+);
 
 function matchesExactly(text: string, words: string[], keyword: string) {
 	if (keyword.includes(' ')) return ` ${text} `.includes(` ${keyword} `);
@@ -248,25 +28,56 @@ function matchesExactly(text: string, words: string[], keyword: string) {
 	return text.includes(keyword);
 }
 
-/** A word, or its start (for plurals and compounds), is the keyword with one typo. */
-function matchesWithTypo(words: string[], keyword: string) {
-	if (keyword.length < TYPO_MIN_LENGTH || keyword.includes(' ')) return false;
-	return words.some((word) =>
-		[-1, 0, 1].some((delta) => withinOneEdit(word.slice(0, keyword.length + delta), keyword))
-	);
+function exactMatch(text: string, words: string[]) {
+	return KEYWORDS.find(([, keywords]) =>
+		keywords.some((keyword) => matchesExactly(text, words, keyword))
+	)?.[0];
 }
 
-function firstMatch(matches: (keyword: string) => boolean) {
-	return KEYWORDS.find(([, keywords]) => keywords.some(matches))?.[0];
+/** A word, or its start (for plurals and compounds), is a keyword with one typo. */
+function typoMatch(words: string[]) {
+	let best: Exclude<ExpenseCategory, 'other'> | undefined;
+	for (const word of words) {
+		const longest = Math.min(word.length, typoIndex.maxLength + 1);
+		for (let length = TYPO_MIN_LENGTH - 1; length <= longest; length++) {
+			for (const keyword of findWithTypo(typoIndex, word.slice(0, length))) {
+				const category = categoryOfKeyword.get(keyword)!;
+				if (!best || rank.get(category)! < rank.get(best)!) best = category;
+			}
+		}
+	}
+	return best;
 }
 
-/** Exact matches win over typo matches; earlier categories win over later ones. */
-export function categorize(title: string): ExpenseCategory {
-	const text = normalizeTitle(title);
+function categorizeText(text: string, dataset?: DatasetIndex): ExpenseCategory {
 	const words = text.split(' ');
 	return (
-		firstMatch((keyword) => matchesExactly(text, words, keyword)) ??
-		firstMatch((keyword) => matchesWithTypo(words, keyword)) ??
+		exactMatch(text, words) ??
+		(dataset && matchDataset(words, dataset)) ??
+		typoMatch(words) ??
 		'other'
 	);
+}
+
+// Titles repeat a lot ("Groceries", "Rent"), so results are remembered per dataset
+const NO_DATASET = {};
+const CACHE_LIMIT = 2000;
+const caches = new WeakMap<object, Map<string, ExpenseCategory>>();
+
+/**
+ * Hand-written keywords first, then the dataset's brands and terms (when loaded), then
+ * hand-written keywords with a typo.
+ */
+export function categorize(title: string, dataset?: DatasetIndex): ExpenseCategory {
+	const key = dataset ?? NO_DATASET;
+	const cache = caches.get(key) ?? new Map<string, ExpenseCategory>();
+	caches.set(key, cache);
+	const text = normalizeTitle(title);
+	let category = cache.get(text);
+	if (!category) {
+		if (cache.size >= CACHE_LIMIT) cache.clear();
+		category = categorizeText(text, dataset);
+		cache.set(text, category);
+	}
+	return category;
 }
