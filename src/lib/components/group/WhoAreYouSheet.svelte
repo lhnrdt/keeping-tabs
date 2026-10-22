@@ -1,6 +1,7 @@
 <script lang="ts">
 	// Action sheet to pick your member; opens by itself until you've picked one (A-4).
 	import { Actions, ActionsButton, ActionsGroup, ActionsLabel } from 'konsta/svelte';
+	import Avatar from '#lib/components/Avatar.svelte';
 	import { useIdentity } from '#lib/group/identity.svelte.ts';
 	import type { Member } from '#lib/group/members.ts';
 	import { m } from '#lib/paraglide/messages.js';
@@ -20,7 +21,10 @@
 				bold={member.id === identity.memberId}
 				onclick={() => identity.choose(member.id)}
 			>
-				{member.name}
+				<span class="flex items-center justify-center gap-3">
+					<Avatar id={member.id} name={member.name} size="sm" />
+					{member.name}
+				</span>
 			</ActionsButton>
 		{/each}
 	</ActionsGroup>

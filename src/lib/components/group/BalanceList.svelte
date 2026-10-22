@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { List, ListItem } from 'konsta/svelte';
-	import IconBadge from '#lib/components/IconBadge.svelte';
+	import Avatar from '#lib/components/Avatar.svelte';
 	import AnimatedAmount from '#lib/components/AnimatedAmount.svelte';
 	import type { Member } from '#lib/group/members.ts';
 	import { transitionName } from '#lib/motion/in-place-transition.ts';
@@ -16,7 +16,7 @@
 		{@const balance = balances[member.id] ?? 0}
 		<ListItem title={member.name} style={transitionName('balance', member.id)}>
 			{#snippet media()}
-				<IconBadge name="member" />
+				<Avatar id={member.id} name={member.name} />
 			{/snippet}
 			{#snippet after()}
 				{#if balance > 0}

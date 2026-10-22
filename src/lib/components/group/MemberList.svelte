@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { List, ListItem } from 'konsta/svelte';
-	import IconBadge from '#lib/components/IconBadge.svelte';
+	import Avatar from '#lib/components/Avatar.svelte';
 	import Field from '#lib/components/Field.svelte';
 	import FormDialog from './FormDialog.svelte';
 	import FormError from '#lib/components/FormError.svelte';
@@ -35,7 +35,7 @@
 			onclick={() => (renaming = lastRenamed = member)}
 		>
 			{#snippet media()}
-				<IconBadge name="member" />
+				<Avatar id={member.id} name={member.name} />
 			{/snippet}
 		</ListItem>
 	{/each}

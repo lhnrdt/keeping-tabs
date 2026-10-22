@@ -1,6 +1,7 @@
 <script lang="ts">
 	// Navbar entry showing who you are; tap to switch (A-5).
 	import { Link } from 'konsta/svelte';
+	import Avatar from '#lib/components/Avatar.svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import { useIdentity } from '#lib/group/identity.svelte.ts';
 	import type { Member } from '#lib/group/members.ts';
@@ -20,7 +21,11 @@
 		aria-label={me ? `${me.name} – ${m.choose_member()}` : m.choose_member()}
 		onclick={() => (identity.switching = true)}
 	>
-		<Icon name="identity" />
+		{#if me}
+			<Avatar id={me.id} name={me.name} size="sm" />
+		{:else}
+			<Icon name="identity" />
+		{/if}
 		{me?.name ?? m.who_are_you()}
 	</Link>
 {/if}
