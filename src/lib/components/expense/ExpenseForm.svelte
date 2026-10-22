@@ -7,6 +7,8 @@
 	import CategoryPicker from '#lib/components/pickers/CategoryPicker.svelte';
 	import GroupForm from '#lib/components/group/GroupForm.svelte';
 	import type { ErrorCode } from '#lib/errors.ts';
+	import type { ExpenseCategory } from '#lib/expense/categories.ts';
+	import { learnCategories } from '#lib/expense/learned.ts';
 	import { useIdentity } from '#lib/group/identity.svelte.ts';
 	import type { Member } from '#lib/group/members.ts';
 	import { m } from '#lib/paraglide/messages.js';
@@ -25,11 +27,13 @@
 			participants: string[];
 			category: string;
 		};
+		/** The group's hand-chosen categories, newest first */
+		chosen: { title: string; category: ExpenseCategory | null }[];
 		error?: ErrorCode;
 		submitLabel: string;
 	};
 
-	let { members, currency, values, error, submitLabel }: Props = $props();
+	let { members, currency, values, chosen, error, submitLabel }: Props = $props();
 
 	const identity = useIdentity();
 	// Follows the typed title, so the automatic category can show its guess
@@ -55,6 +59,6 @@
 	<ParticipantChecklist {members} selected={values.participants} />
 
 	<List strong inset class="py-3">
-		<CategoryPicker value={values.category} {title} />
+		<CategoryPicker value={values.category} {title} learned={learnCategories(chosen)} />
 	</List>
 </GroupForm>

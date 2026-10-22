@@ -5,7 +5,7 @@
 	import IconBadge from '#lib/components/IconBadge.svelte';
 	import AnimatedAmount from '#lib/components/AnimatedAmount.svelte';
 	import type { ExpenseCategory } from '#lib/expense/categories.ts';
-	import { categoryOf } from '#lib/expense/categorize.ts';
+	import { categoryOf, learnCategories } from '#lib/expense/learned.ts';
 	import { categoryIcons } from '#lib/expense/category-style.ts';
 	import { namesById, type Member } from '#lib/group/members.ts';
 	import { transitionName } from '#lib/motion/in-place-transition.ts';
@@ -29,6 +29,8 @@
 	let { token, currency, members, expenses }: Props = $props();
 
 	const names = $derived(namesById(members));
+	// Expenses come newest first, so the latest hand-chosen category per title wins
+	const learned = $derived(learnCategories(expenses));
 	const dateFormat = new Intl.DateTimeFormat(getLocale(), { dateStyle: 'medium', timeZone: 'UTC' });
 	const formatDate = (date: string) => dateFormat.format(new Date(`${date}T00:00:00Z`));
 	const nameOf = (id: string | undefined) => (id && names.get(id)) || '?';
@@ -64,7 +66,9 @@
 			>
 				{#snippet media()}
 					<IconBadge
-						name={expense.type === 'payment' ? 'payment' : categoryIcons[categoryOf(expense)]}
+						name={expense.type === 'payment'
+							? 'payment'
+							: categoryIcons[categoryOf(expense, learned)]}
 					/>
 				{/snippet}
 				{#snippet after()}

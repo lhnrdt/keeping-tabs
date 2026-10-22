@@ -30,6 +30,7 @@
 >
 	<ExpenseForm
 		members={data.members}
+		chosen={data.chosen}
 		currency={data.group.currency}
 		{values}
 		error={form?.error}

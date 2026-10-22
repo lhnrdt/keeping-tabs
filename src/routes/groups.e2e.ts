@@ -3,7 +3,7 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 /** Picks an option in a tile picker by tapping its tile, like a user would. */
 async function choose(scope: Page | Locator, picker: string, option: string) {
 	await scope.getByRole('group', { name: picker }).getByText(option, { exact: true }).click();
-	await expect(scope.getByRole('radio', { name: option })).toBeChecked();
+	await expect(scope.getByRole('radio', { name: option, exact: true })).toBeChecked();
 }
 
 /** Opens a page and waits until it's interactive (hydrated), like a user would. */
@@ -244,5 +244,11 @@ test('expenses get a category from their title unless one is chosen', async ({ p
 	await choose(page, 'Category', 'Drinks');
 	await page.getByRole('button', { name: 'Save' }).click();
 	await page.getByRole('link', { name: /Taxi home/ }).click();
-	await expect(page.getByRole('radio', { name: 'Drinks' })).toBeChecked();
+	await expect(page.getByRole('radio', { name: 'Drinks', exact: true })).toBeChecked();
+
+	// …and the group's choice becomes the guess for the same title
+	await page.goBack();
+	await page.getByRole('link', { name: 'Add expense' }).click();
+	await page.getByLabel('What was it for?').fill('taxi HOME');
+	await expect(automatic).toContainText('Drinks');
 });
