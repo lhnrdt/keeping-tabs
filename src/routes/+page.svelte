@@ -27,9 +27,7 @@
 		error={form?.error}
 		profileName={data.profileName}
 	/>
-	{#if data.hasIdentity}
-		<List strong inset>
-			<ListItem link title={m.home_other_device()} href={resolve('/device')} />
-		</List>
-	{/if}
+	<List strong inset>
+		<ListItem link title={m.home_other_device()} href={resolve('/device')} />
+	</List>
 </AppPage>

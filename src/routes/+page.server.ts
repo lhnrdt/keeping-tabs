@@ -21,7 +21,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 		defaultCurrency: DEFAULT_CURRENCY,
 		// Pre-fills "Your name" (A-13)
 		profileName: person?.name ?? '',
-		hasIdentity: Boolean(person),
 		// On every device of this person (A-17)
 		yourGroups: person ? await listGroupsOf(locals.db, person.id) : []
 	};
