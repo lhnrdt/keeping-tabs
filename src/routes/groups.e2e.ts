@@ -1,4 +1,10 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
+
+/** Picks an option in a tile picker by tapping its tile, like a user would. */
+async function choose(scope: Page | Locator, picker: string, option: string) {
+	await scope.getByRole('group', { name: picker }).getByText(option, { exact: true }).click();
+	await expect(scope.getByRole('radio', { name: option })).toBeChecked();
+}
 
 /** Opens a page and waits until it's interactive (hydrated), like a user would. */
 async function open(page: Page, url: string) {
@@ -182,4 +188,34 @@ test('settle up with suggested payments', async ({ page }) => {
 		.getByRole('button', { name: 'Delete payment' })
 		.click();
 	await expect(page.getByRole('region', { name: 'Settle up' })).toContainText('Ben pays Anna');
+});
+
+test('choose a type and color for a group, then change them', async ({ page }) => {
+	await open(page, '/new');
+	await page.getByLabel('Group name').fill('Lake house');
+	await page.getByLabel('Your name').fill('Anna');
+	await page.getByLabel('Add a person').fill('Ben');
+	await choose(page, 'Type', 'Trip');
+	await choose(page, 'Color', 'Sky');
+	await page.getByRole('button', { name: 'Create group' }).click();
+
+	const hero = page.locator('header', { has: page.getByRole('heading', { name: 'Lake house' }) });
+	await expect(hero).toHaveClass(/tint-sky/);
+
+	await page.getByRole('link', { name: 'Group' }).click();
+	const details = page.getByRole('region', { name: 'Details' });
+	await expect(details).toContainText('Trip');
+
+	await page.getByRole('button', { name: 'Edit group' }).click();
+	const dialog = page.getByRole('dialog', { name: 'Edit group' });
+	await choose(dialog, 'Type', 'Shared home');
+	await choose(dialog, 'Color', 'Moss');
+	await dialog.getByRole('button', { name: 'Save' }).click();
+	await expect(details).toContainText('Shared home');
+	await expect(hero).toHaveClass(/tint-moss/);
+
+	// The home screen shows the group in its new color
+	await open(page, '/');
+	const tile = page.getByRole('link', { name: 'Lake house' }).locator('.tint-moss');
+	await expect(tile).toBeVisible();
 });

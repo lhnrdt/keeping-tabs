@@ -2,9 +2,12 @@
 	import { enhance } from '$app/forms';
 	import { Block, BlockTitle, List } from 'konsta/svelte';
 	import Field from '#lib/components/Field.svelte';
+	import KindPicker from '#lib/components/pickers/KindPicker.svelte';
+	import TintPicker from '#lib/components/pickers/TintPicker.svelte';
 	import FormError from '#lib/components/FormError.svelte';
 	import SubmitButton from '#lib/components/SubmitButton.svelte';
 	import type { ErrorCode } from '#lib/errors.ts';
+	import { DEFAULT_GROUP_KIND } from '#lib/group/kinds.ts';
 	import { Submission } from '#lib/forms/submission.svelte.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { LIMITS } from '#lib/validation.ts';
@@ -14,6 +17,8 @@
 		name: string;
 		description: string;
 		currency: string;
+		kind: string;
+		tint: string;
 		you: string;
 		members: string[];
 	};
@@ -63,6 +68,11 @@
 				autocomplete="given-name"
 				value={values?.you ?? profileName}
 			/>
+		</List>
+
+		<List strong inset class="py-3">
+			<KindPicker value={values?.kind ?? DEFAULT_GROUP_KIND} />
+			<TintPicker value={values?.tint ?? ''} id="new-group" />
 		</List>
 
 		<BlockTitle>{m.field_other_members()}</BlockTitle>
