@@ -1,6 +1,7 @@
 // The app's icons by meaning: one family (Tabler, outline), one place to swap them.
 import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
 import IconCash from '@tabler/icons-svelte-runes/icons/cash';
+import IconFingerprint from '@tabler/icons-svelte-runes/icons/fingerprint';
 import IconPencil from '@tabler/icons-svelte-runes/icons/pencil';
 import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 import IconReceipt from '@tabler/icons-svelte-runes/icons/receipt';
@@ -27,6 +28,7 @@ export const icons = {
 	member: IconUser,
 	payment: IconCash,
 	newLink: IconRefresh,
+	passkey: IconFingerprint,
 	remove: IconX,
 	share: IconShare
 };

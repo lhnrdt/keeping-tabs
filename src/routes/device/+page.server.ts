@@ -1,6 +1,7 @@
 import { fail } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
 import type { ErrorCode } from '#lib/errors.ts';
+import { countPasskeys } from '#lib/server/passkeys.ts';
 import {
 	createDeviceLink,
 	createRecoveryKey,
@@ -10,9 +11,13 @@ import {
 } from '#lib/server/people.ts';
 import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ locals }) => ({
-	hasIdentity: Boolean(await findPerson(locals.db, locals.deviceKey))
-});
+export const load: PageServerLoad = async ({ locals }) => {
+	const person = await findPerson(locals.db, locals.deviceKey);
+	return {
+		hasIdentity: Boolean(person),
+		passkeyCount: person ? await countPasskeys(locals.db, person.id) : 0
+	};
+};
 
 export const actions: Actions = {
 	/** A one-time link for another device (A-14); the token travels in the URL fragment */
