@@ -72,7 +72,7 @@ export async function useDeviceLink(db: Db, token: string, deviceKey: string): P
 }
 
 /** Makes this device belong to a person (moving it away from any previous one). */
-async function attachDevice(db: Db, deviceKey: string, personId: string) {
+export async function attachDevice(db: Db, deviceKey: string, personId: string) {
 	await db
 		.insert(devices)
 		.values({ keyHash: await hashSecret(deviceKey), personId })
