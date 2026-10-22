@@ -1,10 +1,11 @@
 <script lang="ts">
 	import type { Path } from '$app/types';
-	import { onNavigate } from '$app/navigation';
+	import { beforeNavigate, onNavigate } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import { page } from '$app/state';
+	import { page, updated } from '$app/state';
 	import { App } from 'konsta/svelte';
 	import { prefersReducedMotion } from 'svelte/motion';
+	import OfflineBanner from '#lib/components/OfflineBanner.svelte';
 	import { locales, localizeHref } from '#lib/paraglide/runtime.js';
 	import './layout.css';
 	import favicon from '#lib/assets/favicon.svg';
@@ -13,6 +14,11 @@
 	let { children }: LayoutProps = $props();
 
 	const depth = (url: URL | undefined) => url?.pathname.split('/').filter(Boolean).length ?? 0;
+
+	// After a deploy, the next navigation loads the new version instead of the old app
+	beforeNavigate(({ willUnload, to }) => {
+		if (updated.current && !willUnload && to?.url) location.href = to.url.href;
+	});
 
 	// Page transitions (N-12)
 	onNavigate((navigation) => {
@@ -35,6 +41,7 @@
 
 <App theme="ios" dark safeAreas>
 	{@render children()}
+	<OfflineBanner />
 </App>
 
 <div style="display:none">

@@ -54,7 +54,9 @@ test('create a group, manage members and replace its link', async ({ page }) => 
 		.getByRole('dialog', { name: 'Create new link' })
 		.getByRole('button', { name: 'Create new link' })
 		.click();
-	await expect(page).not.toHaveURL(groupUrl);
+	// Wait for the new token, not just any other URL (we're on ?tab=group)
+	const oldToken = new URL(groupUrl).pathname.split('/').pop()!;
+	await expect(page).toHaveURL((url) => !url.pathname.endsWith(oldToken));
 	await expect(page.getByRole('heading', { name: 'Ski trip' })).toBeVisible();
 
 	const response = await page.goto(groupUrl);
