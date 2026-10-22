@@ -47,7 +47,7 @@
 		/>
 		<!-- Konsta sets role="button" on its Fab even when it's a link -->
 		<Fab
-			class="fixed right-4 bottom-[calc(var(--k-safe-area-bottom,0px)+6rem)] z-20"
+			class="fixed right-[max(1rem,calc(50vw-var(--container-app)/2+1rem))] bottom-[calc(var(--k-safe-area-bottom,0px)+6rem)] z-20"
 			href={resolve('/g/[token]/expenses/new', { token: data.group.shareToken })}
 			text={m.add_expense()}
 			role="link"
