@@ -2,10 +2,13 @@ import { env } from 'cloudflare:workers';
 import { version } from '$app/env';
 import type { Handle } from '@sveltejs/kit/hooks';
 import { sequence } from '@sveltejs/kit/hooks';
+import { redirect } from '@sveltejs/kit';
+import { resolve as resolveRoute } from '$app/paths';
 import { cookieName, getTextDirection } from '#lib/paraglide/runtime.js';
 import { LOCALE_COOKIE, THEME_COOKIE } from '#lib/settings.ts';
 import { paraglideMiddleware } from '#lib/paraglide/server.js';
 import { getDb } from '#lib/server/db/index.ts';
+import { grantAccess, hasAccess, isOpenPath } from '#lib/server/access.ts';
 import { ensureDeviceKey } from '#lib/server/device.ts';
 import { findPerson } from '#lib/server/people.ts';
 import { applySettings, markSettingsChecked, settingsChecked } from '#lib/server/settings.ts';
@@ -55,10 +58,29 @@ const handleSettings: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
+/**
+ * Private app (#109): without access, everything except invitations leads to the password
+ * page. Devices that already belong to someone in a group are let in (and remembered).
+ */
+const handleAccess: Handle = async ({ event, resolve }) => {
+	if (isOpenPath(event.url.pathname) || (await hasAccess(event.cookies))) return resolve(event);
+	if (await findPerson(event.locals.db, event.locals.deviceKey)) {
+		await grantAccess(event.cookies);
+		return resolve(event);
+	}
+	// Come back to the page itself afterwards, not to its data request
+	const next = event.isDataRequest
+		? event.url.pathname.replace(/\/__data\.json$/, '') || '/'
+		: `${event.url.pathname}${event.url.search}`;
+	redirect(303, `${resolveRoute('/welcome')}?${new URLSearchParams({ next })}`);
+};
+
 /** Every dynamic response says which release served it. */
 const handleVersion: Handle = async ({ event, resolve }) => {
 	const response = await resolve(event);
 	response.headers.set('x-app-version', version);
+	// A private app: never listed by search engines
+	response.headers.set('x-robots-tag', 'noindex, nofollow');
 	return response;
 };
 
@@ -66,6 +88,7 @@ export const handle: Handle = sequence(
 	handleVersion,
 	handleDb,
 	handleDevice,
+	handleAccess,
 	handleSettings,
 	handleParaglide
 );
