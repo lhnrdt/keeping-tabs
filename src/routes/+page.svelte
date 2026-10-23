@@ -5,12 +5,13 @@
 	import Icon from '#lib/components/Icon.svelte';
 	import LinkButton from '#lib/components/LinkButton.svelte';
 	import HomeHero from '#lib/components/home/HomeHero.svelte';
+	import RecentlyDeleted from '#lib/components/home/RecentlyDeleted.svelte';
 	import YourGroups from '#lib/components/home/YourGroups.svelte';
 	import { totalsByCurrency } from '#lib/money.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import type { PageProps } from './$types';
 
-	let { data }: PageProps = $props();
+	let { data, form }: PageProps = $props();
 </script>
 
 <svelte:head>
@@ -28,6 +29,7 @@
 			{m.new_group()}
 		</LinkButton>
 	</Block>
+	<RecentlyDeleted groups={data.recentlyDeleted} error={form?.error} />
 	<List strong inset>
 		<ListItem link title={m.home_other_device()} href={resolve('/device')} />
 	</List>

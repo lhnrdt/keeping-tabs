@@ -26,7 +26,11 @@
 </Block>
 <List strong inset>
 	<ListItem title={shareUrl} titleWrapClass="truncate select-all" aria-label={m.share_title()} />
-	<ListButton type="button" class="tone-destructive" onclick={() => (confirmingRegenerate = true)}>
+	<ListButton
+		type="button"
+		class="[&_button]:tone-destructive"
+		onclick={() => (confirmingRegenerate = true)}
+	>
 		<Icon name="newLink" />
 		{m.regenerate_link()}
 	</ListButton>

@@ -235,6 +235,13 @@
 	"delete_identity_button": "Delete my identity",
 	"delete_identity_explain": "This can't be undone. You'll be signed out here and on all your devices, and you can't get your groups back with a passkey or recovery key anymore.",
 	"delete_identity_anonymize": "Also replace my name in groups with \"Former member\"",
-	"delete_identity_confirm": "Delete",
-	"former_member": "Former member"
+	"former_member": "Former member",
+	"delete_group_button": "Delete group",
+	"delete_group_title": "Delete {name}?",
+	"delete_group_explain": "The group disappears for everyone. Any member can restore it from the start screen for {days} days; after that it is gone for good.",
+	"recently_deleted_title": "Recently deleted",
+	"restorable_until": "Can be restored until {date}",
+	"restore_group": "Restore",
+	"error_group_not_restorable": "This group can't be restored anymore.",
+	"delete_confirm": "Delete"
 }

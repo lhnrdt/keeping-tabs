@@ -7,6 +7,7 @@ import { settleTransfers } from '#lib/settle.ts';
 import { formContext as context, requireGroup } from '#lib/server/context.ts';
 import { entryPage } from '#lib/server/expense-entries.ts';
 import { listExpenses } from '#lib/server/expenses.ts';
+import { deleteGroup } from '#lib/server/group-deletion.ts';
 import { joinGroup, letJoinAgain, removeMember, stepBack } from '#lib/server/membership.ts';
 import {
 	addMember,
@@ -131,6 +132,13 @@ export const actions: Actions = {
 		if (!joined.ok) return fail(400, { action: 'join' as const, error: joined.error });
 		// The first name you use becomes your profile name (A-13)
 		if (!person.name) await setProfileName(locals.db, person.id, joined.value.name);
+	},
+
+	/** Soft delete: the group disappears for everyone and can be restored for a while (G-3) */
+	deleteGroup: async ({ locals, params, request }) => {
+		const { group, actorId } = await context(locals, params.token, request);
+		await deleteGroup(locals.db, group.id, actorId);
+		redirect(303, resolve('/'));
 	},
 
 	/** "Not you?": step back while you haven't taken part yet */

@@ -235,6 +235,13 @@
 	"delete_identity_button": "Meine Identität löschen",
 	"delete_identity_explain": "Das lässt sich nicht rückgängig machen. Du bist danach hier und auf allen deinen Geräten abgemeldet und kannst deine Gruppen nicht mehr mit Passkey oder Wiederherstellungsschlüssel zurückholen.",
 	"delete_identity_anonymize": "Meinen Namen in Gruppen außerdem durch „Ehemaliges Mitglied“ ersetzen",
-	"delete_identity_confirm": "Löschen",
-	"former_member": "Ehemaliges Mitglied"
+	"former_member": "Ehemaliges Mitglied",
+	"delete_group_button": "Gruppe löschen",
+	"delete_group_title": "{name} löschen?",
+	"delete_group_explain": "Die Gruppe verschwindet für alle. Jedes Mitglied kann sie {days} Tage lang auf dem Startbildschirm wiederherstellen; danach ist sie endgültig weg.",
+	"recently_deleted_title": "Kürzlich gelöscht",
+	"restorable_until": "Wiederherstellbar bis {date}",
+	"restore_group": "Wiederherstellen",
+	"error_group_not_restorable": "Diese Gruppe kann nicht mehr wiederhergestellt werden.",
+	"delete_confirm": "Löschen"
 }

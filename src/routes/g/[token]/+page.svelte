@@ -7,6 +7,7 @@
 	import Icon from '#lib/components/Icon.svelte';
 	import BalanceList from '#lib/components/group/BalanceList.svelte';
 	import ExpenseList from '#lib/components/group/ExpenseList.svelte';
+	import DeleteGroup from '#lib/components/group/DeleteGroup.svelte';
 	import GroupDetails from '#lib/components/group/GroupDetails.svelte';
 	import GroupHero from '#lib/components/group/GroupHero.svelte';
 	import GroupTabs from '#lib/components/group/GroupTabs.svelte';
@@ -80,6 +81,7 @@
 		<GroupDetails group={data.group} error={errorFor('updateGroup')} />
 		<BlockTitle>{m.share_title()}</BlockTitle>
 		<ShareLink token={data.group.shareToken} groupName={data.group.name} />
+		<DeleteGroup groupId={data.group.id} name={data.group.name} />
 		<List strong inset>
 			<ListItem
 				link

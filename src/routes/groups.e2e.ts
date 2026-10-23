@@ -256,3 +256,37 @@ test('unknown pages are calm, with a way back', async ({ page }) => {
 	await page.getByRole('link', { name: 'Your groups' }).click();
 	await expect(page).toHaveURL(/\/$/);
 });
+
+test('delete a group for everyone, and restore it from the start screen', async ({ page }) => {
+	await open(page, '/new');
+	await page.getByLabel('Group name').fill('Old flat');
+	await page.getByLabel('Your name').fill('Anna');
+	await page.getByRole('button', { name: 'Create group' }).click();
+	await expect(page.getByTestId('identity')).toHaveText('Anna');
+	const groupUrl = page.url();
+
+	await open(page, `${groupUrl}?tab=group`);
+	await page.getByRole('button', { name: 'Delete group' }).click();
+	const dialog = page.getByRole('dialog', { name: 'Delete Old flat?' });
+	await expect(dialog).toContainText('30 days');
+	await dialog.getByRole('button', { name: 'Delete' }).click();
+
+	// Gone from the start screen's groups and for anyone opening the link
+	await expect(page).toHaveURL(/\/$/);
+	await expect(page.getByRole('link', { name: 'Old flat' })).toHaveCount(0);
+	const deleted = page.getByRole('region', { name: 'Recently deleted' });
+	await expect(deleted).toContainText('Old flat');
+	const response = await page.goto(groupUrl);
+	expect(response?.status()).toBe(404);
+
+	// A member brings it back
+	await open(page, '/');
+	await page
+		.getByRole('region', { name: 'Recently deleted' })
+		.getByRole('button', { name: 'Restore' })
+		.click();
+	await expect(page.getByRole('link', { name: 'Old flat' })).toBeVisible();
+	await expect(page.getByRole('region', { name: 'Recently deleted' })).toHaveCount(0);
+	await open(page, groupUrl);
+	await expect(page.getByRole('heading', { name: 'Old flat' })).toBeVisible();
+});
