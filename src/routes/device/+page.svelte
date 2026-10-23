@@ -2,6 +2,7 @@
 	import { resolve } from '$app/paths';
 	import { Block, BlockTitle } from 'konsta/svelte';
 	import AppPage from '#lib/components/AppPage.svelte';
+	import DeleteIdentity from '#lib/components/device/DeleteIdentity.svelte';
 	import DeviceLinkCreator from '#lib/components/device/DeviceLinkCreator.svelte';
 	import PasskeyRestore from '#lib/components/device/PasskeyRestore.svelte';
 	import PasskeySave from '#lib/components/device/PasskeySave.svelte';
@@ -32,6 +33,10 @@
 		<RecoveryKeyCreator
 			recoveryKey={form && 'recoveryKey' in form ? form.recoveryKey : undefined}
 		/>
+
+		<BlockTitle>{m.delete_identity_title()}</BlockTitle>
+		<Block><p class="opacity-80">{m.delete_identity_intro()}</p></Block>
+		<DeleteIdentity />
 	{/if}
 
 	<BlockTitle>{m.restore_title()}</BlockTitle>

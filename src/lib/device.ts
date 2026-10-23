@@ -33,3 +33,12 @@ export function rememberGroup(group: Omit<RecentGroup, 'openedAt'>) {
 	const others = getRecentGroups().filter((g) => g.id !== group.id);
 	write(RECENT_KEY, [{ ...group, openedAt: Date.now() }, ...others]);
 }
+
+/** Forgets the groups remembered on this device (e.g. after deleting the identity). */
+export function clearRecentGroups() {
+	try {
+		localStorage.removeItem(RECENT_KEY);
+	} catch {
+		// Nothing was remembered, or storage is unavailable
+	}
+}

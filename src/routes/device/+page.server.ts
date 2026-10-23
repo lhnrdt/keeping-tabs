@@ -1,6 +1,9 @@
-import { fail } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
 import type { ErrorCode } from '#lib/errors.ts';
+import { m } from '#lib/paraglide/messages.js';
+import { forgetDeviceKey } from '#lib/server/device.ts';
+import { eraseIdentity } from '#lib/server/erase-identity.ts';
 import { countPasskeys } from '#lib/server/passkeys.ts';
 import {
 	createDeviceLink,
@@ -40,5 +43,20 @@ export const actions: Actions = {
 			return fail(400, { error: 'recovery_key_invalid' as ErrorCode });
 		}
 		return { restored: true };
+	},
+
+	/** Deletes the identity behind this device, its passkeys and links (GDPR, #74) */
+	deleteIdentity: async ({ locals, request, cookies }) => {
+		const person = await findPerson(locals.db, locals.deviceKey);
+		if (person) {
+			const form = await request.formData();
+			await eraseIdentity(
+				locals.db,
+				person.id,
+				form.get('anonymize') === 'on' ? m.former_member() : null
+			);
+		}
+		forgetDeviceKey(cookies);
+		redirect(303, resolve('/'));
 	}
 };
