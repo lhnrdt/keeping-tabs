@@ -5,13 +5,14 @@
 	import { page, updated } from '$app/state';
 	import { App } from 'konsta/svelte';
 	import { prefersReducedMotion } from 'svelte/motion';
+	import FriendlyNote from '#lib/components/FriendlyNote.svelte';
 	import OfflineBanner from '#lib/components/OfflineBanner.svelte';
 	import { locales, localizeHref } from '#lib/paraglide/runtime.js';
 	import './layout.css';
 	import favicon from '#lib/assets/favicon.svg';
 	import type { LayoutProps } from './$types';
 
-	let { children }: LayoutProps = $props();
+	let { data, children }: LayoutProps = $props();
 
 	const depth = (url: URL | undefined) => url?.pathname.split('/').filter(Boolean).length ?? 0;
 
@@ -42,6 +43,9 @@
 <App theme="ios" dark safeAreas>
 	{@render children()}
 	<OfflineBanner />
+	{#if data.showNote}
+		<FriendlyNote />
+	{/if}
 </App>
 
 <div style="display:none">

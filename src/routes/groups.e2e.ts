@@ -25,17 +25,21 @@ test('create a group, manage members and replace its link', async ({ page }) => 
 
 	await page.getByRole('link', { name: 'Group' }).click();
 	await expect(page.getByRole('region', { name: 'Details' })).toContainText('CHF');
-	const members = page.getByRole('region', { name: 'Members' });
+	const members = page.getByRole('list', { name: 'Members' });
+	await expect(members.getByRole('button', { name: 'Ben: options' })).toContainText('not here yet');
 
-	await page.getByLabel('New member').fill('Cara');
-	await page.getByRole('button', { name: 'Add member' }).click();
+	// People are pills; "+ Add" opens a field that stays open for the next name
+	await page.getByRole('button', { name: 'Add', exact: true }).click();
+	const newName = page.getByLabel("New person's name");
+	await newName.fill('Cara');
+	await newName.press('Enter');
 	await expect(members.getByText('Cara')).toBeVisible();
-
-	await page.getByLabel('New member').fill('cara');
-	await page.getByRole('button', { name: 'Add member' }).click();
+	await newName.fill('cara');
+	await newName.press('Enter');
 	await expect(page.getByRole('alert')).toHaveText('Each member needs a different name.');
 
-	await page.getByRole('button', { name: 'Rename Ben' }).click();
+	await members.getByRole('button', { name: 'Ben: options' }).click();
+	await page.getByRole('dialog', { name: 'Ben' }).getByRole('button', { name: 'Rename' }).click();
 	const renameDialog = page.getByRole('dialog', { name: 'Rename Ben' });
 	await renameDialog.getByLabel('Name').fill('Benedikt');
 	await renameDialog.getByRole('button', { name: 'Save' }).click();
@@ -242,4 +246,49 @@ test('expenses get a category from their title unless one is chosen', async ({ p
 	await page.getByRole('link', { name: 'Add expense' }).click();
 	await page.getByLabel('What was it for?').fill('taxi HOME');
 	await expect(automatic).toContainText('Drinks');
+});
+
+test('unknown pages are calm, with a way back', async ({ page }) => {
+	// As a friend who's already in (strangers land on the password page instead)
+	await open(page, '/');
+	const response = await page.goto('/g/AAAAAAAAAAAAAAAAAAAAAA');
+	expect(response?.status()).toBe(404);
+	await expect(page.getByRole('heading', { name: 'Nothing here' })).toBeVisible();
+	await expect(page.getByRole('alert')).toContainText("This group doesn't exist");
+	await page.getByRole('link', { name: 'Your groups' }).click();
+	await expect(page).toHaveURL(/\/$/);
+});
+
+test('delete a group for everyone, and restore it from the start screen', async ({ page }) => {
+	await open(page, '/new');
+	await page.getByLabel('Group name').fill('Old flat');
+	await page.getByLabel('Your name').fill('Anna');
+	await page.getByRole('button', { name: 'Create group' }).click();
+	await expect(page.getByTestId('identity')).toHaveText('Anna');
+	const groupUrl = page.url();
+
+	await open(page, `${groupUrl}?tab=group`);
+	await page.getByRole('button', { name: 'Delete group' }).click();
+	const dialog = page.getByRole('dialog', { name: 'Delete Old flat?' });
+	await expect(dialog).toContainText('30 days');
+	await dialog.getByRole('button', { name: 'Delete' }).click();
+
+	// Gone from the start screen's groups and for anyone opening the link
+	await expect(page).toHaveURL(/\/$/);
+	await expect(page.getByRole('link', { name: 'Old flat' })).toHaveCount(0);
+	const deleted = page.getByRole('region', { name: 'Recently deleted' });
+	await expect(deleted).toContainText('Old flat');
+	const response = await page.goto(groupUrl);
+	expect(response?.status()).toBe(404);
+
+	// A member brings it back
+	await open(page, '/');
+	await page
+		.getByRole('region', { name: 'Recently deleted' })
+		.getByRole('button', { name: 'Restore' })
+		.click();
+	await expect(page.getByRole('link', { name: 'Old flat' })).toBeVisible();
+	await expect(page.getByRole('region', { name: 'Recently deleted' })).toHaveCount(0);
+	await open(page, groupUrl);
+	await expect(page.getByRole('heading', { name: 'Old flat' })).toBeVisible();
 });

@@ -2,15 +2,17 @@ import { fail, redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
 import type { ErrorCode } from '#lib/errors.ts';
 import { useDeviceLink } from '#lib/server/people.ts';
+import { checkSettingsAgain } from '#lib/server/settings.ts';
 import type { Actions } from './$types';
 
 export const actions: Actions = {
 	/** Makes this browser the same person as the device that created the link (A-14) */
-	use: async ({ locals, request }) => {
+	use: async ({ locals, request, cookies }) => {
 		const token = String((await request.formData()).get('token') ?? '');
 		if (!(await useDeviceLink(locals.db, token, locals.deviceKey))) {
 			return fail(400, { error: 'device_link_invalid' as ErrorCode });
 		}
+		checkSettingsAgain(cookies);
 		redirect(303, resolve('/'));
 	}
 };

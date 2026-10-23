@@ -60,6 +60,34 @@ jobs:
       - run: pnpm check
       - run: pnpm exec vitest --run --project server
 
+      # The app is private (#109) and locks everyone out without its password: never deploy
+      # an environment that doesn't have the ACCESS_PASSWORD secret
+      - name: Access password is set
+        run: |
+          if ! pnpm exec wrangler secret list ${{ steps.version.outputs.env_args }} | grep -q '"ACCESS_PASSWORD"'; then
+            echo "::error::Set the access password first: wrangler secret put ACCESS_PASSWORD ${{ steps.version.outputs.env_args }}"
+            exit 1
+          fi
+
+      # D1 Time Travel can restore any point in the last 7 days (free plan); record the point
+      # right before migrating, so a bad migration can be undone. See docs/migrations.md.
+      - name: Record a restore point
+        run: |
+          bookmark=$(pnpm exec wrangler d1 time-travel info DB ${{ steps.version.outputs.env_args }} --json | jq -r .bookmark)
+          if [ -z "$bookmark" ] || [ "$bookmark" = null ]; then
+            echo "::error::Could not record a restore point"
+            exit 1
+          fi
+          {
+            echo "### Restore point before migrations"
+            echo "Bookmark: \`$bookmark\`"
+            echo
+            echo '```sh'
+            echo "pnpm exec wrangler d1 time-travel restore DB ${{ steps.version.outputs.env_args }} --bookmark=$bookmark"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "::notice title=Restore point::$bookmark"
+
       - name: Migrate database
         run: pnpm exec wrangler d1 migrations apply DB --remote ${{ steps.version.outputs.env_args }}
 
@@ -90,7 +118,8 @@ jobs:
           auth=()
           if [ "$GITHUB_REF_NAME" = staging ]; then auth=(-u "deploy:$STAGING_PASSWORD"); fi
           for attempt in $(seq 1 12); do
-            served=$(curl -sS -o /dev/null -D - "${auth[@]}" "$URL/" | tr -d '\r' | awk -F': ' 'tolower($1) == "x-app-version" { print $2 }')
+            # The password page: always reachable, also behind the access gate (#109)
+            served=$(curl -sS -o /dev/null -D - "${auth[@]}" "$URL/welcome" | tr -d '\r' | awk -F': ' 'tolower($1) == "x-app-version" { print $2 }')
             if [ "$served" = "$VERSION" ]; then
               echo "$URL serves v$VERSION"
               exit 0

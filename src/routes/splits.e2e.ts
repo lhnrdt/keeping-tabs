@@ -27,6 +27,13 @@ test('split by percentages, with a live remainder, and edit it again', async ({ 
 	await page.getByRole('button', { name: 'Add expense' }).click();
 	await expect(page).toHaveURL(groupUrl);
 
+	// The list shows Anna's side of it: she paid 1000, her share is 400
+	const rent = page
+		.getByRole('region', { name: 'Expenses' })
+		.getByRole('listitem')
+		.filter({ hasText: 'Rent' });
+	await expect(rent).toContainText('you lent €600.00');
+
 	// Anna paid 1000, her share is 400: Ben owes her 600
 	await page.goto(`${groupUrl}?tab=balances`);
 	await expect(balanceOf(page, 'Anna')).toContainText('€600.00');
@@ -64,6 +71,10 @@ test('split by amounts, parts and difference', async ({ page }) => {
 	await page.getByLabel('Difference for Cara').fill('6');
 	await page.getByRole('button', { name: 'Add expense' }).click();
 	await expect(page).toHaveURL(groupUrl);
+
+	// Not every expense involves Anna the same way
+	const entries = page.getByRole('region', { name: 'Expenses' }).getByRole('listitem');
+	await expect(entries.filter({ hasText: 'Taxi' })).toContainText('you lent €22.00');
 
 	// Anna paid 100 and her shares are 10 + 20 + 8 = 38: she gets back 62.
 	// Ben owes 20 + 10 + 8 = 38, Cara 0 + 10 + 14 = 24.

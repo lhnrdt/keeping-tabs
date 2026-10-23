@@ -22,6 +22,22 @@ Keeping Tabs is a calm, mobile-first web app for keeping track of who paid what 
 - **Feels like an app:** Konsta UI (iOS style), tabs, sheets and dialogs, view transitions, a warm light and dark theme. English, with German translations ready.
 - **Accessible and resilient:** real labels, keyboard support, reduced-motion support, and forms that work without JavaScript.
 
+## Principles
+
+- **Free:** hosting, database and development run entirely on free tiers.
+- **No signup:** groups are shared by secret link; identity is per device, with optional passkeys and recovery keys.
+- **Private:** no tracking, no third-party analytics, no personal data beyond the names you type.
+- **Mobile first, responsive:** fully usable at 360 px, touch targets of at least 44 px, adapting up to desktop without horizontal scrolling.
+- **Accessible:** WCAG 2.1 AA for core flows; real labels, keyboard support, reduced motion respected.
+- **Exact money:** amounts are integer cents, and splits always add up to the total.
+- **Reactive and calm:** changes appear immediately with clear pending and error states, smooth but purposeful animations.
+
+Out of scope, because it conflicts with no-signup or free hosting: user accounts, expenses outside groups, bank or card import, built-in payments, a public API, ads or a paid tier.
+
+## Roadmap
+
+Planned work and ideas are [GitHub issues](https://github.com/lhnrdt/keeping-tabs/issues), grouped into [milestones](https://github.com/lhnrdt/keeping-tabs/milestones) (Before 1.0, v1, v2, v3, Later) with priority labels.
+
 ## Privacy
 
 No tracking, no analytics, no third-party requests (fonts, icons and category keywords are bundled). The only personal data is the names you type in. Device keys, link tokens and recovery keys are stored only as hashes.

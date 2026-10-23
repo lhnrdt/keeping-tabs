@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, isNull } from 'drizzle-orm';
+import { and, asc, desc, eq, isNotNull, isNull } from 'drizzle-orm';
 import type { GroupKind } from '#lib/group/kinds.ts';
 import type { Tint } from '#lib/tints.ts';
 import { log } from './activity';
@@ -28,6 +28,14 @@ export function listMembers(db: Db, groupId: string) {
 		columns: { id: true, name: true, personId: true },
 		where: and(eq(members.groupId, groupId), isNull(members.deletedAt)),
 		orderBy: [asc(members.createdAt), asc(members.name)]
+	});
+}
+
+/** Members who were removed (M-6): their past expenses still show their name. */
+export function listFormerMembers(db: Db, groupId: string) {
+	return db.query.members.findMany({
+		columns: { id: true, name: true },
+		where: and(eq(members.groupId, groupId), isNotNull(members.deletedAt))
 	});
 }
 

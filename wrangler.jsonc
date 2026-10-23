@@ -4,7 +4,10 @@
 	"name": "app",
 	"compatibility_date": "2026-10-21",
 	"compatibility_flags": ["nodejs_als"],
-	"main": ".svelte-kit/cloudflare/_worker.js",
+	// The SvelteKit worker plus a daily cleanup job (worker/app.ts)
+	"main": "worker/app.ts",
+	// Daily at 03:17 UTC: remove groups deleted more than 30 days ago
+	"triggers": { "crons": ["17 3 * * *"] },
 	"assets": {
 		"binding": "ASSETS",
 		"directory": ".svelte-kit/cloudflare"
@@ -25,6 +28,8 @@
 			"name": "app-staging",
 			// Password-protected wrapper around the SvelteKit worker (see worker/staging.ts)
 			"main": "worker/staging.ts",
+			// Triggers aren't inherited by environments
+			"triggers": { "crons": ["17 3 * * *"] },
 			"assets": {
 				"binding": "ASSETS",
 				"directory": ".svelte-kit/cloudflare",

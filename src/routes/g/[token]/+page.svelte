@@ -1,20 +1,20 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-	import { BlockTitle, Fab, List, ListItem } from 'konsta/svelte';
+	import { BlockTitle, List, ListItem } from 'konsta/svelte';
 	import AppPage from '#lib/components/AppPage.svelte';
+	import FloatingLink from '#lib/components/FloatingLink.svelte';
 	import Icon from '#lib/components/Icon.svelte';
-	import AddMemberForm from '#lib/components/group/AddMemberForm.svelte';
 	import BalanceList from '#lib/components/group/BalanceList.svelte';
 	import ExpenseList from '#lib/components/group/ExpenseList.svelte';
+	import DeleteGroup from '#lib/components/group/DeleteGroup.svelte';
 	import GroupDetails from '#lib/components/group/GroupDetails.svelte';
 	import GroupHero from '#lib/components/group/GroupHero.svelte';
 	import GroupTabs from '#lib/components/group/GroupTabs.svelte';
 	import IdentityButton from '#lib/components/group/IdentityButton.svelte';
-	import MemberList from '#lib/components/group/MemberList.svelte';
 	import SettleUp from '#lib/components/group/SettleUp.svelte';
 	import ShareLink from '#lib/components/group/ShareLink.svelte';
-	import WhoAreYouSheet from '#lib/components/group/WhoAreYouSheet.svelte';
+	import PeoplePills from '#lib/components/people/PeoplePills.svelte';
 	import { currentTab } from '#lib/group/tabs.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import type { PageProps } from './$types';
@@ -47,21 +47,15 @@
 		<ExpenseList
 			token={data.group.shareToken}
 			currency={data.group.currency}
-			members={data.members}
+			members={[...data.members, ...data.formerMembers]}
 			entries={data.entries}
 			hasMore={data.hasMore}
 		/>
-		<!-- Konsta sets role="button" on its Fab even when it's a link -->
-		<Fab
-			class="fixed right-[max(1rem,calc(50vw-var(--container-app)/2+1rem))] bottom-[calc(var(--k-safe-area-bottom,0px)+6rem)] z-20"
+		<FloatingLink
 			href={resolve('/g/[token]/expenses/new', { token: data.group.shareToken })}
-			text={m.add_expense()}
-			role="link"
-		>
-			{#snippet icon()}
-				<Icon name="add" size={24} />
-			{/snippet}
-		</Fab>
+			icon="add"
+			label={m.add_expense()}
+		/>
 	{:else if tab === 'balances'}
 		<BlockTitle>{m.balances_title()}</BlockTitle>
 		<BalanceList currency={data.group.currency} members={data.members} balances={data.balances} />
@@ -74,12 +68,20 @@
 		/>
 	{:else}
 		<BlockTitle>{m.members_title()}</BlockTitle>
-		<MemberList members={data.members} renameError={errorFor('renameMember')} />
-		<AddMemberForm error={errorFor('addMember')} />
+		<PeoplePills
+			members={data.members}
+			balances={data.balances}
+			errors={{
+				add: errorFor('addMember'),
+				rename: errorFor('renameMember'),
+				remove: errorFor('removeMember')
+			}}
+		/>
 		<BlockTitle>{m.group_details()}</BlockTitle>
 		<GroupDetails group={data.group} error={errorFor('updateGroup')} />
 		<BlockTitle>{m.share_title()}</BlockTitle>
 		<ShareLink token={data.group.shareToken} groupName={data.group.name} />
+		<DeleteGroup groupId={data.group.id} name={data.group.name} />
 		<List strong inset>
 			<ListItem
 				link
@@ -94,5 +96,4 @@
 	{/if}
 
 	<GroupTabs active={tab} />
-	<WhoAreYouSheet members={data.members} {tab} error={errorFor('claimMember')} />
 </AppPage>

@@ -1,6 +1,10 @@
 <script lang="ts">
-	// Per-group client state shared by all screens of one group.
+	// Per-group client state shared by all screens of one group. Until you've joined, every
+	// screen of the group is the join screen (A-4).
 	import type { Snippet } from 'svelte';
+	import type { ErrorCode } from '#lib/errors.ts';
+	import JoinScreen from './JoinScreen.svelte';
+	import YouSheet from './YouSheet.svelte';
 	import { rememberGroup } from '#lib/device.ts';
 	import { Identity, provideIdentity } from '#lib/group/identity.svelte.ts';
 	import type { GroupMember } from '#lib/group/members.ts';
@@ -10,12 +14,20 @@
 	type Props = {
 		group: { id: string; name: string; shareToken: string; kind: GroupKind; tint: Tint | null };
 		members: GroupMember[];
+		canStepBack: boolean;
+		profileName: string | null;
+		/** From the last join or step back */
+		error?: ErrorCode;
 		children: Snippet;
 	};
 
-	let { group, members, children }: Props = $props();
+	let { group, members, canStepBack, profileName, error, children }: Props = $props();
 
-	provideIdentity(new Identity(() => members));
+	const identity = new Identity(
+		() => members,
+		() => canStepBack
+	);
+	provideIdentity(identity);
 
 	$effect(() => {
 		rememberGroup({
@@ -28,4 +40,9 @@
 	});
 </script>
 
-{@render children()}
+{#if identity.me}
+	{@render children()}
+	<YouSheet token={group.shareToken} {error} />
+{:else}
+	<JoinScreen {group} {members} {profileName} {error} />
+{/if}

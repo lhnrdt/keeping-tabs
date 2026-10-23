@@ -108,10 +108,21 @@
 		color: var(--color-clay-night);
 	}
 }
+/* Delete and other destructive actions are red (important: Konsta's buttons set their own
+   color) */
 @utility tone-destructive {
-	color: var(--color-destructive);
+	color: var(--color-destructive) !important;
 	&:where(.dark, .dark *) {
-		color: var(--color-destructive-night);
+		color: var(--color-destructive-night) !important;
+	}
+}
+/* The confirming button of a destructive dialog: filled red */
+@utility solid-destructive {
+	background-color: var(--color-destructive) !important;
+	color: var(--color-surface) !important;
+	&:where(.dark, .dark *) {
+		background-color: var(--color-destructive-night) !important;
+		color: var(--color-canvas-night) !important;
 	}
 }
 
