@@ -15,6 +15,7 @@ import IconHome from '@tabler/icons-svelte-runes/icons/home';
 import IconPlane from '@tabler/icons-svelte-runes/icons/plane';
 import IconToolsKitchen2 from '@tabler/icons-svelte-runes/icons/tools-kitchen-2';
 import IconTableImport from '@tabler/icons-svelte-runes/icons/table-import';
+import IconCheck from '@tabler/icons-svelte-runes/icons/check';
 import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
 import IconCash from '@tabler/icons-svelte-runes/icons/cash';
 import IconFingerprint from '@tabler/icons-svelte-runes/icons/fingerprint';
@@ -34,6 +35,7 @@ import IconX from '@tabler/icons-svelte-runes/icons/x';
 export const icons = {
 	add: IconPlus,
 	addMember: IconUserPlus,
+	check: IconCheck,
 	copy: IconCopy,
 	balances: IconScale,
 	delete: IconTrash,
