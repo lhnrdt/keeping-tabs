@@ -3,6 +3,7 @@ import { resolve } from '$app/paths';
 import type { ErrorCode } from '#lib/errors.ts';
 import { m } from '#lib/paraglide/messages.js';
 import { forgetDeviceKey } from '#lib/server/device.ts';
+import { checkSettingsAgain } from '#lib/server/settings.ts';
 import { eraseIdentity } from '#lib/server/erase-identity.ts';
 import { countPasskeys } from '#lib/server/passkeys.ts';
 import {
@@ -37,11 +38,12 @@ export const actions: Actions = {
 	},
 
 	/** Makes this device the person behind a recovery key (A-16) */
-	restore: async ({ locals, request }) => {
+	restore: async ({ locals, request, cookies }) => {
 		const key = String((await request.formData()).get('recoveryKey') ?? '');
 		if (!(await restoreWithRecoveryKey(locals.db, key, locals.deviceKey))) {
 			return fail(400, { error: 'recovery_key_invalid' as ErrorCode });
 		}
+		checkSettingsAgain(cookies);
 		return { restored: true };
 	},
 

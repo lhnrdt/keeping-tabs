@@ -8,14 +8,12 @@ test('the app speaks the browser language, until you pick another one', async ({
 	await expect(page.locator('html')).toHaveAttribute('lang', 'de');
 	await expect(page.getByRole('link', { name: 'Neue Gruppe' })).toBeVisible();
 
-	await page.getByRole('button', { name: 'English' }).click();
-	await expect(page.getByRole('link', { name: 'New group' })).toBeVisible();
-	// Remembered on this device
+	// Choosing a language in the settings wins over the browser's, and is remembered
+	await open(page, '/settings');
+	await page.getByRole('group', { name: 'Sprache' }).getByText('English').click();
+	await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
 	await open(page, '/');
-	await expect(page.getByRole('button', { name: 'English' })).toHaveAttribute(
-		'aria-pressed',
-		'true'
-	);
+	await expect(page.getByRole('link', { name: 'New group' })).toBeVisible();
 	await context.close();
 });
 

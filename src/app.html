@@ -18,16 +18,25 @@
 		<meta name="mobile-web-app-capable" content="yes" />
 		<script>
 			// Konsta's dark styles hang off a .dark class; set it before first paint, together with
-			// the system bars' color (installed apps on Android ignore media on theme-color)
+			// the system bars' color (installed apps on Android ignore media on theme-color). The
+			// theme is "system" (the device's), "light" or "dark" (a personal setting, in a cookie).
 			(() => {
 				const query = matchMedia('(prefers-color-scheme: dark)');
 				const themeColor = document.querySelector('meta[name="theme-color"]');
+				let chosen = /(?:^|; )kt-theme=(light|dark)/.exec(document.cookie)?.[1];
 				const apply = () => {
-					document.documentElement.classList.toggle('dark', query.matches);
-					themeColor.content = query.matches ? '#1d211d' : '#f4f1ea';
+					const dark = chosen ? chosen === 'dark' : query.matches;
+					document.documentElement.classList.toggle('dark', dark);
+					document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+					themeColor.content = dark ? '#1d211d' : '#f4f1ea';
 				};
 				apply();
-				query.addEventListener('change', apply);
+				query.addEventListener('change', () => chosen || apply());
+				// Settings switch the theme right away, without reloading
+				window.applyTheme = (theme) => {
+					chosen = theme === 'system' ? undefined : theme;
+					apply();
+				};
 			})();
 		</script>
 		%sveltekit.head%

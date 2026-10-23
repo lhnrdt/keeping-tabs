@@ -2,6 +2,7 @@ import { sql } from 'drizzle-orm';
 import { SPLIT_MODES } from '#lib/split/modes.ts';
 import type { ExpenseCategory } from '#lib/expense/categories.ts';
 import type { GroupKind } from '#lib/group/kinds.ts';
+import type { Locale, Theme } from '#lib/settings.ts';
 import type { Tint } from '#lib/tints.ts';
 import {
 	check,
@@ -50,6 +51,9 @@ export const people = sqliteTable('people', {
 	id: id(),
 	// Profile name, pre-filled when creating groups or claiming members
 	name: text('name'),
+	// Personal settings (S-3, src/lib/settings.ts); null = follow the browser
+	locale: text('locale').$type<Locale>(),
+	theme: text('theme').$type<Theme>(),
 	// Hash of the person's recovery key, if they created one (A-16)
 	recoveryHash: text('recovery_hash').unique(),
 	createdAt: createdAt()

@@ -38,6 +38,7 @@ export const errorMessages = {
 	import_people_invalid: m.error_import_people_invalid,
 	already_member: m.error_already_member,
 	group_not_restorable: m.error_group_not_restorable,
+	settings_invalid: m.error_settings_invalid,
 	member_has_taken_part: m.error_member_has_taken_part,
 	member_not_settled: m.error_member_not_settled
 } satisfies Record<string, () => string>;

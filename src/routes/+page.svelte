@@ -31,6 +31,7 @@
 	</Block>
 	<RecentlyDeleted groups={data.recentlyDeleted} error={form?.error} />
 	<List strong inset>
+		<ListItem link title={m.settings_title()} href={resolve('/settings')} />
 		<ListItem link title={m.home_other_device()} href={resolve('/device')} />
 	</List>
 </AppPage>

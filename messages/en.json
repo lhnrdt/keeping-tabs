@@ -222,7 +222,6 @@
 	"join_no": "No, someone else",
 	"join_submit": "Join",
 	"new_person_name": "New person's name",
-	"language": "Language",
 	"error_not_found_title": "Nothing here",
 	"error_unexpected": "That didn't work. Please try again in a moment.",
 	"try_again": "Try again",
@@ -243,5 +242,14 @@
 	"restorable_until": "Can be restored until {date}",
 	"restore_group": "Restore",
 	"error_group_not_restorable": "This group can't be restored anymore.",
-	"delete_confirm": "Delete"
+	"delete_confirm": "Delete",
+	"settings_title": "Settings",
+	"settings_name_hint": "The name we suggest when you create or join a group.",
+	"settings_language": "Language",
+	"settings_theme": "Appearance",
+	"theme_system": "Like my device",
+	"theme_light": "Light",
+	"theme_dark": "Dark",
+	"error_settings_invalid": "Choose one of the options.",
+	"saved": "Saved"
 }

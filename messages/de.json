@@ -222,7 +222,6 @@
 	"join_no": "Nein, jemand anderes",
 	"join_submit": "Beitreten",
 	"new_person_name": "Name der neuen Person",
-	"language": "Sprache",
 	"error_not_found_title": "Hier ist nichts",
 	"error_unexpected": "Das hat nicht geklappt. Bitte versuche es gleich noch einmal.",
 	"try_again": "Nochmal versuchen",
@@ -243,5 +242,14 @@
 	"restorable_until": "Wiederherstellbar bis {date}",
 	"restore_group": "Wiederherstellen",
 	"error_group_not_restorable": "Diese Gruppe kann nicht mehr wiederhergestellt werden.",
-	"delete_confirm": "Löschen"
+	"delete_confirm": "Löschen",
+	"settings_title": "Einstellungen",
+	"settings_name_hint": "Der Name, den wir vorschlagen, wenn du eine Gruppe erstellst oder beitrittst.",
+	"settings_language": "Sprache",
+	"settings_theme": "Darstellung",
+	"theme_system": "Wie mein Gerät",
+	"theme_light": "Hell",
+	"theme_dark": "Dunkel",
+	"error_settings_invalid": "Wähle eine der Optionen.",
+	"saved": "Gespeichert"
 }
