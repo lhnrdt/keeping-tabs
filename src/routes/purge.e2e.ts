@@ -2,14 +2,21 @@ import { execFileSync } from 'node:child_process';
 import { expect, test } from '@playwright/test';
 import { open } from './e2e-helpers';
 
-/** Runs SQL on the local database the preview worker uses. */
-function sql(command: string) {
-	const out = execFileSync(
-		'pnpm',
-		['exec', 'wrangler', 'd1', 'execute', 'DB', '--local', '--json', '--command', command],
-		{ encoding: 'utf8' }
-	);
-	return JSON.parse(out)[0].results as Record<string, unknown>[];
+/** Runs SQL on the local database the preview worker uses; retries while other tests hold it. */
+function sql(command: string): Record<string, unknown>[] {
+	for (let attempt = 1; ; attempt++) {
+		try {
+			const out = execFileSync(
+				'pnpm',
+				['exec', 'wrangler', 'd1', 'execute', 'DB', '--local', '--json', '--command', command],
+				{ encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }
+			);
+			return JSON.parse(out)[0].results;
+		} catch (error) {
+			if (attempt >= 5) throw error;
+			execFileSync('sleep', [String(attempt)]);
+		}
+	}
 }
 
 test('deleted groups are removed for good after 30 days', async ({ page, request }) => {
