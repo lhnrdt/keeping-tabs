@@ -243,5 +243,14 @@
 	"restorable_until": "Can be restored until {date}",
 	"restore_group": "Restore",
 	"error_group_not_restorable": "This group can't be restored anymore.",
-	"delete_confirm": "Delete"
+	"delete_confirm": "Delete",
+	"settings_title": "Settings",
+	"settings_name_hint": "The name we suggest when you create or join a group.",
+	"settings_language": "Language",
+	"settings_theme": "Appearance",
+	"theme_system": "Like my device",
+	"theme_light": "Light",
+	"theme_dark": "Dark",
+	"settings_follow_you": "Your settings follow you to your other devices.",
+	"error_settings_invalid": "Choose one of the options."
 }

@@ -243,5 +243,14 @@
 	"restorable_until": "Wiederherstellbar bis {date}",
 	"restore_group": "Wiederherstellen",
 	"error_group_not_restorable": "Diese Gruppe kann nicht mehr wiederhergestellt werden.",
-	"delete_confirm": "Löschen"
+	"delete_confirm": "Löschen",
+	"settings_title": "Einstellungen",
+	"settings_name_hint": "Der Name, den wir vorschlagen, wenn du eine Gruppe erstellst oder beitrittst.",
+	"settings_language": "Sprache",
+	"settings_theme": "Darstellung",
+	"theme_system": "Wie mein Gerät",
+	"theme_light": "Hell",
+	"theme_dark": "Dunkel",
+	"settings_follow_you": "Deine Einstellungen folgen dir auf deine anderen Geräte.",
+	"error_settings_invalid": "Wähle eine der Optionen."
 }
