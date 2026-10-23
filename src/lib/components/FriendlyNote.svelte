@@ -13,7 +13,12 @@
 		action={resolve('/note')}
 		class="mx-auto max-w-app space-y-3 px-6 pt-6 pb-[calc(var(--k-safe-area-bottom,0px)+1.5rem)]"
 	>
-		<input type="hidden" name="next" value={`${page.url.pathname}${page.url.search}`} />
+		<!-- With the #fragment: device links keep their token there -->
+		<input
+			type="hidden"
+			name="next"
+			value={`${page.url.pathname}${page.url.search}${page.url.hash}`}
+		/>
 		<h2 id="friendly-note" class="font-display text-2xl font-semibold">{m.note_title()}</h2>
 		<p>{m.note_text()}</p>
 		<button
