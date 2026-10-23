@@ -15,9 +15,7 @@
 	>
 		<input type="hidden" name="next" value={`${page.url.pathname}${page.url.search}`} />
 		<h2 id="friendly-note" class="font-display text-2xl font-semibold">{m.note_title()}</h2>
-		<p>{m.note_why()}</p>
-		<p>{m.note_honest()}</p>
-		<p>{m.note_until()}</p>
+		<p>{m.note_text()}</p>
 		<button
 			type="submit"
 			class="mt-2 flex h-12 w-full items-center justify-center rounded-full bg-forest font-semibold text-white dark:bg-forest-night dark:text-canvas-night"
