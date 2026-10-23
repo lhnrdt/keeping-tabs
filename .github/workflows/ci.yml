@@ -22,19 +22,16 @@ jobs:
           fetch-tags: true
       - uses: jdx/mise-action@v5
 
+      # The release title ("release: vX.Y.Z") is set by release-pr.yml; checking it here raced
+      # with that workflow (a push to staging re-runs this before the title is updated, and
+      # the bot's edit can't trigger a new run), so only the branch is checked
       - name: Release PRs go from staging to master
         if: github.event.pull_request.base.ref == 'master'
         env:
           HEAD_REF: ${{ github.event.pull_request.head.ref }}
-          TITLE: ${{ github.event.pull_request.title }}
         run: |
           if [ "$HEAD_REF" != staging ]; then
             echo "::error::Only staging can be merged into master (got $HEAD_REF)"
-            exit 1
-          fi
-          expected="release: v$(node scripts/version.ts release origin/staging)"
-          if [ "$TITLE" != "$expected" ]; then
-            echo "::error::Release PR title must be \"$expected\""
             exit 1
           fi
 
