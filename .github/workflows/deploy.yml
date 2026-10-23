@@ -118,7 +118,8 @@ jobs:
           auth=()
           if [ "$GITHUB_REF_NAME" = staging ]; then auth=(-u "deploy:$STAGING_PASSWORD"); fi
           for attempt in $(seq 1 12); do
-            served=$(curl -sS -o /dev/null -D - "${auth[@]}" "$URL/" | tr -d '\r' | awk -F': ' 'tolower($1) == "x-app-version" { print $2 }')
+            # The password page: always reachable, also behind the access gate (#109)
+            served=$(curl -sS -o /dev/null -D - "${auth[@]}" "$URL/welcome" | tr -d '\r' | awk -F': ' 'tolower($1) == "x-app-version" { print $2 }')
             if [ "$served" = "$VERSION" ]; then
               echo "$URL serves v$VERSION"
               exit 0
