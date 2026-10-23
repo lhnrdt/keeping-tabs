@@ -14,6 +14,9 @@ const COOKIE_OPTIONS = {
 	maxAge: 400 * 24 * 60 * 60
 } as const;
 
+/** Forgets this browser's device key (after deleting the identity behind it). */
+export const forgetDeviceKey = (cookies: Cookies) => cookies.delete(DEVICE_COOKIE, { path: '/' });
+
 /** This browser's device key, creating it if needed; refreshes the cookie's lifetime. */
 export function ensureDeviceKey(cookies: Cookies): string {
 	const existing = cookies.get(DEVICE_COOKIE);
