@@ -14,5 +14,11 @@ export const LOCALE_NAMES: Record<Locale, string> = { en: 'English', de: 'Deutsc
 
 export const isLocale = (value: unknown): value is Locale => locales.includes(value as Locale);
 
+/**
+ * Set when a language was chosen (or brought from the person's settings). Paraglide's own cookie
+ * can't tell: its browser code writes it on every first visit.
+ */
+export const LOCALE_COOKIE = 'kt-locale';
+
 /** Cookie with the chosen theme; the page script in app.html reads it before first paint */
 export const THEME_COOKIE = 'kt-theme';

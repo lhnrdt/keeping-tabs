@@ -2,7 +2,7 @@
 import type { Cookies } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import { cookieName, cookieMaxAge } from '#lib/paraglide/runtime.js';
-import { THEME_COOKIE, type Locale, type Theme } from '#lib/settings.ts';
+import { LOCALE_COOKIE, THEME_COOKIE, type Locale, type Theme } from '#lib/settings.ts';
 import type { Db } from './db';
 import { people } from './db/schema';
 import type { Person } from './people';
@@ -18,9 +18,11 @@ export async function saveSettings(
 	await db.update(people).set(settings).where(eq(people.id, personId));
 }
 
-/** Makes this browser use a language (paraglide's cookie) */
-export const setLocaleCookie = (cookies: Cookies, locale: Locale) =>
+/** Makes this browser use a language (paraglide's cookie), remembering that it was chosen */
+export function setLocaleCookie(cookies: Cookies, locale: Locale) {
 	cookies.set(cookieName, locale, { ...COOKIE_OPTIONS, httpOnly: false });
+	cookies.set(LOCALE_COOKIE, locale, { ...COOKIE_OPTIONS, httpOnly: true });
+}
 
 /** Makes this browser use a theme; the page script reads it before first paint */
 export const setThemeCookie = (cookies: Cookies, theme: Theme) =>
@@ -45,14 +47,14 @@ export const checkSettingsAgain = (cookies: Cookies) =>
 
 /**
  * A device that doesn't have the person's settings yet (a new or linked one) gets them.
- * Returns true when the language changed, so the page needs to be served again to use it.
+ * Returns the language it now uses, if that changed, so the current request can use it too.
  */
-export function applySettings(cookies: Cookies, person: Person | undefined): boolean {
-	if (!person) return false;
+export function applySettings(cookies: Cookies, person: Person | undefined): Locale | null {
+	if (!person) return null;
 	if (person.theme && !cookies.get(THEME_COOKIE)) setThemeCookie(cookies, person.theme);
-	if (person.locale && !cookies.get(cookieName)) {
+	if (person.locale && !cookies.get(LOCALE_COOKIE)) {
 		setLocaleCookie(cookies, person.locale);
-		return true;
+		return person.locale;
 	}
-	return false;
+	return null;
 }
