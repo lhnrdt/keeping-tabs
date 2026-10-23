@@ -35,6 +35,19 @@ jobs:
           previous=$(git tag --list 'v*' --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1 || true)
           notes=$(git log --merges --first-parent --format='- %s' "${previous:+$previous..}HEAD")
           body=$(printf 'Ships staging (v%s-rc) to production as **v%s**.\n\n%s\n' "$version" "$version" "$notes")
+
+          # Issues close when they reach production: GitHub closes whatever a PR into the
+          # default branch says it closes, so repeat the "Closes #N" lines of the shipped PRs
+          closes=""
+          for pr in $(printf '%s\n' "$notes" | grep -oE '\(#[0-9]+\)$' | grep -oE '[0-9]+'); do
+            pr_body=$(gh pr view "$pr" --json body --jq .body)
+            for issue in $(printf '%s\n' "$pr_body" | grep -oiE '(close[sd]?|fix(e[sd])?|resolve[sd]?) +#[0-9]+' | grep -oE '[0-9]+'); do
+              closes=$(printf '%s\nCloses #%s' "$closes" "$issue")
+            done
+          done
+          if [ -n "$closes" ]; then
+            body=$(printf '%s\n\n%s\n' "$body" "$(printf '%s\n' "$closes" | sort -u | sed '/^$/d')")
+          fi
           existing=$(gh pr list --base master --head staging --state open --json number --jq '.[0].number')
           if [ -n "$existing" ]; then
             gh pr edit "$existing" --title "release: v$version" --body "$body"
