@@ -82,7 +82,27 @@
 					/>
 				{/snippet}
 				{#snippet after()}
-					<AnimatedAmount amount={expense.amountCents} {currency} />
+					{#if expense.type === 'payment'}
+						<AnimatedAmount amount={expense.amountCents} {currency} />
+					{:else if expense.yourSide === null}
+						<span class="text-sm opacity-60">{m.side_not_involved()}</span>
+					{:else if expense.yourSide >= 0}
+						<span class="text-sm font-medium tone-positive tabular-nums">
+							<AnimatedAmount
+								amount={expense.yourSide}
+								{currency}
+								label={(amount) => m.side_lent({ amount })}
+							/>
+						</span>
+					{:else}
+						<span class="text-sm font-medium tone-negative tabular-nums">
+							<AnimatedAmount
+								amount={-expense.yourSide}
+								{currency}
+								label={(amount) => m.side_borrowed({ amount })}
+							/>
+						</span>
+					{/if}
 				{/snippet}
 			</ListItem>
 		{/each}

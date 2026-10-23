@@ -222,5 +222,8 @@
 	"join_no": "Nein, jemand anderes",
 	"join_submit": "Beitreten",
 	"new_person_name": "Name der neuen Person",
-	"language": "Sprache"
+	"language": "Sprache",
+	"side_lent": "du bekommst {amount}",
+	"side_borrowed": "du schuldest {amount}",
+	"side_not_involved": "nicht beteiligt"
 }
