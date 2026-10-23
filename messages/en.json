@@ -225,5 +225,8 @@
 	"language": "Language",
 	"error_not_found_title": "Nothing here",
 	"error_unexpected": "That didn't work. Please try again in a moment.",
-	"try_again": "Try again"
+	"try_again": "Try again",
+	"side_lent": "you lent {amount}",
+	"side_borrowed": "you borrowed {amount}",
+	"side_not_involved": "not involved"
 }
