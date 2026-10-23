@@ -6,8 +6,8 @@ test('settings are saved and follow you to another device', async ({ browser }) 
 	const phone = await (await browser.newContext({ locale: 'en-US' })).newPage();
 	await open(phone, '/settings');
 	await phone.getByLabel('Your name').fill('Anna');
-	await phone.getByText('Deutsch', { exact: true }).click();
-	await phone.getByText('Dark', { exact: true }).click();
+	await phone.getByRole('group', { name: 'Language' }).getByText('Deutsch').click();
+	await phone.getByRole('group', { name: 'Appearance' }).getByText('Dark').click();
 	await phone.getByRole('button', { name: 'Save' }).click();
 
 	// A plain form post: the page is served again in German and dark
@@ -22,7 +22,8 @@ test('settings are saved and follow you to another device', async ({ browser }) 
 	const link = (await phone.getByRole('listitem', { name: 'Einmal-Link' }).innerText()).trim();
 	const laptop = await (await browser.newContext({ locale: 'en-US' })).newPage();
 	await open(laptop, link);
-	await laptop.getByRole('button', { name: 'Dieses Gerät verwenden' }).click();
+	// Not linked yet, so still in its own (English) language
+	await laptop.getByRole('button', { name: 'Use this device' }).click();
 	await expect(laptop).toHaveURL(/\/$/);
 	await open(laptop, '/settings');
 	await expect(laptop.getByRole('heading', { name: 'Einstellungen' })).toBeVisible();
@@ -43,7 +44,7 @@ test('a chosen light theme wins over a dark device', async ({ browser }) => {
 	const page = await (await browser.newContext({ colorScheme: 'dark' })).newPage();
 	await open(page, '/settings');
 	await expect(page.locator('html')).toHaveClass(/dark/);
-	await page.getByText('Light', { exact: true }).click();
+	await page.getByRole('group', { name: 'Appearance' }).getByText('Light').click();
 	await page.getByRole('button', { name: 'Save' }).click();
 	await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
 	await expect(page.locator('html')).not.toHaveClass(/dark/);
