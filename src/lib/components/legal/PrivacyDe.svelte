@@ -70,9 +70,10 @@
 
 <h2>Wie lange</h2>
 <p>
-	Gruppen und ihr Verlauf bleiben gespeichert, bis die Gruppe gelöscht wird. Deine Identität,
-	solange du die App nutzt. Gelöschte Ausgaben bleiben im Verlauf der Gruppe, damit sie
-	wiederhergestellt werden können.
+	Gruppen und ihr Verlauf bleiben gespeichert, bis die Gruppe gelöscht wird. Eine gelöschte Gruppe
+	können ihre Mitglieder 30 Tage lang wiederherstellen; danach wird sie mit ihren Mitgliedern,
+	Ausgaben und ihrem Verlauf endgültig entfernt. Deine Identität, solange du die App nutzt.
+	Gelöschte Ausgaben bleiben im Verlauf der Gruppe, damit sie wiederhergestellt werden können.
 </p>
 
 <h2>Deine Daten löschen</h2>

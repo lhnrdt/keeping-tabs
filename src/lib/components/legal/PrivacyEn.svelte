@@ -69,8 +69,10 @@
 
 <h2>How long</h2>
 <p>
-	Groups and their history are kept until the group is deleted. Your identity is kept while you use
-	the app. Deleted expenses stay in the group's history so they can be restored.
+	Groups and their history are kept until the group is deleted. A deleted group can be restored by
+	its members for 30 days; after that it is removed for good, with its members, expenses and
+	history. Your identity is kept while you use the app. Deleted expenses stay in the group's history
+	so they can be restored.
 </p>
 
 <h2>Deleting your data</h2>
