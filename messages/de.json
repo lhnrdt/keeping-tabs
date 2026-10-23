@@ -222,7 +222,6 @@
 	"join_no": "Nein, jemand anderes",
 	"join_submit": "Beitreten",
 	"new_person_name": "Name der neuen Person",
-	"language": "Sprache",
 	"error_not_found_title": "Hier ist nichts",
 	"error_unexpected": "Das hat nicht geklappt. Bitte versuche es gleich noch einmal.",
 	"try_again": "Nochmal versuchen",
@@ -251,6 +250,6 @@
 	"theme_system": "Wie mein Gerät",
 	"theme_light": "Hell",
 	"theme_dark": "Dunkel",
-	"settings_follow_you": "Deine Einstellungen folgen dir auf deine anderen Geräte.",
-	"error_settings_invalid": "Wähle eine der Optionen."
+	"error_settings_invalid": "Wähle eine der Optionen.",
+	"saved": "Gespeichert"
 }
