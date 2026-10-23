@@ -23,7 +23,7 @@
 			(() => {
 				const query = matchMedia('(prefers-color-scheme: dark)');
 				const themeColor = document.querySelector('meta[name="theme-color"]');
-				const chosen = /(?:^|; )kt-theme=(light|dark)/.exec(document.cookie)?.[1];
+				let chosen = /(?:^|; )kt-theme=(light|dark)/.exec(document.cookie)?.[1];
 				const apply = () => {
 					const dark = chosen ? chosen === 'dark' : query.matches;
 					document.documentElement.classList.toggle('dark', dark);
@@ -31,7 +31,12 @@
 					themeColor.content = dark ? '#1d211d' : '#f4f1ea';
 				};
 				apply();
-				if (!chosen) query.addEventListener('change', apply);
+				query.addEventListener('change', () => chosen || apply());
+				// Settings switch the theme right away, without reloading
+				window.applyTheme = (theme) => {
+					chosen = theme === 'system' ? undefined : theme;
+					apply();
+				};
 			})();
 		</script>
 		%sveltekit.head%
