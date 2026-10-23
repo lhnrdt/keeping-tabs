@@ -249,6 +249,8 @@ test('expenses get a category from their title unless one is chosen', async ({ p
 });
 
 test('unknown pages are calm, with a way back', async ({ page }) => {
+	// As a friend who's already in (strangers land on the password page instead)
+	await open(page, '/');
 	const response = await page.goto('/g/AAAAAAAAAAAAAAAAAAAAAA');
 	expect(response?.status()).toBe(404);
 	await expect(page.getByRole('heading', { name: 'Nothing here' })).toBeVisible();

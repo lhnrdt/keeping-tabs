@@ -60,6 +60,15 @@ jobs:
       - run: pnpm check
       - run: pnpm exec vitest --run --project server
 
+      # The app is private (#109) and locks everyone out without its password: never deploy
+      # an environment that doesn't have the ACCESS_PASSWORD secret
+      - name: Access password is set
+        run: |
+          if ! pnpm exec wrangler secret list ${{ steps.version.outputs.env_args }} | grep -q '"ACCESS_PASSWORD"'; then
+            echo "::error::Set the access password first: wrangler secret put ACCESS_PASSWORD ${{ steps.version.outputs.env_args }}"
+            exit 1
+          fi
+
       # D1 Time Travel can restore any point in the last 7 days (free plan); record the point
       # right before migrating, so a bad migration can be undone. See docs/migrations.md.
       - name: Record a restore point

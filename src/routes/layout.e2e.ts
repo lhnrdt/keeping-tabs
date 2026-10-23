@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { open } from './e2e-helpers';
 
 // N-10: usable from 360 px phones to desktops, without horizontal scrolling, and on wide
 // screens the app stays a readable column instead of stretching across the window.
@@ -10,7 +11,7 @@ for (const width of widths) {
 	test(`no horizontal scrolling and a bounded column at ${width}px`, async ({ page }) => {
 		await page.setViewportSize({ width, height: 900 });
 		for (const path of ['/', '/new', '/device']) {
-			await page.goto(path);
+			await open(page, path);
 			await page.waitForLoadState('networkidle');
 			const overflow = await page.evaluate(
 				() => document.documentElement.scrollWidth > window.innerWidth
@@ -28,7 +29,7 @@ for (const width of widths) {
 }
 
 test('every page links to the privacy notice', async ({ page }) => {
-	await page.goto('/');
+	await open(page, '/');
 	await page.getByRole('link', { name: 'Privacy' }).click();
 	await expect(page.getByRole('heading', { name: 'Privacy' })).toBeVisible();
 	await expect(

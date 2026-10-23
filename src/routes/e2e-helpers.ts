@@ -1,10 +1,28 @@
 // Shared steps for the end-to-end tests.
 import { expect, type Locator, type Page } from '@playwright/test';
 
-/** Opens a page and waits until it's interactive (hydrated), like a user would. */
+/** The preview's access password (package.json, "preview") */
+export const ACCESS_PASSWORD = 'letmein';
+
+/** Enters the shared password on the private app's door (#109). */
+export async function enterPassword(page: Page, password = ACCESS_PASSWORD) {
+	// By role, not text: the page may be in any language
+	await page.locator('input[name="password"]').fill(password);
+	await page.locator('form button[type="submit"]').click();
+	await page.waitForLoadState('networkidle');
+}
+
+/**
+ * Opens a page and waits until it's interactive (hydrated), like a user would. A new device
+ * meets the password page first and gets in, like a friend who knows the password.
+ */
 export async function open(page: Page, url: string) {
 	await page.goto(url);
 	await page.waitForLoadState('networkidle');
+	if (new URL(page.url()).pathname === '/welcome') {
+		await enterPassword(page);
+		await page.waitForURL((current) => current.pathname !== '/welcome');
+	}
 }
 
 /** Picks an option in a tile picker by tapping its tile, like a user would. */
