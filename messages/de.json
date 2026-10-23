@@ -27,7 +27,7 @@
 	"regenerate_hint": "Nutze das, wenn der Link an die falschen Leute gelangt ist.",
 	"error_title": "Etwas ist schiefgelaufen",
 	"error_not_found": "Diese Gruppe gibt es nicht, oder ihr Link wurde ersetzt. Frag ein Mitglied nach dem aktuellen Link.",
-	"back_home": "Zur Startseite",
+	"back_home": "Deine Gruppen",
 	"error_group_name_required": "Gib einen Gruppennamen ein.",
 	"error_group_name_too_long": "Der Gruppenname ist zu lang.",
 	"error_description_too_long": "Die Beschreibung ist zu lang.",
@@ -222,5 +222,8 @@
 	"join_no": "Nein, jemand anderes",
 	"join_submit": "Beitreten",
 	"new_person_name": "Name der neuen Person",
-	"language": "Sprache"
+	"language": "Sprache",
+	"error_not_found_title": "Hier ist nichts",
+	"error_unexpected": "Das hat nicht geklappt. Bitte versuche es gleich noch einmal.",
+	"try_again": "Nochmal versuchen"
 }
