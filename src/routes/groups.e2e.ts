@@ -247,3 +247,12 @@ test('expenses get a category from their title unless one is chosen', async ({ p
 	await page.getByLabel('What was it for?').fill('taxi HOME');
 	await expect(automatic).toContainText('Drinks');
 });
+
+test('unknown pages are calm, with a way back', async ({ page }) => {
+	const response = await page.goto('/g/AAAAAAAAAAAAAAAAAAAAAA');
+	expect(response?.status()).toBe(404);
+	await expect(page.getByRole('heading', { name: 'Nothing here' })).toBeVisible();
+	await expect(page.getByRole('alert')).toContainText("This group doesn't exist");
+	await page.getByRole('link', { name: 'Your groups' }).click();
+	await expect(page).toHaveURL(/\/$/);
+});

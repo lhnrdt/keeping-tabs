@@ -27,7 +27,7 @@
 	"regenerate_hint": "Use this if the link reached the wrong people.",
 	"error_title": "Something went wrong",
 	"error_not_found": "This group doesn't exist, or its link was replaced. Ask a member for the current link.",
-	"back_home": "Back to start",
+	"back_home": "Your groups",
 	"error_group_name_required": "Enter a group name.",
 	"error_group_name_too_long": "The group name is too long.",
 	"error_description_too_long": "The description is too long.",
@@ -222,5 +222,8 @@
 	"join_no": "No, someone else",
 	"join_submit": "Join",
 	"new_person_name": "New person's name",
-	"language": "Language"
+	"language": "Language",
+	"error_not_found_title": "Nothing here",
+	"error_unexpected": "That didn't work. Please try again in a moment.",
+	"try_again": "Try again"
 }
