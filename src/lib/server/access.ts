@@ -21,7 +21,9 @@ const accessToken = (password: string) => digest(`keeping-tabs-access:${password
 export const isOpenPath = (pathname: string) =>
 	pathname.startsWith('/g/') ||
 	pathname.startsWith('/device/link') ||
-	pathname.startsWith('/welcome');
+	pathname.startsWith('/welcome') ||
+	// Accepting the friendly note, also for friends who came with a group link
+	pathname === '/note';
 
 export async function hasAccess(cookies: Cookies) {
 	const password = accessPassword();
