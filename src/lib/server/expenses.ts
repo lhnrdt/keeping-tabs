@@ -63,6 +63,16 @@ export async function listEntryPage(db: Db, groupId: string, offset: number, lim
 	return rows.map((row) => ({ ...row, recipient: recipientOf.get(row.id) }));
 }
 
+/** One member's share of each of the given expenses (absent when they have none). */
+export async function listSharesOf(db: Db, expenseIds: string[], memberId: string) {
+	if (expenseIds.length === 0) return new Map<string, number>();
+	const rows = await db
+		.select({ expenseId: expenseSplits.expenseId, shareCents: expenseSplits.shareCents })
+		.from(expenseSplits)
+		.where(and(eq(expenseSplits.memberId, memberId), inArray(expenseSplits.expenseId, expenseIds)));
+	return new Map(rows.map((row) => [row.expenseId, row.shareCents]));
+}
+
 /** Categories chosen by hand in a group, newest first: what its automatic guess learns from. */
 export function listChosenCategories(db: Db, groupId: string) {
 	return db
