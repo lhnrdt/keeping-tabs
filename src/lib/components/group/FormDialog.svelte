@@ -17,6 +17,8 @@
 		/** Another action on the same form, shown as an extra button */
 		secondary?: { label: string; action: string };
 		onClose: () => void;
+		/** Runs when the form is submitted, before the server answers */
+		onSubmit?: () => void;
 		children?: Snippet;
 	};
 
@@ -28,6 +30,7 @@
 		destructive = false,
 		secondary,
 		onClose,
+		onSubmit,
 		children
 	}: Props = $props();
 
@@ -40,7 +43,15 @@
 <Dialog {opened} onBackdropClick={onClose} role="dialog" aria-modal="true" aria-label={heading}>
 	<!-- Konsta 5.5.0's Dialog crashes on string titles (missing printText import), so pass a snippet -->
 	{#snippet title()}{heading}{/snippet}
-	<form id={formId} method="POST" {action} use:enhance={submission.enhance}>
+	<form
+		id={formId}
+		method="POST"
+		{action}
+		use:enhance={(input) => {
+			onSubmit?.();
+			return submission.enhance(input);
+		}}
+	>
 		{@render children?.()}
 	</form>
 
