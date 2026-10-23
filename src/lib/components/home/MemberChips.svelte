@@ -45,7 +45,7 @@
 					{#snippet trailing()}
 						<button
 							type="button"
-							class="-me-1 grid h-7 w-7 place-items-center rounded-full opacity-60 hover:opacity-100 focus-visible:ring-2"
+							class="-me-1 grid h-7 w-7 place-items-center rounded-full tone-destructive opacity-70 hover:opacity-100 focus-visible:ring-2"
 							aria-label={m.remove_person({ name })}
 							onclick={() => remove(name)}
 						>

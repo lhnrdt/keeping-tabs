@@ -74,7 +74,7 @@
 			form={formId}
 			strong
 			disabled={submission.pending}
-			class={destructive ? 'tone-destructive' : ''}
+			class={destructive ? 'solid-destructive' : ''}
 		>
 			{submitLabel}
 		</DialogButton>
