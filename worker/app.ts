@@ -6,7 +6,7 @@ import { purgeDeletedGroups } from '../src/lib/server/purge.ts';
 
 export default {
 	fetch: app.fetch,
-	async scheduled(_controller, env, ctx) {
-		ctx.waitUntil(purgeDeletedGroups(getDb(env.DB)));
+	async scheduled(controller, env, ctx) {
+		ctx.waitUntil(purgeDeletedGroups(getDb(env.DB), new Date(controller.scheduledTime)));
 	}
 } satisfies ExportedHandler<Env>;
