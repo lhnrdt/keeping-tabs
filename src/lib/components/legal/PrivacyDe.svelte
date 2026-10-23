@@ -75,6 +75,16 @@
 	wiederhergestellt werden können.
 </p>
 
+<h2>Deine Daten löschen</h2>
+<p>
+	Du kannst deine Identität jederzeit selbst löschen: <strong>Geräte &amp; Wiederherstellung</strong
+	>
+	→ <strong>Meine Daten löschen</strong>. Das entfernt deine Identität, Passkeys, Gerätelinks und
+	den Wiederherstellungsschlüssel. Deine Gruppen und ihre Ausgaben bleiben für die anderen erhalten;
+	du erscheinst dort als „noch nicht da“ oder, wenn du auch deinen Namen entfernen lässt, als
+	„Ehemaliges Mitglied“.
+</p>
+
 <h2>Deine Rechte</h2>
 <p>
 	Du kannst Auskunft, Berichtigung oder Löschung deiner Daten verlangen, die Verarbeitung

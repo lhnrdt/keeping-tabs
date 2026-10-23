@@ -204,3 +204,42 @@ test('join as someone new, without picking someone else, and remove people who a
 	await anna.getByRole('button', { name: 'Remove from group' }).click();
 	await expect(people.getByText('Cara')).toHaveCount(0);
 });
+
+test('delete my identity: signed out, passkey-free, my member stays as "not here yet"', async ({
+	browser
+}) => {
+	const anna = await newDevice(browser);
+	await open(anna, '/new');
+	await anna.getByLabel('Group name').fill('Cabin');
+	await anna.getByLabel('Your name').fill('Anna');
+	await anna.getByLabel('Add a person').fill('Ben');
+	await anna.getByLabel('Add a person').press('Enter');
+	await anna.getByRole('button', { name: 'Create group' }).click();
+	await expect(anna.getByTestId('identity')).toHaveText('Anna');
+	const groupUrl = anna.url();
+
+	// Ben joins from his device, so he can look at the group afterwards
+	const ben = await newDevice(browser);
+	await open(ben, groupUrl);
+	await ben.getByRole('button', { name: "I'm Ben" }).click();
+	await expect(ben.getByTestId('identity')).toHaveText('Ben');
+
+	await open(anna, '/device');
+	await anna.getByRole('button', { name: 'Delete my identity' }).click();
+	const dialog = anna.getByRole('dialog', { name: 'Delete my data' });
+	await dialog.getByText('Also replace my name').click();
+	await dialog.getByRole('button', { name: 'Delete' }).click();
+
+	// Anna lands on a fresh start: no groups, nothing remembered, not a member anymore
+	await expect(anna).toHaveURL(/\/$/);
+	await expect(anna.getByText('No groups yet')).toBeVisible();
+	await open(anna, groupUrl);
+	await expect(anna.getByRole('heading', { name: 'Join Cabin' })).toBeVisible();
+
+	// For Ben the group is intact; Anna's spot is open and no longer carries her name
+	await open(ben, `${groupUrl}?tab=group`);
+	const people = ben.getByRole('list', { name: 'Members' });
+	await expect(people.getByText('Anna')).toHaveCount(0);
+	await expect(people.getByText(/Former member/)).toBeVisible();
+	await expect(people.getByText('not here yet')).toBeVisible();
+});
