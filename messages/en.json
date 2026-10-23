@@ -251,5 +251,11 @@
 	"theme_light": "Light",
 	"theme_dark": "Dark",
 	"error_settings_invalid": "Choose one of the options.",
-	"saved": "Saved"
+	"saved": "Saved",
+	"welcome_title": "Just for friends",
+	"welcome_intro": "Keeping Tabs is a small app among friends. Enter the password you got from whoever told you about it.",
+	"welcome_password": "Password",
+	"welcome_enter": "Let me in",
+	"welcome_wrong": "That's not it. Ask the friend who told you about the app.",
+	"welcome_link_hint": "Got a link to a group? Just open it, no password needed."
 }
