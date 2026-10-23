@@ -228,5 +228,6 @@
 	"try_again": "Nochmal versuchen",
 	"side_lent": "du bekommst {amount}",
 	"side_borrowed": "du schuldest {amount}",
-	"side_not_involved": "nicht beteiligt"
+	"side_not_involved": "nicht beteiligt",
+	"privacy_title": "Datenschutz"
 }
