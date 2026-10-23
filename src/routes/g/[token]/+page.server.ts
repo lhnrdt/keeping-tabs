@@ -32,7 +32,7 @@ export const load: PageServerLoad = async ({ locals, parent, url }) => {
 	// Balances and settling up need everything; the list only its first page(s)
 	const [expenses, page] = await Promise.all([
 		listExpenses(locals.db, group.id),
-		entryPage(locals.db, group.id, 0, shown)
+		entryPage(locals.db, group.id, members.find((member) => member.mine)?.id ?? null, 0, shown)
 	]);
 	const memberIds = members.map((member) => member.id);
 	return {

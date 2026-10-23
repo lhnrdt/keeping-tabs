@@ -225,5 +225,8 @@
 	"language": "Sprache",
 	"error_not_found_title": "Hier ist nichts",
 	"error_unexpected": "Das hat nicht geklappt. Bitte versuche es gleich noch einmal.",
-	"try_again": "Nochmal versuchen"
+	"try_again": "Nochmal versuchen",
+	"side_lent": "du bekommst {amount}",
+	"side_borrowed": "du schuldest {amount}",
+	"side_not_involved": "nicht beteiligt"
 }

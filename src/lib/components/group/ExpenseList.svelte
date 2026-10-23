@@ -9,6 +9,7 @@
 	import { categoryIcons } from '#lib/expense/category-style.ts';
 	import { EXPENSES_PER_PAGE } from '#lib/group/expense-pages.ts';
 	import { namesById, type Member } from '#lib/group/members.ts';
+	import { groupByMonth } from '#lib/group/months.ts';
 	import { OlderEntries } from '#lib/group/older-entries.svelte.ts';
 	import { uniqueById } from '#lib/unique.ts';
 	import type { ListEntry } from '#lib/server/expense-entries.ts';
@@ -41,8 +42,26 @@
 
 	const names = $derived(namesById(members));
 
-	const dateFormat = new Intl.DateTimeFormat(getLocale(), { dateStyle: 'medium', timeZone: 'UTC' });
-	const formatDate = (date: string) => dateFormat.format(new Date(`${date}T00:00:00Z`));
+	// Within a month the day is enough ("Thu 23"); the month is the heading (SP-20)
+	const utc = (date: string) => new Date(`${date}T00:00:00Z`);
+	const dayFormat = new Intl.DateTimeFormat(getLocale(), {
+		weekday: 'short',
+		day: 'numeric',
+		timeZone: 'UTC'
+	});
+	const monthFormat = new Intl.DateTimeFormat(getLocale(), { month: 'long', timeZone: 'UTC' });
+	const monthYearFormat = new Intl.DateTimeFormat(getLocale(), {
+		month: 'long',
+		year: 'numeric',
+		timeZone: 'UTC'
+	});
+	const thisYear = new Date().getUTCFullYear();
+	const formatDate = (date: string) => dayFormat.format(utc(date));
+	const formatMonth = (month: string) => {
+		const date = utc(`${month}-01`);
+		return (date.getUTCFullYear() === thisYear ? monthFormat : monthYearFormat).format(date);
+	};
+	const months = $derived(groupByMonth(expenses));
 	const nameOf = (id: string | undefined) => (id && names.get(id)) || '?';
 
 	// Payments (B-4) read "Ben paid Anna" and link to their own screen
@@ -64,29 +83,56 @@
 </script>
 
 {#if expenses.length}
-	<List strong inset role="region" aria-label={m.expenses_title()}>
-		{#each expenses as expense (expense.id)}
-			<ListItem
-				link
-				href={hrefOf(expense)}
-				title={titleOf(expense)}
-				subtitle={subtitleOf(expense)}
-				style={transitionName('expense', expense.id)}
-				class={expense.type === 'payment' ? 'italic' : ''}
-			>
-				{#snippet media()}
-					<IconBadge
-						name={expense.type === 'payment'
-							? 'payment'
-							: categoryIcons[expense.category ?? 'other']}
-					/>
-				{/snippet}
-				{#snippet after()}
-					<AnimatedAmount amount={expense.amountCents} {currency} />
-				{/snippet}
-			</ListItem>
+	<section aria-label={m.expenses_title()}>
+		{#each months as group (group.month)}
+			<h3 class="mx-8 mt-6 mb-2 text-sm font-medium opacity-60 first:mt-2">
+				{formatMonth(group.month)}
+			</h3>
+			<List strong inset class="!my-0">
+				{#each group.entries as expense (expense.id)}
+					<ListItem
+						link
+						href={hrefOf(expense)}
+						title={titleOf(expense)}
+						subtitle={subtitleOf(expense)}
+						style={transitionName('expense', expense.id)}
+						class={expense.type === 'payment' ? 'italic' : ''}
+					>
+						{#snippet media()}
+							<IconBadge
+								name={expense.type === 'payment'
+									? 'payment'
+									: categoryIcons[expense.category ?? 'other']}
+							/>
+						{/snippet}
+						{#snippet after()}
+							{#if expense.type === 'payment'}
+								<AnimatedAmount amount={expense.amountCents} {currency} />
+							{:else if expense.yourSide === null}
+								<span class="text-sm opacity-60">{m.side_not_involved()}</span>
+							{:else if expense.yourSide >= 0}
+								<span class="text-sm font-medium tone-positive tabular-nums">
+									<AnimatedAmount
+										amount={expense.yourSide}
+										{currency}
+										label={(amount) => m.side_lent({ amount })}
+									/>
+								</span>
+							{:else}
+								<span class="text-sm font-medium tone-negative tabular-nums">
+									<AnimatedAmount
+										amount={-expense.yourSide}
+										{currency}
+										label={(amount) => m.side_borrowed({ amount })}
+									/>
+								</span>
+							{/if}
+						{/snippet}
+					</ListItem>
+				{/each}
+			</List>
 		{/each}
-	</List>
+	</section>
 	{#if more}
 		<p
 			class="-mt-4 mb-8 text-center text-sm"
