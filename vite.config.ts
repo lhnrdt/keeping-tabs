@@ -20,7 +20,8 @@ export default defineConfig({
 				runes: ({ filename }) =>
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
 			},
-			adapter: adapter(),
+			// The adapter reads a build-only config; wrangler.jsonc's entry wraps its output
+			adapter: adapter({ config: 'wrangler.adapter.jsonc' }),
 			// Also sent as the x-sveltekit-version header and in /_app/version.json
 			version: { name: appVersion }
 		}),

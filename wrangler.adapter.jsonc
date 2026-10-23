@@ -1,0 +1,11 @@
+{
+	// Read only by SvelteKit's Cloudflare adapter (vite.config.ts): where to write the built
+	// worker and assets. Deploying uses wrangler.jsonc, whose entry (worker/app.ts) wraps that
+	// built worker; the adapter writes its output to `main`, so it can't read that file.
+	"name": "app",
+	"main": ".svelte-kit/cloudflare/_worker.js",
+	"assets": {
+		"binding": "ASSETS",
+		"directory": ".svelte-kit/cloudflare"
+	}
+}
