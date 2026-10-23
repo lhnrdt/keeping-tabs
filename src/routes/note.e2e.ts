@@ -11,7 +11,7 @@ test('a new person reads the friendly note once, also from a group link', async 
 	const ben = await (await browser.newContext()).newPage();
 	await ben.goto(groupUrl);
 	const note = ben.getByRole('dialog', { name: 'Good to know' });
-	await expect(note).toContainText('stored in plain text');
+	await expect(note).toContainText('visible to admins');
 	await note.getByRole('button', { name: 'Got it' }).click();
 	await expect(note).toHaveCount(0);
 	await expect(ben).toHaveURL(groupUrl);

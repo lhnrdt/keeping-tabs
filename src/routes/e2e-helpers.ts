@@ -14,7 +14,8 @@ export async function enterPassword(page: Page, password = ACCESS_PASSWORD) {
 
 /** Reads the friendly note (#112) if it's shown; by role, not text, for any language. */
 export async function acceptNote(page: Page) {
-	const note = page.locator('form[action="/note"]');
+	// The address is relative (e.g. "../../note"), so match its end
+	const note = page.locator('form[action$="note"]');
 	if ((await note.count()) === 0) return;
 	await note.locator('button[type="submit"]').click();
 	await expect(note).toHaveCount(0);
