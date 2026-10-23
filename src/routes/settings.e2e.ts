@@ -16,7 +16,7 @@ test('settings are saved and follow you to another device', async ({ browser }) 
 	await phone.getByRole('group', { name: 'Language' }).getByText('Deutsch').click();
 
 	// The page is served again in German
-	await expect(phone.getByRole('heading', { name: 'Einstellungen' })).toBeVisible();
+	await expect(phone.getByRole('heading', { name: 'Settings' })).toBeVisible();
 	await expect(phone.locator('html')).toHaveAttribute('lang', 'de');
 	await expect(phone.locator('html')).toHaveClass(/dark/);
 	await expect(phone.getByLabel('Dein Name')).toHaveValue('Anna');
@@ -24,14 +24,14 @@ test('settings are saved and follow you to another device', async ({ browser }) 
 	// A second device linked to Anna starts in German and dark as well
 	await open(phone, '/device');
 	await phone.getByRole('button', { name: 'Link erstellen' }).click();
-	const link = (await phone.getByRole('listitem', { name: 'Einmal-Link' }).innerText()).trim();
+	const link = (await phone.getByRole('listitem', { name: 'One-Time-Link' }).innerText()).trim();
 	const laptop = await (await browser.newContext({ locale: 'en-US' })).newPage();
 	await open(laptop, link);
 	// Not linked yet, so still in its own (English) language
 	await laptop.getByRole('button', { name: 'Use this device' }).click();
 	await expect(laptop).toHaveURL(/\/$/);
 	await open(laptop, '/settings');
-	await expect(laptop.getByRole('heading', { name: 'Einstellungen' })).toBeVisible();
+	await expect(laptop.getByRole('heading', { name: 'Settings' })).toBeVisible();
 	await expect(laptop.locator('html')).toHaveClass(/dark/);
 	await expect(laptop.getByLabel('Dein Name')).toHaveValue('Anna');
 });
