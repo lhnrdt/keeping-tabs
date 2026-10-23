@@ -73,6 +73,14 @@
 	the app. Deleted expenses stay in the group's history so they can be restored.
 </p>
 
+<h2>Deleting your data</h2>
+<p>
+	You can delete your identity yourself, at any time: <strong>Devices &amp; recovery</strong> →
+	<strong>Delete my data</strong>. It removes your identity, passkeys, device links and recovery
+	key. Your groups and their expenses stay for the others; you appear there as "not here yet", or
+	under "Former member" if you choose to remove your name too.
+</p>
+
 <h2>Your rights</h2>
 <p>
 	You can ask for access to, correction or deletion of your data, restrict or object to its
