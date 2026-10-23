@@ -1,5 +1,6 @@
 // Who is who: each person in an export becomes an existing member or a new one.
-import { normalizeText, parseMemberName, type Result } from '#lib/validation.ts';
+import { matchMember } from '#lib/group/match-member.ts';
+import { parseMemberName, type Result } from '#lib/validation.ts';
 
 type Member = { id: string; name: string };
 
@@ -9,15 +10,9 @@ export const personField = (index: number) => `person:${index}`;
 /** The form value for "add as a new member" */
 export const NEW_MEMBER = 'new';
 
-const lower = (text: string) => normalizeText(text).toLocaleLowerCase();
-
 /** The member a person probably is: same name, or same first name ("Elisabeth Hecht"). */
-export function suggestMember(name: string, members: readonly Member[]): string {
-	const exact = members.find((member) => lower(member.name) === lower(name));
-	const first = lower(name).split(' ')[0];
-	const byFirstName = members.find((member) => lower(member.name) === first);
-	return (exact ?? byFirstName)?.id ?? NEW_MEMBER;
-}
+export const suggestMember = (name: string, members: readonly Member[]): string =>
+	matchMember(name, members)?.id ?? NEW_MEMBER;
 
 /**
  * Checks the chosen member per person (missing → the suggestion): known members, nobody

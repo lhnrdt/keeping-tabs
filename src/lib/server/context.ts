@@ -13,12 +13,15 @@ export async function requireGroup(db: Db, token: string) {
 
 /**
  * Form data, group, the device's person and the member they act as, for a form
- * submission. The actor comes from the device identity, never from the form (A-5).
+ * submission by a member of the group. The actor comes from the device identity, never
+ * from the form (A-5).
  */
 export async function formContext(locals: App.Locals, token: string, request: Request) {
 	const form = await request.formData();
 	const group = await requireGroup(locals.db, token);
 	const person = await findPerson(locals.db, locals.deviceKey);
 	const actorId = await memberOf(locals.db, group.id, person?.id);
+	// Joining comes first: every change has a member behind it
+	if (!actorId) error(403, m.error_not_a_member());
 	return { form, group, person, actorId };
 }
