@@ -228,5 +228,6 @@
 	"try_again": "Try again",
 	"side_lent": "you lent {amount}",
 	"side_borrowed": "you borrowed {amount}",
-	"side_not_involved": "not involved"
+	"side_not_involved": "not involved",
+	"privacy_title": "Privacy"
 }
