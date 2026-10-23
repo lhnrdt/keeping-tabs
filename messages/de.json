@@ -221,5 +221,6 @@
 	"join_yes": "Ja, ich bin {name}",
 	"join_no": "Nein, jemand anderes",
 	"join_submit": "Beitreten",
-	"new_person_name": "Name der neuen Person"
+	"new_person_name": "Name der neuen Person",
+	"language": "Sprache"
 }

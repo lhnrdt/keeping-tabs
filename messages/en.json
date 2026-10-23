@@ -221,5 +221,6 @@
 	"join_yes": "Yes, I'm {name}",
 	"join_no": "No, someone else",
 	"join_submit": "Join",
-	"new_person_name": "New person's name"
+	"new_person_name": "New person's name",
+	"language": "Language"
 }
