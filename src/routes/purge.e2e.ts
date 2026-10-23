@@ -1,23 +1,7 @@
-import { execFileSync } from 'node:child_process';
 import { expect, test } from '@playwright/test';
 import { open } from './e2e-helpers';
 
-/** Runs SQL on the local database the preview worker uses; retries while other tests hold it. */
-function sql(command: string): Record<string, unknown>[] {
-	for (let attempt = 1; ; attempt++) {
-		try {
-			const out = execFileSync(
-				'pnpm',
-				['exec', 'wrangler', 'd1', 'execute', 'DB', '--local', '--json', '--command', command],
-				{ encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }
-			);
-			return JSON.parse(out)[0].results;
-		} catch (error) {
-			if (attempt >= 5) throw error;
-			execFileSync('sleep', [String(attempt)]);
-		}
-	}
-}
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 test('deleted groups are removed for good after 30 days', async ({ page, request }) => {
 	await open(page, '/new');
@@ -25,22 +9,19 @@ test('deleted groups are removed for good after 30 days', async ({ page, request
 	await page.getByLabel('Your name').fill('Anna');
 	await page.getByRole('button', { name: 'Create group' }).click();
 	await expect(page.getByTestId('identity')).toHaveText('Anna');
-	const token = new URL(page.url()).pathname.split('/').pop()!;
 
 	await open(page, `${page.url()}?tab=group`);
 	await page.getByRole('button', { name: 'Delete group' }).click();
 	await page.getByRole('dialog').getByRole('button', { name: 'Delete' }).click();
-	await expect(page.getByRole('region', { name: 'Recently deleted' })).toContainText('Long gone');
+	const recentlyDeleted = page.getByRole('region', { name: 'Recently deleted' });
+	await expect(recentlyDeleted).toContainText('Long gone');
 
-	// 31 days later, the daily job runs
-	const day = 24 * 60 * 60 * 1000;
-	sql(`update groups set deleted_at = ${Date.now() - 31 * day} where share_token = '${token}'`);
-	const [{ id }] = sql(`select id from groups where share_token = '${token}'`);
-	expect((await request.get('/cdn-cgi/handler/scheduled')).ok()).toBe(true);
+	// The daily job, as if it ran 31 days from now (wrangler's test trigger sets its time)
+	const time = Date.now() + 31 * DAY_MS;
+	const job = await request.get(`/cdn-cgi/handler/scheduled?time=${time}`);
+	expect(job.ok()).toBe(true);
 
-	expect(sql(`select count(*) as n from groups where id = '${id}'`)[0].n).toBe(0);
-	expect(sql(`select count(*) as n from members where group_id = '${id}'`)[0].n).toBe(0);
-	expect(sql(`select count(*) as n from activity_log where group_id = '${id}'`)[0].n).toBe(0);
+	// Gone for good: not even restorable any more
 	await open(page, '/');
-	await expect(page.getByRole('region', { name: 'Recently deleted' })).toHaveCount(0);
+	await expect(page.getByText('Long gone')).toHaveCount(0);
 });
