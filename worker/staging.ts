@@ -1,7 +1,7 @@
 // Staging-only entry: HTTP Basic auth in front of the whole app, including static
-// assets (wrangler.jsonc sets run_worker_first for staging). Production uses the
-// SvelteKit worker directly.
-import app from '../.svelte-kit/cloudflare/_worker.js';
+// assets (wrangler.jsonc sets run_worker_first for staging). Production uses worker/app.ts
+// directly; its daily cleanup runs here too.
+import app from './app.ts';
 
 const REALM = 'Basic realm="Keeping Tabs staging", charset="UTF-8"';
 
@@ -45,5 +45,6 @@ export default {
 			);
 		}
 		return noindex(await app.fetch!(request, env, ctx));
-	}
+	},
+	scheduled: app.scheduled
 } satisfies ExportedHandler<Env>;
