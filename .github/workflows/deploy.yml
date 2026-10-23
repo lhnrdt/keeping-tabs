@@ -60,6 +60,25 @@ jobs:
       - run: pnpm check
       - run: pnpm exec vitest --run --project server
 
+      # D1 Time Travel can restore any point in the last 7 days (free plan); record the point
+      # right before migrating, so a bad migration can be undone. See docs/migrations.md.
+      - name: Record a restore point
+        run: |
+          bookmark=$(pnpm exec wrangler d1 time-travel info DB ${{ steps.version.outputs.env_args }} --json | jq -r .bookmark)
+          if [ -z "$bookmark" ] || [ "$bookmark" = null ]; then
+            echo "::error::Could not record a restore point"
+            exit 1
+          fi
+          {
+            echo "### Restore point before migrations"
+            echo "Bookmark: \`$bookmark\`"
+            echo
+            echo '```sh'
+            echo "pnpm exec wrangler d1 time-travel restore DB ${{ steps.version.outputs.env_args }} --bookmark=$bookmark"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "::notice title=Restore point::$bookmark"
+
       - name: Migrate database
         run: pnpm exec wrangler d1 migrations apply DB --remote ${{ steps.version.outputs.env_args }}
 
