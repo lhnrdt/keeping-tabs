@@ -257,5 +257,10 @@
 	"welcome_password": "Password",
 	"welcome_enter": "Let me in",
 	"welcome_wrong": "That's not it. Ask the friend who told you about the app.",
-	"welcome_link_hint": "Got a link to a group? Just open it, no password needed."
+	"welcome_link_hint": "Got a link to a group? Just open it, no password needed.",
+	"note_title": "Hi! A quick note before you start",
+	"note_why": "I built Keeping Tabs for us, so we can split costs without yet another app collecting our data. It's not a company: no ads, no tracking, nothing sold or shared.",
+	"note_honest": "To be upfront about one thing: what you enter here (your name, the people in your groups, expenses and amounts) is stored on my Cloudflare account, so technically I could look at it. I won't, and I'm working on a version where not even I can read it.",
+	"note_until": "Until then, just put in what you're fine with me being able to see.",
+	"note_ok": "Got it"
 }

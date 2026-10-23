@@ -257,5 +257,10 @@
 	"welcome_password": "Passwort",
 	"welcome_enter": "Reinlassen",
 	"welcome_wrong": "Das ist es nicht. Frag die Person, die dir von der App erzählt hat.",
-	"welcome_link_hint": "Du hast einen Link zu einer Gruppe? Öffne ihn einfach, ganz ohne Passwort."
+	"welcome_link_hint": "Du hast einen Link zu einer Gruppe? Öffne ihn einfach, ganz ohne Passwort.",
+	"note_title": "Hi! Kurz vorab",
+	"note_why": "Ich habe Keeping Tabs für uns gebaut, damit wir Kosten teilen können, ohne dass noch eine App unsere Daten sammelt. Dahinter steckt keine Firma: keine Werbung, kein Tracking, nichts wird verkauft oder weitergegeben.",
+	"note_honest": "Eins will ich ehrlich sagen: Was du hier eingibst (dein Name, die Leute in deinen Gruppen, Ausgaben und Beträge), liegt in meinem Cloudflare-Konto. Technisch könnte ich es also sehen. Das mache ich nicht, und ich arbeite an einer Version, in der nicht mal ich es lesen kann.",
+	"note_until": "Bis dahin: Gib einfach nur ein, was ich auch sehen dürfte.",
+	"note_ok": "Alles klar"
 }
