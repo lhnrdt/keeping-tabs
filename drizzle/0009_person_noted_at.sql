@@ -1,0 +1,1 @@
+ALTER TABLE `people` ADD `noted_at` integer;

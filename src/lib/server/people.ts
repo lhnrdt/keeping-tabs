@@ -15,12 +15,20 @@ export type Person = {
 	/** Personal settings (S-3); null follows the browser */
 	locale: Locale | null;
 	theme: Theme | null;
+	/** When they read the friendly note (#112) */
+	notedAt: Date | null;
 };
 
 /** The person this device belongs to, if any. */
 export async function findPerson(db: Db, deviceKey: string): Promise<Person | undefined> {
 	const [row] = await db
-		.select({ id: people.id, name: people.name, locale: people.locale, theme: people.theme })
+		.select({
+			id: people.id,
+			name: people.name,
+			locale: people.locale,
+			theme: people.theme,
+			notedAt: people.notedAt
+		})
 		.from(devices)
 		.innerJoin(people, eq(devices.personId, people.id))
 		.where(eq(devices.keyHash, await hashSecret(deviceKey)));
@@ -36,7 +44,7 @@ export async function ensurePerson(db: Db, deviceKey: string): Promise<Person> {
 		db.insert(people).values({ id }),
 		db.insert(devices).values({ keyHash: await hashSecret(deviceKey), personId: id })
 	]);
-	return { id, name: null, locale: null, theme: null };
+	return { id, name: null, locale: null, theme: null, notedAt: null };
 }
 
 /** Remembers the name someone uses, to pre-fill it next time (A-13). */

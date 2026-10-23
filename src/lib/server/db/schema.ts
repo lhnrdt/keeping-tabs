@@ -54,6 +54,8 @@ export const people = sqliteTable('people', {
 	// Personal settings (S-3, src/lib/settings.ts); null = follow the browser
 	locale: text('locale').$type<Locale>(),
 	theme: text('theme').$type<Theme>(),
+	// When they read the friendly note about what the app's creator can see (#112)
+	notedAt: integer('noted_at', { mode: 'timestamp_ms' }),
 	// Hash of the person's recovery key, if they created one (A-16)
 	recoveryHash: text('recovery_hash').unique(),
 	createdAt: createdAt()
