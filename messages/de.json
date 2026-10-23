@@ -228,7 +228,6 @@
 	"side_lent": "du bekommst {amount}",
 	"side_borrowed": "du schuldest {amount}",
 	"side_not_involved": "nicht beteiligt",
-	"privacy_title": "Datenschutz",
 	"delete_identity_title": "Meine Daten löschen",
 	"delete_identity_intro": "Entfernt alles, was dich mit dieser App verbindet: deine Identität, Passkeys, Gerätelinks und den Recovery-Key. Deine Gruppen und ihre Ausgaben bleiben für die anderen erhalten; du erscheinst dort als „noch nicht da“.",
 	"delete_identity_button": "Alle meine Daten löschen",

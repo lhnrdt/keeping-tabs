@@ -228,7 +228,6 @@
 	"side_lent": "you lent {amount}",
 	"side_borrowed": "you borrowed {amount}",
 	"side_not_involved": "not involved",
-	"privacy_title": "Privacy",
 	"delete_identity_title": "Delete my data",
 	"delete_identity_intro": "Remove everything that ties you to this app: your identity, passkeys, device links and recovery key. Your groups and their expenses stay for the others; you show up as \"not here yet\".",
 	"delete_identity_button": "Delete my identity",
