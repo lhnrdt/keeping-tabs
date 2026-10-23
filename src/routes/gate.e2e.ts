@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { createGroup, enterPassword, open } from './e2e-helpers';
+import { acceptNote, createGroup, enterPassword, open } from './e2e-helpers';
 
 test('the start page asks for the password once per device', async ({ browser }) => {
 	const page = await (await browser.newContext()).newPage();
@@ -25,6 +25,7 @@ test('a group link is an invitation: no password, and afterwards the app is open
 
 	const ben = await (await browser.newContext()).newPage();
 	await ben.goto(groupUrl);
+	await acceptNote(ben);
 	await expect(ben.getByRole('heading', { name: 'Join Picnic' })).toBeVisible();
 	await ben.getByRole('button', { name: "I'm Ben" }).click();
 	await expect(ben.getByTestId('identity')).toHaveText('Ben');

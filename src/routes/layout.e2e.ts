@@ -27,12 +27,3 @@ for (const width of widths) {
 		}
 	});
 }
-
-test('every page links to the privacy notice', async ({ page }) => {
-	await open(page, '/');
-	await page.getByRole('link', { name: 'Privacy' }).click();
-	await expect(page.getByRole('heading', { name: 'Privacy' })).toBeVisible();
-	await expect(
-		page.getByRole('heading', { name: 'Cookies and storage in your browser' })
-	).toBeVisible();
-});

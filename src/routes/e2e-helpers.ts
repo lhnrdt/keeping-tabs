@@ -12,9 +12,20 @@ export async function enterPassword(page: Page, password = ACCESS_PASSWORD) {
 	await page.waitForLoadState('networkidle');
 }
 
+/** Reads the friendly note (#112) if it's shown; by role, not text, for any language. */
+export async function acceptNote(page: Page) {
+	// The address is relative (e.g. "../../note"), so match its end
+	const note = page.locator('form[action$="note"]');
+	if ((await note.count()) === 0) return;
+	await note.locator('button[type="submit"]').click();
+	await expect(note).toHaveCount(0);
+	await page.waitForLoadState('networkidle');
+}
+
 /**
  * Opens a page and waits until it's interactive (hydrated), like a user would. A new device
- * meets the password page first and gets in, like a friend who knows the password.
+ * meets the password page first and gets in, like a friend who knows the password, and
+ * reads the friendly note.
  */
 export async function open(page: Page, url: string) {
 	await page.goto(url);
@@ -23,6 +34,7 @@ export async function open(page: Page, url: string) {
 		await enterPassword(page);
 		await page.waitForURL((current) => current.pathname !== '/welcome');
 	}
+	await acceptNote(page);
 }
 
 /** Picks an option in a tile picker by tapping its tile, like a user would. */

@@ -50,6 +50,7 @@ test('without JavaScript, older entries are a link away', async ({ browser }) =>
 
 	// Joining works without JavaScript too (a plain form)
 	await page.goto(groupUrl);
+	await page.getByRole('button', { name: 'Got it' }).click();
 	await page.getByRole('button', { name: "I'm Ben" }).click();
 	await page.goto(groupUrl);
 	const entries = page.getByRole('region', { name: 'Expenses' }).getByRole('listitem');

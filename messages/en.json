@@ -228,7 +228,6 @@
 	"side_lent": "you lent {amount}",
 	"side_borrowed": "you borrowed {amount}",
 	"side_not_involved": "not involved",
-	"privacy_title": "Privacy",
 	"delete_identity_title": "Delete my data",
 	"delete_identity_intro": "Remove everything that ties you to this app: your identity, passkeys, device links and recovery key. Your groups and their expenses stay for the others; you show up as \"not here yet\".",
 	"delete_identity_button": "Delete my identity",
@@ -257,5 +256,8 @@
 	"welcome_password": "Password",
 	"welcome_enter": "Let me in",
 	"welcome_wrong": "That's not it. Ask the friend who told you about the app.",
-	"welcome_link_hint": "Got a link to a group? Just open it, no password needed."
+	"welcome_link_hint": "Got a link to a group? Just open it, no password needed.",
+	"note_title": "Good to know",
+	"note_ok": "Got it",
+	"note_text": "Names, groups and expenses are kept on the app's secured server, but still in plain text, so they're visible to admins. Encryption that only your group members can read is planned."
 }
