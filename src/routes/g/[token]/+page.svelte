@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-	import { BlockTitle, Fab, List, ListItem } from 'konsta/svelte';
+	import { BlockTitle, List, ListItem } from 'konsta/svelte';
 	import AppPage from '#lib/components/AppPage.svelte';
+	import FloatingLink from '#lib/components/FloatingLink.svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import BalanceList from '#lib/components/group/BalanceList.svelte';
 	import ExpenseList from '#lib/components/group/ExpenseList.svelte';
@@ -49,17 +50,11 @@
 			entries={data.entries}
 			hasMore={data.hasMore}
 		/>
-		<!-- Konsta sets role="button" on its Fab even when it's a link -->
-		<Fab
-			class="fixed right-[max(1rem,calc(50vw-var(--container-app)/2+1rem))] bottom-[calc(var(--k-safe-area-bottom,0px)+6rem)] z-20"
+		<FloatingLink
 			href={resolve('/g/[token]/expenses/new', { token: data.group.shareToken })}
-			text={m.add_expense()}
-			role="link"
-		>
-			{#snippet icon()}
-				<Icon name="add" size={24} />
-			{/snippet}
-		</Fab>
+			icon="add"
+			label={m.add_expense()}
+		/>
 	{:else if tab === 'balances'}
 		<BlockTitle>{m.balances_title()}</BlockTitle>
 		<BalanceList currency={data.group.currency} members={data.members} balances={data.balances} />
