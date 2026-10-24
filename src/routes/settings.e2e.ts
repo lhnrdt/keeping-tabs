@@ -57,9 +57,12 @@ test('everything about you is in one place: profile, settings, devices (#146)', 
 	await page.getByLabel('Your name').press('Tab');
 	await expect(page.getByText('Saved').first()).toBeVisible();
 
-	// The start screen has a way to you, at the top
+	// The start screen has a way to you, at the top: the same menu as in a group (#156)
 	await open(page, '/');
-	await page.getByRole('link', { name: 'Profile' }).click();
+	await page.getByRole('link', { name: 'Anna', exact: true }).click();
+	const menu = page.getByRole('dialog', { name: 'Anna' });
+	await expect(menu.getByRole('link', { name: 'Devices & recovery' })).toBeVisible();
+	await menu.getByRole('link', { name: 'Profile' }).click();
 	await expect(page).toHaveURL(/\/you$/);
 	await expect(page.getByRole('heading', { name: 'Profile' })).toBeVisible();
 	await expect(page.getByText('Anna', { exact: true })).toBeVisible();
@@ -109,5 +112,5 @@ test('choose an avatar and see it wherever you appear (#61)', async ({ page }) =
 
 	// And on the start screen's profile button, after a reload
 	await open(page, '/');
-	await expect(page.getByRole('link', { name: 'Profile' }).locator('svg')).toBeVisible();
+	await expect(page.getByRole('link', { name: 'Anna', exact: true }).locator('svg')).toBeVisible();
 });
