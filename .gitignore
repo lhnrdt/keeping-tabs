@@ -34,3 +34,6 @@ worker-configuration.d.ts
 
 # Editor settings stay local
 .vscode/
+
+# The example browser of `pnpm seed`, for `pnpm seed --link`
+.seed-anna.json
