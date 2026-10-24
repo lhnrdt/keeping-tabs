@@ -17,9 +17,9 @@
 	let token = $state('');
 
 	onMount(() => {
+		// Stays in the address until it's used: a new browser first meets the friendly note,
+		// which brings it back here with the address it had. The link works only once anyway.
 		token = location.hash.slice(1);
-		// Keep the secret out of the history and anything that shows the URL
-		history.replaceState(history.state, '', location.pathname);
 	});
 </script>
 
