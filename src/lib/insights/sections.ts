@@ -6,6 +6,7 @@ export type Tile =
 	'spent' | 'myShare' | 'perPerson' | 'perDay' | 'change' | 'count' | 'fixedPerMonth';
 /** Every insight section there is, in the order they're offered (#174) */
 export const SECTIONS = [
+	'budget',
 	'overTime',
 	'categories',
 	'kinds',
@@ -25,11 +26,11 @@ export type Layout = { tiles: [Tile, Tile, Tile, Tile]; sections: Section[] };
 export const LAYOUTS: Record<GroupKind, Layout> = {
 	trip: {
 		tiles: ['spent', 'perPerson', 'perDay', 'myShare'],
-		sections: ['overTime', 'kinds', 'categories', 'biggest', 'whoPays', 'settling']
+		sections: ['budget', 'overTime', 'kinds', 'categories', 'biggest', 'whoPays', 'settling']
 	},
 	event: {
 		tiles: ['spent', 'perPerson', 'count', 'myShare'],
-		sections: ['categories', 'settling', 'whoPays', 'biggest', 'overTime']
+		sections: ['budget', 'categories', 'settling', 'whoPays', 'biggest', 'overTime']
 	},
 	home: {
 		tiles: ['fixedPerMonth', 'change', 'perPerson', 'myShare'],

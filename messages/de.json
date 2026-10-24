@@ -393,5 +393,19 @@
 	"welcome_link_hint": "Du hast einen Link zu einer Gruppe? Öffne ihn einfach, ganz ohne Passwort.",
 	"note_title": "Good to know",
 	"note_ok": "Alles klar",
-	"note_text": "Namen, Gruppen und Ausgaben liegen auf dem gesicherten Server der App, aber noch im Klartext und damit für Admins einsehbar. Eine Verschlüsselung, die nur deine Gruppenmitglieder lesen können, ist geplant."
+	"note_text": "Namen, Gruppen und Ausgaben liegen auf dem gesicherten Server der App, aber noch im Klartext und damit für Admins einsehbar. Eine Verschlüsselung, die nur deine Gruppenmitglieder lesen können, ist geplant.",
+	"insights_budget": "Budget",
+	"section_budget_hint": "Ausgaben gegen das Budget, und wohin das Tempo führt",
+	"budget_of": "von {amount}",
+	"budget_at_pace": "In diesem Tempo: {amount}",
+	"budget_left_per_day": "Noch {amount} pro Tag",
+	"budget_left": "Noch {amount} übrig",
+	"budget_over": "{amount} über dem Budget",
+	"budget_line": "Budget {amount}",
+	"budget_hint": "Leg ein Budget und ein Enddatum fest, dann siehst du, wo ihr in diesem Tempo landet.",
+	"budget_set": "Budget festlegen",
+	"budget_edit": "Budget ändern",
+	"budget_remove": "Budget entfernen",
+	"field_budget": "Budget",
+	"field_ends_on": "Endet am"
 }

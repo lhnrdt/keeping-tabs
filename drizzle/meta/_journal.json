@@ -99,6 +99,13 @@
       "when": 1792873629871,
       "tag": "0013_group_insight_sections",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "6",
+      "when": 1792875908923,
+      "tag": "0014_group_budget",
+      "breakpoints": true
     }
   ]
 }

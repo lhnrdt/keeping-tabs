@@ -6,9 +6,11 @@
 	import { namesById, type GroupMember, type Member } from '#lib/group/members.ts';
 	import type { GroupKind } from '#lib/group/kinds.ts';
 	import { m } from '#lib/paraglide/messages.js';
-	import type { Insights } from '#lib/insights/insights.ts';
+	import type { ErrorCode } from '#lib/errors.ts';
+	import type { GroupInsights } from '#lib/insights/group.ts';
 	import { LAYOUTS, sectionsFor, type Section } from '#lib/insights/sections.ts';
 	import CustomizeInsights from './CustomizeInsights.svelte';
+	import Budget from './Budget.svelte';
 	import BiggestList from './BiggestList.svelte';
 	import CategoryBars from './CategoryBars.svelte';
 	import FixedCosts from './FixedCosts.svelte';
@@ -21,7 +23,9 @@
 	import WhoPays from './WhoPays.svelte';
 
 	type Props = {
-		insights: Insights;
+		insights: GroupInsights;
+		/** The budget form's error, if it was just sent */
+		budgetError: ErrorCode | undefined;
 		group: {
 			kind: GroupKind;
 			currency: string;
@@ -34,13 +38,14 @@
 		everyone: Member[];
 	};
 
-	let { insights, group, members, everyone }: Props = $props();
+	let { insights, budgetError, group, members, everyone }: Props = $props();
 
 	const layout = $derived(LAYOUTS[group.kind]);
 	// The group's own choice, else what suits its type (#174)
 	const chosen = $derived(sectionsFor(group.kind, group.insightSections));
 	const names = $derived(namesById(everyone));
 	const titles: Record<Section, () => string> = {
+		budget: m.insights_budget,
 		overTime: m.insights_over_time,
 		categories: m.insights_by_category,
 		kinds: m.insights_kinds,
@@ -76,7 +81,9 @@
 	<div class="pt-4"><StatTiles {insights} currency={group.currency} tiles={layout.tiles} /></div>
 	{#each shown as section (section)}
 		<BlockTitle class="!mb-2">{titles[section]()}</BlockTitle>
-		{#if section === 'overTime'}
+		{#if section === 'budget'}
+			<Budget view={insights.budget} currency={group.currency} error={budgetError} />
+		{:else if section === 'overTime'}
 			<OverTimeChart
 				unit={insights.overTime.unit}
 				buckets={insights.overTime.buckets}
