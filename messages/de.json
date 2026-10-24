@@ -223,6 +223,7 @@
 	"join_submit": "Beitreten",
 	"new_person_name": "Name der neuen Person",
 	"error_not_found_title": "Hier ist nichts",
+	"rate_limited": "Gerade ist ganz schön viel los. Warte eine Minute und versuch es dann noch mal.",
 	"error_unexpected": "Das hat nicht geklappt. Versuch es gleich noch mal.",
 	"try_again": "Noch mal versuchen",
 	"side_lent": "du bekommst {amount}",

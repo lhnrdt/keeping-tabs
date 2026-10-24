@@ -10,6 +10,8 @@ import { paraglideMiddleware } from '#lib/paraglide/server.js';
 import { getDb } from '#lib/server/db/index.ts';
 import { grantAccess, hasAccess, isOpenPath } from '#lib/server/access.ts';
 import { ensureDeviceKey } from '#lib/server/device.ts';
+import { limitKindOf } from '#lib/server/rate-limit-kinds.ts';
+import { tooManyRequests, withinLimit } from '#lib/server/rate-limit.ts';
 import { findPerson } from '#lib/server/people.ts';
 import { applySettings, markSettingsChecked, settingsChecked } from '#lib/server/settings.ts';
 
@@ -75,6 +77,18 @@ const handleAccess: Handle = async ({ event, resolve }) => {
 	redirect(303, `${resolveRoute('/welcome')}?${new URLSearchParams({ next })}`);
 };
 
+/**
+ * Rate limits per address (#66): changes and guessing secrets are counted. Last in the
+ * sequence, so the answer is in the visitor's language.
+ */
+const handleRateLimit: Handle = async ({ event, resolve }) => {
+	const kind = limitKindOf(event.request.method, event.url);
+	if (kind && !(await withinLimit(kind, event.getClientAddress()))) {
+		return tooManyRequests(event.request);
+	}
+	return resolve(event);
+};
+
 /** Every dynamic response says which release served it. */
 const handleVersion: Handle = async ({ event, resolve }) => {
 	const response = await resolve(event);
@@ -90,5 +104,6 @@ export const handle: Handle = sequence(
 	handleDevice,
 	handleAccess,
 	handleSettings,
-	handleParaglide
+	handleParaglide,
+	handleRateLimit
 );
