@@ -42,6 +42,11 @@ test('a group shows where the money went (#161)', async ({ page }) => {
 	await expect(tile('Per person')).toHaveText('€240.00');
 	await expect(tile('Per day')).toHaveText('€96.00');
 
+	// A few facts worth telling (#162)
+	const highlights = page.getByRole('list', { name: 'Highlights' });
+	await expect(highlights).toContainText('63% of everything');
+	await expect(highlights).toContainText('Busiest day');
+
 	// Over time, by day, with the gaps; readable as a table too
 	const overTime = page
 		.locator('figure')

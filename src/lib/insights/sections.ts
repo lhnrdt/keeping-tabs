@@ -7,6 +7,7 @@ export type Tile =
 /** Every insight section there is, in the order they're offered (#174) */
 export const SECTIONS = [
 	'budget',
+	'highlights',
 	'overTime',
 	'categories',
 	'kinds',
@@ -26,35 +27,53 @@ export type Layout = { tiles: [Tile, Tile, Tile, Tile]; sections: Section[] };
 export const LAYOUTS: Record<GroupKind, Layout> = {
 	trip: {
 		tiles: ['spent', 'perPerson', 'perDay', 'myShare'],
-		sections: ['budget', 'overTime', 'kinds', 'categories', 'biggest', 'whoPays', 'settling']
+		sections: [
+			'budget',
+			'highlights',
+			'overTime',
+			'kinds',
+			'categories',
+			'biggest',
+			'whoPays',
+			'settling'
+		]
 	},
 	event: {
 		tiles: ['spent', 'perPerson', 'count', 'myShare'],
-		sections: ['budget', 'categories', 'settling', 'whoPays', 'biggest', 'overTime']
+		sections: ['budget', 'categories', 'settling', 'whoPays', 'highlights', 'biggest', 'overTime']
 	},
 	home: {
 		tiles: ['fixedPerMonth', 'change', 'perPerson', 'myShare'],
-		sections: ['fixedCosts', 'overTime', 'kinds', 'categories', 'howOften', 'whoPays', 'biggest']
+		sections: [
+			'fixedCosts',
+			'overTime',
+			'kinds',
+			'categories',
+			'howOften',
+			'whoPays',
+			'biggest',
+			'highlights'
+		]
 	},
 	partner: {
 		tiles: ['spent', 'myShare', 'change', 'count'],
-		sections: ['myPosition', 'whoPays', 'overTime', 'categories', 'kinds', 'biggest']
+		sections: ['myPosition', 'highlights', 'whoPays', 'overTime', 'categories', 'kinds', 'biggest']
 	},
 	friends: {
 		tiles: ['spent', 'myShare', 'count', 'perPerson'],
-		sections: ['howOften', 'settling', 'whoPays', 'biggest', 'categories', 'overTime']
+		sections: ['highlights', 'howOften', 'settling', 'whoPays', 'biggest', 'categories', 'overTime']
 	},
 	food: {
 		tiles: ['spent', 'count', 'perPerson', 'myShare'],
-		sections: ['howOften', 'overTime', 'biggest', 'whoPays']
+		sections: ['highlights', 'howOften', 'overTime', 'biggest', 'whoPays']
 	},
 	car: {
 		tiles: ['spent', 'fixedPerMonth', 'change', 'myShare'],
-		sections: ['overTime', 'fixedCosts', 'kinds', 'whoPays', 'biggest']
+		sections: ['overTime', 'fixedCosts', 'kinds', 'whoPays', 'biggest', 'highlights']
 	},
 	other: {
 		tiles: ['spent', 'myShare', 'perPerson', 'perDay'],
-		sections: ['overTime', 'categories', 'kinds', 'biggest', 'whoPays', 'settling']
+		sections: ['highlights', 'overTime', 'categories', 'kinds', 'biggest', 'whoPays', 'settling']
 	}
 };
 
