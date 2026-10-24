@@ -5,6 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
+		"dev:phone": "node scripts/dev-phone.ts",
 		"themes": "node scripts/themes.ts",
 		"seed": "node scripts/seed/seed.ts",
 		"build": "wrangler types && vite build",
