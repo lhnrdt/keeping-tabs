@@ -37,3 +37,6 @@ worker-configuration.d.ts
 
 # The example browser of `pnpm seed`, for `pnpm seed --link`
 .seed-anna.json
+
+# The dev server's self-signed certificate for phones (`pnpm dev:phone`)
+.certs/
