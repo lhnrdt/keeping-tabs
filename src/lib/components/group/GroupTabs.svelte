@@ -36,7 +36,7 @@
 				href: groupTabUrl('', tab.id),
 				'aria-current': tab.id === active ? 'page' : undefined,
 				'data-sveltekit-replacestate': '',
-				'data-sveltekit-noscroll': ''
+				'data-sveltekit-reset': 'false'
 			}}
 		>
 			{#snippet icon()}
