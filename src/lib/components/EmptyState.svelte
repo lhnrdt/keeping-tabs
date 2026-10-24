@@ -14,5 +14,5 @@
 
 <div class="flex flex-col items-center gap-3 px-4 py-8 text-center" {role}>
 	<span class="text-sage dark:text-forest-night"><Illustration /></span>
-	<p class="max-w-xs opacity-70">{text}</p>
+	<p class="max-w-xs text-muted">{text}</p>
 </div>

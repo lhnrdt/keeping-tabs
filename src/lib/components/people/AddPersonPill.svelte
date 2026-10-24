@@ -52,7 +52,7 @@
 		</button>
 		<button
 			type="button"
-			class="grid h-9 w-9 place-items-center rounded-full opacity-60 hover:opacity-100"
+			class="grid h-9 w-9 place-items-center rounded-full text-muted"
 			aria-label={m.cancel()}
 			onclick={() => (open = false)}
 		>

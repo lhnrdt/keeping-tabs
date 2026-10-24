@@ -17,7 +17,7 @@
 </script>
 
 <fieldset class="px-4 pb-2">
-	<legend class="mb-2 text-sm opacity-70">{legend}</legend>
+	<legend class="mb-2 text-sm text-muted">{legend}</legend>
 	<div class="grid grid-cols-4 gap-2">
 		{#each options as option (option.value)}
 			<label
@@ -33,7 +33,7 @@
 				<Icon name={option.icon} />
 				<span class="line-clamp-2 text-center leading-tight">{option.label}</span>
 				{#if option.hint}
-					<span class="max-w-full truncate text-center text-[0.65rem] leading-none opacity-60"
+					<span class="max-w-full truncate text-center text-[0.65rem] leading-none"
 						>{option.hint}</span
 					>
 				{/if}

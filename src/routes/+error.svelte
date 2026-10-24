@@ -24,7 +24,7 @@
 	<div class="flex flex-col items-center gap-3 px-6 pt-10 pb-6 text-center" role="alert">
 		<span class="text-sage dark:text-forest-night"><Hills /></span>
 		<h1 class="font-display text-3xl font-semibold">{heading}</h1>
-		<p class="max-w-sm opacity-75">{message}</p>
+		<p class="max-w-sm text-muted">{message}</p>
 	</div>
 	<Block class="space-y-2">
 		<LinkButton href={resolve('/')}>{m.back_home()}</LinkButton>

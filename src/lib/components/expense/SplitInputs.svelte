@@ -107,14 +107,14 @@
 						aria-label={labels[mode]({ name: member.name })}
 						bind:value={texts[member.id]}
 					/>
-					<span class="w-10 text-xs opacity-60">{suffix}</span>
+					<span class="w-10 text-xs text-muted">{suffix}</span>
 				</span>
 			{/snippet}
 		</ListItem>
 	{/each}
 </List>
 {#if summary}
-	<p class="mx-8 -mt-4 mb-6 text-sm opacity-70" aria-live="polite" data-testid="split-summary">
+	<p class="mx-8 -mt-4 mb-6 text-sm text-muted" aria-live="polite" data-testid="split-summary">
 		{summary}
 	</p>
 {/if}

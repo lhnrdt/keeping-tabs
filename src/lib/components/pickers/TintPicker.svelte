@@ -12,7 +12,7 @@
 </script>
 
 <fieldset class="px-4 pb-3">
-	<legend class="mb-2 text-sm opacity-70">{m.field_group_color()}</legend>
+	<legend class="mb-2 text-sm text-muted">{m.field_group_color()}</legend>
 	<div class="flex flex-wrap gap-3">
 		<label class="relative flex cursor-pointer flex-col items-center gap-1 text-xs">
 			<input class="peer sr-only" type="radio" name="tint" value="" checked={!value} />

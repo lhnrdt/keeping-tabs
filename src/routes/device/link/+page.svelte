@@ -28,7 +28,7 @@
 </svelte:head>
 
 <AppPage title={m.device_adopt_title()}>
-	<Block><p class="opacity-80">{m.device_adopt_intro()}</p></Block>
+	<Block><p class="text-muted">{m.device_adopt_intro()}</p></Block>
 	<form method="POST" action="?/use" use:enhance={submission.enhance}>
 		<input type="hidden" name="token" value={token} />
 		<FormError error={form?.error} />

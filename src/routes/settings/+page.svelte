@@ -65,7 +65,7 @@
 				value={data.name}
 			/>
 		</List>
-		<Block class="!my-0"><p class="text-sm opacity-70">{m.settings_name_hint()}</p></Block>
+		<Block class="!my-0"><p class="text-sm text-muted">{m.settings_name_hint()}</p></Block>
 		<SavedHint shown={saved === 'name'} />
 		<FormError error={errorFor('name')} />
 		<noscript><Block><button type="submit">{m.save()}</button></Block></noscript>
@@ -74,7 +74,7 @@
 	<!-- A plain post: the page is served again, so the new language applies everywhere -->
 	<form method="POST" action="?/language" onchange={submitOnChange}>
 		<input type="hidden" name="next" value={resolve('/settings')} />
-		<h2 class="mx-4 mt-4 mb-1 text-sm font-medium opacity-60">{m.settings_language()}</h2>
+		<h2 class="mx-4 mt-4 mb-1 text-sm font-medium text-muted">{m.settings_language()}</h2>
 		<SegmentedPicker
 			name="locale"
 			legend={m.settings_language()}
@@ -85,7 +85,7 @@
 	</form>
 
 	<form method="POST" action="?/theme" use:enhance={saveQuietly} onchange={themeChanged}>
-		<h2 class="mx-4 mt-4 mb-1 text-sm font-medium opacity-60">{m.settings_theme()}</h2>
+		<h2 class="mx-4 mt-4 mb-1 text-sm font-medium text-muted">{m.settings_theme()}</h2>
 		<SegmentedPicker
 			name="theme"
 			legend={m.settings_theme()}
