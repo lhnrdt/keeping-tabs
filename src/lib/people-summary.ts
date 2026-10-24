@@ -30,11 +30,20 @@ export type PersonSummary = {
 	groups: PersonGroupAmount[];
 };
 
-/** Your side of a transfer: what the other one owes you (negative: you owe them) */
-function yourSide(transfer: Transfer, you: string): [string, number] | null {
-	if (transfer.to === you) return [transfer.from, transfer.amountCents];
-	if (transfer.from === you) return [transfer.to, -transfer.amountCents];
-	return null;
+/**
+ * In one group: what's open between you and each other member, from the group's settle-up
+ * payments. Positive: they owe you; negative: you owe them. Members you're even with are
+ * left out; the order follows the payments.
+ */
+export function betweenYou(transfers: readonly Transfer[], you: string) {
+	const open = new Map<string, number>();
+	for (const { from, to, amountCents } of transfers) {
+		if (to === you) open.set(from, (open.get(from) ?? 0) + amountCents);
+		if (from === you) open.set(to, (open.get(to) ?? 0) - amountCents);
+	}
+	return [...open]
+		.filter(([, amount]) => amount !== 0)
+		.map(([memberId, amount]) => ({ memberId, amount }));
 }
 
 /** Groups newest first; people by the largest amount, then by name. Settled people are left out. */
@@ -42,10 +51,9 @@ export function summarizePeople(groups: readonly GroupSettlement[]): PersonSumma
 	const people = new Map<string, PersonSummary>();
 	for (const group of groups) {
 		const members = new Map(group.members.map((member) => [member.id, member]));
-		for (const transfer of group.transfers) {
-			const side = yourSide(transfer, group.memberId);
-			const other = side && members.get(side[0]);
-			if (!side || !other) continue;
+		for (const { memberId, amount } of betweenYou(group.transfers, group.memberId)) {
+			const other = members.get(memberId);
+			if (!other) continue;
 			const identity = other.personId ? `person:${other.personId}` : `member:${other.id}`;
 			const key = `${identity}:${group.currency}`;
 			const person = people.get(key) ?? {
@@ -56,8 +64,8 @@ export function summarizePeople(groups: readonly GroupSettlement[]): PersonSumma
 				net: 0,
 				groups: []
 			};
-			person.net += side[1];
-			person.groups.push({ id: group.id, name: group.name, token: group.token, amount: side[1] });
+			person.net += amount;
+			person.groups.push({ id: group.id, name: group.name, token: group.token, amount });
 			people.set(key, person);
 		}
 	}

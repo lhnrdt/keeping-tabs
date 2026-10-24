@@ -5,9 +5,9 @@
 	import Topography from '#lib/components/illustrations/Topography.svelte';
 	import { useIdentity } from '#lib/group/identity.svelte.ts';
 	import { namesById, type Member } from '#lib/group/members.ts';
-	import { formatAmount } from '#lib/money.ts';
+	import { openLine } from '#lib/group/open-line.ts';
+	import { betweenYou } from '#lib/people-summary.ts';
 	import { m } from '#lib/paraglide/messages.js';
-	import { getLocale } from '#lib/paraglide/runtime.js';
 	import type { Transfer } from '#lib/settle.ts';
 	import Icon from '#lib/components/Icon.svelte';
 	import { kindIcons } from '#lib/group/kind-style.ts';
@@ -27,17 +27,14 @@
 	const identity = useIdentity();
 	const names = $derived(namesById(members));
 	const myBalance = $derived(identity.memberId ? (balances[identity.memberId] ?? 0) : null);
-	const money = (amount: number) => formatAmount(amount, group.currency, getLocale());
 
 	/** Suggested payments you're part of, phrased from your side */
 	const myTransfers = $derived(
-		transfers
-			.filter((t) => t.from === identity.memberId || t.to === identity.memberId)
-			.map((t) =>
-				t.to === identity.memberId
-					? m.hero_owes_you({ name: names.get(t.from) ?? '?', amount: money(t.amountCents) })
-					: m.hero_you_owe({ name: names.get(t.to) ?? '?', amount: money(t.amountCents) })
-			)
+		identity.memberId
+			? betweenYou(transfers, identity.memberId).map(({ memberId, amount }) =>
+					openLine(names.get(memberId) ?? '?', amount, group.currency)
+				)
+			: []
 	);
 </script>
 

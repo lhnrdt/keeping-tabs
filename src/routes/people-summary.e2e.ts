@@ -26,8 +26,16 @@ test('the start screen sums up each person across groups (#117)', async ({ brows
 	await addExpense(anna, trip, 'Cabin', '60');
 	await addExpense(ben, flat, 'Rent', '20');
 
+	// The start screen shows it per group, as in each group's header
 	await open(anna, '/');
-	const people = anna.getByRole('region', { name: 'By person' });
+	const yourGroups = anna.getByRole('region', { name: 'Your groups' });
+	await expect(yourGroups.getByRole('link', { name: /Trip/ })).toContainText('Ben owes you €30.00');
+	await expect(yourGroups.getByRole('link', { name: /Flat/ })).toContainText('You owe Ben €10.00');
+
+	// From the overall balance to everyone, by person
+	await anna.getByRole('link', { name: /Overall across your groups/ }).click();
+	await expect(anna).toHaveURL(/\/balances$/);
+	const people = anna.getByRole('region', { name: 'Between you and others' });
 	const benRow = people.getByRole('listitem').filter({ hasText: 'Ben' }).first();
 	await expect(benRow).toContainText('owes you €20.00');
 	await benRow.getByText('Ben', { exact: true }).click();
@@ -35,6 +43,14 @@ test('the start screen sums up each person across groups (#117)', async ({ brows
 	await expect(groups.getByRole('link', { name: /Trip/ })).toContainText('owes you €30.00');
 	await expect(groups.getByRole('link', { name: /Flat/ })).toContainText('you owe €10.00');
 
+	// And in a group's balances, between you and each person there
 	await groups.getByRole('link', { name: /Flat/ }).click();
 	await expect(anna).toHaveURL(/\?tab=balances$/);
+	await expect(anna.getByRole('heading', { name: 'Flat' })).toBeVisible();
+	await expect(
+		anna
+			.getByRole('region', { name: 'Between you and others' })
+			.getByRole('listitem')
+			.filter({ hasText: 'Ben' })
+	).toContainText('you owe €10.00');
 });
