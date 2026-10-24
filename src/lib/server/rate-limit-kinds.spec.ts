@@ -9,12 +9,14 @@ describe('limitKindOf', () => {
 		expect(limitKindOf('HEAD', at('/g/abc'))).toBeNull();
 	});
 
-	it.each(['/welcome?next=%2F', '/device/link?/use', '/you/devices?/restore', '/device/passkey/login'])(
-		'counts %s as guessing a secret',
-		(path) => {
-			expect(limitKindOf('POST', at(path))).toBe('secret');
-		}
-	);
+	it.each([
+		'/welcome?next=%2F',
+		'/device/link?/use',
+		'/you/devices?/restore',
+		'/device/passkey/login'
+	])('counts %s as guessing a secret', (path) => {
+		expect(limitKindOf('POST', at(path))).toBe('secret');
+	});
 
 	it('counts creating a group on its own', () => {
 		expect(limitKindOf('POST', at('/new'))).toBe('newGroup');
