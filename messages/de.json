@@ -260,7 +260,7 @@
 	"restore_group": "Wiederherstellen",
 	"error_group_not_restorable": "Diese Gruppe kann nicht mehr wiederhergestellt werden.",
 	"delete_confirm": "Löschen",
-	"settings_title": "Settings",
+	"you_title": "Profil",
 	"settings_name_hint": "Der Name, den wir vorschlagen, wenn du eine Gruppe erstellst oder beitrittst.",
 	"settings_language": "Sprache",
 	"settings_theme": "Design",
