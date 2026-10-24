@@ -13,7 +13,7 @@ describe('choosing insight sections (#174)', () => {
 			'fixedCosts'
 		] as const;
 		expect(choiceToStore('partner', chosen)).toBe(
-			'myPosition,whoPays,overTime,categories,kinds,fixedCosts'
+			'myPosition,highlights,whoPays,overTime,categories,kinds,fixedCosts'
 		);
 	});
 

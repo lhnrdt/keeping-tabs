@@ -407,5 +407,13 @@
 	"budget_edit": "Change budget",
 	"budget_remove": "Remove budget",
 	"field_budget": "Budget",
-	"field_ends_on": "Ends on"
+	"field_ends_on": "Ends on",
+	"insights_highlights": "Highlights",
+	"section_highlights_hint": "A few facts worth knowing, when there are some",
+	"highlight_top_category": "{category} is {share} of everything",
+	"highlight_busiest_day": "Busiest day: {date}, {amount}",
+	"highlight_place": "{title}: {count} times, {amount} in all",
+	"highlight_most_often": "{name} paid {times} of {count} times",
+	"highlight_streak": "{days} days in a row with expenses, from {date}",
+	"highlight_weekday": "Most goes on {weekday}s: {share}"
 }

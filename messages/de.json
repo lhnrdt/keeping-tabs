@@ -407,5 +407,13 @@
 	"budget_edit": "Budget ändern",
 	"budget_remove": "Budget entfernen",
 	"field_budget": "Budget",
-	"field_ends_on": "Endet am"
+	"field_ends_on": "Endet am",
+	"insights_highlights": "Highlights",
+	"section_highlights_hint": "Ein paar Fakten, die man wissen sollte, wenn es welche gibt",
+	"highlight_top_category": "{category} macht {share} von allem aus",
+	"highlight_busiest_day": "Teuerster Tag: {date} mit {amount}",
+	"highlight_place": "{title}: {count}-mal, insgesamt {amount}",
+	"highlight_most_often": "{name} hat {times} von {count} Mal bezahlt",
+	"highlight_streak": "{days} Tage am Stück mit Ausgaben, ab {date}",
+	"highlight_weekday": "An {weekday}en geht am meisten drauf: {share}"
 }

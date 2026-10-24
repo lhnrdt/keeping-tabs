@@ -3,6 +3,7 @@
 import type { ExpenseCategory } from '#lib/expense/categories.ts';
 import type { Transfer } from '#lib/settle.ts';
 import { fixedCosts, kindsOf, KINDS, type FixedCost, type Kind } from './expense-kinds';
+import { highlightsOf, type Highlight } from './highlights';
 import { owingSince, paidBack, positionOverTime, type Point } from './standing';
 
 export type InsightEntry = {
@@ -66,6 +67,8 @@ export type Insights = {
 	settling: Settling;
 	/** Paid, share and how often each member paid, in member order */
 	byMember: MemberSpend[];
+	/** A few friendly facts, when the data makes them true (#162) */
+	highlights: Highlight[];
 };
 
 /** Categories shown on their own; the smaller rest is summed up */
@@ -224,6 +227,7 @@ export function insightsOf(
 				since: owingSince(entries, transfer.from)
 			}))
 		},
-		byMember: members
+		byMember: members,
+		highlights: highlightsOf(expenses, kinds, memberIds.length)
 	};
 }

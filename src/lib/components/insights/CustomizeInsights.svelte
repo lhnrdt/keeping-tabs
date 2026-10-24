@@ -16,6 +16,7 @@
 
 	const names: Record<Section, () => string> = {
 		budget: m.insights_budget,
+		highlights: m.insights_highlights,
 		overTime: m.insights_over_time,
 		categories: m.insights_by_category,
 		kinds: m.insights_kinds,
@@ -28,6 +29,7 @@
 	};
 	const descriptions: Record<Section, () => string> = {
 		budget: m.section_budget_hint,
+		highlights: m.section_highlights_hint,
 		overTime: m.section_over_time_hint,
 		categories: m.section_categories_hint,
 		kinds: m.section_kinds_hint,

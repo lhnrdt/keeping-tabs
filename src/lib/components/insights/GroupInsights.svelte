@@ -15,6 +15,7 @@
 	import CategoryBars from './CategoryBars.svelte';
 	import FixedCosts from './FixedCosts.svelte';
 	import KindBars from './KindBars.svelte';
+	import Highlights from './Highlights.svelte';
 	import HowOften from './HowOften.svelte';
 	import OverTimeChart from './OverTimeChart.svelte';
 	import PositionChart from './PositionChart.svelte';
@@ -46,6 +47,7 @@
 	const names = $derived(namesById(everyone));
 	const titles: Record<Section, () => string> = {
 		budget: m.insights_budget,
+		highlights: m.insights_highlights,
 		overTime: m.insights_over_time,
 		categories: m.insights_by_category,
 		kinds: m.insights_kinds,
@@ -63,14 +65,16 @@
 				? insights.byMember.length > 1
 				: section === 'fixedCosts'
 					? insights.fixed.length > 0
-					: section === 'kinds'
-						? insights.byKind.length > 1
-						: section === 'myPosition'
-							? (insights.position?.length ?? 0) > 1
-							: section === 'settling'
-								? insights.byMember.length > 1 &&
-									insights.settling.paidBack + insights.settling.open > 0
-								: true
+					: section === 'highlights'
+						? insights.highlights.length > 0
+						: section === 'kinds'
+							? insights.byKind.length > 1
+							: section === 'myPosition'
+								? (insights.position?.length ?? 0) > 1
+								: section === 'settling'
+									? insights.byMember.length > 1 &&
+										insights.settling.paidBack + insights.settling.open > 0
+									: true
 		)
 	);
 </script>
@@ -83,6 +87,8 @@
 		<BlockTitle class="!mb-2">{titles[section]()}</BlockTitle>
 		{#if section === 'budget'}
 			<Budget view={insights.budget} currency={group.currency} error={budgetError} />
+		{:else if section === 'highlights'}
+			<Highlights highlights={insights.highlights} {members} {names} currency={group.currency} />
 		{:else if section === 'overTime'}
 			<OverTimeChart
 				unit={insights.overTime.unit}

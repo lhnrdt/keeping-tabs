@@ -2,7 +2,10 @@
 import IconBed from '@tabler/icons-svelte-runes/icons/bed';
 import IconBeer from '@tabler/icons-svelte-runes/icons/beer';
 import IconBus from '@tabler/icons-svelte-runes/icons/bus';
+import IconCalendarEvent from '@tabler/icons-svelte-runes/icons/calendar-event';
 import IconFirstAidKit from '@tabler/icons-svelte-runes/icons/first-aid-kit';
+import IconFlame from '@tabler/icons-svelte-runes/icons/flame';
+import IconMapPin from '@tabler/icons-svelte-runes/icons/map-pin';
 import IconGift from '@tabler/icons-svelte-runes/icons/gift';
 import IconShoppingBag from '@tabler/icons-svelte-runes/icons/shopping-bag';
 import IconShoppingCart from '@tabler/icons-svelte-runes/icons/shopping-cart';
@@ -80,7 +83,11 @@ export const icons = {
 	categoryFun: IconTicket,
 	categoryShopping: IconShoppingBag,
 	categoryGifts: IconGift,
-	categoryHealth: IconFirstAidKit
+	categoryHealth: IconFirstAidKit,
+	// Highlights (src/lib/insights/highlights.ts)
+	day: IconCalendarEvent,
+	place: IconMapPin,
+	streak: IconFlame
 };
 
 export type IconName = keyof typeof icons;
