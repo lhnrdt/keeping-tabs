@@ -12,7 +12,7 @@
 			crossorigin="use-credentials"
 		/>
 		<!-- Colors the phone's status and navigation bars; switched with the theme below -->
-		<meta name="theme-color" content="#f4f1ea" />
+		<meta name="theme-color" content="#eaf1ec" />
 		<link rel="apple-touch-icon" href="%sveltekit.assets%/icons/apple-touch-icon.png" />
 		<meta name="apple-mobile-web-app-title" content="Keeping Tabs" />
 		<meta name="mobile-web-app-capable" content="yes" />
@@ -32,7 +32,7 @@
 					const canvas = getComputedStyle(document.documentElement)
 						.getPropertyValue(dark ? '--canvas-night' : '--canvas')
 						.trim();
-					themeColor.content = canvas || (dark ? '#1d211d' : '#f4f1ea');
+					themeColor.content = canvas || (dark ? '#141a16' : '#eaf1ec');
 				};
 				apply();
 				query.addEventListener('change', () => chosen || apply());

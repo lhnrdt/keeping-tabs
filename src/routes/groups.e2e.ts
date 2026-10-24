@@ -308,7 +308,7 @@ test('delete a recently deleted group for good, right away (#118)', async ({ pag
 
 	const deleted = page.getByRole('region', { name: 'Recently deleted' });
 	const forGood = deleted.getByRole('button', { name: 'Delete Old flat for good' });
-	await expect(forGood).toHaveCSS('color', 'rgb(179, 79, 70)');
+	await expect(forGood).toHaveCSS('color', 'rgb(168, 68, 59)');
 	await forGood.click();
 	const dialog = page.getByRole('dialog', { name: 'Delete Old flat for good?' });
 	await expect(dialog).toContainText("can't be undone");
