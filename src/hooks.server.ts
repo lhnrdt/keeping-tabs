@@ -90,6 +90,19 @@ const handleRateLimit: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
+/**
+ * Pages and their data are private and change whenever someone in the group does
+ * something: browsers must ask the server before reusing them (#125). Responses that set
+ * their own caching (e.g. the CSV export) keep it.
+ */
+const handleCaching: Handle = async ({ event, resolve }) => {
+	const response = await resolve(event);
+	if (!response.headers.has('cache-control')) {
+		response.headers.set('cache-control', 'private, no-cache');
+	}
+	return response;
+};
+
 /** Every dynamic response says which release served it. */
 const handleVersion: Handle = async ({ event, resolve }) => {
 	const response = await resolve(event);
@@ -101,6 +114,7 @@ const handleVersion: Handle = async ({ event, resolve }) => {
 
 export const handle: Handle = sequence(
 	handleVersion,
+	handleCaching,
 	handleDb,
 	handleDevice,
 	handleAccess,

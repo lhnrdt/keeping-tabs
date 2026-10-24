@@ -223,6 +223,7 @@
 	"join_no": "No, someone else",
 	"join_submit": "Join",
 	"new_person_name": "New person's name",
+	"error_group_deleted": "This group was deleted. Its members can restore it from their start screen within {days} days of deleting it.",
 	"error_not_found_title": "Nothing here",
 	"rate_limited": "Lots going on at once. Please wait a minute and try again.",
 	"undo_expense_deleted": "“{title}” deleted",

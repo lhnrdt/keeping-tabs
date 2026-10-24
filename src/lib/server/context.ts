@@ -1,14 +1,17 @@
 import { error } from '@sveltejs/kit';
+import { DELETED_GROUP_DAYS } from '#lib/group/retention.ts';
 import { m } from '#lib/paraglide/messages.js';
 import type { Db } from './db';
-import { findGroupByToken, memberOf } from './groups';
+import { findGroupByToken, isDeletedGroupToken, memberOf } from './groups';
 import { findPerson } from './people';
 
-/** The group behind a share token, or a 404. */
+/** The group behind a share token; 410 when it was deleted (#125), else 404. */
 export async function requireGroup(db: Db, token: string) {
 	const group = await findGroupByToken(db, token);
-	if (!group) error(404, m.error_not_found());
-	return group;
+	if (group) return group;
+	if (await isDeletedGroupToken(db, token))
+		error(410, m.error_group_deleted({ days: DELETED_GROUP_DAYS }));
+	error(404, m.error_not_found());
 }
 
 /**

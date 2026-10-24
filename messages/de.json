@@ -223,6 +223,7 @@
 	"join_no": "Nein, jemand anderes",
 	"join_submit": "Beitreten",
 	"new_person_name": "Name der neuen Person",
+	"error_group_deleted": "Diese Gruppe wurde gelöscht. Ihre Mitglieder können sie innerhalb von {days} Tagen nach dem Löschen auf ihrer Startseite wiederherstellen.",
 	"error_not_found_title": "Hier ist nichts",
 	"rate_limited": "Gerade ist ganz schön viel los. Warte eine Minute und versuch es dann noch mal.",
 	"undo_expense_deleted": "„{title}“ gelöscht",

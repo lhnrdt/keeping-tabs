@@ -281,7 +281,8 @@ test('delete a group for everyone, and restore it from the start screen', async 
 	const deleted = page.getByRole('region', { name: 'Recently deleted' });
 	await expect(deleted).toContainText('Old flat');
 	const response = await page.goto(groupUrl);
-	expect(response?.status()).toBe(404);
+	expect(response?.status()).toBe(410);
+	await expect(page.getByRole('alert')).toContainText('This group was deleted');
 
 	// A member brings it back
 	await open(page, '/');

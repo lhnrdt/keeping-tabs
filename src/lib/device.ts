@@ -34,6 +34,17 @@ export function rememberGroup(group: Omit<RecentGroup, 'openedAt'>) {
 	write(RECENT_KEY, [{ ...group, openedAt: Date.now() }, ...others]);
 }
 
+/** Keeps only the remembered groups in `current` (by id), with their current name and look */
+export function keepRecentGroups(current: readonly GroupLink[]) {
+	const byId = new Map(current.map((group) => [group.id, group]));
+	const kept = getRecentGroups().flatMap((group) => {
+		const now = byId.get(group.id);
+		return now ? [{ ...now, openedAt: group.openedAt }] : [];
+	});
+	write(RECENT_KEY, kept);
+	return kept;
+}
+
 /** Forgets one group remembered on this device (e.g. after deleting it). */
 export function forgetGroup(id: string) {
 	write(
