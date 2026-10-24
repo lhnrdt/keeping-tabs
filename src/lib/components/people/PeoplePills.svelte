@@ -31,6 +31,7 @@
 				<PersonPill
 					name={member.name}
 					avatarId={member.avatarId}
+					avatar={member.avatar}
 					mark={markOf(member)}
 					hint={m.person_menu_hint()}
 					onclick={() => (selected = member)}

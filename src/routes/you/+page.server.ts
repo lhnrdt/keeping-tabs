@@ -1,4 +1,5 @@
 import { fail, redirect } from '@sveltejs/kit';
+import { formatAvatar, parseAvatar } from '#lib/avatars.ts';
 import type { ErrorCode } from '#lib/errors.ts';
 import { getLocale } from '#lib/paraglide/runtime.js';
 import { safePath } from '#lib/safe-redirect.ts';
@@ -29,7 +30,8 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
 		name: person?.name ?? '',
 		locale: getLocale(),
 		theme: isTheme(theme) ? theme : (person?.theme ?? 'system'),
-		accent: isAccent(accent) ? accent : (person?.accent ?? DEFAULT_ACCENT)
+		accent: isAccent(accent) ? accent : (person?.accent ?? DEFAULT_ACCENT),
+		avatar: person?.avatar ?? null
 	};
 };
 
@@ -45,6 +47,16 @@ export const actions: Actions = {
 		const person = await ensurePerson(locals.db, locals.deviceKey);
 		await saveSettings(locals.db, person.id, { name });
 		return { setting: 'name' };
+	},
+
+	/** Your avatar (#61): an icon or "initials", on a tint */
+	avatar: async ({ locals, request }) => {
+		const form = await request.formData();
+		const choice = parseAvatar(`${form.get('icon')}:${form.get('tint')}`);
+		if (!choice) return fail(400, { setting: 'avatar', error: 'settings_invalid' as ErrorCode });
+		const person = await ensurePerson(locals.db, locals.deviceKey);
+		await saveSettings(locals.db, person.id, { avatar: formatAvatar(choice) });
+		return { setting: 'avatar' };
 	},
 
 	accent: async ({ locals, request, cookies }) => {

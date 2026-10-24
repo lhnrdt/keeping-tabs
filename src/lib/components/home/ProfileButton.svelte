@@ -6,7 +6,7 @@
 	import Icon from '#lib/components/Icon.svelte';
 	import { m } from '#lib/paraglide/messages.js';
 
-	let { me }: { me: { id: string; name: string | null } | null } = $props();
+	let { me }: { me: { id: string; name: string | null; avatar: string | null } | null } = $props();
 </script>
 
 <a
@@ -15,7 +15,7 @@
 	class="k-link inline-flex h-full max-h-12 items-center justify-center gap-1 px-4 duration-300 select-none active:opacity-50"
 >
 	{#if me?.name}
-		<Avatar id={me.id} name={me.name} size="sm" />
+		<Avatar id={me.id} name={me.name} avatar={me.avatar} size="sm" />
 		{me.name}
 	{:else}
 		<Icon name="identity" />

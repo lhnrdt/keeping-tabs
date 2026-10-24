@@ -9,6 +9,8 @@
 		name: string;
 		/** For the avatar color; any stable id */
 		avatarId: string;
+		/** The person's chosen avatar (#61) */
+		avatar?: string | null;
 		/** "you", or "away": added but not joined yet */
 		mark?: 'you' | 'away';
 		onclick?: () => void;
@@ -17,7 +19,7 @@
 		trailing?: Snippet;
 	};
 
-	let { name, avatarId, mark, onclick, hint, trailing }: Props = $props();
+	let { name, avatarId, avatar, mark, onclick, hint, trailing }: Props = $props();
 
 	const pill =
 		'inline-flex min-h-11 items-center gap-2 rounded-full py-1 ps-1 pe-3 text-sm transition-colors';
@@ -29,7 +31,7 @@
 </script>
 
 {#snippet content()}
-	<Avatar id={avatarId} {name} size="sm" />
+	<Avatar id={avatarId} {name} {avatar} size="sm" />
 	<span class="font-medium">{name}</span>
 	{#if mark === 'you'}
 		<span class="rounded-full bg-accent-soft/50 px-2 text-xs dark:bg-accent-night/30"

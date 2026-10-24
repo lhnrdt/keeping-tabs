@@ -16,7 +16,12 @@
 		class="k-link inline-flex h-full max-h-12 cursor-pointer items-center justify-center gap-1 px-4 duration-300 select-none active:opacity-50"
 		onclick={() => (identity.showing = true)}
 	>
-		<Avatar id={identity.me.avatarId} name={identity.me.name} size="sm" />
+		<Avatar
+			id={identity.me.avatarId}
+			name={identity.me.name}
+			avatar={identity.me.avatar}
+			size="sm"
+		/>
 		{identity.me.name}
 	</button>
 {/if}
