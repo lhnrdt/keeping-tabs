@@ -22,6 +22,7 @@ export const errorMessages = {
 	not_a_member: m.error_not_a_member,
 	device_link_invalid: m.error_device_link_invalid,
 	recovery_key_invalid: m.error_recovery_key_invalid,
+	device_not_found: m.error_device_not_found,
 	passkey_failed: m.error_passkey_failed,
 	kind_invalid: m.error_kind_invalid,
 	tint_invalid: m.error_tint_invalid,
