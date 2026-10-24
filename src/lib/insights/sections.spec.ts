@@ -12,7 +12,9 @@ describe('choosing insight sections (#174)', () => {
 			...LAYOUTS.partner.sections.filter((s) => s !== 'biggest'),
 			'fixedCosts'
 		] as const;
-		expect(choiceToStore('partner', chosen)).toBe('whoPays,overTime,categories,kinds,fixedCosts');
+		expect(choiceToStore('partner', chosen)).toBe(
+			'myPosition,whoPays,overTime,categories,kinds,fixedCosts'
+		);
 	});
 
 	it('stores nothing for just the suggestions, so a type change still applies', () => {

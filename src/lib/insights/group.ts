@@ -2,6 +2,7 @@
 // chosen by hand or guessed from its title the way the group taught it.
 import { learnCategories, categoryOf } from '#lib/expense/learned.ts';
 import type { ExpenseCategory } from '#lib/expense/categories.ts';
+import type { Transfer } from '#lib/settle.ts';
 import { insightsOf, type InsightEntry } from './insights';
 
 type Entry = Omit<InsightEntry, 'category'> & { category: ExpenseCategory | null };
@@ -10,12 +11,14 @@ type Entry = Omit<InsightEntry, 'category'> & { category: ExpenseCategory | null
 export function groupInsights(
 	entries: readonly Entry[],
 	memberIds: readonly string[],
-	you: string | null
+	you: string | null,
+	transfers: readonly Transfer[]
 ) {
 	const learned = learnCategories(entries);
 	return insightsOf(
 		entries.map((entry) => ({ ...entry, category: categoryOf(entry, learned) })),
 		memberIds,
-		you
+		you,
+		transfers
 	);
 }

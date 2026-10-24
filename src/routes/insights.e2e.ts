@@ -63,6 +63,13 @@ test('a group shows where the money went (#161)', async ({ page }) => {
 	const whoPays = page.getByRole('list', { name: 'Who pays' }).getByRole('listitem');
 	await expect(whoPays.filter({ hasText: 'Anna' })).toContainText('paid €120.00 more');
 	await expect(whoPays.filter({ hasText: 'Ben' })).toContainText('paid €120.00 less');
+
+	// Settling up: Ben still pays Anna, and since when (#166)
+	const open = page.getByRole('list', { name: 'Still open' }).getByRole('listitem');
+	await expect(open).toHaveCount(1);
+	await expect(open).toContainText('Ben → Anna');
+	await expect(open).toContainText('€120.00');
+	await expect(open).toContainText('owes since Aug 1');
 	expect(groupUrl).toBeTruthy();
 });
 

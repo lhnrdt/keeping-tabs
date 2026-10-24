@@ -43,16 +43,22 @@ export const load: PageServerLoad = async ({ locals, parent, url }) => {
 		deletedId ? findDeletedEntry(locals.db, group.id, deletedId) : undefined
 	]);
 	const memberIds = members.map((member) => member.id);
+	const transfers = settleTransfers(group.simplifyDebts, memberIds, expenses);
 	return {
 		balances: Object.fromEntries(balances(memberIds, expenses)),
-		transfers: settleTransfers(group.simplifyDebts, memberIds, expenses),
+		transfers,
 		entries: page.entries,
 		hasMore: page.hasMore,
 		justDeleted: justDeleted ?? null,
 		// Only on its tab: everything else doesn't need it (#161)
 		insights:
 			currentTab(url) === 'insights'
-				? groupInsights(expenses, memberIds, members.find((member) => member.mine)?.id ?? null)
+				? groupInsights(
+						expenses,
+						memberIds,
+						members.find((member) => member.mine)?.id ?? null,
+						transfers
+					)
 				: null
 	};
 };
