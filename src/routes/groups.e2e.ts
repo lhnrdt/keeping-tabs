@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { choose, open } from './e2e-helpers';
+import { choose, createGroup, open } from './e2e-helpers';
 
 test('a new visitor starts from the empty home screen', async ({ page }) => {
 	await open(page, '/');
@@ -294,4 +294,28 @@ test('delete a group for everyone, and restore it from the start screen', async 
 	await expect(page.getByRole('region', { name: 'Recently deleted' })).toHaveCount(0);
 	await open(page, groupUrl);
 	await expect(page.getByRole('heading', { name: 'Old flat' })).toBeVisible();
+});
+
+test('delete a recently deleted group for good, right away (#118)', async ({ page }) => {
+	const groupUrl = await createGroup(page, 'Old flat', 'Anna', ['Ben']);
+	await open(page, `${groupUrl}?tab=group`);
+	await page.getByRole('button', { name: 'Delete group' }).click();
+	await page
+		.getByRole('dialog', { name: 'Delete Old flat?' })
+		.getByRole('button', { name: 'Delete' })
+		.click();
+	await expect(page).toHaveURL(/\/$/);
+
+	const deleted = page.getByRole('region', { name: 'Recently deleted' });
+	const forGood = deleted.getByRole('button', { name: 'Delete Old flat for good' });
+	await expect(forGood).toHaveCSS('color', 'rgb(179, 79, 70)');
+	await forGood.click();
+	const dialog = page.getByRole('dialog', { name: 'Delete Old flat for good?' });
+	await expect(dialog).toContainText("can't be undone");
+	await dialog.getByRole('button', { name: 'Delete for good' }).click();
+
+	// Gone: not restorable anymore, and its link leads nowhere
+	await expect(deleted).toHaveCount(0);
+	const response = await page.goto(groupUrl);
+	expect(response?.status()).toBe(404);
 });
