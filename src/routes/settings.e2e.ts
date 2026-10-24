@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { open } from './e2e-helpers';
+import { createGroup, open } from './e2e-helpers';
 
 test('settings are saved and follow you to another device', async ({ browser }) => {
 	test.setTimeout(60_000);
@@ -89,4 +89,25 @@ test('a nature theme switches at once and is remembered (#60)', async ({ page })
 	await open(page, '/you');
 	await page.getByRole('group', { name: 'Theme' }).getByText('Forest', { exact: true }).click();
 	await expect(page.locator('html')).not.toHaveAttribute('data-accent');
+});
+
+test('choose an avatar and see it wherever you appear (#61)', async ({ page }) => {
+	const groupUrl = await createGroup(page, 'Trip', 'Anna', ['Ben']);
+	await open(page, '/you');
+	await page.getByRole('group', { name: 'Color' }).getByTitle('Moss').click();
+	await page.getByRole('group', { name: 'Picture' }).getByTitle('Deer').click();
+	await expect(page.getByRole('radio', { name: 'Deer' })).toBeChecked();
+	await expect(page.getByText('Saved').first()).toBeVisible();
+
+	// In the group: your pill and balance show the deer, not initials
+	await open(page, `${groupUrl}?tab=group`);
+	const members = page.getByRole('list', { name: 'Members' });
+	await expect(members.locator('li').filter({ hasText: 'Anna' }).locator('svg')).toBeVisible();
+	await expect(
+		members.locator('li').filter({ hasText: 'Ben' }).locator('[data-initials="B"]')
+	).toBeVisible();
+
+	// And on the start screen's profile button, after a reload
+	await open(page, '/');
+	await expect(page.getByRole('link', { name: 'Profile' }).locator('svg')).toBeVisible();
 });

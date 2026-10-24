@@ -26,7 +26,7 @@
 			{#if member}
 				<ListItem title={member.name}>
 					{#snippet media()}
-						<Avatar id={member.avatarId} name={member.name} />
+						<Avatar id={member.avatarId} name={member.name} avatar={member.avatar} />
 					{/snippet}
 					{#snippet after()}
 						<PersonAmount {amount} {currency} stacked />

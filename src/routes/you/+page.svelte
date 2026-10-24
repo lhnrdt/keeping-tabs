@@ -11,6 +11,9 @@
 	import Field from '#lib/components/Field.svelte';
 	import FormError from '#lib/components/FormError.svelte';
 	import AccentPicker from '#lib/components/pickers/AccentPicker.svelte';
+	import AvatarPicker from '#lib/components/pickers/AvatarPicker.svelte';
+	import { parseAvatar } from '#lib/avatars.ts';
+	import { tintFor } from '#lib/tints.ts';
 	import SegmentedPicker from '#lib/components/pickers/SegmentedPicker.svelte';
 	import SavedHint from '#lib/components/SavedHint.svelte';
 	import { m } from '#lib/paraglide/messages.js';
@@ -72,10 +75,23 @@
 <AppPage title={m.you_title()} back={{ href: resolve('/'), label: m.app_name() }}>
 	{#if data.name}
 		<div class="flex items-center gap-3 px-4 pt-4 pb-2">
-			<Avatar id={data.personId ?? ''} name={data.name} />
+			<Avatar id={data.personId ?? ''} name={data.name} avatar={data.avatar} />
 			<p class="font-display text-2xl font-semibold">{data.name}</p>
 		</div>
 	{/if}
+	<!-- Your avatar, shown wherever you appear (#61) -->
+	<form method="POST" action="?/avatar" use:enhance={saveQuietly} onchange={submitOnChange}>
+		<h2 class="mx-4 mt-4 mb-2 text-sm font-medium text-muted">{m.avatar_title()}</h2>
+		<AvatarPicker
+			id={data.personId ?? ''}
+			name={data.name}
+			value={parseAvatar(data.avatar) ?? { icon: null, tint: tintFor(data.personId ?? '') }}
+		/>
+		<SavedHint shown={saved === 'avatar'} />
+		<FormError error={errorFor('avatar')} />
+		<noscript><Block><button type="submit">{m.save()}</button></Block></noscript>
+	</form>
+
 	<form method="POST" action="?/name" use:enhance={saveQuietly} onchange={submitOnChange}>
 		<List strong inset class="!mb-2">
 			<Field

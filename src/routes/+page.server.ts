@@ -8,7 +8,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const person = await findPerson(locals.db, locals.deviceKey);
 	// On every device of this person (A-17)
 	return {
-		me: person ? { id: person.id, name: person.name } : null,
+		me: person ? { id: person.id, name: person.name, avatar: person.avatar } : null,
 		yourGroups: person ? await yourGroupsWithBalances(locals.db, person.id) : [],
 		recentlyDeleted: person ? await listDeletedGroupsOf(locals.db, person.id) : []
 	};

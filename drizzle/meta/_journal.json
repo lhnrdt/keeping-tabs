@@ -78,6 +78,13 @@
       "when": 1792863128480,
       "tag": "0010_person_accent",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1792866270918,
+      "tag": "0011_person_avatar",
+      "breakpoints": true
     }
   ]
 }

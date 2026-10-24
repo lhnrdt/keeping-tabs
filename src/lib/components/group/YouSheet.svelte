@@ -34,7 +34,12 @@
 		<div class="mx-auto mb-5 h-1.5 w-10 rounded-full bg-ink-muted/30" aria-hidden="true"></div>
 		{#if identity.me}
 			<div class="flex items-center gap-3">
-				<Avatar id={identity.me.avatarId} name={identity.me.name} size="lg" />
+				<Avatar
+					id={identity.me.avatarId}
+					name={identity.me.name}
+					avatar={identity.me.avatar}
+					size="lg"
+				/>
 				<h2 class="font-display text-2xl leading-tight font-semibold">{heading}</h2>
 			</div>
 		{/if}

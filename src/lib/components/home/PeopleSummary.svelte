@@ -22,7 +22,7 @@
 						<summary
 							class="flex min-h-14 cursor-pointer list-none items-center gap-3 px-4 py-2 [&::-webkit-details-marker]:hidden"
 						>
-							<Avatar id={person.avatarId} name={person.name} />
+							<Avatar id={person.avatarId} name={person.name} avatar={person.avatar} />
 							<span class="min-w-0 flex-1 truncate font-medium">{person.name}</span>
 							<span class="text-sm">
 								<PersonAmount amount={person.net} currency={person.currency} stacked />
