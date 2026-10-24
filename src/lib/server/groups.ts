@@ -17,7 +17,8 @@ export async function findGroupByToken(db: Db, token: string) {
 			currency: true,
 			kind: true,
 			tint: true,
-			simplifyDebts: true
+			simplifyDebts: true,
+			insightSections: true
 		},
 		where: and(eq(groups.shareToken, token), isNull(groups.deletedAt))
 	});
@@ -200,4 +201,17 @@ export async function listGroupsOf(db: Db, personId: string) {
 		.innerJoin(groups, eq(members.groupId, groups.id))
 		.where(and(eq(members.personId, personId), isNull(members.deletedAt), isNull(groups.deletedAt)))
 		.orderBy(desc(groups.createdAt));
+}
+
+/** Which insights the group shows (#174); null = its type's suggestions */
+export async function setInsightSections(
+	db: Db,
+	groupId: string,
+	actorId: string | null,
+	insightSections: string | null
+) {
+	await db.batch([
+		db.update(groups).set({ insightSections }).where(eq(groups.id, groupId)),
+		log(db, groupId, actorId, 'group.update', { insightSections })
+	]);
 }

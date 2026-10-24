@@ -4,8 +4,19 @@ import type { GroupKind } from '#lib/group/kinds.ts';
 
 export type Tile =
 	'spent' | 'myShare' | 'perPerson' | 'perDay' | 'change' | 'count' | 'fixedPerMonth';
-export type Section =
-	'overTime' | 'categories' | 'kinds' | 'fixedCosts' | 'biggest' | 'whoPays' | 'howOften';
+/** Every insight section there is, in the order they're offered (#174) */
+export const SECTIONS = [
+	'overTime',
+	'categories',
+	'kinds',
+	'fixedCosts',
+	'biggest',
+	'whoPays',
+	'howOften'
+] as const;
+export type Section = (typeof SECTIONS)[number];
+
+export const isSection = (value: unknown): value is Section => SECTIONS.includes(value as Section);
 
 export type Layout = { tiles: [Tile, Tile, Tile, Tile]; sections: Section[] };
 
@@ -43,3 +54,29 @@ export const LAYOUTS: Record<GroupKind, Layout> = {
 		sections: ['overTime', 'categories', 'kinds', 'biggest', 'whoPays']
 	}
 };
+
+/** As stored with a group: comma-separated, in order; null or unknown values = suggestions */
+export function parseSections(value: string | null | undefined): Section[] | null {
+	if (!value) return null;
+	const sections = value.split(',').filter(isSection);
+	return sections.length ? [...new Set(sections)] : null;
+}
+
+/** What a group shows: its own choice, else its type's suggestions */
+export const sectionsFor = (kind: GroupKind, chosen: string | null | undefined) =>
+	parseSections(chosen) ?? LAYOUTS[kind].sections;
+
+/**
+ * A choice to store: the chosen sections in the suggested order, then the others in the
+ * offered order; null when it's just the suggestions (so a later type change applies)
+ */
+export function choiceToStore(kind: GroupKind, chosen: readonly Section[]): string | null {
+	const suggested = LAYOUTS[kind].sections;
+	const ordered = [
+		...suggested.filter((section) => chosen.includes(section)),
+		...SECTIONS.filter((section) => chosen.includes(section) && !suggested.includes(section))
+	];
+	const same =
+		ordered.length === suggested.length && ordered.every((section, i) => section === suggested[i]);
+	return same || ordered.length === 0 ? null : ordered.join(',');
+}
