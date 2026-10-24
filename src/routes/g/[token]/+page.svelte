@@ -93,6 +93,17 @@
 					<Icon name="import" />
 				{/snippet}
 			</ListItem>
+			<!-- A download: a plain link, not a client-side navigation -->
+			<ListItem
+				link
+				title={m.export_link()}
+				href={resolve('/g/[token]/export', { token: data.group.shareToken })}
+				linkProps={{ download: '', 'data-sveltekit-reload': '' }}
+			>
+				{#snippet media()}
+					<Icon name="export" />
+				{/snippet}
+			</ListItem>
 		</List>
 	{/if}
 

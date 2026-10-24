@@ -1,6 +1,7 @@
 // Splitwise's categories (English and German exports) → ours. Unknown ones, like
-// "General"/"Allgemein", stay automatic so the title decides.
-import type { ExpenseCategory } from '#lib/expense/categories.ts';
+// "General"/"Allgemein", stay automatic so the title decides. Our own exports (#50) write
+// our category ids, which come back as they are.
+import { isExpenseCategory, type ExpenseCategory } from '#lib/expense/categories.ts';
 import { categorize } from '#lib/expense/categorize.ts';
 
 const SPLITWISE: Record<string, ExpenseCategory> = {
@@ -73,6 +74,7 @@ const plain = (text: string) =>
 export function fromSplitwiseCategory(category: string): ExpenseCategory | null {
 	const known = SPLITWISE[plain(category)];
 	if (known) return known;
+	if (isExpenseCategory(category)) return category;
 	const guessed = category.trim() ? categorize(category) : 'other';
 	return guessed === 'other' ? null : guessed;
 }
