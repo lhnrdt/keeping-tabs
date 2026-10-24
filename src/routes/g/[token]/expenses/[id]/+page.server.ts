@@ -1,5 +1,6 @@
 import { error, redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
+import { undoUrl } from '#lib/group/tabs.ts';
 import { m } from '#lib/paraglide/messages.js';
 import { formContext } from '#lib/server/context.ts';
 import { readExpenseForm } from '#lib/server/group-forms.ts';
@@ -33,6 +34,6 @@ export const actions: Actions = {
 	delete: async ({ locals, params, request }) => {
 		const { group, actorId } = await formContext(locals, params.token, request);
 		await softDeleteEntry(locals.db, group.id, actorId, params.id, 'expense.delete');
-		redirect(303, resolve('/g/[token]', { token: params.token }));
+		redirect(303, undoUrl(resolve('/g/[token]', { token: params.token }), 'expenses', params.id));
 	}
 };
