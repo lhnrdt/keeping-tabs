@@ -19,8 +19,8 @@
 
 {#if stacked}
 	<span class="flex flex-col items-end leading-tight {tone}">
-		<span class="text-xs">{owesYou ? m.person_owes_you_label() : m.person_you_owe_label()}</span
-		>{' '}
+		<!-- Separate lines: the space between them keeps "owes you €20.00" readable as text -->
+		<span class="text-xs">{owesYou ? m.person_owes_you_label() : m.person_you_owe_label()}</span>
 		<span class="tabular-nums"><AnimatedAmount amount={Math.abs(amount)} {currency} /></span>
 	</span>
 {:else}
