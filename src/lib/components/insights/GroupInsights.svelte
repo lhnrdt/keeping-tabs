@@ -15,6 +15,8 @@
 	import KindBars from './KindBars.svelte';
 	import HowOften from './HowOften.svelte';
 	import OverTimeChart from './OverTimeChart.svelte';
+	import PositionChart from './PositionChart.svelte';
+	import Settling from './Settling.svelte';
 	import StatTiles from './StatTiles.svelte';
 	import WhoPays from './WhoPays.svelte';
 
@@ -45,7 +47,9 @@
 		fixedCosts: m.insights_fixed,
 		biggest: m.insights_biggest,
 		whoPays: m.insights_who_pays,
-		howOften: m.insights_how_often
+		howOften: m.insights_how_often,
+		myPosition: m.insights_position,
+		settling: m.insights_settling
 	};
 	// Who-pays sections need at least two people to compare
 	const shown = $derived(
@@ -56,7 +60,12 @@
 					? insights.fixed.length > 0
 					: section === 'kinds'
 						? insights.byKind.length > 1
-						: true
+						: section === 'myPosition'
+							? (insights.position?.length ?? 0) > 1
+							: section === 'settling'
+								? insights.byMember.length > 1 &&
+									insights.settling.paidBack + insights.settling.open > 0
+								: true
 		)
 	);
 </script>
@@ -80,6 +89,10 @@
 			<KindBars rows={insights.byKind} currency={group.currency} />
 		{:else if section === 'fixedCosts'}
 			<FixedCosts rows={insights.fixed} currency={group.currency} />
+		{:else if section === 'myPosition' && insights.position}
+			<PositionChart points={insights.position} currency={group.currency} />
+		{:else if section === 'settling'}
+			<Settling settling={insights.settling} {members} currency={group.currency} />
 		{:else if section === 'biggest'}
 			<BiggestList
 				rows={insights.biggest}

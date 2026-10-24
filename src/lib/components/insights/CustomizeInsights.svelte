@@ -21,7 +21,9 @@
 		fixedCosts: m.insights_fixed,
 		biggest: m.insights_biggest,
 		whoPays: m.insights_who_pays,
-		howOften: m.insights_how_often
+		howOften: m.insights_how_often,
+		myPosition: m.insights_position,
+		settling: m.insights_settling
 	};
 	const descriptions: Record<Section, () => string> = {
 		overTime: m.section_over_time_hint,
@@ -30,7 +32,9 @@
 		fixedCosts: m.section_fixed_hint,
 		biggest: m.section_biggest_hint,
 		whoPays: m.section_who_pays_hint,
-		howOften: m.section_how_often_hint
+		howOften: m.section_how_often_hint,
+		myPosition: m.section_position_hint,
+		settling: m.section_settling_hint
 	};
 </script>
 
