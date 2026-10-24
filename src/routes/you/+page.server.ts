@@ -2,20 +2,34 @@ import { fail, redirect } from '@sveltejs/kit';
 import type { ErrorCode } from '#lib/errors.ts';
 import { getLocale } from '#lib/paraglide/runtime.js';
 import { safePath } from '#lib/safe-redirect.ts';
-import { isLocale, isTheme, THEME_COOKIE } from '#lib/settings.ts';
+import {
+	ACCENT_COOKIE,
+	DEFAULT_ACCENT,
+	isAccent,
+	isLocale,
+	isTheme,
+	THEME_COOKIE
+} from '#lib/settings.ts';
 import { ensurePerson, findPerson } from '#lib/server/people.ts';
-import { saveSettings, setLocaleCookie, setThemeCookie } from '#lib/server/settings.ts';
+import {
+	saveSettings,
+	setAccentCookie,
+	setLocaleCookie,
+	setThemeCookie
+} from '#lib/server/settings.ts';
 import { normalizeText, LIMITS } from '#lib/validation.ts';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, cookies }) => {
 	const person = await findPerson(locals.db, locals.deviceKey);
 	const theme = cookies.get(THEME_COOKIE);
+	const accent = cookies.get(ACCENT_COOKIE);
 	return {
 		personId: person?.id ?? null,
 		name: person?.name ?? '',
 		locale: getLocale(),
-		theme: isTheme(theme) ? theme : (person?.theme ?? 'system')
+		theme: isTheme(theme) ? theme : (person?.theme ?? 'system'),
+		accent: isAccent(accent) ? accent : (person?.accent ?? DEFAULT_ACCENT)
 	};
 };
 
@@ -31,6 +45,17 @@ export const actions: Actions = {
 		const person = await ensurePerson(locals.db, locals.deviceKey);
 		await saveSettings(locals.db, person.id, { name });
 		return { setting: 'name' };
+	},
+
+	accent: async ({ locals, request, cookies }) => {
+		const accent = (await request.formData()).get('accent');
+		if (!isAccent(accent)) {
+			return fail(400, { setting: 'accent', error: 'settings_invalid' as ErrorCode });
+		}
+		const person = await findPerson(locals.db, locals.deviceKey);
+		if (person) await saveSettings(locals.db, person.id, { accent });
+		setAccentCookie(cookies, accent);
+		return { setting: 'accent' };
 	},
 
 	theme: async ({ locals, request, cookies }) => {

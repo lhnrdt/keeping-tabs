@@ -98,7 +98,7 @@
 				{#if !someoneElse}
 					<button
 						type="button"
-						class="mt-1 self-start rounded-full px-2 py-2 text-sm font-medium text-forest dark:text-forest-night"
+						class="mt-1 self-start rounded-full px-2 py-2 text-sm font-medium text-accent dark:text-accent-night"
 						onclick={() => (someoneElse = true)}
 					>
 						{m.join_someone_else()}
@@ -126,13 +126,13 @@
 							type="submit"
 							name="memberId"
 							value={lookalike.id}
-							class="rounded-full bg-forest px-4 py-2 text-sm font-medium text-white dark:bg-forest-night dark:text-canvas-night"
+							class="rounded-full bg-accent px-4 py-2 text-sm font-medium text-white dark:bg-accent-night dark:text-canvas-night"
 						>
 							{m.join_yes({ name: lookalike.name })}
 						</button>
 						<button
 							type="button"
-							class="rounded-full px-4 py-2 text-sm font-medium text-forest dark:text-forest-night"
+							class="rounded-full px-4 py-2 text-sm font-medium text-accent dark:text-accent-night"
 							onclick={() => (declined = lookalike?.id)}
 						>
 							{m.join_no()}

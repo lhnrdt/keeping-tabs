@@ -5,7 +5,7 @@ import { sequence } from '@sveltejs/kit/hooks';
 import { redirect } from '@sveltejs/kit';
 import { resolve as resolveRoute } from '$app/paths';
 import { cookieName, getTextDirection } from '#lib/paraglide/runtime.js';
-import { LOCALE_COOKIE, THEME_COOKIE } from '#lib/settings.ts';
+import { ACCENT_COOKIE, LOCALE_COOKIE, THEME_COOKIE } from '#lib/settings.ts';
 import { paraglideMiddleware } from '#lib/paraglide/server.js';
 import { getDb } from '#lib/server/db/index.ts';
 import { grantAccess, hasAccess, isOpenPath } from '#lib/server/access.ts';
@@ -45,7 +45,9 @@ const handleDevice: Handle = ({ event, resolve }) => {
  * in the last day, don't cost an extra lookup.
  */
 const handleSettings: Handle = async ({ event, resolve }) => {
-	const missing = !event.cookies.get(LOCALE_COOKIE) || !event.cookies.get(THEME_COOKIE);
+	const missing = [LOCALE_COOKIE, THEME_COOKIE, ACCENT_COOKIE].some(
+		(name) => !event.cookies.get(name)
+	);
 	if (missing && event.request.method === 'GET' && !settingsChecked(event.cookies)) {
 		const person = await findPerson(event.locals.db, event.locals.deviceKey);
 		markSettingsChecked(event.cookies);

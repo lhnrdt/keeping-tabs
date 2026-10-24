@@ -37,6 +37,12 @@
 					chosen = theme === 'system' ? undefined : theme;
 					apply();
 				};
+				// The color theme (#60), from its cookie; the default (forest) needs no attribute
+				window.applyAccent = (accent) => {
+					if (accent && accent !== 'forest') document.documentElement.dataset.accent = accent;
+					else delete document.documentElement.dataset.accent;
+				};
+				window.applyAccent(/(?:^|; )kt-accent=([a-z]+)/.exec(document.cookie)?.[1]);
 			})();
 		</script>
 		%sveltekit.head%

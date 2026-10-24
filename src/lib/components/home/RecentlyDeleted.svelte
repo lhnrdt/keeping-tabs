@@ -44,7 +44,7 @@
 							<input type="hidden" name="groupId" value={group.id} />
 							<button
 								type="submit"
-								class="rounded-full bg-surface-muted px-4 py-2 text-sm font-medium text-forest focus-visible:ring-2 dark:bg-surface-muted-night dark:text-forest-night"
+								class="rounded-full bg-surface-muted px-4 py-2 text-sm font-medium text-accent focus-visible:ring-2 dark:bg-surface-muted-night dark:text-accent-night"
 							>
 								{m.restore_group()}
 							</button>

@@ -2,7 +2,14 @@
 import type { Cookies } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import { cookieName, cookieMaxAge } from '#lib/paraglide/runtime.js';
-import { LOCALE_COOKIE, THEME_COOKIE, type Locale, type Theme } from '#lib/settings.ts';
+import {
+	ACCENT_COOKIE,
+	LOCALE_COOKIE,
+	THEME_COOKIE,
+	type Accent,
+	type Locale,
+	type Theme
+} from '#lib/settings.ts';
 import type { Db } from './db';
 import { people } from './db/schema';
 import type { Person } from './people';
@@ -12,7 +19,7 @@ const COOKIE_OPTIONS = { path: '/', sameSite: 'lax', maxAge: cookieMaxAge } as c
 export async function saveSettings(
 	db: Db,
 	personId: string,
-	settings: { name?: string; locale?: Locale; theme?: Theme }
+	settings: { name?: string; locale?: Locale; theme?: Theme; accent?: Accent }
 ) {
 	if (Object.keys(settings).length === 0) return;
 	await db.update(people).set(settings).where(eq(people.id, personId));
@@ -27,6 +34,10 @@ export function setLocaleCookie(cookies: Cookies, locale: Locale) {
 /** Makes this browser use a theme; the page script reads it before first paint */
 export const setThemeCookie = (cookies: Cookies, theme: Theme) =>
 	cookies.set(THEME_COOKIE, theme, { ...COOKIE_OPTIONS, httpOnly: false });
+
+/** Makes this browser use a color theme; the page script reads it before first paint */
+export const setAccentCookie = (cookies: Cookies, accent: Accent) =>
+	cookies.set(ACCENT_COOKIE, accent, { ...COOKIE_OPTIONS, httpOnly: false });
 
 /** Set when a device was checked for saved settings, so the check isn't repeated every page */
 const CHECKED_COOKIE = 'kt-settings-checked';
@@ -52,6 +63,7 @@ export const checkSettingsAgain = (cookies: Cookies) =>
 export function applySettings(cookies: Cookies, person: Person | undefined): Locale | null {
 	if (!person) return null;
 	if (person.theme && !cookies.get(THEME_COOKIE)) setThemeCookie(cookies, person.theme);
+	if (person.accent && !cookies.get(ACCENT_COOKIE)) setAccentCookie(cookies, person.accent);
 	if (person.locale && !cookies.get(LOCALE_COOKIE)) {
 		setLocaleCookie(cookies, person.locale);
 		return person.locale;
