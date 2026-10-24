@@ -36,7 +36,7 @@
 					})}
 				>
 					{#snippet media()}
-						<GroupTile id={group.id} kind={group.kind} tint={group.tint} />
+						<GroupTile kind={group.kind} tint={group.tint} />
 					{/snippet}
 					{#snippet after()}
 						<DeleteGroupNow groupId={group.id} name={group.name} />

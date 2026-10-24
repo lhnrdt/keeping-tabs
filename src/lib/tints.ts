@@ -25,3 +25,7 @@ const TINT_CLASSES: Record<Tint, string> = {
 
 /** Class that sets --tint-bg, --tint-fg and --tint-line: the chosen tint, else one derived from the id. */
 export const tintClass = (id: string, chosen?: Tint | null) => TINT_CLASSES[chosen ?? tintFor(id)];
+
+/** A group's tint: the chosen one, else the nature theme's own (#60), so groups match it */
+export const groupTintClass = (chosen?: Tint | null) =>
+	chosen ? TINT_CLASSES[chosen] : 'tint-theme';

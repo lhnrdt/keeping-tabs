@@ -2,7 +2,7 @@
 	// Group header: tinted band with a topographic pattern, the name in the display serif,
 	// and where you stand ("You get back €300.00", "Ben owes you €300.00").
 	import AnimatedAmount from '#lib/components/AnimatedAmount.svelte';
-	import Topography from '#lib/components/illustrations/Topography.svelte';
+	import ThemePattern from '#lib/components/illustrations/ThemePattern.svelte';
 	import { useIdentity } from '#lib/group/identity.svelte.ts';
 	import { namesById, type Member } from '#lib/group/members.ts';
 	import { openLine } from '#lib/group/open-line.ts';
@@ -12,10 +12,10 @@
 	import Icon from '#lib/components/Icon.svelte';
 	import { kindIcons } from '#lib/group/kind-style.ts';
 	import type { GroupKind } from '#lib/group/kinds.ts';
-	import { tintClass, type Tint } from '#lib/tints.ts';
+	import { groupTintClass, type Tint } from '#lib/tints.ts';
 
 	type Props = {
-		group: { id: string; name: string; currency: string; kind: GroupKind; tint: Tint | null };
+		group: { name: string; currency: string; kind: GroupKind; tint: Tint | null };
 		members: Member[];
 		balances: Record<string, number>;
 		/** The group's payments to settle up */
@@ -39,12 +39,11 @@
 </script>
 
 <header
-	class="{tintClass(
-		group.id,
+	class="{groupTintClass(
 		group.tint
 	)} relative mx-4 mt-2 overflow-hidden rounded-3xl bg-(--tint-bg) px-5 pt-5 pb-6 text-(--tint-fg)"
 >
-	<Topography />
+	<ThemePattern />
 	<div class="relative">
 		<Icon name={kindIcons[group.kind]} size={28} />
 		<h1 class="font-display text-4xl leading-tight font-semibold">{group.name}</h1>

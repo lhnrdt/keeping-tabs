@@ -10,7 +10,7 @@
 	import Field from '#lib/components/Field.svelte';
 	import FormError from '#lib/components/FormError.svelte';
 	import Icon from '#lib/components/Icon.svelte';
-	import Topography from '#lib/components/illustrations/Topography.svelte';
+	import ThemePattern from '#lib/components/illustrations/ThemePattern.svelte';
 	import PersonPill from '#lib/components/people/PersonPill.svelte';
 	import SubmitButton from '#lib/components/SubmitButton.svelte';
 	import type { ErrorCode } from '#lib/errors.ts';
@@ -20,11 +20,11 @@
 	import { matchMember } from '#lib/group/match-member.ts';
 	import type { GroupMember } from '#lib/group/members.ts';
 	import { m } from '#lib/paraglide/messages.js';
-	import { tintClass, type Tint } from '#lib/tints.ts';
+	import { groupTintClass, type Tint } from '#lib/tints.ts';
 	import { LIMITS, normalizeText } from '#lib/validation.ts';
 
 	type Props = {
-		group: { id: string; name: string; shareToken: string; kind: GroupKind; tint: Tint | null };
+		group: { name: string; shareToken: string; kind: GroupKind; tint: Tint | null };
 		members: GroupMember[];
 		/** Your name from other groups, to prefill */
 		profileName: string | null;
@@ -53,12 +53,11 @@
 <AppPage title={group.name} back={{ href: resolve('/'), label: m.app_name() }}>
 	{#snippet hero()}
 		<header
-			class="{tintClass(
-				group.id,
+			class="{groupTintClass(
 				group.tint
 			)} relative mx-4 mt-2 overflow-hidden rounded-3xl bg-(--tint-bg) px-5 pt-5 pb-6 text-(--tint-fg)"
 		>
-			<Topography />
+			<ThemePattern />
 			<div class="relative">
 				<Icon name={kindIcons[group.kind]} size={28} />
 				<h1 class="font-display text-3xl leading-tight font-semibold">
