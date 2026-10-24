@@ -223,6 +223,7 @@
 	"join_submit": "Join",
 	"new_person_name": "New person's name",
 	"error_not_found_title": "Nothing here",
+	"rate_limited": "Lots going on at once. Please wait a minute and try again.",
 	"error_unexpected": "That didn't work. Please try again in a moment.",
 	"try_again": "Try again",
 	"side_lent": "you lent {amount}",
