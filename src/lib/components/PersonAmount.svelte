@@ -1,22 +1,35 @@
 <script lang="ts">
-	// What's open with someone, from your side: "owes you €12.00" or "you owe €8.00" (#117).
+	// What's open with someone, from your side (#117): "owes you €12.00" / "you owe €8.00" in a
+	// line, or stacked: the words small above the amount, right-aligned, as in a list's end.
 	import AnimatedAmount from '#lib/components/AnimatedAmount.svelte';
 	import { m } from '#lib/paraglide/messages.js';
 
-	/** Positive: they owe you; negative: you owe them */
-	let { amount, currency }: { amount: number; currency: string } = $props();
+	type Props = {
+		/** Positive: they owe you; negative: you owe them */
+		amount: number;
+		currency: string;
+		stacked?: boolean;
+	};
+
+	let { amount, currency, stacked = false }: Props = $props();
+
+	const owesYou = $derived(amount > 0);
+	const tone = $derived(owesYou ? 'tone-positive' : 'tone-negative');
 </script>
 
-{#if amount > 0}
-	<span class="tone-positive tabular-nums">
-		<AnimatedAmount {amount} {currency} label={(text) => m.person_owes_you({ amount: text })} />
+{#if stacked}
+	<span class="flex flex-col items-end leading-tight {tone}">
+		<span class="text-xs">{owesYou ? m.person_owes_you_label() : m.person_you_owe_label()}</span
+		>{' '}
+		<span class="tabular-nums"><AnimatedAmount amount={Math.abs(amount)} {currency} /></span>
 	</span>
 {:else}
-	<span class="tone-negative tabular-nums">
+	<span class="tabular-nums {tone}">
 		<AnimatedAmount
-			amount={-amount}
+			amount={Math.abs(amount)}
 			{currency}
-			label={(text) => m.person_you_owe({ amount: text })}
+			label={(text) =>
+				owesYou ? m.person_owes_you({ amount: text }) : m.person_you_owe({ amount: text })}
 		/>
 	</span>
 {/if}

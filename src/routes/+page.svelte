@@ -5,7 +5,6 @@
 	import Icon from '#lib/components/Icon.svelte';
 	import LinkButton from '#lib/components/LinkButton.svelte';
 	import HomeHero from '#lib/components/home/HomeHero.svelte';
-	import PeopleSummary from '#lib/components/home/PeopleSummary.svelte';
 	import RecentlyDeleted from '#lib/components/home/RecentlyDeleted.svelte';
 	import YourGroups from '#lib/components/home/YourGroups.svelte';
 	import { totalsByCurrency } from '#lib/money.ts';
@@ -23,7 +22,6 @@
 	{#snippet hero()}
 		<HomeHero totals={totalsByCurrency(data.yourGroups)} />
 	{/snippet}
-	<PeopleSummary people={data.people} />
 	<YourGroups memberOf={data.yourGroups} />
 	<Block>
 		<LinkButton href={resolve('/new')}>

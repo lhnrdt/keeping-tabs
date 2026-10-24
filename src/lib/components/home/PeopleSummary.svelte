@@ -2,20 +2,19 @@
 	// Across your groups: who owes you and whom you owe, each with the groups it comes from
 	// (#117). Plain <details>, so it opens without JavaScript.
 	import { resolve } from '$app/paths';
-	import { BlockTitle, List } from 'konsta/svelte';
+	import { List } from 'konsta/svelte';
 	import Avatar from '#lib/components/Avatar.svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import { groupTabUrl } from '#lib/group/tabs.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import type { PersonSummary } from '#lib/people-summary.ts';
-	import PersonAmount from './PersonAmount.svelte';
+	import PersonAmount from '#lib/components/PersonAmount.svelte';
 
 	let { people }: { people: PersonSummary[] } = $props();
 </script>
 
 {#if people.length}
-	<section aria-labelledby="people-summary">
-		<BlockTitle id="people-summary">{m.people_title()}</BlockTitle>
+	<section aria-label={m.between_you_title()}>
 		<List strong inset>
 			{#each people as person (person.key)}
 				<li>
@@ -26,7 +25,7 @@
 							<Avatar id={person.avatarId} name={person.name} />
 							<span class="min-w-0 flex-1 truncate font-medium">{person.name}</span>
 							<span class="text-sm">
-								<PersonAmount amount={person.net} currency={person.currency} />
+								<PersonAmount amount={person.net} currency={person.currency} stacked />
 							</span>
 							<span
 								class="text-muted transition-transform group-open:rotate-180"
