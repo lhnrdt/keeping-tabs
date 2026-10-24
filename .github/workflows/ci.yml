@@ -76,6 +76,9 @@ jobs:
           key: pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: pnpm-${{ runner.os }}-
       - run: pnpm install --frozen-lockfile
+      # Known vulnerabilities (#140): high and critical ones fail the build
+      - name: Dependencies have no serious known vulnerabilities
+        run: pnpm audit --audit-level high
       - run: pnpm lint
       - run: pnpm check
       # Unit tests include a browser project, so this job needs Chromium too. The browser is
