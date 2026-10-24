@@ -12,7 +12,9 @@ export const SECTIONS = [
 	'fixedCosts',
 	'biggest',
 	'whoPays',
-	'howOften'
+	'howOften',
+	'myPosition',
+	'settling'
 ] as const;
 export type Section = (typeof SECTIONS)[number];
 
@@ -23,11 +25,11 @@ export type Layout = { tiles: [Tile, Tile, Tile, Tile]; sections: Section[] };
 export const LAYOUTS: Record<GroupKind, Layout> = {
 	trip: {
 		tiles: ['spent', 'perPerson', 'perDay', 'myShare'],
-		sections: ['overTime', 'kinds', 'categories', 'biggest', 'whoPays']
+		sections: ['overTime', 'kinds', 'categories', 'biggest', 'whoPays', 'settling']
 	},
 	event: {
 		tiles: ['spent', 'perPerson', 'count', 'myShare'],
-		sections: ['categories', 'whoPays', 'biggest', 'overTime']
+		sections: ['categories', 'settling', 'whoPays', 'biggest', 'overTime']
 	},
 	home: {
 		tiles: ['fixedPerMonth', 'change', 'perPerson', 'myShare'],
@@ -35,11 +37,11 @@ export const LAYOUTS: Record<GroupKind, Layout> = {
 	},
 	partner: {
 		tiles: ['spent', 'myShare', 'change', 'count'],
-		sections: ['whoPays', 'overTime', 'categories', 'kinds', 'biggest']
+		sections: ['myPosition', 'whoPays', 'overTime', 'categories', 'kinds', 'biggest']
 	},
 	friends: {
 		tiles: ['spent', 'myShare', 'count', 'perPerson'],
-		sections: ['howOften', 'whoPays', 'biggest', 'categories', 'overTime']
+		sections: ['howOften', 'settling', 'whoPays', 'biggest', 'categories', 'overTime']
 	},
 	food: {
 		tiles: ['spent', 'count', 'perPerson', 'myShare'],
@@ -51,7 +53,7 @@ export const LAYOUTS: Record<GroupKind, Layout> = {
 	},
 	other: {
 		tiles: ['spent', 'myShare', 'perPerson', 'perDay'],
-		sections: ['overTime', 'categories', 'kinds', 'biggest', 'whoPays']
+		sections: ['overTime', 'categories', 'kinds', 'biggest', 'whoPays', 'settling']
 	}
 };
 

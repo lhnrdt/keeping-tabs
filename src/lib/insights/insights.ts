@@ -1,7 +1,9 @@
 // A group's insights (#161): the numbers behind the Insights tab, from its entries. Spending
 // means expenses only; payments move money between people and aren't spent.
 import type { ExpenseCategory } from '#lib/expense/categories.ts';
+import type { Transfer } from '#lib/settle.ts';
 import { fixedCosts, kindsOf, KINDS, type FixedCost, type Kind } from './expense-kinds';
+import { owingSince, paidBack, positionOverTime, type Point } from './standing';
 
 export type InsightEntry = {
 	id: string;
@@ -27,6 +29,8 @@ export type BigExpense = {
 	amount: number;
 };
 export type KindShare = { kind: Kind; amount: number; share: number };
+export type OpenDebt = Transfer & { since: string | null };
+export type Settling = { paidBack: number; open: number; debts: OpenDebt[] };
 
 export type Insights = {
 	total: number;
@@ -56,6 +60,10 @@ export type Insights = {
 	fixedPerMonth: number;
 	/** The largest expenses that aren't fixed costs */
 	biggest: BigExpense[];
+	/** Your balance over time, when you're a member (#166) */
+	position: Point[] | null;
+	/** Paid back so far, still open, and the open payments with how long they've been owed */
+	settling: Settling;
 	/** Paid, share and how often each member paid, in member order */
 	byMember: MemberSpend[];
 };
@@ -148,7 +156,9 @@ export function byMember(expenses: readonly InsightEntry[], memberIds: readonly 
 export function insightsOf(
 	entries: readonly InsightEntry[],
 	memberIds: readonly string[],
-	you: string | null
+	you: string | null,
+	/** The group's settle-up payments (as on the balances tab) */
+	transfers: readonly Transfer[] = []
 ): Insights {
 	const expenses = entries.filter((entry) => entry.type === 'expense');
 	const total = expenses.reduce((sum, { amountCents }) => sum + amountCents, 0);
@@ -205,6 +215,15 @@ export function insightsOf(
 				paidBy,
 				amount: amountCents
 			})),
+		position: you ? positionOverTime(entries, you) : null,
+		settling: {
+			paidBack: paidBack(entries),
+			open: transfers.reduce((sum, transfer) => sum + transfer.amountCents, 0),
+			debts: transfers.map((transfer) => ({
+				...transfer,
+				since: owingSince(entries, transfer.from)
+			}))
+		},
 		byMember: members
 	};
 }
