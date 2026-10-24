@@ -27,7 +27,29 @@ export default defineConfig({
 				platformProxy: { configPath: 'wrangler.jsonc' }
 			}),
 			// Also sent as the x-sveltekit-version header and in /_app/version.json
-			version: { name: appVersion }
+			version: { name: appVersion },
+			// Content Security Policy (#133): only the app's own files; SvelteKit adds nonces for
+			// its inline scripts, and app.html's theme script uses %sveltekit.nonce%
+			csp: {
+				mode: 'auto',
+				directives: {
+					'default-src': ['self'],
+					'script-src': ['self'],
+					'style-src': ['self'],
+					// style="…" attributes (e.g. view transition names) in server-rendered markup
+					'style-src-attr': ['unsafe-inline'],
+					'img-src': ['self', 'data:'],
+					'font-src': ['self'],
+					'connect-src': ['self'],
+					'manifest-src': ['self'],
+					'worker-src': ['self'],
+					'object-src': ['none'],
+					'base-uri': ['self'],
+					'form-action': ['self'],
+					// No framing anywhere: no clickjacking
+					'frame-ancestors': ['none']
+				}
+			}
 		}),
 
 		paraglideVitePlugin({
