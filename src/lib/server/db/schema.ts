@@ -45,6 +45,9 @@ export const groups = sqliteTable('groups', {
 	// Insight sections chosen for this group, in order, e.g. "overTime,fixedCosts" (#174);
 	// null = the group type's suggestions
 	insightSections: text('insight_sections'),
+	// Budget (minor units) and end date for trips and events, both optional (#168)
+	budgetCents: integer('budget_cents'),
+	endsOn: text('ends_on'),
 	createdAt: createdAt(),
 	deletedAt: deletedAt()
 });

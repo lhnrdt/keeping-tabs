@@ -18,7 +18,9 @@ export async function findGroupByToken(db: Db, token: string) {
 			kind: true,
 			tint: true,
 			simplifyDebts: true,
-			insightSections: true
+			insightSections: true,
+			budgetCents: true,
+			endsOn: true
 		},
 		where: and(eq(groups.shareToken, token), isNull(groups.deletedAt))
 	});
@@ -213,5 +215,18 @@ export async function setInsightSections(
 	await db.batch([
 		db.update(groups).set({ insightSections }).where(eq(groups.id, groupId)),
 		log(db, groupId, actorId, 'group.update', { insightSections })
+	]);
+}
+
+/** A trip's or event's budget and end date (#168); null clears either */
+export async function setBudget(
+	db: Db,
+	groupId: string,
+	actorId: string | null,
+	plan: { budgetCents: number | null; endsOn: string | null }
+) {
+	await db.batch([
+		db.update(groups).set(plan).where(eq(groups.id, groupId)),
+		log(db, groupId, actorId, 'group.update', plan)
 	]);
 }

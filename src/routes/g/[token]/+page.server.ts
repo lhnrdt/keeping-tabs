@@ -1,11 +1,12 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
+import { todayInputValue } from '#lib/dates.ts';
 import type { ErrorCode } from '#lib/errors.ts';
 import { shownCount } from '#lib/group/expense-pages.ts';
 import { currentTab, UNDO_PARAM } from '#lib/group/tabs.ts';
 import { groupInsights } from '#lib/insights/group.ts';
 import { choiceToStore, isSection } from '#lib/insights/sections.ts';
-import { balances } from '#lib/money.ts';
+import { balances, parseAmount } from '#lib/money.ts';
 import { settleTransfers } from '#lib/settle.ts';
 import { formContext as context, requireGroup } from '#lib/server/context.ts';
 import { entryPage } from '#lib/server/expense-entries.ts';
@@ -17,6 +18,7 @@ import {
 	isUniqueViolation,
 	listMembers,
 	regenerateShareToken,
+	setBudget,
 	setInsightSections,
 	renameMember,
 	updateGroup
@@ -26,6 +28,7 @@ import {
 	parseDescription,
 	parseGroupName,
 	parseKind,
+	parseDate,
 	parseMemberName,
 	parseTint
 } from '#lib/validation.ts';
@@ -57,7 +60,9 @@ export const load: PageServerLoad = async ({ locals, parent, url }) => {
 						expenses,
 						memberIds,
 						members.find((member) => member.mine)?.id ?? null,
-						transfers
+						transfers,
+						{ budget: group.budgetCents, endsOn: group.endsOn },
+						todayInputValue()
 					)
 				: null
 	};
@@ -185,6 +190,26 @@ export const actions: Actions = {
 		const { form, group, actorId } = await context(locals, params.token, request);
 		const chosen = url.searchParams.has('reset') ? [] : form.getAll('section').filter(isSection);
 		await setInsightSections(locals.db, group.id, actorId, choiceToStore(group.kind, chosen));
+	},
+
+	/** A budget and end date for the insights (#168); "remove" clears both */
+	budget: async ({ locals, params, request, url }) => {
+		const { form, group, actorId } = await context(locals, params.token, request);
+		const invalid = (error: ErrorCode) => fail(400, { action: 'budget' as const, error });
+		if (url.searchParams.has('remove')) {
+			await setBudget(locals.db, group.id, actorId, { budgetCents: null, endsOn: null });
+			return;
+		}
+		const amount = String(form.get('amount') ?? '').trim();
+		const budgetCents = amount ? parseAmount(amount, group.currency) : null;
+		if (amount && budgetCents === null) return invalid('amount_invalid');
+		const date = String(form.get('endsOn') ?? '').trim();
+		const endsOn = date ? parseDate(date) : null;
+		if (endsOn && !endsOn.ok) return invalid(endsOn.error);
+		await setBudget(locals.db, group.id, actorId, {
+			budgetCents,
+			endsOn: endsOn?.ok ? endsOn.value : null
+		});
 	},
 
 	removeMember: async ({ locals, params, request }) => {
