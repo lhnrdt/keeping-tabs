@@ -57,3 +57,10 @@ export async function createGroup(page: Page, name: string, you: string, others:
 	await expect(page.getByTestId('identity')).toHaveText(you);
 	return page.url();
 }
+
+/** Opens a folded card (Fold, e.g. on the devices page) by its title, if it isn't open yet. */
+export async function openFold(page: Page, title: string) {
+	const fold = page.locator('details').filter({ has: page.locator('summary', { hasText: title }) });
+	if ((await fold.getAttribute('open')) === null) await fold.locator('summary').click();
+	await expect(fold).toHaveAttribute('open', '');
+}

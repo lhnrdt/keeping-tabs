@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { createGroup, open } from './e2e-helpers';
+import { createGroup, open, openFold } from './e2e-helpers';
 
 test('settings are saved and follow you to another device', async ({ browser }) => {
 	test.setTimeout(60_000);
@@ -22,7 +22,8 @@ test('settings are saved and follow you to another device', async ({ browser }) 
 	await expect(phone.getByLabel('Dein Name')).toHaveValue('Anna');
 
 	// A second device linked to Anna starts in German and dark as well
-	await open(phone, '/device');
+	await open(phone, '/you/devices');
+	await openFold(phone, 'Weiteres Gerät hinzufügen');
 	await phone.getByRole('button', { name: 'Link erstellen' }).click();
 	const link = (await phone.getByRole('listitem', { name: 'One-Time-Link' }).innerText()).trim();
 	const laptop = await (await browser.newContext({ locale: 'en-US' })).newPage();
