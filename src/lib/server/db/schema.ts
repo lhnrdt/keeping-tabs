@@ -2,7 +2,7 @@ import { sql } from 'drizzle-orm';
 import { SPLIT_MODES } from '#lib/split/modes.ts';
 import type { ExpenseCategory } from '#lib/expense/categories.ts';
 import type { GroupKind } from '#lib/group/kinds.ts';
-import type { Locale, Theme } from '#lib/settings.ts';
+import type { Accent, Locale, Theme } from '#lib/settings.ts';
 import type { Tint } from '#lib/tints.ts';
 import {
 	check,
@@ -54,6 +54,7 @@ export const people = sqliteTable('people', {
 	// Personal settings (S-3, src/lib/settings.ts); null = follow the browser
 	locale: text('locale').$type<Locale>(),
 	theme: text('theme').$type<Theme>(),
+	accent: text('accent').$type<Accent>(),
 	// When they read the friendly note about what the app's creator can see (#112)
 	notedAt: integer('noted_at', { mode: 'timestamp_ms' }),
 	// Hash of the person's recovery key, if they created one (A-16)

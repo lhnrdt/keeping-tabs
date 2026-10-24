@@ -7,6 +7,13 @@ export type Theme = (typeof THEMES)[number];
 
 export const isTheme = (value: unknown): value is Theme => THEMES.includes(value as Theme);
 
+/** Color themes (#60): the app's accent color, each with a light and a dark shade */
+export const ACCENTS = ['forest', 'fjord', 'heather', 'amber'] as const;
+export type Accent = (typeof ACCENTS)[number];
+export const DEFAULT_ACCENT: Accent = 'forest';
+
+export const isAccent = (value: unknown): value is Accent => ACCENTS.includes(value as Accent);
+
 export type Locale = (typeof locales)[number];
 
 /** Each language in its own name */
@@ -22,3 +29,6 @@ export const LOCALE_COOKIE = 'kt-locale';
 
 /** Cookie with the chosen theme; the page script in app.html reads it before first paint */
 export const THEME_COOKIE = 'kt-theme';
+
+/** Cookie with the chosen color theme; the page script in app.html reads it before first paint */
+export const ACCENT_COOKIE = 'kt-accent';
