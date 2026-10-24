@@ -9,7 +9,7 @@ describe('limitKindOf', () => {
 		expect(limitKindOf('HEAD', at('/g/abc'))).toBeNull();
 	});
 
-	it.each(['/welcome?next=%2F', '/device/link?/use', '/device?/restore', '/device/passkey/login'])(
+	it.each(['/welcome?next=%2F', '/device/link?/use', '/you/devices?/restore', '/device/passkey/login'])(
 		'counts %s as guessing a secret',
 		(path) => {
 			expect(limitKindOf('POST', at(path))).toBe('secret');
@@ -20,7 +20,7 @@ describe('limitKindOf', () => {
 		expect(limitKindOf('POST', at('/new'))).toBe('newGroup');
 	});
 
-	it.each(['/g/abc?/addMember', '/g/abc/expenses/new?/save', '/device?/createLink', '/note'])(
+	it.each(['/g/abc?/addMember', '/g/abc/expenses/new?/save', '/you/devices?/createLink', '/note'])(
 		'counts %s as a write',
 		(path) => {
 			expect(limitKindOf('POST', at(path))).toBe('write');
