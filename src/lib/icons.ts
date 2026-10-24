@@ -14,6 +14,7 @@ import IconHeart from '@tabler/icons-svelte-runes/icons/heart';
 import IconHome from '@tabler/icons-svelte-runes/icons/home';
 import IconPlane from '@tabler/icons-svelte-runes/icons/plane';
 import IconToolsKitchen2 from '@tabler/icons-svelte-runes/icons/tools-kitchen-2';
+import IconTableExport from '@tabler/icons-svelte-runes/icons/table-export';
 import IconTableImport from '@tabler/icons-svelte-runes/icons/table-import';
 import IconCheck from '@tabler/icons-svelte-runes/icons/check';
 import IconCopy from '@tabler/icons-svelte-runes/icons/copy';
@@ -44,6 +45,7 @@ export const icons = {
 	group: IconUsersGroup,
 	identity: IconUserCircle,
 	import: IconTableImport,
+	export: IconTableExport,
 	member: IconUser,
 	payment: IconCash,
 	newLink: IconRefresh,

@@ -184,6 +184,7 @@
 	"error_import_too_large": "This file is too large to import.",
 	"error_import_people_invalid": "Choose a different member for each person, or add them as new members.",
 	"import_title": "Import from Splitwise",
+	"export_link": "Export as CSV",
 	"import_link": "Import from Splitwise",
 	"import_intro": "Bring a group's history over from Splitwise. In Splitwise, open the group's settings and choose “Export as spreadsheet”, then pick that CSV file here.",
 	"import_file": "Splitwise export (CSV)",
