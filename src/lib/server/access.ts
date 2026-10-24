@@ -48,9 +48,12 @@ export async function isAccessPassword(given: unknown) {
 		crypto.subtle.digest('SHA-256', encode(given.trim())),
 		crypto.subtle.digest('SHA-256', encode(password))
 	]);
-	// Cloudflare's runtime adds timingSafeEqual to SubtleCrypto
-	const subtle = crypto.subtle as SubtleCrypto & {
-		timingSafeEqual(a: ArrayBuffer, b: ArrayBuffer): boolean;
-	};
-	return subtle.timingSafeEqual(a, b);
+	return sameBytes(new Uint8Array(a), new Uint8Array(b));
+}
+
+/** Looks at every byte, whatever differs; digests always have the same length */
+function sameBytes(a: Uint8Array, b: Uint8Array) {
+	let difference = 0;
+	for (let i = 0; i < a.length; i++) difference |= a[i] ^ b[i];
+	return difference === 0;
 }
