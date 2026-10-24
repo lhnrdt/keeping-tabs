@@ -43,7 +43,9 @@ export const isAvatarIcon = (value: unknown): value is AvatarIcon =>
 /** A stored or submitted avatar, or null when it isn't a valid one */
 export function parseAvatar(value: unknown): AvatarChoice | null {
 	if (typeof value !== 'string') return null;
-	const [icon, tint] = value.split(':');
+	const parts = value.split(':');
+	if (parts.length !== 2) return null;
+	const [icon, tint] = parts;
 	if (!isTint(tint) || (icon !== INITIALS && !isAvatarIcon(icon))) return null;
 	return { icon: icon === INITIALS ? null : icon, tint };
 }
