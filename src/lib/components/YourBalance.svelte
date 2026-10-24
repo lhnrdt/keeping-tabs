@@ -14,5 +14,5 @@
 {:else if amount < 0}
 	<span class="tone-negative tabular-nums">{m.you_owe({ amount: money })}</span>
 {:else}
-	<span class="opacity-60">{m.balance_settled()}</span>
+	<span class="text-muted">{m.balance_settled()}</span>
 {/if}

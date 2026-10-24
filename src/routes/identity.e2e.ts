@@ -52,12 +52,14 @@ test('join as yourself, stay yourself, rejoin after losing access, and identitie
 	// Ben lost his phone: Anna lets him join again (A-15)
 	await open(anna, `${groupUrl}?tab=group`);
 	const people = anna.getByRole('list', { name: 'Members' });
-	await expect(people.getByRole('button', { name: 'Ben: options' })).not.toContainText(
+	await expect(people.getByRole('button', { name: /^Ben\b.*, options$/ })).not.toContainText(
 		'not here yet'
 	);
-	await people.getByRole('button', { name: 'Ben: options' }).click();
+	await people.getByRole('button', { name: /^Ben\b.*, options$/ }).click();
 	await anna.getByRole('button', { name: 'Ben lost access: let them join again' }).click();
-	await expect(people.getByRole('button', { name: 'Ben: options' })).toContainText('not here yet');
+	await expect(people.getByRole('button', { name: /^Ben\b.*, options$/ })).toContainText(
+		'not here yet'
+	);
 
 	// Ben's old device is asked again, like a new one
 	await open(ben, groupUrl);
@@ -195,12 +197,12 @@ test('join as someone new, without picking someone else, and remove people who a
 
 	await open(anna, `${groupUrl}?tab=group`);
 	const people = anna.getByRole('list', { name: 'Members' });
-	await people.getByRole('button', { name: 'Ben: options' }).click();
+	await people.getByRole('button', { name: /^Ben\b.*, options$/ }).click();
 	await expect(
 		anna.getByRole('button', { name: 'Ben can be removed once settled up' })
 	).toBeDisabled();
 	await anna.getByRole('button', { name: 'Cancel' }).click();
-	await people.getByRole('button', { name: 'Cara: options' }).click();
+	await people.getByRole('button', { name: /^Cara\b.*, options$/ }).click();
 	await anna.getByRole('button', { name: 'Remove from group' }).click();
 	await expect(people.getByText('Cara')).toHaveCount(0);
 });

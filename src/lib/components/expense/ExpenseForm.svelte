@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { BlockTitle, List } from 'konsta/svelte';
+	import { Block, BlockTitle, List } from 'konsta/svelte';
 	import Field from '#lib/components/Field.svelte';
 	import AmountField from '#lib/components/fields/AmountField.svelte';
 	import DateField from '#lib/components/fields/DateField.svelte';
@@ -81,7 +81,8 @@
 		/>
 	{/if}
 
-	<List strong inset class="py-3">
+	<!-- A card, not a List: pickers are fieldsets, not list items (#79) -->
+	<Block strong inset class="!px-0 !py-3">
 		<CategoryPicker value={values.category} {title} learned={learnCategories(chosen)} />
-	</List>
+	</Block>
 </GroupForm>

@@ -22,7 +22,7 @@
 </script>
 
 <Block class="!mb-2">
-	<p class="text-sm opacity-70">{m.share_hint()}</p>
+	<p class="text-sm text-muted">{m.share_hint()}</p>
 </Block>
 <List strong inset>
 	<ListItem title={shareUrl} titleWrapClass="truncate select-all" aria-label={m.share_title()} />
@@ -53,5 +53,5 @@
 	onClose={() => (confirmingRegenerate = false)}
 >
 	<p>{m.regenerate_confirm()}</p>
-	<p class="mt-2 text-sm opacity-70">{m.regenerate_hint()}</p>
+	<p class="mt-2 text-sm text-muted">{m.regenerate_hint()}</p>
 </FormDialog>

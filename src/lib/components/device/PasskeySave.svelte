@@ -54,5 +54,5 @@
 	</Block>
 	{#if failed}<FormError error="passkey_failed" />{/if}
 {:else}
-	<Block><p class="text-sm opacity-70">{m.passkey_unsupported()}</p></Block>
+	<Block><p class="text-sm text-muted">{m.passkey_unsupported()}</p></Block>
 {/if}

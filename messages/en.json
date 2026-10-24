@@ -203,7 +203,7 @@
 	"error_member_not_settled": "Only people who are settled up can be removed, so no debt gets lost.",
 	"close": "Close",
 	"person_away": "not here yet",
-	"person_menu": "{name}: options",
+	"person_menu_hint": "options",
 	"person_lost_access": "{name} lost access: let them join again",
 	"person_remove": "Remove from group",
 	"person_remove_not_settled": "{name} can be removed once settled up",

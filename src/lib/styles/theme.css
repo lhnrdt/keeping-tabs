@@ -13,7 +13,8 @@
 	--color-surface: #fbf9f5;
 	--color-surface-muted: #ece8df;
 	--color-ink: #252822;
-	--color-ink-muted: #6e7168;
+	/* Secondary text: at least 4.5:1 on canvas and every surface (WCAG AA, #79) */
+	--color-ink-muted: #676a61;
 	--color-forest: #526a58;
 	--color-forest-dark: #394c3f;
 	--color-sage: #aebeaa;
@@ -24,6 +25,7 @@
 	--color-surface-night: #252a25;
 	--color-surface-muted-night: #303630;
 	--color-ink-night: #ecede8;
+	--color-ink-muted-night: #a3a69e;
 	--color-forest-night: #90a88e;
 	--color-clay-night: #c8846d;
 	--color-destructive-night: #d9776d;
@@ -92,6 +94,28 @@
 	color-scheme: dark;
 	background-color: var(--color-canvas-night);
 	color: var(--color-ink-night);
+}
+
+/* Secondary text (hints, captions, section labels). Not opacity: that fails contrast. */
+@utility text-muted {
+	color: var(--color-ink-muted);
+	&:where(.dark, .dark *) {
+		color: var(--color-ink-muted-night);
+	}
+}
+/* Konsta's section titles and secondary list text (black/white at 55–60%) are too faint (#79) */
+.k-block-title,
+.text-black\/55 {
+	color: var(--color-ink-muted) !important;
+}
+.dark .k-block-title,
+.dark .dark\:text-white\/55 {
+	color: var(--color-ink-muted-night) !important;
+}
+/* Text on the primary fill (Konsta's filled buttons, LinkButton): the dark-mode primary is a
+   light green, so dark ink goes on it instead of paper (#79) */
+.dark .bg-primary.text-white {
+	color: var(--color-canvas-night);
 }
 
 /* Meaning-based text colors. Debts are muted clay, never alarm red (style guide); red is

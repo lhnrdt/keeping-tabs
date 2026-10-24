@@ -38,7 +38,7 @@
 				<h2 class="font-display text-2xl leading-tight font-semibold">{heading}</h2>
 			</div>
 		{/if}
-		<p class="mt-3 text-sm opacity-75">
+		<p class="mt-3 text-sm text-muted">
 			{identity.canStepBack ? m.not_you_hint() : m.you_for_good()}
 		</p>
 

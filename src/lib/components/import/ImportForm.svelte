@@ -36,7 +36,7 @@
 	</Block>
 	<List strong inset>
 		<li class="px-4 py-3">
-			<label for={inputId} class="mb-2 block text-sm opacity-70">{m.import_file()}</label>
+			<label for={inputId} class="mb-2 block text-sm text-muted">{m.import_file()}</label>
 			<input
 				id={inputId}
 				name="file"
@@ -57,6 +57,6 @@
 	<FormError error={error ?? previewError} />
 	<Block>
 		<SubmitButton pending={submission.pending}>{m.import_submit()}</SubmitButton>
-		<p class="mt-3 text-center text-sm opacity-60">{m.import_again_hint()}</p>
+		<p class="mt-3 text-center text-sm text-muted">{m.import_again_hint()}</p>
 	</Block>
 </form>
