@@ -15,6 +15,7 @@
 	const suggested = $derived(LAYOUTS[kind].sections);
 
 	const names: Record<Section, () => string> = {
+		budget: m.insights_budget,
 		overTime: m.insights_over_time,
 		categories: m.insights_by_category,
 		kinds: m.insights_kinds,
@@ -26,6 +27,7 @@
 		settling: m.insights_settling
 	};
 	const descriptions: Record<Section, () => string> = {
+		budget: m.section_budget_hint,
 		overTime: m.section_over_time_hint,
 		categories: m.section_categories_hint,
 		kinds: m.section_kinds_hint,

@@ -105,3 +105,62 @@ test('a group can choose its insights, starting from its type’s suggestions (#
 	await expect.poll(titles).toContain('Biggest expenses');
 	expect(await titles()).not.toContain('Who paid how often');
 });
+
+/** Days from today as YYYY-MM-DD, in this machine's time zone like the server's */
+const daysFromToday = (days: number) => {
+	const date = new Date();
+	date.setDate(date.getDate() + days);
+	return new Date(date.getTime() - date.getTimezoneOffset() * 60_000).toISOString().slice(0, 10);
+};
+
+test('a trip on the way sees its budget, where the pace leads, and what’s left per day (#168)', async ({
+	page
+}) => {
+	const groupUrl = await createGroup(page, 'Bergen', 'Anna', ['Ben']);
+	await open(page, `${groupUrl}/import`);
+	const csv = [
+		'Datum,Beschreibung,Kategorie,Kosten,Währung,Anna,Ben',
+		`${daysFromToday(-1)},Hütte,Hotel,200.00,EUR,100.00,-100.00`,
+		`${daysFromToday(0)},Fischmarkt,Restaurant,100.00,EUR,-50.00,50.00`
+	].join('\n');
+	await page.getByLabel('Splitwise export (CSV)').setInputFiles({
+		name: 'trip.csv',
+		mimeType: 'text/csv',
+		buffer: Buffer.from(csv)
+	});
+	await page.getByRole('button', { name: 'Import' }).click();
+	await expect(page).toHaveURL(groupUrl);
+
+	// Not suggested for this kind of group, but there to choose
+	await open(page, `${groupUrl}?tab=insights`);
+	await page.getByRole('button', { name: 'Customize insights' }).click();
+	const customize = page.getByRole('dialog', { name: 'Customize insights' });
+	await customize.getByRole('checkbox', { name: /^Budget/ }).check();
+	await customize.getByRole('button', { name: 'Save' }).click();
+	await expect(customize).toBeHidden();
+
+	await page.getByRole('button', { name: 'Set a budget' }).click();
+	const dialog = page.getByRole('dialog', { name: 'Set a budget' });
+	await dialog.getByLabel('Budget (EUR)').fill('abc');
+	await dialog.getByRole('button', { name: 'Save' }).click();
+	await expect(dialog.getByRole('alert')).toContainText('Enter an amount');
+	await dialog.getByLabel('Budget (EUR)').fill('700');
+	await dialog.getByLabel('Ends on').fill(daysFromToday(3));
+	await dialog.getByRole('button', { name: 'Save' }).click();
+	await expect(dialog).toBeHidden();
+
+	// €300 in two days is €150 a day; three more days make €750, over the €700
+	await expect(page.getByText('of €700.00')).toBeVisible();
+	await expect(page.getByText('At this pace: €750.00')).toBeVisible();
+	// €400 left over today and the three days after it
+	await expect(page.getByText('€100.00 left per day')).toBeVisible();
+	await expect(page.getByRole('img', { name: 'Budget' })).toBeVisible();
+
+	// Changing starts from what's set
+	await page.getByRole('button', { name: 'Change budget' }).click();
+	const change = page.getByRole('dialog', { name: 'Change budget' });
+	await expect(change.getByLabel('Budget (EUR)')).toHaveValue('700.00');
+	await expect(change.getByLabel('Ends on')).toHaveValue(daysFromToday(3));
+	await change.getByRole('button', { name: 'Remove budget' }).click();
+	await expect(page.getByRole('button', { name: 'Set a budget' })).toBeVisible();
+});

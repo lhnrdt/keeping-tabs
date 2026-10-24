@@ -393,5 +393,19 @@
 	"welcome_link_hint": "Got a link to a group? Just open it, no password needed.",
 	"note_title": "Good to know",
 	"note_ok": "Got it",
-	"note_text": "Names, groups and expenses are kept on the app's secured server, but still in plain text, so they're visible to admins. Encryption that only your group members can read is planned."
+	"note_text": "Names, groups and expenses are kept on the app's secured server, but still in plain text, so they're visible to admins. Encryption that only your group members can read is planned.",
+	"insights_budget": "Budget",
+	"section_budget_hint": "Spent against the budget, and where this pace leads",
+	"budget_of": "of {amount}",
+	"budget_at_pace": "At this pace: {amount}",
+	"budget_left_per_day": "{amount} left per day",
+	"budget_left": "{amount} left",
+	"budget_over": "{amount} over budget",
+	"budget_line": "Budget {amount}",
+	"budget_hint": "Set a budget and an end date to see where this pace leads.",
+	"budget_set": "Set a budget",
+	"budget_edit": "Change budget",
+	"budget_remove": "Remove budget",
+	"field_budget": "Budget",
+	"field_ends_on": "Ends on"
 }
