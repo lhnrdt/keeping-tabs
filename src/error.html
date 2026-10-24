@@ -1,0 +1,64 @@
+<!doctype html>
+<!-- Shown when SvelteKit can't render the app's own error page, e.g. a request turned away by
+     a rate limit (#66) without JavaScript. Self-contained; colors from src/lib/styles/theme.css. -->
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="color-scheme" content="light dark" />
+		<title>Keeping Tabs</title>
+		<style>
+			:root {
+				--canvas: #f4f1ea;
+				--ink: #252822;
+				--forest: #526a58;
+			}
+			@media (prefers-color-scheme: dark) {
+				:root {
+					--canvas: #1d211d;
+					--ink: #ecede8;
+					--forest: #90a88e;
+				}
+			}
+			body {
+				margin: 0;
+				min-height: 100vh;
+				display: grid;
+				place-items: center;
+				background: var(--canvas);
+				color: var(--ink);
+				font:
+					1rem/1.5 ui-sans-serif,
+					system-ui,
+					-apple-system,
+					'Segoe UI',
+					sans-serif;
+				text-align: center;
+			}
+			main {
+				max-width: 24rem;
+				padding: 1.5rem;
+			}
+			p {
+				margin: 0 0 1.5rem;
+				font-size: 1.125rem;
+			}
+			a {
+				display: inline-block;
+				padding: 0.75rem 1.5rem;
+				border-radius: 999px;
+				background: var(--forest);
+				color: var(--canvas);
+				font-weight: 600;
+				text-decoration: none;
+			}
+		</style>
+	</head>
+	<body>
+		<main>
+			<p>%sveltekit.error.message%</p>
+			<!-- The app's name: this page can't know the visitor's language -->
+			<a href="/">Keeping Tabs</a>
+		</main>
+	</body>
+</html>
