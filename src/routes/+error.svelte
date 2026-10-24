@@ -8,7 +8,8 @@
 	import LinkButton from '#lib/components/LinkButton.svelte';
 	import { m } from '#lib/paraglide/messages.js';
 
-	const notFound = $derived(page.status === 404);
+	// Not there (404) or deleted (410): nothing to try again
+	const notFound = $derived(page.status === 404 || page.status === 410);
 	const heading = $derived(notFound ? m.error_not_found_title() : m.error_title());
 	// Messages from our own errors are written for people; others get a friendly default
 	const message = $derived(

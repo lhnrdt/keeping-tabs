@@ -23,6 +23,16 @@ export async function findGroupByToken(db: Db, token: string) {
 	});
 }
 
+/** Whether the token belongs to a group that was deleted (and not yet removed for good) */
+export async function isDeletedGroupToken(db: Db, token: string) {
+	if (!SHARE_TOKEN_PATTERN.test(token)) return false;
+	const group = await db.query.groups.findFirst({
+		columns: { id: true },
+		where: and(eq(groups.shareToken, token), isNotNull(groups.deletedAt))
+	});
+	return Boolean(group);
+}
+
 export function listMembers(db: Db, groupId: string) {
 	return db.query.members.findMany({
 		columns: { id: true, name: true, personId: true },
