@@ -70,3 +70,23 @@ test('everything about you is in one place: profile, settings, devices (#146)', 
 	await open(page, '/device');
 	await expect(page).toHaveURL(/\/you\/devices$/);
 });
+
+test('a color theme switches at once and is remembered (#60)', async ({ page }) => {
+	await open(page, '/you');
+	await page.getByRole('group', { name: 'Color' }).getByText('Fjord').click();
+	await expect(page.locator('html')).toHaveAttribute('data-accent', 'fjord');
+	await expect(page.getByText('Saved').first()).toBeVisible();
+
+	// Buttons take the theme's color; after a reload too
+	await open(page, '/');
+	await expect(page.locator('html')).toHaveAttribute('data-accent', 'fjord');
+	await expect(page.getByRole('link', { name: 'New group' })).toHaveCSS(
+		'background-color',
+		'rgb(61, 100, 112)'
+	);
+
+	// Back to the default: no attribute at all
+	await open(page, '/you');
+	await page.getByRole('group', { name: 'Color' }).getByText('Forest').click();
+	await expect(page.locator('html')).not.toHaveAttribute('data-accent');
+});

@@ -10,11 +10,12 @@
 	import Icon from '#lib/components/Icon.svelte';
 	import Field from '#lib/components/Field.svelte';
 	import FormError from '#lib/components/FormError.svelte';
+	import AccentPicker from '#lib/components/pickers/AccentPicker.svelte';
 	import SegmentedPicker from '#lib/components/pickers/SegmentedPicker.svelte';
 	import SavedHint from '#lib/components/SavedHint.svelte';
 	import { m } from '#lib/paraglide/messages.js';
 	import { locales } from '#lib/paraglide/runtime.js';
-	import { isTheme, LOCALE_NAMES, THEMES, type Theme } from '#lib/settings.ts';
+	import { isAccent, isTheme, LOCALE_NAMES, THEMES, type Theme } from '#lib/settings.ts';
 	import { LIMITS } from '#lib/validation.ts';
 	import type { PageProps } from './$types';
 
@@ -43,6 +44,13 @@
 	};
 	const submitOnChange = (event: Event & { currentTarget: HTMLFormElement }) =>
 		event.currentTarget.requestSubmit();
+
+	/** The color theme switches at once, like the light/dark one */
+	function accentChanged(event: Event & { currentTarget: HTMLFormElement }) {
+		const accent = new FormData(event.currentTarget).get('accent');
+		if (isAccent(accent)) window.applyAccent?.(accent);
+		event.currentTarget.requestSubmit();
+	}
 
 	function themeChanged(event: Event & { currentTarget: HTMLFormElement }) {
 		const theme = new FormData(event.currentTarget).get('theme');
@@ -102,6 +110,14 @@
 		/>
 		<SavedHint shown={saved === 'theme'} />
 		<FormError error={errorFor('theme')} />
+		<noscript><Block><button type="submit">{m.save()}</button></Block></noscript>
+	</form>
+
+	<form method="POST" action="?/accent" use:enhance={saveQuietly} onchange={accentChanged}>
+		<h2 class="mx-4 mt-4 mb-2 text-sm font-medium text-muted">{m.settings_accent()}</h2>
+		<AccentPicker value={data.accent} />
+		<SavedHint shown={saved === 'accent'} />
+		<FormError error={errorFor('accent')} />
 		<noscript><Block><button type="submit">{m.save()}</button></Block></noscript>
 	</form>
 
