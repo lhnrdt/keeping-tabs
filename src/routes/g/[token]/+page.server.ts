@@ -2,11 +2,12 @@ import { fail, redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
 import type { ErrorCode } from '#lib/errors.ts';
 import { shownCount } from '#lib/group/expense-pages.ts';
+import { UNDO_PARAM } from '#lib/group/tabs.ts';
 import { balances } from '#lib/money.ts';
 import { settleTransfers } from '#lib/settle.ts';
 import { formContext as context, requireGroup } from '#lib/server/context.ts';
 import { entryPage } from '#lib/server/expense-entries.ts';
-import { listExpenses } from '#lib/server/expenses.ts';
+import { findDeletedEntry, listExpenses, restoreEntry } from '#lib/server/expenses.ts';
 import { deleteGroup } from '#lib/server/group-deletion.ts';
 import { joinGroup, letJoinAgain, removeMember, stepBack } from '#lib/server/membership.ts';
 import {
@@ -31,16 +32,20 @@ export const load: PageServerLoad = async ({ locals, parent, url }) => {
 	const { group, members } = await parent();
 	const shown = shownCount(url.searchParams.get('show'));
 	// Balances and settling up need everything; the list only its first page(s)
-	const [expenses, page] = await Promise.all([
+	const deletedId = url.searchParams.get(UNDO_PARAM);
+	const [expenses, page, justDeleted] = await Promise.all([
 		listExpenses(locals.db, group.id),
-		entryPage(locals.db, group.id, members.find((member) => member.mine)?.id ?? null, 0, shown)
+		entryPage(locals.db, group.id, members.find((member) => member.mine)?.id ?? null, 0, shown),
+		// Right after deleting: offer "Undo" (#78); gone once it's restored
+		deletedId ? findDeletedEntry(locals.db, group.id, deletedId) : undefined
 	]);
 	const memberIds = members.map((member) => member.id);
 	return {
 		balances: Object.fromEntries(balances(memberIds, expenses)),
 		transfers: settleTransfers(group.simplifyDebts, memberIds, expenses),
 		entries: page.entries,
-		hasMore: page.hasMore
+		hasMore: page.hasMore,
+		justDeleted: justDeleted ?? null
 	};
 };
 
@@ -152,6 +157,13 @@ export const actions: Actions = {
 	letJoinAgain: async ({ locals, params, request }) => {
 		const { form, group, actorId } = await context(locals, params.token, request);
 		await letJoinAgain(locals.db, group.id, actorId, String(form.get('memberId') ?? ''));
+	},
+
+	/** "Undo" right after deleting an expense or payment (#78) */
+	restoreEntry: async ({ locals, params, request }) => {
+		const { form, group, actorId } = await context(locals, params.token, request);
+		const entry = await findDeletedEntry(locals.db, group.id, String(form.get('entryId') ?? ''));
+		if (entry) await restoreEntry(locals.db, group.id, actorId, entry);
 	},
 
 	removeMember: async ({ locals, params, request }) => {

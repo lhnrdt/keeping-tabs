@@ -16,9 +16,11 @@ export type Action =
 	| 'expense.create'
 	| 'expense.update'
 	| 'expense.delete'
+	| 'expense.restore'
 	| 'payment.create'
 	| 'payment.update'
-	| 'payment.delete';
+	| 'payment.delete'
+	| 'payment.restore';
 
 /** Activity log entry (L-1); a query to run inside the caller's batch. */
 export const log = (
