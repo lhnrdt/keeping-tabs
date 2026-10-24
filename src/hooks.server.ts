@@ -103,12 +103,22 @@ const handleCaching: Handle = async ({ event, resolve }) => {
 	return response;
 };
 
-/** Every dynamic response says which release served it. */
+/** Next to the CSP in vite.config.ts (#133) */
+const SECURITY_HEADERS = {
+	// Group links contain their secret: never send them to other sites
+	'referrer-policy': 'same-origin',
+	'x-content-type-options': 'nosniff',
+	'permissions-policy': 'camera=(), microphone=(), geolocation=(), payment=()',
+	'strict-transport-security': 'max-age=31536000; includeSubDomains'
+};
+
+/** Every dynamic response says which release served it, and its security headers. */
 const handleVersion: Handle = async ({ event, resolve }) => {
 	const response = await resolve(event);
 	response.headers.set('x-app-version', version);
 	// A private app: never listed by search engines
 	response.headers.set('x-robots-tag', 'noindex, nofollow');
+	for (const [name, value] of Object.entries(SECURITY_HEADERS)) response.headers.set(name, value);
 	return response;
 };
 
