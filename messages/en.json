@@ -260,7 +260,7 @@
 	"restore_group": "Restore",
 	"error_group_not_restorable": "This group can't be restored anymore.",
 	"delete_confirm": "Delete",
-	"settings_title": "Settings",
+	"you_title": "Profile",
 	"settings_name_hint": "The name we suggest when you create or join a group.",
 	"settings_language": "Language",
 	"settings_theme": "Appearance",

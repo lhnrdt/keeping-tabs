@@ -49,7 +49,7 @@
 			use:enhance={submission.enhance}
 		>
 			<a
-				href={resolve('/device')}
+				href={resolve('/you/devices')}
 				onclick={close}
 				class="flex min-h-12 items-center justify-center gap-2 rounded-full bg-surface-muted px-4 font-medium text-forest active:opacity-70 dark:bg-surface-muted-night dark:text-forest-night"
 			>

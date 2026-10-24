@@ -27,8 +27,8 @@ test('pages send security headers and nothing breaks the content security policy
 	for (const path of [
 		`${groupUrl}?tab=balances`,
 		`${groupUrl}?tab=group`,
-		'/settings',
-		'/device'
+		'/you',
+		'/you/devices'
 	]) {
 		await open(page, path);
 	}

@@ -1,0 +1,59 @@
+import { fail, redirect } from '@sveltejs/kit';
+import type { ErrorCode } from '#lib/errors.ts';
+import { getLocale } from '#lib/paraglide/runtime.js';
+import { safePath } from '#lib/safe-redirect.ts';
+import { isLocale, isTheme, THEME_COOKIE } from '#lib/settings.ts';
+import { ensurePerson, findPerson } from '#lib/server/people.ts';
+import { saveSettings, setLocaleCookie, setThemeCookie } from '#lib/server/settings.ts';
+import { normalizeText, LIMITS } from '#lib/validation.ts';
+import type { Actions, PageServerLoad } from './$types';
+
+export const load: PageServerLoad = async ({ locals, cookies }) => {
+	const person = await findPerson(locals.db, locals.deviceKey);
+	const theme = cookies.get(THEME_COOKIE);
+	return {
+		personId: person?.id ?? null,
+		name: person?.name ?? '',
+		locale: getLocale(),
+		theme: isTheme(theme) ? theme : (person?.theme ?? 'system')
+	};
+};
+
+// Each setting saves on its own as soon as it changes (S-3). Language and theme are kept
+// with the person when there is one, and in this browser's cookies either way.
+export const actions: Actions = {
+	name: async ({ locals, request }) => {
+		const name = normalizeText((await request.formData()).get('name'));
+		if (name.length > LIMITS.memberName) {
+			return fail(400, { setting: 'name', error: 'member_name_too_long' as ErrorCode });
+		}
+		if (!name) return { setting: 'name' };
+		const person = await ensurePerson(locals.db, locals.deviceKey);
+		await saveSettings(locals.db, person.id, { name });
+		return { setting: 'name' };
+	},
+
+	theme: async ({ locals, request, cookies }) => {
+		const theme = (await request.formData()).get('theme');
+		if (!isTheme(theme)) {
+			return fail(400, { setting: 'theme', error: 'settings_invalid' as ErrorCode });
+		}
+		const person = await findPerson(locals.db, locals.deviceKey);
+		if (person) await saveSettings(locals.db, person.id, { theme });
+		setThemeCookie(cookies, theme);
+		return { setting: 'theme' };
+	},
+
+	/** Also the footer's language switch: the page is served again in the new language */
+	language: async ({ locals, request, cookies }) => {
+		const form = await request.formData();
+		const locale = form.get('locale');
+		if (!isLocale(locale)) {
+			return fail(400, { setting: 'language', error: 'settings_invalid' as ErrorCode });
+		}
+		const person = await findPerson(locals.db, locals.deviceKey);
+		if (person) await saveSettings(locals.db, person.id, { locale });
+		setLocaleCookie(cookies, locale);
+		redirect(303, safePath(form.get('next')));
+	}
+};
