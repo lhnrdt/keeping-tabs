@@ -2,27 +2,29 @@
 // that kind of group ask first come first. The single place to change it.
 import type { GroupKind } from '#lib/group/kinds.ts';
 
-export type Tile = 'spent' | 'myShare' | 'perPerson' | 'perDay' | 'change' | 'count';
-export type Section = 'overTime' | 'categories' | 'biggest' | 'whoPays' | 'howOften';
+export type Tile =
+	'spent' | 'myShare' | 'perPerson' | 'perDay' | 'change' | 'count' | 'fixedPerMonth';
+export type Section =
+	'overTime' | 'categories' | 'kinds' | 'fixedCosts' | 'biggest' | 'whoPays' | 'howOften';
 
 export type Layout = { tiles: [Tile, Tile, Tile, Tile]; sections: Section[] };
 
 export const LAYOUTS: Record<GroupKind, Layout> = {
 	trip: {
 		tiles: ['spent', 'perPerson', 'perDay', 'myShare'],
-		sections: ['overTime', 'categories', 'biggest', 'whoPays']
+		sections: ['overTime', 'kinds', 'categories', 'biggest', 'whoPays']
 	},
 	event: {
 		tiles: ['spent', 'perPerson', 'count', 'myShare'],
 		sections: ['categories', 'whoPays', 'biggest', 'overTime']
 	},
 	home: {
-		tiles: ['spent', 'change', 'perPerson', 'myShare'],
-		sections: ['overTime', 'categories', 'howOften', 'whoPays', 'biggest']
+		tiles: ['fixedPerMonth', 'change', 'perPerson', 'myShare'],
+		sections: ['fixedCosts', 'overTime', 'kinds', 'categories', 'howOften', 'whoPays', 'biggest']
 	},
 	partner: {
 		tiles: ['spent', 'myShare', 'change', 'count'],
-		sections: ['whoPays', 'overTime', 'categories', 'biggest']
+		sections: ['whoPays', 'overTime', 'categories', 'kinds', 'biggest']
 	},
 	friends: {
 		tiles: ['spent', 'myShare', 'count', 'perPerson'],
@@ -33,11 +35,11 @@ export const LAYOUTS: Record<GroupKind, Layout> = {
 		sections: ['howOften', 'overTime', 'biggest', 'whoPays']
 	},
 	car: {
-		tiles: ['spent', 'change', 'perPerson', 'myShare'],
-		sections: ['overTime', 'categories', 'whoPays', 'biggest']
+		tiles: ['spent', 'fixedPerMonth', 'change', 'myShare'],
+		sections: ['overTime', 'fixedCosts', 'kinds', 'whoPays', 'biggest']
 	},
 	other: {
 		tiles: ['spent', 'myShare', 'perPerson', 'perDay'],
-		sections: ['overTime', 'categories', 'biggest', 'whoPays']
+		sections: ['overTime', 'categories', 'kinds', 'biggest', 'whoPays']
 	}
 };

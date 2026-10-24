@@ -6,9 +6,18 @@
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import type { Bucket, Unit } from '#lib/insights/insights.ts';
 
-	type Props = { unit: Unit; buckets: Bucket[]; currency: string };
+	type Props = {
+		unit: Unit;
+		buckets: Bucket[];
+		/** The same without big one-offs, offered as a toggle when there are any (#167) */
+		withoutBig?: Bucket[] | null;
+		currency: string;
+	};
 
-	let { unit, buckets, currency }: Props = $props();
+	let { unit, buckets: all, withoutBig = null, currency }: Props = $props();
+
+	let leaveOutBig = $state(false);
+	const buckets = $derived(leaveOutBig && withoutBig ? withoutBig : all);
 
 	const WIDTH = 320;
 	const HEIGHT = 140;
@@ -56,7 +65,24 @@
 </script>
 
 <figure class="mx-4 rounded-2xl bg-surface px-4 pt-3 pb-2 dark:bg-surface-night">
-	<figcaption class="mb-2 text-sm text-muted" aria-live="polite">{caption}</figcaption>
+	<figcaption class="mb-2 flex items-center justify-between gap-2">
+		<span class="text-sm text-muted" aria-live="polite">{caption}</span>
+		{#if withoutBig}
+			<button
+				type="button"
+				aria-pressed={leaveOutBig}
+				class="shrink-0 rounded-full px-3 py-1 text-xs font-medium {leaveOutBig
+					? 'bg-accent text-surface dark:bg-accent-night dark:text-canvas-night'
+					: 'bg-surface-muted text-ink dark:bg-surface-muted-night dark:text-ink-night'}"
+				onclick={() => {
+					leaveOutBig = !leaveOutBig;
+					selected = null;
+				}}
+			>
+				{m.insights_without_big()}
+			</button>
+		{/if}
+	</figcaption>
 	<svg
 		viewBox="0 0 {WIDTH} {HEIGHT + AXIS}"
 		class="w-full overflow-visible"

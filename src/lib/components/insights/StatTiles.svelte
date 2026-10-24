@@ -38,6 +38,10 @@
 				return { label: m.insights_per_person(), value: money(insights.perPerson) };
 			case 'perDay':
 				return { label: m.insights_per_day(), value: money(insights.perDay) };
+			case 'fixedPerMonth':
+				return insights.fixedPerMonth > 0
+					? { label: m.insights_fixed_per_month(), value: money(insights.fixedPerMonth) }
+					: null;
 			case 'count':
 				return { label: m.insights_expenses(), value: String(insights.count) };
 			case 'change': {
