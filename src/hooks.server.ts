@@ -1,6 +1,6 @@
 import { env } from 'cloudflare:workers';
 import { version } from '$app/env';
-import type { Handle } from '@sveltejs/kit/hooks';
+import type { Handle, HandleServerError } from '@sveltejs/kit/hooks';
 import { sequence } from '@sveltejs/kit/hooks';
 import { redirect } from '@sveltejs/kit';
 import { resolve as resolveRoute } from '$app/paths';
@@ -10,6 +10,7 @@ import { paraglideMiddleware } from '#lib/paraglide/server.js';
 import { getDb } from '#lib/server/db/index.ts';
 import { grantAccess, hasAccess, isOpenPath } from '#lib/server/access.ts';
 import { ensureDeviceKey } from '#lib/server/device.ts';
+import { logError } from '#lib/server/error-log.ts';
 import { limitKindOf } from '#lib/server/rate-limit-kinds.ts';
 import { tooManyRequests, withinLimit } from '#lib/server/rate-limit.ts';
 import { findPerson } from '#lib/server/people.ts';
@@ -107,3 +108,9 @@ export const handle: Handle = sequence(
 	handleParaglide,
 	handleRateLimit
 );
+
+/** Unexpected errors (not our own error() calls or 404s) are logged for monitoring (#81) */
+export const handleError: HandleServerError = ({ kind, error, event }) => {
+	if (kind !== 'unknown') return;
+	logError({ error, route: event.route.id, method: event.request.method });
+};
