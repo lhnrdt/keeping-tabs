@@ -204,6 +204,7 @@
 	"import_submit": "Import",
 	"import_again_hint": "Rows imported before are skipped, so you can import a newer export again later.",
 	"expenses_show_more": "Show older",
+	"page_loading": "Loading…",
 	"expenses_loading": "Loading older entries…",
 	"expenses_retry": "Couldn't load. Try again",
 	"error_already_member": "You're already in this group.",
