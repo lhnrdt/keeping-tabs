@@ -55,6 +55,8 @@ export const people = sqliteTable('people', {
 	locale: text('locale').$type<Locale>(),
 	theme: text('theme').$type<Theme>(),
 	accent: text('accent').$type<Accent>(),
+	// Chosen avatar, e.g. "deer:moss" (#61, src/lib/avatars.ts); null = initials, derived tint
+	avatar: text('avatar'),
 	// When they read the friendly note about what the app's creator can see (#112)
 	notedAt: integer('noted_at', { mode: 'timestamp_ms' }),
 	// Hash of the person's recovery key, if they created one (A-16)

@@ -19,7 +19,7 @@ const COOKIE_OPTIONS = { path: '/', sameSite: 'lax', maxAge: cookieMaxAge } as c
 export async function saveSettings(
 	db: Db,
 	personId: string,
-	settings: { name?: string; locale?: Locale; theme?: Theme; accent?: Accent }
+	settings: { name?: string; locale?: Locale; theme?: Theme; accent?: Accent; avatar?: string }
 ) {
 	if (Object.keys(settings).length === 0) return;
 	await db.update(people).set(settings).where(eq(people.id, personId));
