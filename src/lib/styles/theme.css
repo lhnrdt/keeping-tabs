@@ -89,28 +89,32 @@
 }
 
 /* Color themes (#60), chosen in your profile: html[data-accent], set before first paint by
-   app.html. Each reaches WCAG AA as text on the canvas and under text on its fill. */
-:root {
+   app.html; any element with data-accent shows that theme (e.g. the picker's swatches). Each
+   reaches WCAG AA as text on the canvas and under text on its fill. */
+:root,
+[data-accent='forest'] {
 	--accent: #526a58;
 	--accent-night: #90a88e;
 	--accent-soft: #aebeaa;
+}
+:root {
 	/* Konsta's primary (buttons, links, tints) follows the theme */
 	--k-color-primary: var(--accent);
 	--k-color-ios-primary: var(--accent);
 	--k-color-ios-primary-tint: color-mix(in srgb, var(--accent) 85%, white);
 	--k-color-ios-primary-shade: color-mix(in srgb, var(--accent) 85%, black);
 }
-:root[data-accent='fjord'] {
+[data-accent='fjord'] {
 	--accent: #3d6470;
 	--accent-night: #8db3be;
 	--accent-soft: #a9c3cb;
 }
-:root[data-accent='heather'] {
+[data-accent='heather'] {
 	--accent: #6b5a7a;
 	--accent-night: #b5a3c4;
 	--accent-soft: #c4b8cf;
 }
-:root[data-accent='amber'] {
+[data-accent='amber'] {
 	--accent: #7d5f2a;
 	--accent-night: #cfae6e;
 	--accent-soft: #d9c39a;
