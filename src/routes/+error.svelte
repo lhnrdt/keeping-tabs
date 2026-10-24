@@ -23,7 +23,7 @@
 
 <AppPage title={m.app_name()}>
 	<div class="flex flex-col items-center gap-3 px-6 pt-10 pb-6 text-center" role="alert">
-		<span class="text-sage dark:text-forest-night"><Hills /></span>
+		<span class="text-accent-soft dark:text-accent-night"><Hills /></span>
 		<h1 class="font-display text-3xl font-semibold">{heading}</h1>
 		<p class="max-w-sm text-muted">{message}</p>
 	</div>
@@ -32,7 +32,7 @@
 		{#if !notFound}
 			<button
 				type="button"
-				class="flex h-12 w-full items-center justify-center rounded-full font-semibold text-forest dark:text-forest-night"
+				class="flex h-12 w-full items-center justify-center rounded-full font-semibold text-accent dark:text-accent-night"
 				onclick={() => location.reload()}
 			>
 				{m.try_again()}

@@ -29,7 +29,7 @@
 		method="POST"
 		action={tabAction('addMember', 'group')}
 		use:enhance={submission.enhance}
-		class="inline-flex min-h-11 items-center gap-1 rounded-full bg-surface ps-4 pe-1 shadow-[0_0_0_2px_var(--color-forest)] dark:bg-surface-night"
+		class="inline-flex min-h-11 items-center gap-1 rounded-full bg-surface ps-4 pe-1 shadow-[0_0_0_2px_var(--color-accent)] dark:bg-surface-night"
 	>
 		<input
 			bind:this={input}
@@ -44,7 +44,7 @@
 		/>
 		<button
 			type="submit"
-			class="grid h-9 w-9 place-items-center rounded-full bg-forest text-white dark:bg-forest-night dark:text-canvas-night"
+			class="grid h-9 w-9 place-items-center rounded-full bg-accent text-white dark:bg-accent-night dark:text-canvas-night"
 			aria-label={m.add_person_button()}
 			aria-busy={submission.pending}
 		>
@@ -62,7 +62,7 @@
 {:else}
 	<button
 		type="button"
-		class="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-dashed border-forest/60 px-4 text-sm font-medium text-forest focus-visible:ring-2 dark:border-forest-night/60 dark:text-forest-night"
+		class="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-dashed border-accent/60 px-4 text-sm font-medium text-accent focus-visible:ring-2 dark:border-accent-night/60 dark:text-accent-night"
 		onclick={start}
 	>
 		<Icon name="addMember" size={18} />

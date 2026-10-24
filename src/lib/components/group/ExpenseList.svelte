@@ -147,7 +147,7 @@
 				<!-- eslint-disable svelte/no-navigation-without-resolve -->
 				<a
 					href={`${resolve('/g/[token]', { token })}?show=${expenses.length + EXPENSES_PER_PAGE}`}
-					class="inline-block rounded-full px-4 py-2 font-medium text-forest dark:text-forest-night"
+					class="inline-block rounded-full px-4 py-2 font-medium text-accent dark:text-accent-night"
 					data-sveltekit-reset="false"
 					data-sveltekit-replacestate
 					onclick={(event) => {

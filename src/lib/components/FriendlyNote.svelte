@@ -23,7 +23,7 @@
 		<p>{m.note_text()}</p>
 		<button
 			type="submit"
-			class="mt-2 flex h-12 w-full items-center justify-center rounded-full bg-forest font-semibold text-white dark:bg-forest-night dark:text-canvas-night"
+			class="mt-2 flex h-12 w-full items-center justify-center rounded-full bg-accent font-semibold text-white dark:bg-accent-night dark:text-canvas-night"
 		>
 			{m.note_ok()}
 		</button>

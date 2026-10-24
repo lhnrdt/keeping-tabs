@@ -32,7 +32,7 @@
 	<Avatar id={avatarId} {name} size="sm" />
 	<span class="font-medium">{name}</span>
 	{#if mark === 'you'}
-		<span class="rounded-full bg-sage/50 px-2 text-xs dark:bg-forest-night/30"
+		<span class="rounded-full bg-accent-soft/50 px-2 text-xs dark:bg-accent-night/30"
 			>{m.member_you()}</span
 		>
 	{:else if mark === 'away'}

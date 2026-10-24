@@ -21,7 +21,7 @@
 	<div class="grid grid-cols-4 gap-2">
 		{#each options as option (option.value)}
 			<label
-				class="relative flex h-22 cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-2xl border border-transparent bg-surface-muted px-1 text-xs transition-colors has-checked:border-forest has-checked:bg-sage/40 has-focus-visible:ring-2 dark:bg-surface-muted-night dark:has-checked:border-forest-night"
+				class="relative flex h-22 cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-2xl border border-transparent bg-surface-muted px-1 text-xs transition-colors has-checked:border-accent has-checked:bg-accent-soft/40 has-focus-visible:ring-2 dark:bg-surface-muted-night dark:has-checked:border-accent-night"
 			>
 				<input
 					class="sr-only"

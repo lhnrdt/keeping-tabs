@@ -8,7 +8,7 @@
 	let { value, id }: { value: string; id: string } = $props();
 
 	const swatch =
-		'h-9 w-9 rounded-full border-2 border-transparent bg-(--tint-bg) peer-checked:border-forest peer-focus-visible:ring-2 dark:peer-checked:border-forest-night';
+		'h-9 w-9 rounded-full border-2 border-transparent bg-(--tint-bg) peer-checked:border-accent peer-focus-visible:ring-2 dark:peer-checked:border-accent-night';
 </script>
 
 <fieldset class="px-4 pb-3">
