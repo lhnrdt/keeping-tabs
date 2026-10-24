@@ -14,7 +14,7 @@ test('the start page asks for the password once per device', async ({ browser })
 	await enterPassword(page);
 	await expect(page).toHaveURL(/\/new$/);
 	await page.goto('/settings');
-	await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
+	await expect(page.getByRole('heading', { name: 'Profile' })).toBeVisible();
 });
 
 test('a group link is an invitation: no password, and afterwards the app is open', async ({

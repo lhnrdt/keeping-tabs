@@ -10,7 +10,7 @@ const APP_COLUMN_PX = 42 * 16; // --container-app
 for (const width of widths) {
 	test(`no horizontal scrolling and a bounded column at ${width}px`, async ({ page }) => {
 		await page.setViewportSize({ width, height: 900 });
-		for (const path of ['/', '/new', '/device']) {
+		for (const path of ['/', '/new', '/you/devices']) {
 			await open(page, path);
 			await page.waitForLoadState('networkidle');
 			const overflow = await page.evaluate(
