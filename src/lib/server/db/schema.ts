@@ -72,6 +72,9 @@ export const devices = sqliteTable(
 		personId: text('person_id')
 			.notNull()
 			.references(() => people.id),
+		// e.g. "Chrome · Android", from the browser; when it was last used (#126, at most daily)
+		label: text('label'),
+		lastSeenAt: integer('last_seen_at', { mode: 'timestamp_ms' }),
 		createdAt: createdAt()
 	},
 	(t) => [index('devices_person_idx').on(t.personId)]

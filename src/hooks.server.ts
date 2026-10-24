@@ -10,6 +10,7 @@ import { paraglideMiddleware } from '#lib/paraglide/server.js';
 import { getDb } from '#lib/server/db/index.ts';
 import { grantAccess, hasAccess, isOpenPath } from '#lib/server/access.ts';
 import { ensureDeviceKey } from '#lib/server/device.ts';
+import { noteDeviceSeen } from '#lib/server/devices.ts';
 import { logError } from '#lib/server/error-log.ts';
 import { limitKindOf } from '#lib/server/rate-limit-kinds.ts';
 import { tooManyRequests, withinLimit } from '#lib/server/rate-limit.ts';
@@ -34,8 +35,17 @@ const handleDb: Handle = ({ event, resolve }) => {
 	return resolve(event);
 };
 
-const handleDevice: Handle = ({ event, resolve }) => {
+const handleDevice: Handle = async ({ event, resolve }) => {
 	event.locals.deviceKey = ensureDeviceKey(event.cookies);
+	// The device's name and "last used" for your device list (#126), at most daily
+	if (event.request.method === 'GET') {
+		await noteDeviceSeen(
+			event.locals.db,
+			event.cookies,
+			event.locals.deviceKey,
+			event.request.headers.get('user-agent')
+		);
+	}
 	return resolve(event);
 };
 

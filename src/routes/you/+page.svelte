@@ -4,8 +4,9 @@
 	// Without JavaScript, each has its own Save button.
 	import { enhance, type SubmitFunction } from '$app/forms';
 	import { resolve } from '$app/paths';
-	import { Block, List, ListItem } from 'konsta/svelte';
+	import { Block, BlockTitle, List, ListItem } from 'konsta/svelte';
 	import AppPage from '#lib/components/AppPage.svelte';
+	import DeleteIdentity from '#lib/components/device/DeleteIdentity.svelte';
 	import Avatar from '#lib/components/Avatar.svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import Field from '#lib/components/Field.svelte';
@@ -150,4 +151,9 @@
 			{/snippet}
 		</ListItem>
 	</List>
+
+	<!-- Removing you entirely, at the very end and in red (#151) -->
+	<BlockTitle>{m.delete_identity_title()}</BlockTitle>
+	<Block class="!my-2"><p class="text-sm text-muted">{m.delete_identity_intro()}</p></Block>
+	<DeleteIdentity />
 </AppPage>

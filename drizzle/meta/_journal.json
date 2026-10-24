@@ -85,6 +85,13 @@
       "when": 1792866270918,
       "tag": "0011_person_avatar",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1792870094048,
+      "tag": "0012_device_label_last_seen",
+      "breakpoints": true
     }
   ]
 }

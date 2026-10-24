@@ -1,5 +1,5 @@
 import { expect, test, type Browser, type Page } from '@playwright/test';
-import { open } from './e2e-helpers';
+import { open, openFold } from './e2e-helpers';
 
 // Each browser context is a separate device with its own identity cookie (A-12).
 
@@ -66,7 +66,8 @@ test('join as yourself, stay yourself, rejoin after losing access, and identitie
 	await expect(joinScreen(ben)).toBeVisible();
 
 	// A one-time link makes a new device Anna in all her groups (A-14)
-	await open(anna, '/device');
+	await open(anna, '/you/devices');
+	await openFold(anna, 'Add another device');
 	await anna.getByRole('button', { name: 'Create link' }).click();
 	const link = await anna.getByRole('listitem', { name: 'One-time link' }).innerText();
 	const annasLaptop = await newDevice(browser);
@@ -85,7 +86,8 @@ test('join as yourself, stay yourself, rejoin after losing access, and identitie
 	await expect(stranger.getByRole('alert')).toContainText('expired or was already used');
 
 	// A recovery key brings Anna back on a fresh browser after losing everything (A-16)
-	await open(anna, '/device');
+	await open(anna, '/you/devices');
+	await openFold(anna, 'Recovery key');
 	await anna.getByRole('button', { name: 'Create recovery key' }).click();
 	const recoveryKey = (await anna.getByTestId('recovery-key').innerText()).trim();
 	const newPhone = await newDevice(browser);
@@ -130,7 +132,8 @@ test('a synced passkey brings you and your groups back on a new device', async (
 	await expect(phone.getByTestId('identity')).toHaveText('Mia');
 	const groupUrl = phone.url();
 
-	await open(phone, '/device');
+	await open(phone, '/you/devices');
+	await openFold(phone, 'Passkey');
 	await phone.getByRole('button', { name: 'Save as passkey' }).click();
 	await expect(phone.getByRole('status')).toContainText('1 passkey');
 
@@ -238,7 +241,7 @@ test('delete my identity: signed out, passkey-free, my member stays as "not here
 			}
 			return urls.filter((url) => url.startsWith(path));
 		}, groupPath);
-	await open(anna, '/device');
+	await open(anna, '/you');
 	await expect.poll(offlineCopiesOfGroup).not.toEqual([]);
 	await anna.getByRole('button', { name: 'Delete my identity' }).click();
 	const dialog = anna.getByRole('dialog', { name: 'Delete my data' });

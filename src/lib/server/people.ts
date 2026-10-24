@@ -122,3 +122,12 @@ export async function restoreWithRecoveryKey(
 	await attachDevice(db, deviceKey, person.id);
 	return true;
 }
+
+/** Whether the person has made a recovery key (#151, for the backup's status) */
+export async function hasRecoveryKey(db: Db, personId: string) {
+	const [row] = await db
+		.select({ hash: people.recoveryHash })
+		.from(people)
+		.where(eq(people.id, personId));
+	return Boolean(row?.hash);
+}

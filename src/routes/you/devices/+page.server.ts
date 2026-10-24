@@ -1,26 +1,28 @@
-import { fail, redirect } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
 import type { ErrorCode } from '#lib/errors.ts';
-import { m } from '#lib/paraglide/messages.js';
-import { forgetDeviceKey } from '#lib/server/device.ts';
+import { listDevices, removeDevice } from '#lib/server/devices.ts';
 import { checkSettingsAgain } from '#lib/server/settings.ts';
-import { eraseIdentity } from '#lib/server/erase-identity.ts';
 import { countPasskeys } from '#lib/server/passkeys.ts';
 import {
 	createDeviceLink,
 	createRecoveryKey,
 	ensurePerson,
 	findPerson,
+	hasRecoveryKey,
 	restoreWithRecoveryKey
 } from '#lib/server/people.ts';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const person = await findPerson(locals.db, locals.deviceKey);
-	return {
-		hasIdentity: Boolean(person),
-		passkeyCount: person ? await countPasskeys(locals.db, person.id) : 0
-	};
+	if (!person) return { hasIdentity: false, passkeyCount: 0, hasRecoveryKey: false, devices: [] };
+	const [passkeyCount, recoveryKey, devices] = await Promise.all([
+		countPasskeys(locals.db, person.id),
+		hasRecoveryKey(locals.db, person.id),
+		listDevices(locals.db, person.id, locals.deviceKey)
+	]);
+	return { hasIdentity: true, passkeyCount, hasRecoveryKey: recoveryKey, devices };
 };
 
 export const actions: Actions = {
@@ -47,18 +49,12 @@ export const actions: Actions = {
 		return { restored: true };
 	},
 
-	/** Deletes the identity behind this device, its passkeys and links (GDPR, #74) */
-	deleteIdentity: async ({ locals, request, cookies }) => {
+	/** Another of your devices stops being you (#126) */
+	removeDevice: async ({ locals, request }) => {
 		const person = await findPerson(locals.db, locals.deviceKey);
-		if (person) {
-			const form = await request.formData();
-			await eraseIdentity(
-				locals.db,
-				person.id,
-				form.get('anonymize') === 'on' ? m.former_member() : null
-			);
+		const id = String((await request.formData()).get('deviceId') ?? '');
+		if (!person || !(await removeDevice(locals.db, person.id, locals.deviceKey, id))) {
+			return fail(400, { error: 'device_not_found' as ErrorCode });
 		}
-		forgetDeviceKey(cookies);
-		redirect(303, resolve('/'));
 	}
 };
