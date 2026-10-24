@@ -160,5 +160,5 @@
 		</p>
 	{/if}
 {:else}
-	<EmptyState illustration="plant" text={m.expenses_empty()} />
+	<EmptyState text={m.expenses_empty()} />
 {/if}

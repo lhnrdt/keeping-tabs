@@ -16,6 +16,7 @@
 	import { m } from '#lib/paraglide/messages.js';
 	import { locales } from '#lib/paraglide/runtime.js';
 	import { isAccent, isTheme, LOCALE_NAMES, THEMES, type Theme } from '#lib/settings.ts';
+	import { useTheme } from '#lib/themes/current.svelte.ts';
 	import { LIMITS } from '#lib/validation.ts';
 	import type { PageProps } from './$types';
 
@@ -46,9 +47,13 @@
 		event.currentTarget.requestSubmit();
 
 	/** The color theme switches at once, like the light/dark one */
+	const theme = useTheme();
 	function accentChanged(event: Event & { currentTarget: HTMLFormElement }) {
 		const accent = new FormData(event.currentTarget).get('accent');
-		if (isAccent(accent)) window.applyAccent?.(accent);
+		if (isAccent(accent)) {
+			window.applyAccent?.(accent);
+			theme.id = accent;
+		}
 		event.currentTarget.requestSubmit();
 	}
 

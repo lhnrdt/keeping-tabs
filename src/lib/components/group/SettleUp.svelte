@@ -53,5 +53,5 @@
 		{/each}
 	</List>
 {:else}
-	<EmptyState illustration="hills" text={m.settle_done()} role="status" />
+	<EmptyState text={m.settle_done()} role="status" />
 {/if}

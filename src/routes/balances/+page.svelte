@@ -27,6 +27,6 @@
 		</div>
 		<PeopleSummary people={data.people} />
 	{:else}
-		<EmptyState illustration="hills" text={m.between_you_settled()} role="status" />
+		<EmptyState text={m.between_you_settled()} role="status" />
 	{/if}
 </AppPage>

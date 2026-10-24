@@ -4,17 +4,26 @@
 	import { resolve } from '$app/paths';
 	import { page, updated } from '$app/state';
 	import { App } from 'konsta/svelte';
-	import { onMount } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import { prefersReducedMotion } from 'svelte/motion';
 	import FriendlyNote from '#lib/components/FriendlyNote.svelte';
 	import OfflineBanner from '#lib/components/OfflineBanner.svelte';
 	import { locales, localizeHref } from '#lib/paraglide/runtime.js';
 	import { refreshOnReturn } from '#lib/refresh-on-return.ts';
+	import { provideTheme, ThemeChoice } from '#lib/themes/current.svelte.ts';
 	import './layout.css';
 	import favicon from '#lib/assets/favicon.svg';
 	import type { LayoutProps } from './$types';
 
 	let { data, children }: LayoutProps = $props();
+
+	// The theme's illustrations follow the picker at once (#60)
+	const theme = new ThemeChoice(untrack(() => data.theme));
+	provideTheme(theme);
+	// e.g. brought from another device of yours
+	$effect(() => {
+		theme.id = data.theme;
+	});
 
 	const depth = (url: URL | undefined) => url?.pathname.split('/').filter(Boolean).length ?? 0;
 
