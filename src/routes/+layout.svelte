@@ -7,6 +7,7 @@
 	import { onMount } from 'svelte';
 	import { prefersReducedMotion } from 'svelte/motion';
 	import FriendlyNote from '#lib/components/FriendlyNote.svelte';
+	import NavigationProgress from '#lib/components/NavigationProgress.svelte';
 	import OfflineBanner from '#lib/components/OfflineBanner.svelte';
 	import { locales, localizeHref } from '#lib/paraglide/runtime.js';
 	import { refreshOnReturn } from '#lib/refresh-on-return.ts';
@@ -45,6 +46,7 @@
 </svelte:head>
 
 <App theme="ios" dark safeAreas>
+	<NavigationProgress />
 	{@render children()}
 	<OfflineBanner />
 	{#if data.showNote}
