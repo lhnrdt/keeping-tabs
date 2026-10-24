@@ -18,7 +18,7 @@
 	<title>{m.identity_title()} – {m.app_name()}</title>
 </svelte:head>
 
-<AppPage title={m.identity_title()} back={{ href: resolve('/'), label: m.app_name() }}>
+<AppPage title={m.identity_title()} back={{ href: resolve('/you'), label: m.you_title() }}>
 	{#if data.hasIdentity}
 		<BlockTitle>{m.passkey_title()}</BlockTitle>
 		<Block><p class="text-muted">{m.passkey_intro()}</p></Block>

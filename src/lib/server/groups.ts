@@ -186,6 +186,7 @@ export async function listGroupsOf(db: Db, personId: string) {
 			currency: groups.currency,
 			kind: groups.kind,
 			tint: groups.tint,
+			simplifyDebts: groups.simplifyDebts,
 			memberId: members.id
 		})
 		.from(members)

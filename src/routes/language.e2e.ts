@@ -11,7 +11,7 @@ test('the app speaks the browser language, until you pick another one', async ({
 	// Choosing a language in the settings wins over the browser's, and is remembered
 	await open(page, '/settings');
 	await page.getByRole('group', { name: 'Sprache' }).getByText('English').click();
-	await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
+	await expect(page.getByRole('heading', { name: 'Profile' })).toBeVisible();
 	await open(page, '/');
 	await expect(page.getByRole('link', { name: 'New group' })).toBeVisible();
 	await context.close();

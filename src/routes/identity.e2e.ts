@@ -226,7 +226,20 @@ test('delete my identity: signed out, passkey-free, my member stays as "not here
 	await ben.getByRole('button', { name: "I'm Ben" }).click();
 	await expect(ben.getByTestId('identity')).toHaveText('Ben');
 
+	// The service worker keeps copies of pages for viewing offline, e.g. the group's
+	const groupPath = new URL(groupUrl).pathname;
+	const offlineCopiesOfGroup = () =>
+		anna.evaluate(async (path) => {
+			const urls: string[] = [];
+			for (const name of await caches.keys()) {
+				if (!name.startsWith('pages-')) continue;
+				const requests = await (await caches.open(name)).keys();
+				urls.push(...requests.map((request) => new URL(request.url).pathname));
+			}
+			return urls.filter((url) => url.startsWith(path));
+		}, groupPath);
 	await open(anna, '/device');
+	await expect.poll(offlineCopiesOfGroup).not.toEqual([]);
 	await anna.getByRole('button', { name: 'Delete my identity' }).click();
 	const dialog = anna.getByRole('dialog', { name: 'Delete my data' });
 	await dialog.getByText('Also replace my name').click();
@@ -235,6 +248,7 @@ test('delete my identity: signed out, passkey-free, my member stays as "not here
 	// Anna lands on a fresh start: no groups, nothing remembered, not a member anymore
 	await expect(anna).toHaveURL(/\/$/);
 	await expect(anna.getByText('No groups yet')).toBeVisible();
+	await expect.poll(offlineCopiesOfGroup).toEqual([]);
 	await open(anna, groupUrl);
 	await expect(anna.getByRole('heading', { name: 'Join Cabin' })).toBeVisible();
 

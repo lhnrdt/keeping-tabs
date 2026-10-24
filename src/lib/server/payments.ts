@@ -3,7 +3,7 @@ import type { PaymentInput } from '#lib/validation.ts';
 import { log } from './activity';
 import type { Db } from './db';
 import { expenses, expenseSplits } from './db/schema';
-import { active } from './expenses';
+import { active, isEntryOf } from './expenses';
 
 // A payment (B-3) is an entry of type "payment": paid_by = sender, one split = recipient.
 
@@ -45,6 +45,7 @@ export async function updatePayment(
 	id: string,
 	input: PaymentInput
 ) {
+	if (!(await isEntryOf(db, groupId, id, 'payment'))) return false;
 	await db.batch([
 		db
 			.update(expenses)
@@ -54,4 +55,5 @@ export async function updatePayment(
 		db.insert(expenseSplits).values(recipientSplit(id, input)),
 		log(db, groupId, actorId, 'payment.update', { expenseId: id, ...input })
 	]);
+	return true;
 }

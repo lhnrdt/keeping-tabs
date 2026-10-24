@@ -17,7 +17,6 @@
 	import type { Tint } from '#lib/tints.ts';
 
 	type Group = {
-		id: string;
 		name: string;
 		description: string | null;
 		currency: string;
@@ -75,7 +74,7 @@
 	</List>
 	<div class="-mx-4">
 		<KindPicker value={group.kind} />
-		<TintPicker value={group.tint ?? ''} id={group.id} />
+		<TintPicker value={group.tint ?? ''} />
 	</div>
 	<FormError {error} />
 </FormDialog>

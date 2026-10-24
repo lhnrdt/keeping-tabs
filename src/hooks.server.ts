@@ -5,7 +5,7 @@ import { sequence } from '@sveltejs/kit/hooks';
 import { redirect } from '@sveltejs/kit';
 import { resolve as resolveRoute } from '$app/paths';
 import { cookieName, getTextDirection } from '#lib/paraglide/runtime.js';
-import { LOCALE_COOKIE, THEME_COOKIE } from '#lib/settings.ts';
+import { ACCENT_COOKIE, LOCALE_COOKIE, THEME_COOKIE } from '#lib/settings.ts';
 import { paraglideMiddleware } from '#lib/paraglide/server.js';
 import { getDb } from '#lib/server/db/index.ts';
 import { grantAccess, hasAccess, isOpenPath } from '#lib/server/access.ts';
@@ -45,7 +45,9 @@ const handleDevice: Handle = ({ event, resolve }) => {
  * in the last day, don't cost an extra lookup.
  */
 const handleSettings: Handle = async ({ event, resolve }) => {
-	const missing = !event.cookies.get(LOCALE_COOKIE) || !event.cookies.get(THEME_COOKIE);
+	const missing = [LOCALE_COOKIE, THEME_COOKIE, ACCENT_COOKIE].some(
+		(name) => !event.cookies.get(name)
+	);
 	if (missing && event.request.method === 'GET' && !settingsChecked(event.cookies)) {
 		const person = await findPerson(event.locals.db, event.locals.deviceKey);
 		markSettingsChecked(event.cookies);
@@ -103,12 +105,22 @@ const handleCaching: Handle = async ({ event, resolve }) => {
 	return response;
 };
 
-/** Every dynamic response says which release served it. */
+/** Next to the CSP in vite.config.ts (#133) */
+const SECURITY_HEADERS = {
+	// Group links contain their secret: never send them to other sites
+	'referrer-policy': 'same-origin',
+	'x-content-type-options': 'nosniff',
+	'permissions-policy': 'camera=(), microphone=(), geolocation=(), payment=()',
+	'strict-transport-security': 'max-age=31536000; includeSubDomains'
+};
+
+/** Every dynamic response says which release served it, and its security headers. */
 const handleVersion: Handle = async ({ event, resolve }) => {
 	const response = await resolve(event);
 	response.headers.set('x-app-version', version);
 	// A private app: never listed by search engines
 	response.headers.set('x-robots-tag', 'noindex, nofollow');
+	for (const [name, value] of Object.entries(SECURITY_HEADERS)) response.headers.set(name, value);
 	return response;
 };
 

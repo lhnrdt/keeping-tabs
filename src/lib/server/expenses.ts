@@ -100,6 +100,20 @@ export async function findExpense(db: Db, groupId: string, id: string) {
 	return rows[0] && { ...rows[0], splits };
 }
 
+type EntryType = 'expense' | 'payment';
+
+/**
+ * Whether `id` is an active entry of this type in this group. Checked before replacing its
+ * splits, which are keyed by the entry alone (#135).
+ */
+export async function isEntryOf(db: Db, groupId: string, id: string, type: EntryType) {
+	const [row] = await db
+		.select({ id: expenses.id })
+		.from(expenses)
+		.where(and(eq(expenses.id, id), eq(expenses.type, type), active(groupId)));
+	return Boolean(row);
+}
+
 const splitRows = (expenseId: string, input: ExpenseInput) =>
 	input.shares.map((share) => ({ expenseId, ...share }));
 
@@ -135,6 +149,7 @@ export async function updateExpense(
 	id: string,
 	input: ExpenseInput
 ) {
+	if (!(await isEntryOf(db, groupId, id, 'expense'))) return false;
 	await db.batch([
 		db
 			.update(expenses)
@@ -151,7 +166,11 @@ export async function updateExpense(
 		db.insert(expenseSplits).values(splitRows(id, input)),
 		log(db, groupId, actorId, 'expense.update', { expenseId: id, ...input })
 	]);
+	return true;
 }
+
+const entryTypeOf = (action: Action): EntryType =>
+	action.startsWith('payment.') ? 'payment' : 'expense';
 
 /** Soft delete (E-7) of an expense or payment; the splits stay for restoring later (L-3). */
 export async function softDeleteEntry(
@@ -165,7 +184,7 @@ export async function softDeleteEntry(
 		db
 			.update(expenses)
 			.set({ deletedAt: new Date() })
-			.where(and(eq(expenses.id, id), active(groupId))),
+			.where(and(eq(expenses.id, id), eq(expenses.type, entryTypeOf(action)), active(groupId))),
 		log(db, groupId, actorId, action, { expenseId: id })
 	]);
 }

@@ -1,11 +1,12 @@
 // The service worker's caches: the app itself (per version) and pages seen while online.
 import { version } from '$app/env';
 import { assets, immutable } from '$app/manifest';
+import { PAGES_CACHE_PREFIX } from '#lib/offline-pages.ts';
 
 /** Built files and static files of this version, served from the cache */
 export const APP_CACHE = `app-${version}`;
 /** Pages and their data, kept for viewing offline; replaced along with the app */
-export const PAGES_CACHE = `pages-${version}`;
+export const PAGES_CACHE = `${PAGES_CACHE_PREFIX}${version}`;
 
 /** Shown when a page is opened offline that wasn't seen online before */
 export const OFFLINE_PAGE = '/offline.html';

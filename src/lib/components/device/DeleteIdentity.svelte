@@ -5,6 +5,7 @@
 	import { Checkbox, List, ListItem } from 'konsta/svelte';
 	import ConfirmDelete from '#lib/components/group/ConfirmDelete.svelte';
 	import { clearRecentGroups } from '#lib/device.ts';
+	import { clearOfflinePages } from '#lib/offline-pages.ts';
 	import { m } from '#lib/paraglide/messages.js';
 </script>
 
@@ -12,7 +13,11 @@
 	label={m.delete_identity_button()}
 	title={m.delete_identity_title()}
 	action="?/deleteIdentity"
-	onSubmit={clearRecentGroups}
+	onSubmit={() => {
+		// Nothing of the groups stays on this device (#138)
+		clearRecentGroups();
+		clearOfflinePages();
+	}}
 >
 	<p class="text-sm">{m.delete_identity_explain()}</p>
 	<List nested class="-mx-4 mt-2 mb-0">

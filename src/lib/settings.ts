@@ -7,6 +7,14 @@ export type Theme = (typeof THEMES)[number];
 
 export const isTheme = (value: unknown): value is Theme => THEMES.includes(value as Theme);
 
+/** Nature themes (#60), stored as the "accent" setting; defined in themes/palettes.ts */
+export {
+	DEFAULT_THEME as DEFAULT_ACCENT,
+	THEME_IDS as ACCENTS,
+	isThemeId as isAccent,
+	type ThemeId as Accent
+} from './themes/palettes';
+
 export type Locale = (typeof locales)[number];
 
 /** Each language in its own name */
@@ -22,3 +30,6 @@ export const LOCALE_COOKIE = 'kt-locale';
 
 /** Cookie with the chosen theme; the page script in app.html reads it before first paint */
 export const THEME_COOKIE = 'kt-theme';
+
+/** Cookie with the chosen color theme; the page script in app.html reads it before first paint */
+export const ACCENT_COOKIE = 'kt-accent';

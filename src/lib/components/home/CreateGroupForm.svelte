@@ -73,7 +73,7 @@
 		<!-- A card, not a List: pickers are fieldsets, not list items (#79) -->
 		<Block strong inset class="!px-0 !py-3">
 			<KindPicker value={values?.kind ?? DEFAULT_GROUP_KIND} />
-			<TintPicker value={values?.tint ?? ''} id="new-group" />
+			<TintPicker value={values?.tint ?? ''} />
 		</Block>
 
 		<BlockTitle>{m.field_other_members()}</BlockTitle>

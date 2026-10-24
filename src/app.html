@@ -12,11 +12,11 @@
 			crossorigin="use-credentials"
 		/>
 		<!-- Colors the phone's status and navigation bars; switched with the theme below -->
-		<meta name="theme-color" content="#f4f1ea" />
+		<meta name="theme-color" content="#eaf1ec" />
 		<link rel="apple-touch-icon" href="%sveltekit.assets%/icons/apple-touch-icon.png" />
 		<meta name="apple-mobile-web-app-title" content="Keeping Tabs" />
 		<meta name="mobile-web-app-capable" content="yes" />
-		<script>
+		<script nonce="%sveltekit.nonce%">
 			// Konsta's dark styles hang off a .dark class; set it before first paint, together with
 			// the system bars' color (installed apps on Android ignore media on theme-color). The
 			// theme is "system" (the device's), "light" or "dark" (a personal setting, in a cookie).
@@ -28,7 +28,11 @@
 					const dark = chosen ? chosen === 'dark' : query.matches;
 					document.documentElement.classList.toggle('dark', dark);
 					document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
-					themeColor.content = dark ? '#1d211d' : '#f4f1ea';
+					// The theme's background (#60), once the styles are there; until then the default's
+					const canvas = getComputedStyle(document.documentElement)
+						.getPropertyValue(dark ? '--canvas-night' : '--canvas')
+						.trim();
+					themeColor.content = canvas || (dark ? '#141a16' : '#eaf1ec');
 				};
 				apply();
 				query.addEventListener('change', () => chosen || apply());
@@ -37,6 +41,14 @@
 					chosen = theme === 'system' ? undefined : theme;
 					apply();
 				};
+				// The color theme (#60), from its cookie; the default (forest) needs no attribute
+				window.applyAccent = (accent) => {
+					if (accent && accent !== 'forest') document.documentElement.dataset.accent = accent;
+					else delete document.documentElement.dataset.accent;
+					apply();
+				};
+				window.applyAccent(/(?:^|; )kt-accent=([a-z]+)/.exec(document.cookie)?.[1]);
+				addEventListener('load', apply);
 			})();
 		</script>
 		%sveltekit.head%

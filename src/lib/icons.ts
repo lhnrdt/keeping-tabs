@@ -14,6 +14,8 @@ import IconHeart from '@tabler/icons-svelte-runes/icons/heart';
 import IconHome from '@tabler/icons-svelte-runes/icons/home';
 import IconPlane from '@tabler/icons-svelte-runes/icons/plane';
 import IconToolsKitchen2 from '@tabler/icons-svelte-runes/icons/tools-kitchen-2';
+import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
+import IconChevronRight from '@tabler/icons-svelte-runes/icons/chevron-right';
 import IconTableExport from '@tabler/icons-svelte-runes/icons/table-export';
 import IconTableImport from '@tabler/icons-svelte-runes/icons/table-import';
 import IconCheck from '@tabler/icons-svelte-runes/icons/check';
@@ -46,6 +48,8 @@ export const icons = {
 	identity: IconUserCircle,
 	import: IconTableImport,
 	export: IconTableExport,
+	expand: IconChevronDown,
+	next: IconChevronRight,
 	member: IconUser,
 	payment: IconCash,
 	newLink: IconRefresh,

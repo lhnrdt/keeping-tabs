@@ -6,6 +6,7 @@
 	import FloatingLink from '#lib/components/FloatingLink.svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import BalanceList from '#lib/components/group/BalanceList.svelte';
+	import BetweenYou from '#lib/components/group/BetweenYou.svelte';
 	import ExpenseList from '#lib/components/group/ExpenseList.svelte';
 	import DeleteGroup from '#lib/components/group/DeleteGroup.svelte';
 	import GroupDetails from '#lib/components/group/GroupDetails.svelte';
@@ -58,6 +59,7 @@
 			label={m.add_expense()}
 		/>
 	{:else if tab === 'balances'}
+		<BetweenYou members={data.members} transfers={data.transfers} currency={data.group.currency} />
 		<BlockTitle>{m.balances_title()}</BlockTitle>
 		<BalanceList currency={data.group.currency} members={data.members} balances={data.balances} />
 		<BlockTitle>{m.settle_title()}</BlockTitle>

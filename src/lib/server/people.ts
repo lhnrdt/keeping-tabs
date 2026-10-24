@@ -1,5 +1,5 @@
 import { and, eq, gt, isNull } from 'drizzle-orm';
-import type { Locale, Theme } from '#lib/settings.ts';
+import type { Accent, Locale, Theme } from '#lib/settings.ts';
 import type { Db } from './db';
 import { deviceLinks, devices, people } from './db/schema';
 import { newRecoveryKey, normalizeRecoveryKey } from './recovery-key';
@@ -15,6 +15,7 @@ export type Person = {
 	/** Personal settings (S-3); null follows the browser */
 	locale: Locale | null;
 	theme: Theme | null;
+	accent: Accent | null;
 	/** When they read the friendly note (#112) */
 	notedAt: Date | null;
 };
@@ -27,6 +28,7 @@ export async function findPerson(db: Db, deviceKey: string): Promise<Person | un
 			name: people.name,
 			locale: people.locale,
 			theme: people.theme,
+			accent: people.accent,
 			notedAt: people.notedAt
 		})
 		.from(devices)
@@ -44,7 +46,7 @@ export async function ensurePerson(db: Db, deviceKey: string): Promise<Person> {
 		db.insert(people).values({ id }),
 		db.insert(devices).values({ keyHash: await hashSecret(deviceKey), personId: id })
 	]);
-	return { id, name: null, locale: null, theme: null, notedAt: null };
+	return { id, name: null, locale: null, theme: null, accent: null, notedAt: null };
 }
 
 /** Remembers the name someone uses, to pre-fill it next time (A-13). */

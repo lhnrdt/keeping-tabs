@@ -5,6 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
+		"themes": "node scripts/themes.ts",
 		"build": "wrangler types && vite build",
 		"preview": "wrangler dev --port 4173 --test-scheduled --var ACCESS_PASSWORD:letmein --var RATE_LIMITS:off",
 		"prepare": "wrangler types && paraglide-js compile --project ./project.inlang --outdir ./src/lib/paraglide && svelte-kit sync || echo ''",

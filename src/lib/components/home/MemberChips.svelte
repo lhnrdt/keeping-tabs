@@ -56,7 +56,7 @@
 			</li>
 		{/each}
 		<li
-			class="inline-flex min-h-11 items-center gap-1 rounded-full border border-dashed border-forest/60 ps-4 pe-1 focus-within:border-solid focus-within:border-forest dark:border-forest-night/60"
+			class="inline-flex min-h-11 items-center gap-1 rounded-full border border-dashed border-accent/60 ps-4 pe-1 focus-within:border-solid focus-within:border-accent dark:border-accent-night/60"
 		>
 			<input
 				name="member"
@@ -70,7 +70,7 @@
 			/>
 			<button
 				type="button"
-				class="grid h-9 w-9 place-items-center rounded-full text-forest focus-visible:ring-2 dark:text-forest-night"
+				class="grid h-9 w-9 place-items-center rounded-full text-accent focus-visible:ring-2 dark:text-accent-night"
 				aria-label={m.add_person_button()}
 				onclick={add}
 			>

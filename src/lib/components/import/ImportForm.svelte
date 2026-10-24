@@ -44,7 +44,7 @@
 				accept=".csv,text/csv"
 				required
 				onchange={read}
-				class="block w-full text-sm file:mr-3 file:rounded-full file:border-0 file:bg-forest file:px-4 file:py-2 file:font-medium file:text-white dark:file:bg-forest-night dark:file:text-canvas-night"
+				class="block w-full text-sm file:mr-3 file:rounded-full file:border-0 file:bg-accent file:px-4 file:py-2 file:font-medium file:text-white dark:file:bg-accent-night dark:file:text-canvas-night"
 			/>
 		</li>
 	</List>
