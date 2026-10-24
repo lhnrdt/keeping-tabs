@@ -14,6 +14,9 @@
 	},
 	"workers_dev": true,
 	"preview_urls": true,
+	// Workers Logs (#81, free: 200,000 events a day): requests, exceptions and the app's
+	// error lines from src/lib/server/error-log.ts, searchable per release in the dashboard
+	"observability": { "enabled": true, "head_sampling_rate": 1 },
 	// Rate limits per address and Cloudflare location (#66, src/lib/server/rate-limit.ts);
 	// namespace ids are per account, so staging has its own
 	"ratelimits": [
@@ -50,6 +53,7 @@
 				"directory": ".svelte-kit/cloudflare",
 				"run_worker_first": true
 			},
+			"observability": { "enabled": true, "head_sampling_rate": 1 },
 			// Separate counters from production
 			"ratelimits": [
 				{
