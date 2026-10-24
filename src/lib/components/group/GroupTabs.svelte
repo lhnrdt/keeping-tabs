@@ -4,6 +4,7 @@
 	import Icon from '#lib/components/Icon.svelte';
 	import { groupTabUrl, type GroupTab } from '#lib/group/tabs.ts';
 	import type { IconName } from '#lib/icons.ts';
+	import { transitionName } from '#lib/motion/in-place-transition.ts';
 	import { m } from '#lib/paraglide/messages.js';
 
 	let { active }: { active: GroupTab } = $props();
@@ -15,12 +16,14 @@
 	];
 </script>
 
-<!-- Solid canvas instead of Konsta's fade, so list text never shows through the labels -->
+<!-- Solid canvas instead of Konsta's fade, so list text never shows through the labels.
+     Named, so it stays above moving list items during same-page updates (#114). -->
 <Tabbar
 	labels
 	icons
 	outline
 	class="fixed bottom-0 left-0 z-20"
+	style={transitionName('bar', 'tabs')}
 	innerClass="mx-auto max-w-app w-full"
 	colors={{ bgIos: 'bg-canvas dark:bg-canvas-night' }}
 	aria-label={m.app_name()}
