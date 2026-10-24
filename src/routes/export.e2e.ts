@@ -33,9 +33,6 @@ test('export a group as CSV and import it into another group', async ({ page }) 
 	await expect(page).toHaveURL(copyUrl);
 	await open(page, `${copyUrl}?tab=balances`);
 	await expect(
-		page
-			.getByRole('region', { name: 'Balances' })
-			.getByRole('listitem')
-			.filter({ hasText: 'Anna' })
+		page.getByRole('region', { name: 'Balances' }).getByRole('listitem').filter({ hasText: 'Anna' })
 	).toContainText('gets back €20.00');
 });
