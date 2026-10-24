@@ -30,6 +30,9 @@
 }
 
 /* Same-page updates (see in-place-transition.ts): only named elements animate */
+:root[data-transition='in-place'] [style*='--vt-name'] {
+	view-transition-name: var(--vt-name);
+}
 :root[data-transition='in-place']::view-transition-old(root),
 :root[data-transition='in-place']::view-transition-new(root) {
 	animation: none;
