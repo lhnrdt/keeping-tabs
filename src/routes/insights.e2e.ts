@@ -71,3 +71,30 @@ test('an empty group invites to add expenses first', async ({ page }) => {
 	await open(page, `${groupUrl}?tab=insights`);
 	await expect(page.getByText('Add a few expenses to see where the money goes.')).toBeVisible();
 });
+
+test('a group can choose its insights, starting from its type’s suggestions (#174)', async ({
+	page
+}) => {
+	const groupUrl = await tripWithExpenses(page);
+	await open(page, `${groupUrl}?tab=insights`);
+	const titles = () => page.locator('.k-block-title').allInnerTexts();
+	expect(await titles()).toContain('Biggest expenses');
+	expect(await titles()).not.toContain('Fixed costs');
+
+	await page.getByRole('button', { name: 'Customize insights' }).click();
+	const dialog = page.getByRole('dialog', { name: 'Customize insights' });
+	await dialog.getByLabel(/Biggest expenses/).uncheck();
+	await dialog.getByLabel(/Who paid how often/).check();
+	await dialog.getByRole('button', { name: 'Save' }).click();
+	await expect(dialog).toBeHidden();
+	await expect.poll(titles).toContain('Who paid how often');
+	expect(await titles()).not.toContain('Biggest expenses');
+
+	// It stays for the group, and goes back to the suggestions on request
+	await open(page, `${groupUrl}?tab=insights`);
+	expect(await titles()).toContain('Who paid how often');
+	await page.getByRole('button', { name: 'Customize insights' }).click();
+	await dialog.getByRole('button', { name: 'Back to suggested' }).click();
+	await expect.poll(titles).toContain('Biggest expenses');
+	expect(await titles()).not.toContain('Who paid how often');
+});

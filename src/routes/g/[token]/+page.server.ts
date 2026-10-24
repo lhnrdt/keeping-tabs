@@ -4,6 +4,7 @@ import type { ErrorCode } from '#lib/errors.ts';
 import { shownCount } from '#lib/group/expense-pages.ts';
 import { currentTab, UNDO_PARAM } from '#lib/group/tabs.ts';
 import { groupInsights } from '#lib/insights/group.ts';
+import { choiceToStore, isSection } from '#lib/insights/sections.ts';
 import { balances } from '#lib/money.ts';
 import { settleTransfers } from '#lib/settle.ts';
 import { formContext as context, requireGroup } from '#lib/server/context.ts';
@@ -16,6 +17,7 @@ import {
 	isUniqueViolation,
 	listMembers,
 	regenerateShareToken,
+	setInsightSections,
 	renameMember,
 	updateGroup
 } from '#lib/server/groups.ts';
@@ -170,6 +172,13 @@ export const actions: Actions = {
 		const { form, group, actorId } = await context(locals, params.token, request);
 		const entry = await findDeletedEntry(locals.db, group.id, String(form.get('entryId') ?? ''));
 		if (entry) await restoreEntry(locals.db, group.id, actorId, entry);
+	},
+
+	/** Which insights the group shows (#174); "reset" goes back to the type's suggestions */
+	insightSections: async ({ locals, params, request, url }) => {
+		const { form, group, actorId } = await context(locals, params.token, request);
+		const chosen = url.searchParams.has('reset') ? [] : form.getAll('section').filter(isSection);
+		await setInsightSections(locals.db, group.id, actorId, choiceToStore(group.kind, chosen));
 	},
 
 	removeMember: async ({ locals, params, request }) => {
