@@ -1,6 +1,10 @@
 import { fail, redirect } from '@sveltejs/kit';
+import { resolve } from '$app/paths';
 import { formatAvatar, parseAvatar } from '#lib/avatars.ts';
 import type { ErrorCode } from '#lib/errors.ts';
+import { m } from '#lib/paraglide/messages.js';
+import { forgetDeviceKey } from '#lib/server/device.ts';
+import { eraseIdentity } from '#lib/server/erase-identity.ts';
 import { getLocale } from '#lib/paraglide/runtime.js';
 import { safePath } from '#lib/safe-redirect.ts';
 import {
@@ -92,5 +96,20 @@ export const actions: Actions = {
 		if (person) await saveSettings(locals.db, person.id, { locale });
 		setLocaleCookie(cookies, locale);
 		redirect(303, safePath(form.get('next')));
+	},
+
+	/** Deletes the identity behind this device, its passkeys and links (GDPR, #74) */
+	deleteIdentity: async ({ locals, request, cookies }) => {
+		const person = await findPerson(locals.db, locals.deviceKey);
+		if (person) {
+			const form = await request.formData();
+			await eraseIdentity(
+				locals.db,
+				person.id,
+				form.get('anonymize') === 'on' ? m.former_member() : null
+			);
+		}
+		forgetDeviceKey(cookies);
+		redirect(303, resolve('/'));
 	}
 };
