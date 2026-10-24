@@ -203,7 +203,7 @@
 	"error_member_not_settled": "Nur ausgeglichene Personen können entfernt werden, damit keine Schulden verloren gehen.",
 	"close": "Schließen",
 	"person_away": "noch nicht da",
-	"person_menu": "{name}: Optionen",
+	"person_menu_hint": "Optionen",
 	"person_lost_access": "{name} hat keinen Zugang mehr: wieder beitreten lassen",
 	"person_remove": "Aus der Gruppe entfernen",
 	"person_remove_not_settled": "{name} kann entfernt werden, sobald alles ausgeglichen ist",
