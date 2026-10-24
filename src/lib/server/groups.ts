@@ -3,7 +3,7 @@ import type { GroupKind } from '#lib/group/kinds.ts';
 import type { Tint } from '#lib/tints.ts';
 import { log } from './activity';
 import type { Db } from './db';
-import { groups, members } from './db/schema';
+import { groups, members, people } from './db/schema';
 import { newShareToken, SHARE_TOKEN_PATTERN } from './token';
 
 export async function findGroupByToken(db: Db, token: string) {
@@ -43,12 +43,19 @@ export async function isDeletedGroupToken(db: Db, token: string) {
 	return Boolean(group);
 }
 
+/** Current members, with the avatar their person chose (#61) */
 export function listMembers(db: Db, groupId: string) {
-	return db.query.members.findMany({
-		columns: { id: true, name: true, personId: true },
-		where: and(eq(members.groupId, groupId), isNull(members.deletedAt)),
-		orderBy: [asc(members.createdAt), asc(members.name)]
-	});
+	return db
+		.select({
+			id: members.id,
+			name: members.name,
+			personId: members.personId,
+			avatar: people.avatar
+		})
+		.from(members)
+		.leftJoin(people, eq(members.personId, people.id))
+		.where(and(eq(members.groupId, groupId), isNull(members.deletedAt)))
+		.orderBy(asc(members.createdAt), asc(members.name));
 }
 
 /** Members who were removed (M-6): their past expenses still show their name. */

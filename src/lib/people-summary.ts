@@ -4,7 +4,7 @@
 // spots nobody has joined stay per group, since names can repeat.
 import type { Transfer } from './settle';
 
-type Member = { id: string; name: string; personId: string | null };
+type Member = { id: string; name: string; personId: string | null; avatar?: string | null };
 
 export type GroupSettlement = {
 	id: string;
@@ -24,6 +24,8 @@ export type PersonSummary = {
 	name: string;
 	/** Same as the avatar in the group: the person, else the member */
 	avatarId: string;
+	/** Their chosen avatar (#61) */
+	avatar: string | null;
 	currency: string;
 	/** Positive: they owe you; negative: you owe them */
 	net: number;
@@ -60,6 +62,7 @@ export function summarizePeople(groups: readonly GroupSettlement[]): PersonSumma
 				key,
 				name: other.name,
 				avatarId: other.personId ?? other.id,
+				avatar: other.avatar ?? null,
 				currency: group.currency,
 				net: 0,
 				groups: []
