@@ -1,4 +1,7 @@
-// Nature themes (#60): the single source of every theme's colors, light and dark. The CSS
+// Nature themes (#60): the single source of every theme's colors, light and dark. Each has
+// one clear primary hue (forest green, golden meadow, autumn rust, alpenglow rose, heather
+// violet, aurora indigo, fjord blue, coast turquoise, birch black-and-white) that also tints
+// its backgrounds and header. The CSS
 // (src/lib/styles/themes.css) is generated from this by `pnpm themes`; palettes.spec.ts
 // checks WCAG AA contrast for every theme in both modes.
 
@@ -40,40 +43,40 @@ export type Palette = {
 /** Light and dark of every theme, in the order of THEME_IDS */
 export const PALETTES: Record<ThemeId, { light: Palette; dark: Palette }> = {
 	forest: {
-		light: palette('#f4f1ea #fbf9f5 #ece8df #252822 #676a61 #526a58 #aebeaa #dce4d9 #394c3f'),
-		dark: palette('#1d211d #252a25 #303630 #ecede8 #a3a69e #90a88e #4e6150 #2f3a31 #b9cbb6')
+		light: palette('#eaf1ec #f8faf8 #dce5df #1c2620 #556359 #2c6d42 #adccb8 #d7e5dc #264a32'),
+		dark: palette('#141a16 #1c241f #27302a #e8edea #a8b3ac #7ebf93 #3a5543 #273a2d #c5decd')
 	},
 	fjord: {
-		light: palette('#eef2f3 #f8fafa #e1e8ea #1f2a2e #56656b #2f6273 #a7c4cd #d5e3e7 #24505e'),
-		dark: palette('#141c20 #1b252a #253137 #e6eef0 #9aaeb5 #86b6c6 #355661 #1f3640 #b3d3dd')
+		light: palette('#e8edf2 #f7f9fa #dae0e7 #1a2128 #525b65 #224e81 #a8bbd2 #d4dde7 #203651'),
+		dark: palette('#12171c #1a2025 #252b32 #e8eaee #a6adb4 #88abd3 #35465a #24303d #c0d0e2')
 	},
 	mountains: {
-		light: palette('#f1f1ef #fafaf8 #e5e5e1 #24262a #5f636a #4f5d6e #b9c1cb #dfe3e7 #3c4757'),
-		dark: palette('#1a1c20 #22252a #2c3036 #eceef1 #a2a8b0 #a9b7c8 #4a5563 #2a3039 #c7d1dc')
+		light: palette('#f1e9eb #faf7f8 #e6dbdd #271c1d #645457 #88303e #ceabb1 #e6d6d9 #4c242b'),
+		dark: palette('#1b1314 #241b1d #312628 #ede8e9 #b3a8a9 #d39ca5 #57383d #3b2629 #dfc3c8')
 	},
 	heather: {
-		light: palette('#f4f0f1 #fbf8f9 #e9e2e5 #2a2329 #695d66 #6e4f73 #c9b3cc #e6dbe7 #553b5a'),
-		dark: palette('#1f1a20 #282229 #332b34 #f0eaf0 #ada2ad #c5a6cb #5a465e #372c3a #dcc6e0')
+		light: palette('#f0eaf0 #f9f8f9 #e4dde4 #251d25 #615661 #7b3d7b #c9b0c9 #e3d8e3 #462a46'),
+		dark: palette('#1a141a #231d23 #2f282f #ece9ec #b2a9b2 #cfabcf #523c52 #382938 #dbc7db')
 	},
 	birch: {
-		light: palette('#f5f4f0 #fdfcf9 #eae8e1 #26261f #64645a #5a662b #c9d0a3 #ecebe2 #474f22'),
-		dark: palette('#1c1c18 #24241f #2f2f28 #efeee8 #a8a79c #b9c77d #4c5330 #2c2e22 #d5ddb0')
+		light: palette('#eeeded #f9f9f8 #e1e1e0 #222120 #5d5c5b #413e3a #bfbdbb #dfdedd #3b3936'),
+		dark: palette('#171716 #20201f #2c2c2b #ebebea #aeaead #d3d2cf #494845 #32312f #d3d2cf')
 	},
 	meadow: {
-		light: palette('#f5f3e8 #fcfbf3 #ebe8d8 #262619 #636350 #8a4560 #e0bfcc #e4ebcd #3d5420'),
-		dark: palette('#1b1d15 #23261b #2d3123 #eeefe3 #a6a991 #e3a3bd #5e3a49 #2b3420 #cfe0a9')
+		light: palette('#f3f0e8 #fafaf7 #e8e4d9 #292519 #676250 #796215 #d6caa3 #e9e4d2 #56481b'),
+		dark: palette('#1d1a11 #272319 #332f24 #eeede7 #b6b2a5 #d4bb68 #5e5331 #403921 #e6dcbc')
 	},
 	coast: {
-		light: palette('#f6f2ea #fdfaf4 #ece5d8 #262420 #67615a #2a6874 #a9cfd4 #e9dfcb #5a4a2e'),
-		dark: palette('#1a1d1f #222628 #2c3133 #eef0ef #a5abab #7fc0cb #345a61 #2e2b24 #e0d2b4')
+		light: palette('#e8f2f2 #f7fafa #dae7e7 #1a2828 #526566 #19696b #a6d2d3 #d4e7e8 #1e5052'),
+		dark: palette('#121c1c #1a2526 #253232 #e7eeee #a6b4b5 #5fc5c9 #335a5b #233d3e #bfe2e4')
 	},
 	aurora: {
-		light: palette('#eff1f5 #f9fafc #e2e6ee #1e2230 #5a6175 #2c6a59 #a8d8c6 #dde7f0 #2c4060'),
-		dark: palette('#10141f #171c29 #212736 #e8ecf5 #9ea6bb #7ee0b8 #2a5a4c #1a2440 #a8e8cf')
+		light: palette('#eceaf0 #f8f8fa #dfdce5 #1f1d26 #595562 #5a4096 #b7aecb #dbd7e4 #312749'),
+		dark: palette('#16141a #1e1c24 #2a2730 #eae9ed #aba9b2 #baaed5 #423b54 #2d2839 #ccc5dd')
 	},
 	autumn: {
-		light: palette('#f6f0e8 #fcf8f3 #ece2d5 #2a221c #6a5d50 #8a4a24 #e3bf9c #f0dfcc #7a3f1c'),
-		dark: palette('#1f1915 #28201b #332923 #f2ebe4 #b0a396 #e09a6a #5e3a24 #3a281d #f0c7a5')
+		light: palette('#f2ebe8 #faf8f7 #e7deda #281f1a #665852 #84411f #d3b5a6 #e8dad4 #522f1e'),
+		dark: palette('#1c1512 #261e1a #322925 #eeeae7 #b5aba6 #d39a7d #5b4133 #3e2c23 #e4cbbf')
 	}
 };
 
