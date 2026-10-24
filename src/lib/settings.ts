@@ -7,12 +7,13 @@ export type Theme = (typeof THEMES)[number];
 
 export const isTheme = (value: unknown): value is Theme => THEMES.includes(value as Theme);
 
-/** Color themes (#60): the app's accent color, each with a light and a dark shade */
-export const ACCENTS = ['forest', 'fjord', 'heather', 'amber'] as const;
-export type Accent = (typeof ACCENTS)[number];
-export const DEFAULT_ACCENT: Accent = 'forest';
-
-export const isAccent = (value: unknown): value is Accent => ACCENTS.includes(value as Accent);
+/** Nature themes (#60), stored as the "accent" setting; defined in themes/palettes.ts */
+export {
+	DEFAULT_THEME as DEFAULT_ACCENT,
+	THEME_IDS as ACCENTS,
+	isThemeId as isAccent,
+	type ThemeId as Accent
+} from './themes/palettes';
 
 export type Locale = (typeof locales)[number];
 

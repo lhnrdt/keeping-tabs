@@ -46,7 +46,7 @@ test('a chosen light theme wins over a dark device', async ({ browser }) => {
 	await expect(page.getByText('Saved').first()).toBeVisible();
 	await page.reload();
 	await expect(page.locator('html')).not.toHaveClass(/dark/);
-	await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', '#f4f1ea');
+	await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', '#eaf1ec');
 });
 
 test('everything about you is in one place: profile, settings, devices (#146)', async ({
@@ -71,9 +71,9 @@ test('everything about you is in one place: profile, settings, devices (#146)', 
 	await expect(page).toHaveURL(/\/you\/devices$/);
 });
 
-test('a color theme switches at once and is remembered (#60)', async ({ page }) => {
+test('a nature theme switches at once and is remembered (#60)', async ({ page }) => {
 	await open(page, '/you');
-	await page.getByRole('group', { name: 'Color' }).getByText('Fjord').click();
+	await page.getByRole('group', { name: 'Theme' }).getByText('Fjord', { exact: true }).click();
 	await expect(page.locator('html')).toHaveAttribute('data-accent', 'fjord');
 	await expect(page.getByText('Saved').first()).toBeVisible();
 
@@ -82,11 +82,11 @@ test('a color theme switches at once and is remembered (#60)', async ({ page }) 
 	await expect(page.locator('html')).toHaveAttribute('data-accent', 'fjord');
 	await expect(page.getByRole('link', { name: 'New group' })).toHaveCSS(
 		'background-color',
-		'rgb(61, 100, 112)'
+		'rgb(34, 78, 129)'
 	);
 
 	// Back to the default: no attribute at all
 	await open(page, '/you');
-	await page.getByRole('group', { name: 'Color' }).getByText('Forest').click();
+	await page.getByRole('group', { name: 'Theme' }).getByText('Forest', { exact: true }).click();
 	await expect(page.locator('html')).not.toHaveAttribute('data-accent');
 });

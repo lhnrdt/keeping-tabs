@@ -3,7 +3,7 @@
 	import { Block, List } from 'konsta/svelte';
 	import AppPage from '#lib/components/AppPage.svelte';
 	import Field from '#lib/components/Field.svelte';
-	import Hills from '#lib/components/illustrations/Hills.svelte';
+	import ThemeMotif from '#lib/components/illustrations/ThemeMotif.svelte';
 	import SubmitButton from '#lib/components/SubmitButton.svelte';
 	import { m } from '#lib/paraglide/messages.js';
 	import type { PageProps } from './$types';
@@ -17,7 +17,7 @@
 
 <AppPage title={m.app_name()}>
 	<div class="flex flex-col items-center gap-3 px-6 pt-10 pb-4 text-center">
-		<span class="text-accent-soft dark:text-accent-night"><Hills /></span>
+		<ThemeMotif />
 		<h1 class="font-display text-3xl font-semibold">{m.welcome_title()}</h1>
 		<p class="max-w-sm text-muted">{m.welcome_intro()}</p>
 	</div>

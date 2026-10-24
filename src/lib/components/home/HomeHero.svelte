@@ -3,7 +3,7 @@
 	// your overall balance across groups, per currency (SP-5); the app's name stays small.
 	import { resolve } from '$app/paths';
 	import Icon from '#lib/components/Icon.svelte';
-	import Topography from '#lib/components/illustrations/Topography.svelte';
+	import ThemePattern from '#lib/components/illustrations/ThemePattern.svelte';
 	import YourBalance from '#lib/components/YourBalance.svelte';
 	import { m } from '#lib/paraglide/messages.js';
 
@@ -11,9 +11,9 @@
 </script>
 
 <header
-	class="relative mx-4 mt-2 overflow-hidden rounded-3xl bg-(--tint-bg) px-5 pt-4 pb-7 text-(--tint-fg) tint-sage"
+	class="relative mx-4 mt-2 overflow-hidden rounded-3xl bg-(--tint-bg) px-5 pt-4 pb-7 text-(--tint-fg) tint-theme"
 >
-	<Topography />
+	<ThemePattern />
 	<div class="relative">
 		<h1 class="font-display text-sm font-semibold tracking-wide opacity-70">{m.app_name()}</h1>
 		{#if totals.length}

@@ -48,7 +48,7 @@
 			{#each groups as group (group.id)}
 				<ListItem link title={group.name} href={resolve('/g/[token]', { token: group.token })}>
 					{#snippet media()}
-						<GroupTile id={group.id} kind={group.kind} tint={group.tint} />
+						<GroupTile kind={group.kind} tint={group.tint} />
 					{/snippet}
 					{#snippet subtitle()}
 						{#if 'balance' in group}
@@ -72,5 +72,5 @@
 	</section>
 {:else if mounted}
 	<!-- Only once this browser's own list is known, so returning visitors don't see a flash -->
-	<EmptyState illustration="plant" text={m.home_empty()} />
+	<EmptyState text={m.home_empty()} />
 {/if}

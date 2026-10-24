@@ -4,7 +4,7 @@
 	import { page } from '$app/state';
 	import { Block } from 'konsta/svelte';
 	import AppPage from '#lib/components/AppPage.svelte';
-	import Hills from '#lib/components/illustrations/Hills.svelte';
+	import ThemeMotif from '#lib/components/illustrations/ThemeMotif.svelte';
 	import LinkButton from '#lib/components/LinkButton.svelte';
 	import { m } from '#lib/paraglide/messages.js';
 
@@ -23,7 +23,7 @@
 
 <AppPage title={m.app_name()}>
 	<div class="flex flex-col items-center gap-3 px-6 pt-10 pb-6 text-center" role="alert">
-		<span class="text-accent-soft dark:text-accent-night"><Hills /></span>
+		<ThemeMotif />
 		<h1 class="font-display text-3xl font-semibold">{heading}</h1>
 		<p class="max-w-sm text-muted">{message}</p>
 	</div>
