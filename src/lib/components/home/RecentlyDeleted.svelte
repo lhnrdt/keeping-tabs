@@ -1,9 +1,10 @@
 <script lang="ts">
-	// Groups deleted recently, with a way to bring them back (G-3).
+	// Groups deleted recently, with a way to bring them back (G-3) or remove them for good (#118).
 	import { enhance } from '$app/forms';
 	import { BlockTitle, List, ListItem } from 'konsta/svelte';
 	import FormError from '#lib/components/FormError.svelte';
 	import GroupTile from '#lib/components/GroupTile.svelte';
+	import DeleteGroupNow from './DeleteGroupNow.svelte';
 	import type { ErrorCode } from '#lib/errors.ts';
 	import type { GroupKind } from '#lib/group/kinds.ts';
 	import { m } from '#lib/paraglide/messages.js';
@@ -38,6 +39,7 @@
 						<GroupTile id={group.id} kind={group.kind} tint={group.tint} />
 					{/snippet}
 					{#snippet after()}
+						<DeleteGroupNow groupId={group.id} name={group.name} />
 						<form method="POST" action="?/restoreGroup" use:enhance>
 							<input type="hidden" name="groupId" value={group.id} />
 							<button
