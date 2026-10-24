@@ -18,6 +18,11 @@
 	--color-forest: #526a58;
 	--color-forest-dark: #394c3f;
 	--color-sage: #aebeaa;
+	/* The color theme's accent (#60): buttons, links, highlights, illustrations. Set per theme
+	   below; money keeps its own colors (tone-positive / tone-negative) whatever the theme. */
+	--color-accent: var(--accent);
+	--color-accent-night: var(--accent-night);
+	--color-accent-soft: var(--accent-soft);
 	--color-clay: #a65f4b;
 	--color-destructive: #b34f46;
 
@@ -83,14 +88,42 @@
 	letter-spacing: -0.01em;
 }
 
+/* Color themes (#60), chosen in your profile: html[data-accent], set before first paint by
+   app.html. Each reaches WCAG AA as text on the canvas and under text on its fill. */
+:root {
+	--accent: #526a58;
+	--accent-night: #90a88e;
+	--accent-soft: #aebeaa;
+	/* Konsta's primary (buttons, links, tints) follows the theme */
+	--k-color-primary: var(--accent);
+	--k-color-ios-primary: var(--accent);
+	--k-color-ios-primary-tint: color-mix(in srgb, var(--accent) 85%, white);
+	--k-color-ios-primary-shade: color-mix(in srgb, var(--accent) 85%, black);
+}
+:root[data-accent='fjord'] {
+	--accent: #3d6470;
+	--accent-night: #8db3be;
+	--accent-soft: #a9c3cb;
+}
+:root[data-accent='heather'] {
+	--accent: #6b5a7a;
+	--accent-night: #b5a3c4;
+	--accent-soft: #c4b8cf;
+}
+:root[data-accent='amber'] {
+	--accent: #7d5f2a;
+	--accent-night: #cfae6e;
+	--accent-soft: #d9c39a;
+}
+
 /* Konsta paints .dark pure black; keep it warm and green-tinted instead */
 .dark {
 	--k-hairline-color: rgb(236 237 232 / 0.1);
-	/* A lighter forest so the primary stays readable on dark surfaces */
-	--k-color-primary: rgb(144 168 142);
-	--k-color-ios-primary: rgb(144 168 142);
-	--k-color-ios-primary-tint: rgb(164 186 162);
-	--k-color-ios-primary-shade: rgb(124 150 122);
+	/* The theme's lighter shade, so the primary stays readable on dark surfaces */
+	--k-color-primary: var(--accent-night);
+	--k-color-ios-primary: var(--accent-night);
+	--k-color-ios-primary-tint: color-mix(in srgb, var(--accent-night) 85%, white);
+	--k-color-ios-primary-shade: color-mix(in srgb, var(--accent-night) 85%, black);
 	color-scheme: dark;
 	background-color: var(--color-canvas-night);
 	color: var(--color-ink-night);
