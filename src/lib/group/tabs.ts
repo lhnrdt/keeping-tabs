@@ -13,3 +13,10 @@ export const tabAction = (action: string, tab: GroupTab) => `?/${action}&tab=${t
 
 /** Path to a tab of a group, e.g. for redirects after saving. */
 export const groupTabUrl = (groupPath: string, tab: GroupTab) => `${groupPath}?tab=${tab}`;
+
+/** Query parameter naming an entry that was just deleted, so the group offers "Undo" (#78) */
+export const UNDO_PARAM = 'deleted';
+
+/** A group tab after deleting an entry: shows "Undo" for it */
+export const undoUrl = (groupPath: string, tab: GroupTab, entryId: string) =>
+	`${groupTabUrl(groupPath, tab)}&${UNDO_PARAM}=${encodeURIComponent(entryId)}`;

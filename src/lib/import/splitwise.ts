@@ -6,6 +6,7 @@
 import { parseDecimal } from '#lib/decimal.ts';
 import { minorDigits } from '#lib/money.ts';
 import { LIMITS, parseDate, type Result } from '#lib/validation.ts';
+import { fromTextCell } from '#lib/export/csv.ts';
 import { parseCsv } from './csv';
 
 export type SplitwiseRow = {
@@ -78,7 +79,7 @@ export function parseSplitwise(text: string, currency: string): Result<Splitwise
 	if (!header || header.length <= FIXED_COLUMNS || !DATE_HEADERS.has(plain(header[0]))) {
 		return { ok: false, error: 'import_not_splitwise' };
 	}
-	const people = header.slice(FIXED_COLUMNS).map((name) => name.trim());
+	const people = header.slice(FIXED_COLUMNS).map((name) => fromTextCell(name.trim()));
 	const digits = minorDigits(currency);
 	const rows: SplitwiseRow[] = [];
 	const skipped: SplitwiseExport['skipped'] = [];
@@ -111,7 +112,7 @@ export function parseSplitwise(text: string, currency: string): Result<Splitwise
 			return;
 		}
 
-		const title = (rawTitle ?? '').trim().slice(0, LIMITS.expenseTitle) || '?';
+		const title = fromTextCell((rawTitle ?? '').trim()).slice(0, LIMITS.expenseTitle) || '?';
 		// Identical rows in one file are different expenses: count them into the key
 		const content = [date, title, costCents, currency, amounts.join(',')].join('|');
 		const occurrence = (seen.get(content) ?? 0) + 1;

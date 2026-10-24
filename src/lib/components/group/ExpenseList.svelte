@@ -85,7 +85,7 @@
 {#if expenses.length}
 	<section aria-label={m.expenses_title()}>
 		{#each months as group (group.month)}
-			<h3 class="mx-8 mt-6 mb-2 text-sm font-medium opacity-60 first:mt-2">
+			<h3 class="mx-8 mt-6 mb-2 text-sm font-medium text-muted first:mt-2">
 				{formatMonth(group.month)}
 			</h3>
 			<List strong inset class="!my-0">
@@ -109,7 +109,7 @@
 							{#if expense.type === 'payment'}
 								<AnimatedAmount amount={expense.amountCents} {currency} />
 							{:else if expense.yourSide === null}
-								<span class="text-sm opacity-60">{m.side_not_involved()}</span>
+								<span class="text-sm text-muted">{m.side_not_involved()}</span>
 							{:else if expense.yourSide >= 0}
 								<span class="text-sm font-medium tone-positive tabular-nums">
 									<AnimatedAmount
@@ -140,7 +140,7 @@
 			use:whenVisible={{ onVisible: loadOlder, key: expenses.length }}
 		>
 			{#if older.loading}
-				<span class="opacity-60">{m.expenses_loading()}</span>
+				<span class="text-muted">{m.expenses_loading()}</span>
 			{:else}
 				<!-- A plain link without JS (?show= renders more on the server); the href is
 				     resolve() plus a query string, which the lint rule can't see -->
@@ -148,7 +148,7 @@
 				<a
 					href={`${resolve('/g/[token]', { token })}?show=${expenses.length + EXPENSES_PER_PAGE}`}
 					class="inline-block rounded-full px-4 py-2 font-medium text-forest dark:text-forest-night"
-					data-sveltekit-noscroll
+					data-sveltekit-reset="false"
 					data-sveltekit-replacestate
 					onclick={(event) => {
 						event.preventDefault();

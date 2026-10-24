@@ -14,5 +14,9 @@ export async function inPlaceTransition(update: () => Promise<void>) {
 	return transition.updateCallbackDone;
 }
 
-/** A view-transition-name for a list item; ids are UUIDs, so they're valid and unique. */
-export const transitionName = (kind: string, id: string) => `view-transition-name: ${kind}-${id}`;
+/**
+ * A view-transition-name for a list item; ids are UUIDs, so they're valid and unique. Only
+ * applied during same-page updates (layout.css): on page transitions the whole page moves as
+ * one, else named items would be drawn above the tab bar (#114).
+ */
+export const transitionName = (kind: string, id: string) => `--vt-name: ${kind}-${id}`;

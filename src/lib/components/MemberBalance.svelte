@@ -15,5 +15,5 @@
 		<AnimatedAmount amount={-balance} {currency} label={(amount) => m.balance_owes({ amount })} />
 	</span>
 {:else}
-	<span class="opacity-60">{m.balance_settled()}</span>
+	<span class="text-muted">{m.balance_settled()}</span>
 {/if}

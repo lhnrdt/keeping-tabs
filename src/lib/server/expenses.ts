@@ -169,3 +169,28 @@ export async function softDeleteEntry(
 		log(db, groupId, actorId, action, { expenseId: id })
 	]);
 }
+
+/** A deleted expense or payment of the group, for "Undo" (#78) */
+export async function findDeletedEntry(db: Db, groupId: string, id: string) {
+	const [row] = await db
+		.select({ id: expenses.id, type: expenses.type, title: expenses.title })
+		.from(expenses)
+		.where(and(eq(expenses.id, id), eq(expenses.groupId, groupId), isNotNull(expenses.deletedAt)));
+	return row;
+}
+
+/** Brings a deleted expense or payment back, with its splits (#78) */
+export async function restoreEntry(
+	db: Db,
+	groupId: string,
+	actorId: string | null,
+	entry: { id: string; type: 'expense' | 'payment' }
+) {
+	await db.batch([
+		db
+			.update(expenses)
+			.set({ deletedAt: null })
+			.where(and(eq(expenses.id, entry.id), eq(expenses.groupId, groupId))),
+		log(db, groupId, actorId, `${entry.type}.restore`, { expenseId: entry.id })
+	]);
+}

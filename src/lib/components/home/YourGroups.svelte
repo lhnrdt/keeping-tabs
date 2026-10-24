@@ -6,6 +6,7 @@
 	import YourBalance from '#lib/components/YourBalance.svelte';
 	import { onMount } from 'svelte';
 	import { getRecentGroups } from '#lib/device.ts';
+	import { currentRecentGroups } from '#lib/group/recent-groups.ts';
 	import { mergeGroups, type GroupLink } from '#lib/group/your-groups.ts';
 	import { m } from '#lib/paraglide/messages.js';
 
@@ -22,6 +23,13 @@
 	onMount(() => {
 		local = getRecentGroups();
 		mounted = true;
+	});
+
+	// Then as they are now, whenever the server's list is (re)loaded: renamed, or gone when
+	// someone deleted them (#125)
+	$effect(() => {
+		void memberOf;
+		currentRecentGroups().then((groups) => (local = groups));
 	});
 </script>
 

@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, isNotNull, isNull } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray, isNotNull, isNull } from 'drizzle-orm';
 import type { GroupKind } from '#lib/group/kinds.ts';
 import type { Tint } from '#lib/tints.ts';
 import { log } from './activity';
@@ -21,6 +21,26 @@ export async function findGroupByToken(db: Db, token: string) {
 		},
 		where: and(eq(groups.shareToken, token), isNull(groups.deletedAt))
 	});
+}
+
+/** Current name and look of the groups behind these links; deleted ones are left out (#125) */
+export function findGroupsByTokens(db: Db, tokens: readonly string[]) {
+	const valid = tokens.filter((token) => SHARE_TOKEN_PATTERN.test(token));
+	if (valid.length === 0) return Promise.resolve([]);
+	return db.query.groups.findMany({
+		columns: { id: true, name: true, shareToken: true, kind: true, tint: true },
+		where: and(inArray(groups.shareToken, valid), isNull(groups.deletedAt))
+	});
+}
+
+/** Whether the token belongs to a group that was deleted (and not yet removed for good) */
+export async function isDeletedGroupToken(db: Db, token: string) {
+	if (!SHARE_TOKEN_PATTERN.test(token)) return false;
+	const group = await db.query.groups.findFirst({
+		columns: { id: true },
+		where: and(eq(groups.shareToken, token), isNotNull(groups.deletedAt))
+	});
+	return Boolean(group);
 }
 
 export function listMembers(db: Db, groupId: string) {

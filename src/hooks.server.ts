@@ -1,6 +1,6 @@
 import { env } from 'cloudflare:workers';
 import { version } from '$app/env';
-import type { Handle } from '@sveltejs/kit/hooks';
+import type { Handle, HandleServerError } from '@sveltejs/kit/hooks';
 import { sequence } from '@sveltejs/kit/hooks';
 import { redirect } from '@sveltejs/kit';
 import { resolve as resolveRoute } from '$app/paths';
@@ -10,6 +10,9 @@ import { paraglideMiddleware } from '#lib/paraglide/server.js';
 import { getDb } from '#lib/server/db/index.ts';
 import { grantAccess, hasAccess, isOpenPath } from '#lib/server/access.ts';
 import { ensureDeviceKey } from '#lib/server/device.ts';
+import { logError } from '#lib/server/error-log.ts';
+import { limitKindOf } from '#lib/server/rate-limit-kinds.ts';
+import { tooManyRequests, withinLimit } from '#lib/server/rate-limit.ts';
 import { findPerson } from '#lib/server/people.ts';
 import { applySettings, markSettingsChecked, settingsChecked } from '#lib/server/settings.ts';
 
@@ -75,6 +78,31 @@ const handleAccess: Handle = async ({ event, resolve }) => {
 	redirect(303, `${resolveRoute('/welcome')}?${new URLSearchParams({ next })}`);
 };
 
+/**
+ * Rate limits per address (#66): changes and guessing secrets are counted. Last in the
+ * sequence, so the answer is in the visitor's language.
+ */
+const handleRateLimit: Handle = async ({ event, resolve }) => {
+	const kind = limitKindOf(event.request.method, event.url);
+	if (kind && !(await withinLimit(kind, event.getClientAddress()))) {
+		return tooManyRequests(event.request);
+	}
+	return resolve(event);
+};
+
+/**
+ * Pages and their data are private and change whenever someone in the group does
+ * something: browsers must ask the server before reusing them (#125). Responses that set
+ * their own caching (e.g. the CSV export) keep it.
+ */
+const handleCaching: Handle = async ({ event, resolve }) => {
+	const response = await resolve(event);
+	if (!response.headers.has('cache-control')) {
+		response.headers.set('cache-control', 'private, no-cache');
+	}
+	return response;
+};
+
 /** Every dynamic response says which release served it. */
 const handleVersion: Handle = async ({ event, resolve }) => {
 	const response = await resolve(event);
@@ -86,9 +114,17 @@ const handleVersion: Handle = async ({ event, resolve }) => {
 
 export const handle: Handle = sequence(
 	handleVersion,
+	handleCaching,
 	handleDb,
 	handleDevice,
 	handleAccess,
 	handleSettings,
-	handleParaglide
+	handleParaglide,
+	handleRateLimit
 );
+
+/** Unexpected errors (not our own error() calls or 404s) are logged for monitoring (#81) */
+export const handleError: HandleServerError = ({ kind, error, event }) => {
+	if (kind !== 'unknown') return;
+	logError({ error, route: event.route.id, method: event.request.method });
+};

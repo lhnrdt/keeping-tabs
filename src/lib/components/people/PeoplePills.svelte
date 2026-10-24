@@ -32,7 +32,7 @@
 					name={member.name}
 					avatarId={member.avatarId}
 					mark={markOf(member)}
-					label={m.person_menu({ name: member.name })}
+					hint={m.person_menu_hint()}
 					onclick={() => (selected = member)}
 				/>
 			</li>

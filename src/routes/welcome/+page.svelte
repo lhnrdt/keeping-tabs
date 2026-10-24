@@ -19,7 +19,7 @@
 	<div class="flex flex-col items-center gap-3 px-6 pt-10 pb-4 text-center">
 		<span class="text-sage dark:text-forest-night"><Hills /></span>
 		<h1 class="font-display text-3xl font-semibold">{m.welcome_title()}</h1>
-		<p class="max-w-sm opacity-75">{m.welcome_intro()}</p>
+		<p class="max-w-sm text-muted">{m.welcome_intro()}</p>
 	</div>
 	<form method="POST">
 		<List strong inset>
@@ -38,7 +38,7 @@
 		{/if}
 		<Block>
 			<SubmitButton>{m.welcome_enter()}</SubmitButton>
-			<p class="mt-4 text-center text-sm opacity-60">{m.welcome_link_hint()}</p>
+			<p class="mt-4 text-center text-sm text-muted">{m.welcome_link_hint()}</p>
 		</Block>
 	</form>
 </AppPage>

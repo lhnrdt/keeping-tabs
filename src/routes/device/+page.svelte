@@ -21,26 +21,26 @@
 <AppPage title={m.identity_title()} back={{ href: resolve('/'), label: m.app_name() }}>
 	{#if data.hasIdentity}
 		<BlockTitle>{m.passkey_title()}</BlockTitle>
-		<Block><p class="opacity-80">{m.passkey_intro()}</p></Block>
+		<Block><p class="text-muted">{m.passkey_intro()}</p></Block>
 		<PasskeySave count={data.passkeyCount} />
 
 		<BlockTitle>{m.device_title()}</BlockTitle>
-		<Block><p class="opacity-80">{m.device_intro()}</p></Block>
+		<Block><p class="text-muted">{m.device_intro()}</p></Block>
 		<DeviceLinkCreator link={form && 'link' in form ? form.link : undefined} />
 
 		<BlockTitle>{m.recovery_title()}</BlockTitle>
-		<Block><p class="opacity-80">{m.recovery_intro()}</p></Block>
+		<Block><p class="text-muted">{m.recovery_intro()}</p></Block>
 		<RecoveryKeyCreator
 			recoveryKey={form && 'recoveryKey' in form ? form.recoveryKey : undefined}
 		/>
 
 		<BlockTitle>{m.delete_identity_title()}</BlockTitle>
-		<Block><p class="opacity-80">{m.delete_identity_intro()}</p></Block>
+		<Block><p class="text-muted">{m.delete_identity_intro()}</p></Block>
 		<DeleteIdentity />
 	{/if}
 
 	<BlockTitle>{m.restore_title()}</BlockTitle>
-	<Block><p class="opacity-80">{m.restore_intro()}</p></Block>
+	<Block><p class="text-muted">{m.restore_intro()}</p></Block>
 	<PasskeyRestore />
 	<RestoreForm
 		error={form && 'error' in form ? form.error : undefined}

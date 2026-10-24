@@ -14,6 +14,7 @@
 	import IdentityButton from '#lib/components/group/IdentityButton.svelte';
 	import SettleUp from '#lib/components/group/SettleUp.svelte';
 	import ShareLink from '#lib/components/group/ShareLink.svelte';
+	import UndoToast from '#lib/components/group/UndoToast.svelte';
 	import PeoplePills from '#lib/components/people/PeoplePills.svelte';
 	import { currentTab } from '#lib/group/tabs.ts';
 	import { m } from '#lib/paraglide/messages.js';
@@ -92,8 +93,25 @@
 					<Icon name="import" />
 				{/snippet}
 			</ListItem>
+			<!-- A download: a plain link, not a client-side navigation -->
+			<ListItem
+				link
+				title={m.export_link()}
+				href={resolve('/g/[token]/export', { token: data.group.shareToken })}
+				linkProps={{ download: '', 'data-sveltekit-reload': '' }}
+			>
+				{#snippet media()}
+					<Icon name="export" />
+				{/snippet}
+			</ListItem>
 		</List>
 	{/if}
 
+	{#if data.justDeleted}
+		<!-- A new one for each deletion, so its timer starts again -->
+		{#key data.justDeleted.id}
+			<UndoToast entry={data.justDeleted} {tab} />
+		{/key}
+	{/if}
 	<GroupTabs active={tab} />
 </AppPage>

@@ -26,7 +26,9 @@ test('create a group, manage members and replace its link', async ({ page }) => 
 	await page.getByRole('link', { name: 'Group' }).click();
 	await expect(page.getByRole('region', { name: 'Details' })).toContainText('CHF');
 	const members = page.getByRole('list', { name: 'Members' });
-	await expect(members.getByRole('button', { name: 'Ben: options' })).toContainText('not here yet');
+	await expect(members.getByRole('button', { name: /^Ben\b.*, options$/ })).toContainText(
+		'not here yet'
+	);
 
 	// People are pills; "+ Add" opens a field that stays open for the next name
 	await page.getByRole('button', { name: 'Add', exact: true }).click();
@@ -38,7 +40,7 @@ test('create a group, manage members and replace its link', async ({ page }) => 
 	await newName.press('Enter');
 	await expect(page.getByRole('alert')).toHaveText('Each member needs a different name.');
 
-	await members.getByRole('button', { name: 'Ben: options' }).click();
+	await members.getByRole('button', { name: /^Ben\b.*, options$/ }).click();
 	await page.getByRole('dialog', { name: 'Ben' }).getByRole('button', { name: 'Rename' }).click();
 	const renameDialog = page.getByRole('dialog', { name: 'Rename Ben' });
 	await renameDialog.getByLabel('Name').fill('Benedikt');
@@ -279,7 +281,8 @@ test('delete a group for everyone, and restore it from the start screen', async 
 	const deleted = page.getByRole('region', { name: 'Recently deleted' });
 	await expect(deleted).toContainText('Old flat');
 	const response = await page.goto(groupUrl);
-	expect(response?.status()).toBe(404);
+	expect(response?.status()).toBe(410);
+	await expect(page.getByRole('alert')).toContainText('This group was deleted');
 
 	// A member brings it back
 	await open(page, '/');
