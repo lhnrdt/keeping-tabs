@@ -20,7 +20,9 @@ export const actions: Actions = {
 		const { form, group, actorId } = await formContext(locals, params.token, request);
 		const result = await readPaymentForm(locals.db, group, form);
 		if (!result.ok) return result.failure;
-		await updatePayment(locals.db, group.id, actorId, params.id, result.input);
+		if (!(await updatePayment(locals.db, group.id, actorId, params.id, result.input))) {
+			error(404, m.error_payment_not_found());
+		}
 		redirect(303, groupTabUrl(resolve('/g/[token]', { token: params.token }), 'balances'));
 	},
 
