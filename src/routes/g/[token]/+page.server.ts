@@ -2,7 +2,8 @@ import { fail, redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
 import type { ErrorCode } from '#lib/errors.ts';
 import { shownCount } from '#lib/group/expense-pages.ts';
-import { UNDO_PARAM } from '#lib/group/tabs.ts';
+import { currentTab, UNDO_PARAM } from '#lib/group/tabs.ts';
+import { groupInsights } from '#lib/insights/group.ts';
 import { balances } from '#lib/money.ts';
 import { settleTransfers } from '#lib/settle.ts';
 import { formContext as context, requireGroup } from '#lib/server/context.ts';
@@ -45,7 +46,12 @@ export const load: PageServerLoad = async ({ locals, parent, url }) => {
 		transfers: settleTransfers(group.simplifyDebts, memberIds, expenses),
 		entries: page.entries,
 		hasMore: page.hasMore,
-		justDeleted: justDeleted ?? null
+		justDeleted: justDeleted ?? null,
+		// Only on its tab: everything else doesn't need it (#161)
+		insights:
+			currentTab(url) === 'insights'
+				? groupInsights(expenses, memberIds, members.find((member) => member.mine)?.id ?? null)
+				: null
 	};
 };
 

@@ -1,0 +1,176 @@
+// A group's insights (#161): the numbers behind the Insights tab, from its entries. Spending
+// means expenses only; payments move money between people and aren't spent.
+import type { ExpenseCategory } from '#lib/expense/categories.ts';
+
+export type InsightEntry = {
+	id: string;
+	type: 'expense' | 'payment';
+	title: string;
+	amountCents: number;
+	paidBy: string;
+	/** ISO date, YYYY-MM-DD */
+	date: string;
+	category: ExpenseCategory;
+	splits: readonly { memberId: string; shareCents: number }[];
+};
+
+export type Unit = 'day' | 'week' | 'month';
+export type Bucket = { start: string; amount: number };
+export type CategoryShare = { category: ExpenseCategory | 'rest'; amount: number; share: number };
+export type MemberSpend = { memberId: string; paid: number; share: number; times: number };
+export type BigExpense = {
+	id: string;
+	title: string;
+	date: string;
+	paidBy: string;
+	amount: number;
+};
+
+export type Insights = {
+	total: number;
+	count: number;
+	perPerson: number;
+	/** Your share of everything, when you're a member */
+	myShare: number | null;
+	/** Over the days from the first to the last expense */
+	perDay: number;
+	first: string | null;
+	last: string | null;
+	days: number;
+	overTime: { unit: Unit; buckets: Bucket[] };
+	/** The latest week or month against the one before (not for day-by-day spans) */
+	change: { current: number; previous: number } | null;
+	byCategory: CategoryShare[];
+	biggest: BigExpense[];
+	/** Paid, share and how often each member paid, in member order */
+	byMember: MemberSpend[];
+};
+
+/** Categories shown on their own; the smaller rest is summed up */
+export const MAX_CATEGORIES = 6;
+export const MAX_BIGGEST = 5;
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+const toDate = (iso: string) => new Date(`${iso}T00:00:00Z`);
+const toIso = (date: Date) => date.toISOString().slice(0, 10);
+
+/** The finest unit that keeps the chart readable: days for a month, weeks for a quarter */
+export function unitFor(days: number): Unit {
+	if (days <= 31) return 'day';
+	if (days <= 90) return 'week';
+	return 'month';
+}
+
+/** Start of the day, week (Monday) or month an ISO date falls in */
+export function bucketStart(iso: string, unit: Unit): string {
+	const date = toDate(iso);
+	if (unit === 'week') date.setUTCDate(date.getUTCDate() - ((date.getUTCDay() + 6) % 7));
+	if (unit === 'month') date.setUTCDate(1);
+	return toIso(date);
+}
+
+function nextStart(iso: string, unit: Unit): string {
+	const date = toDate(iso);
+	if (unit === 'day') date.setUTCDate(date.getUTCDate() + 1);
+	if (unit === 'week') date.setUTCDate(date.getUTCDate() + 7);
+	if (unit === 'month') date.setUTCMonth(date.getUTCMonth() + 1);
+	return toIso(date);
+}
+
+/** Every bucket from the first to the last expense, empty ones included */
+export function overTime(expenses: readonly InsightEntry[], unit: Unit): Bucket[] {
+	if (expenses.length === 0) return [];
+	const sums = new Map<string, number>();
+	for (const { date, amountCents } of expenses) {
+		const start = bucketStart(date, unit);
+		sums.set(start, (sums.get(start) ?? 0) + amountCents);
+	}
+	const starts = [...sums.keys()].sort();
+	const buckets: Bucket[] = [];
+	for (let start = starts[0]; start <= starts.at(-1)!; start = nextStart(start, unit)) {
+		buckets.push({ start, amount: sums.get(start) ?? 0 });
+	}
+	return buckets;
+}
+
+/** Largest first; past MAX_CATEGORIES, the rest is one "rest" row at the end */
+export function byCategory(expenses: readonly InsightEntry[], total: number): CategoryShare[] {
+	const sums = new Map<ExpenseCategory, number>();
+	for (const { category, amountCents } of expenses) {
+		sums.set(category, (sums.get(category) ?? 0) + amountCents);
+	}
+	const sorted = [...sums].sort((a, b) => b[1] - a[1]);
+	const shown = sorted.length > MAX_CATEGORIES ? sorted.slice(0, MAX_CATEGORIES - 1) : sorted;
+	const restAmount = sorted.slice(shown.length).reduce((sum, [, amount]) => sum + amount, 0);
+	const rows: CategoryShare[] = shown.map(([category, amount]) => ({
+		category,
+		amount,
+		share: amount / total
+	}));
+	if (restAmount > 0)
+		rows.push({ category: 'rest', amount: restAmount, share: restAmount / total });
+	return rows;
+}
+
+/** What each member paid for expenses, their share of them, and how often they paid */
+export function byMember(expenses: readonly InsightEntry[], memberIds: readonly string[]) {
+	const rows = new Map<string, MemberSpend>(
+		memberIds.map((memberId) => [memberId, { memberId, paid: 0, share: 0, times: 0 }])
+	);
+	for (const { paidBy, amountCents, splits } of expenses) {
+		const payer = rows.get(paidBy);
+		if (payer) {
+			payer.paid += amountCents;
+			payer.times += 1;
+		}
+		for (const { memberId, shareCents } of splits) {
+			const row = rows.get(memberId);
+			if (row) row.share += shareCents;
+		}
+	}
+	return [...rows.values()];
+}
+
+export function insightsOf(
+	entries: readonly InsightEntry[],
+	memberIds: readonly string[],
+	you: string | null
+): Insights {
+	const expenses = entries.filter((entry) => entry.type === 'expense');
+	const total = expenses.reduce((sum, { amountCents }) => sum + amountCents, 0);
+	const dates = expenses.map(({ date }) => date).sort();
+	const first = dates[0] ?? null;
+	const last = dates.at(-1) ?? null;
+	const days =
+		first && last ? Math.round((toDate(last).getTime() - toDate(first).getTime()) / DAY_MS) + 1 : 0;
+	const unit = unitFor(days);
+	const buckets = overTime(expenses, unit);
+	const members = byMember(expenses, memberIds);
+	return {
+		total,
+		count: expenses.length,
+		perPerson: memberIds.length > 0 ? Math.round(total / memberIds.length) : 0,
+		myShare: members.find((row) => row.memberId === you)?.share ?? null,
+		perDay: days > 0 ? Math.round(total / days) : 0,
+		first,
+		last,
+		days,
+		overTime: { unit, buckets },
+		change:
+			unit !== 'day' && buckets.length >= 2
+				? { current: buckets.at(-1)!.amount, previous: buckets.at(-2)!.amount }
+				: null,
+		byCategory: total > 0 ? byCategory(expenses, total) : [],
+		biggest: expenses
+			.toSorted((a, b) => b.amountCents - a.amountCents)
+			.slice(0, MAX_BIGGEST)
+			.map(({ id, title, date, paidBy, amountCents }) => ({
+				id,
+				title,
+				date,
+				paidBy,
+				amount: amountCents
+			})),
+		byMember: members
+	};
+}

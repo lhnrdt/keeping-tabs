@@ -14,6 +14,7 @@ import IconHeart from '@tabler/icons-svelte-runes/icons/heart';
 import IconHome from '@tabler/icons-svelte-runes/icons/home';
 import IconPlane from '@tabler/icons-svelte-runes/icons/plane';
 import IconToolsKitchen2 from '@tabler/icons-svelte-runes/icons/tools-kitchen-2';
+import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
 import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
 import IconDeviceLaptop from '@tabler/icons-svelte-runes/icons/device-laptop';
 import IconDeviceMobile from '@tabler/icons-svelte-runes/icons/device-mobile';
@@ -51,6 +52,7 @@ export const icons = {
 	import: IconTableImport,
 	export: IconTableExport,
 	expand: IconChevronDown,
+	insights: IconChartBar,
 	phone: IconDeviceMobile,
 	computer: IconDeviceLaptop,
 	next: IconChevronRight,

@@ -1,4 +1,4 @@
-export const GROUP_TABS = ['expenses', 'balances', 'group'] as const;
+export const GROUP_TABS = ['expenses', 'balances', 'insights', 'group'] as const;
 
 export type GroupTab = (typeof GROUP_TABS)[number];
 
