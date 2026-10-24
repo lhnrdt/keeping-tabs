@@ -3,37 +3,38 @@
  * cosy Scandinavian, stone, moss, clay and paper; muted, warm, calm.
  * Imported after Konsta's theme, so these override its defaults.
  */
+@import './themes.css';
 @import '@fontsource-variable/inter';
 /* Display serif for big titles and hero amounts only (soft axis = rounded serifs) */
 @import '@fontsource-variable/fraunces/soft.css';
 
 @theme {
-	/* Palette */
-	--color-canvas: #f4f1ea;
-	--color-surface: #fbf9f5;
-	--color-surface-muted: #ece8df;
-	--color-ink: #252822;
-	/* Secondary text: at least 4.5:1 on canvas and every surface (WCAG AA, #79) */
-	--color-ink-muted: #676a61;
-	--color-forest: #526a58;
-	--color-forest-dark: #394c3f;
-	--color-sage: #aebeaa;
-	/* The color theme's accent (#60): buttons, links, highlights, illustrations. Set per theme
-	   below; money keeps its own colors (tone-positive / tone-negative) whatever the theme. */
+	/* Palette: the chosen nature theme's colors (#60), generated into themes.css from
+	   src/lib/themes/palettes.ts, light and dark (-night). Every theme meets WCAG AA. */
+	--color-canvas: var(--canvas);
+	--color-surface: var(--surface);
+	--color-surface-muted: var(--surface-muted);
+	--color-ink: var(--ink);
+	--color-ink-muted: var(--ink-muted);
+	/* Buttons, links, highlights, illustrations */
 	--color-accent: var(--accent);
-	--color-accent-night: var(--accent-night);
 	--color-accent-soft: var(--accent-soft);
-	--color-clay: #a65f4b;
-	--color-destructive: #b34f46;
 
-	--color-canvas-night: #1d211d;
-	--color-surface-night: #252a25;
-	--color-surface-muted-night: #303630;
-	--color-ink-night: #ecede8;
-	--color-ink-muted-night: #a3a69e;
-	--color-forest-night: #90a88e;
-	--color-clay-night: #c8846d;
-	--color-destructive-night: #d9776d;
+	--color-canvas-night: var(--canvas-night);
+	--color-surface-night: var(--surface-night);
+	--color-surface-muted-night: var(--surface-muted-night);
+	--color-ink-night: var(--ink-night);
+	--color-ink-muted-night: var(--ink-muted-night);
+	--color-accent-night: var(--accent-night);
+	--color-accent-soft-night: var(--accent-soft-night);
+
+	/* Money and danger mean the same in every theme */
+	--color-positive: var(--positive);
+	--color-negative: var(--negative);
+	--color-destructive: var(--destructive);
+	--color-positive-night: var(--positive-night);
+	--color-negative-night: var(--negative-night);
+	--color-destructive-night: var(--destructive-night);
 
 	/* Konsta: primary color (iOS tint, buttons, links, FAB) */
 	--color-brand-primary: #526a58;
@@ -88,36 +89,12 @@
 	letter-spacing: -0.01em;
 }
 
-/* Color themes (#60), chosen in your profile: html[data-accent], set before first paint by
-   app.html; any element with data-accent shows that theme (e.g. the picker's swatches). Each
-   reaches WCAG AA as text on the canvas and under text on its fill. */
-:root,
-[data-accent='forest'] {
-	--accent: #526a58;
-	--accent-night: #90a88e;
-	--accent-soft: #aebeaa;
-}
+/* Konsta's primary (buttons, links, tints) follows the theme (#60) */
 :root {
-	/* Konsta's primary (buttons, links, tints) follows the theme */
 	--k-color-primary: var(--accent);
 	--k-color-ios-primary: var(--accent);
 	--k-color-ios-primary-tint: color-mix(in srgb, var(--accent) 85%, white);
 	--k-color-ios-primary-shade: color-mix(in srgb, var(--accent) 85%, black);
-}
-[data-accent='fjord'] {
-	--accent: #3d6470;
-	--accent-night: #8db3be;
-	--accent-soft: #a9c3cb;
-}
-[data-accent='heather'] {
-	--accent: #6b5a7a;
-	--accent-night: #b5a3c4;
-	--accent-soft: #c4b8cf;
-}
-[data-accent='amber'] {
-	--accent: #7d5f2a;
-	--accent-night: #cfae6e;
-	--accent-soft: #d9c39a;
 }
 
 /* Konsta paints .dark pure black; keep it warm and green-tinted instead */
@@ -158,15 +135,15 @@
 /* Meaning-based text colors. Debts are muted clay, never alarm red (style guide); red is
    only for destructive actions and errors. */
 @utility tone-positive {
-	color: var(--color-forest);
+	color: var(--color-positive);
 	&:where(.dark, .dark *) {
-		color: var(--color-forest-night);
+		color: var(--color-positive-night);
 	}
 }
 @utility tone-negative {
-	color: var(--color-clay);
+	color: var(--color-negative);
 	&:where(.dark, .dark *) {
-		color: var(--color-clay-night);
+		color: var(--color-negative-night);
 	}
 }
 /* Delete and other destructive actions are red (important: Konsta's buttons set their own
@@ -196,6 +173,17 @@
 }
 
 /* Tints (see src/lib/tints.ts): background, foreground and pattern line color */
+/* The start screen's header: the nature theme's own tint (#60) */
+@utility tint-theme {
+	--tint-bg: var(--hero-bg);
+	--tint-fg: var(--hero-fg);
+	--tint-line: color-mix(in srgb, var(--hero-fg) 14%, transparent);
+	&:where(.dark, .dark *) {
+		--tint-bg: var(--hero-bg-night);
+		--tint-fg: var(--hero-fg-night);
+		--tint-line: color-mix(in srgb, var(--hero-fg-night) 12%, transparent);
+	}
+}
 @utility tint-sage {
 	--tint-bg: #dce4d9;
 	--tint-fg: #394c3f;

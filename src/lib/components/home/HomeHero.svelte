@@ -11,7 +11,7 @@
 </script>
 
 <header
-	class="relative mx-4 mt-2 overflow-hidden rounded-3xl bg-(--tint-bg) px-5 pt-4 pb-7 text-(--tint-fg) tint-sage"
+	class="relative mx-4 mt-2 overflow-hidden rounded-3xl bg-(--tint-bg) px-5 pt-4 pb-7 text-(--tint-fg) tint-theme"
 >
 	<Topography />
 	<div class="relative">
