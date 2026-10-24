@@ -7,7 +7,8 @@
 	import type { GroupKind } from '#lib/group/kinds.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import type { Insights } from '#lib/insights/insights.ts';
-	import { LAYOUTS, type Section } from '#lib/insights/sections.ts';
+	import { LAYOUTS, sectionsFor, type Section } from '#lib/insights/sections.ts';
+	import CustomizeInsights from './CustomizeInsights.svelte';
 	import BiggestList from './BiggestList.svelte';
 	import CategoryBars from './CategoryBars.svelte';
 	import FixedCosts from './FixedCosts.svelte';
@@ -19,7 +20,12 @@
 
 	type Props = {
 		insights: Insights;
-		group: { kind: GroupKind; currency: string; shareToken: string };
+		group: {
+			kind: GroupKind;
+			currency: string;
+			shareToken: string;
+			insightSections: string | null;
+		};
 		/** Current members, for who pays */
 		members: GroupMember[];
 		/** Current and former members, for who paid an expense */
@@ -29,6 +35,8 @@
 	let { insights, group, members, everyone }: Props = $props();
 
 	const layout = $derived(LAYOUTS[group.kind]);
+	// The group's own choice, else what suits its type (#174)
+	const chosen = $derived(sectionsFor(group.kind, group.insightSections));
 	const names = $derived(namesById(everyone));
 	const titles: Record<Section, () => string> = {
 		overTime: m.insights_over_time,
@@ -41,7 +49,7 @@
 	};
 	// Who-pays sections need at least two people to compare
 	const shown = $derived(
-		layout.sections.filter((section) =>
+		chosen.filter((section) =>
 			section === 'whoPays' || section === 'howOften'
 				? insights.byMember.length > 1
 				: section === 'fixedCosts'
@@ -85,5 +93,6 @@
 			<HowOften rows={insights.byMember} {members} />
 		{/if}
 	{/each}
+	<CustomizeInsights kind={group.kind} shown={chosen} />
 	<div class="h-6"></div>
 {/if}

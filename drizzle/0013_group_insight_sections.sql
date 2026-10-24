@@ -1,0 +1,1 @@
+ALTER TABLE `groups` ADD `insight_sections` text;

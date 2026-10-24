@@ -42,6 +42,9 @@ export const groups = sqliteTable('groups', {
 	// Settle up via the fewest payments (A owes B, B owes C → A pays C) instead of paying
 	// back each person directly (B-6)
 	simplifyDebts: integer('simplify_debts', { mode: 'boolean' }).notNull().default(true),
+	// Insight sections chosen for this group, in order, e.g. "overTime,fixedCosts" (#174);
+	// null = the group type's suggestions
+	insightSections: text('insight_sections'),
 	createdAt: createdAt(),
 	deletedAt: deletedAt()
 });
