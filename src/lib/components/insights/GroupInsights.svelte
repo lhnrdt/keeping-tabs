@@ -10,6 +10,8 @@
 	import { LAYOUTS, type Section } from '#lib/insights/sections.ts';
 	import BiggestList from './BiggestList.svelte';
 	import CategoryBars from './CategoryBars.svelte';
+	import FixedCosts from './FixedCosts.svelte';
+	import KindBars from './KindBars.svelte';
 	import HowOften from './HowOften.svelte';
 	import OverTimeChart from './OverTimeChart.svelte';
 	import StatTiles from './StatTiles.svelte';
@@ -31,6 +33,8 @@
 	const titles: Record<Section, () => string> = {
 		overTime: m.insights_over_time,
 		categories: m.insights_by_category,
+		kinds: m.insights_kinds,
+		fixedCosts: m.insights_fixed,
 		biggest: m.insights_biggest,
 		whoPays: m.insights_who_pays,
 		howOften: m.insights_how_often
@@ -38,7 +42,13 @@
 	// Who-pays sections need at least two people to compare
 	const shown = $derived(
 		layout.sections.filter((section) =>
-			section === 'whoPays' || section === 'howOften' ? insights.byMember.length > 1 : true
+			section === 'whoPays' || section === 'howOften'
+				? insights.byMember.length > 1
+				: section === 'fixedCosts'
+					? insights.fixed.length > 0
+					: section === 'kinds'
+						? insights.byKind.length > 1
+						: true
 		)
 	);
 </script>
@@ -48,15 +58,20 @@
 {:else}
 	<div class="pt-4"><StatTiles {insights} currency={group.currency} tiles={layout.tiles} /></div>
 	{#each shown as section (section)}
-		<BlockTitle>{titles[section]()}</BlockTitle>
+		<BlockTitle class="!mb-2">{titles[section]()}</BlockTitle>
 		{#if section === 'overTime'}
 			<OverTimeChart
 				unit={insights.overTime.unit}
 				buckets={insights.overTime.buckets}
+				withoutBig={insights.overTime.withoutBig}
 				currency={group.currency}
 			/>
 		{:else if section === 'categories'}
 			<CategoryBars rows={insights.byCategory} currency={group.currency} />
+		{:else if section === 'kinds'}
+			<KindBars rows={insights.byKind} currency={group.currency} />
+		{:else if section === 'fixedCosts'}
+			<FixedCosts rows={insights.fixed} currency={group.currency} />
 		{:else if section === 'biggest'}
 			<BiggestList
 				rows={insights.biggest}

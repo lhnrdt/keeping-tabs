@@ -1,6 +1,7 @@
 // A group's insights (#161): the numbers behind the Insights tab, from its entries. Spending
 // means expenses only; payments move money between people and aren't spent.
 import type { ExpenseCategory } from '#lib/expense/categories.ts';
+import { fixedCosts, kindsOf, KINDS, type FixedCost, type Kind } from './expense-kinds';
 
 export type InsightEntry = {
 	id: string;
@@ -25,6 +26,7 @@ export type BigExpense = {
 	paidBy: string;
 	amount: number;
 };
+export type KindShare = { kind: Kind; amount: number; share: number };
 
 export type Insights = {
 	total: number;
@@ -37,10 +39,22 @@ export type Insights = {
 	first: string | null;
 	last: string | null;
 	days: number;
-	overTime: { unit: Unit; buckets: Bucket[] };
+	overTime: {
+		unit: Unit;
+		buckets: Bucket[];
+		/** The same without big one-offs, when there are any (#167) */
+		withoutBig: Bucket[] | null;
+	};
 	/** The latest week or month against the one before (not for day-by-day spans) */
 	change: { current: number; previous: number } | null;
 	byCategory: CategoryShare[];
+	/** Fixed, everyday, occasional, big: how much of each (#167) */
+	byKind: KindShare[];
+	/** The recurring costs, largest first (#167) */
+	fixed: FixedCost[];
+	/** What the recurring costs come to in a month */
+	fixedPerMonth: number;
+	/** The largest expenses that aren't fixed costs */
 	biggest: BigExpense[];
 	/** Paid, share and how often each member paid, in member order */
 	byMember: MemberSpend[];
@@ -146,6 +160,14 @@ export function insightsOf(
 	const unit = unitFor(days);
 	const buckets = overTime(expenses, unit);
 	const members = byMember(expenses, memberIds);
+	const kinds = kindsOf(expenses);
+	const fixed = fixedCosts(expenses);
+	const kindAmounts = new Map<Kind, number>();
+	for (const expense of expenses) {
+		const kind = kinds.get(expense.id)!;
+		kindAmounts.set(kind, (kindAmounts.get(kind) ?? 0) + expense.amountCents);
+	}
+	const withoutBig = expenses.filter((expense) => kinds.get(expense.id) !== 'big');
 	return {
 		total,
 		count: expenses.length,
@@ -155,13 +177,25 @@ export function insightsOf(
 		first,
 		last,
 		days,
-		overTime: { unit, buckets },
+		overTime: {
+			unit,
+			buckets,
+			withoutBig: withoutBig.length < expenses.length ? overTime(withoutBig, unit) : null
+		},
 		change:
 			unit !== 'day' && buckets.length >= 2
 				? { current: buckets.at(-1)!.amount, previous: buckets.at(-2)!.amount }
 				: null,
 		byCategory: total > 0 ? byCategory(expenses, total) : [],
+		byKind: KINDS.filter((kind) => kindAmounts.has(kind)).map((kind) => ({
+			kind,
+			amount: kindAmounts.get(kind)!,
+			share: kindAmounts.get(kind)! / total
+		})),
+		fixed,
+		fixedPerMonth: fixed.reduce((sum, cost) => sum + cost.average, 0),
 		biggest: expenses
+			.filter((expense) => kinds.get(expense.id) !== 'fixed')
 			.toSorted((a, b) => b.amountCents - a.amountCents)
 			.slice(0, MAX_BIGGEST)
 			.map(({ id, title, date, paidBy, amountCents }) => ({
