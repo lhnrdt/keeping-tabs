@@ -4,10 +4,12 @@
 	import { resolve } from '$app/paths';
 	import { page, updated } from '$app/state';
 	import { App } from 'konsta/svelte';
+	import { onMount } from 'svelte';
 	import { prefersReducedMotion } from 'svelte/motion';
 	import FriendlyNote from '#lib/components/FriendlyNote.svelte';
 	import OfflineBanner from '#lib/components/OfflineBanner.svelte';
 	import { locales, localizeHref } from '#lib/paraglide/runtime.js';
+	import { refreshOnReturn } from '#lib/refresh-on-return.ts';
 	import './layout.css';
 	import favicon from '#lib/assets/favicon.svg';
 	import type { LayoutProps } from './$types';
@@ -20,6 +22,8 @@
 	beforeNavigate(({ willUnload, to }) => {
 		if (updated.current && !willUnload && to?.url) location.href = to.url.href;
 	});
+
+	onMount(refreshOnReturn);
 
 	// Page transitions (N-12)
 	onNavigate((navigation) => {
