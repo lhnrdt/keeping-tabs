@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { summarizePeople, type GroupSettlement } from './people-summary';
+import { betweenYou, summarizePeople, type GroupSettlement } from './people-summary';
 
 const group = (overrides: Partial<GroupSettlement> & Pick<GroupSettlement, 'id'>) => ({
 	name: overrides.id,
@@ -67,5 +67,23 @@ describe('summarizePeople', () => {
 			transfers: [{ from: 'flat-me', to: 'flat-anna', amountCents: 400 }]
 		});
 		expect(summarizePeople([trip, flat])).toEqual([]);
+	});
+});
+
+describe('betweenYou', () => {
+	it('nets the payments involving you per member, leaving out the rest', () => {
+		expect(
+			betweenYou(
+				[
+					{ from: 'ben', to: 'me', amountCents: 500 },
+					{ from: 'cara', to: 'ben', amountCents: 300 },
+					{ from: 'me', to: 'dan', amountCents: 200 }
+				],
+				'me'
+			)
+		).toEqual([
+			{ memberId: 'ben', amount: 500 },
+			{ memberId: 'dan', amount: -200 }
+		]);
 	});
 });
