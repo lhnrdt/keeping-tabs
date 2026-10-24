@@ -12,6 +12,7 @@
 	const tabs: { id: GroupTab; label: () => string; icon: IconName }[] = [
 		{ id: 'expenses', label: m.tab_expenses, icon: 'expense' },
 		{ id: 'balances', label: m.tab_balances, icon: 'balances' },
+		{ id: 'insights', label: m.tab_insights, icon: 'insights' },
 		{ id: 'group', label: m.tab_group, icon: 'group' }
 	];
 </script>

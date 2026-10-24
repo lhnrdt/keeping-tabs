@@ -11,6 +11,7 @@
 	import DeleteGroup from '#lib/components/group/DeleteGroup.svelte';
 	import GroupDetails from '#lib/components/group/GroupDetails.svelte';
 	import GroupHero from '#lib/components/group/GroupHero.svelte';
+	import GroupInsights from '#lib/components/insights/GroupInsights.svelte';
 	import GroupTabs from '#lib/components/group/GroupTabs.svelte';
 	import IdentityButton from '#lib/components/group/IdentityButton.svelte';
 	import SettleUp from '#lib/components/group/SettleUp.svelte';
@@ -68,6 +69,13 @@
 			currency={data.group.currency}
 			members={data.members}
 			transfers={data.transfers}
+		/>
+	{:else if tab === 'insights' && data.insights}
+		<GroupInsights
+			insights={data.insights}
+			group={data.group}
+			members={data.members}
+			everyone={[...data.members, ...data.formerMembers]}
 		/>
 	{:else}
 		<BlockTitle>{m.members_title()}</BlockTitle>
