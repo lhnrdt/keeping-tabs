@@ -28,7 +28,11 @@
 					const dark = chosen ? chosen === 'dark' : query.matches;
 					document.documentElement.classList.toggle('dark', dark);
 					document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
-					themeColor.content = dark ? '#1d211d' : '#f4f1ea';
+					// The theme's background (#60), once the styles are there; until then the default's
+					const canvas = getComputedStyle(document.documentElement)
+						.getPropertyValue(dark ? '--canvas-night' : '--canvas')
+						.trim();
+					themeColor.content = canvas || (dark ? '#1d211d' : '#f4f1ea');
 				};
 				apply();
 				query.addEventListener('change', () => chosen || apply());
@@ -41,8 +45,10 @@
 				window.applyAccent = (accent) => {
 					if (accent && accent !== 'forest') document.documentElement.dataset.accent = accent;
 					else delete document.documentElement.dataset.accent;
+					apply();
 				};
 				window.applyAccent(/(?:^|; )kt-accent=([a-z]+)/.exec(document.cookie)?.[1]);
+				addEventListener('load', apply);
 			})();
 		</script>
 		%sveltekit.head%
