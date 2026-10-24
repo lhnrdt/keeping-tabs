@@ -204,6 +204,7 @@
 	"import_submit": "Importieren",
 	"import_again_hint": "Bereits importierte Zeilen werden übersprungen, du kannst also später einen neueren Export erneut importieren.",
 	"expenses_show_more": "Ältere anzeigen",
+	"page_loading": "Lädt…",
 	"expenses_loading": "Ältere Einträge werden geladen …",
 	"expenses_retry": "Laden fehlgeschlagen. Noch mal versuchen",
 	"error_already_member": "Du bist schon in dieser Gruppe.",
