@@ -448,5 +448,8 @@
 	"has_note": "with a note",
 	"error_expense_note_too_long": "That note is too long (500 characters at most).",
 	"copy_link": "Copy link",
-	"copied": "Copied"
+	"copied": "Copied",
+	"search_label": "Search expenses",
+	"search_placeholder": "Search expenses",
+	"search_none": "No expenses match “{query}”."
 }

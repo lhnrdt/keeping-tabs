@@ -448,5 +448,8 @@
 	"has_note": "mit Notiz",
 	"error_expense_note_too_long": "Die Notiz ist zu lang (höchstens 500 Zeichen).",
 	"copy_link": "Link kopieren",
-	"copied": "Kopiert"
+	"copied": "Kopiert",
+	"search_label": "Ausgaben durchsuchen",
+	"search_placeholder": "Ausgaben durchsuchen",
+	"search_none": "Keine Ausgabe passt zu „{query}“."
 }

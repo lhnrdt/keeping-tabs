@@ -1,4 +1,5 @@
-import { and, desc, eq, inArray, isNotNull, isNull } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNotNull, isNull, or, sql } from 'drizzle-orm';
+import { LIKE_ESCAPE, likePattern } from '#lib/group/search.ts';
 
 import type { ExpenseInput } from '#lib/validation.ts';
 import { log, type Action } from './activity';
@@ -45,11 +46,30 @@ export async function listExpenses(db: Db, groupId: string) {
  * A page of the expense list, newest first: only these rows (not the group's whole
  * history), plus each payment's recipient.
  */
-export async function listEntryPage(db: Db, groupId: string, offset: number, limit: number) {
+/** A page of entries, newest first; with a query, the expenses whose title or note has it (#68) */
+export async function listEntryPage(
+	db: Db,
+	groupId: string,
+	offset: number,
+	limit: number,
+	query = ''
+) {
+	const pattern = likePattern(query);
 	const rows = await db
 		.select(expenseColumns)
 		.from(expenses)
-		.where(active(groupId))
+		.where(
+			query
+				? and(
+						active(groupId),
+						eq(expenses.type, 'expense'),
+						or(
+							sql`lower(${expenses.title}) like ${pattern} escape ${LIKE_ESCAPE}`,
+							sql`lower(${expenses.notes}) like ${pattern} escape ${LIKE_ESCAPE}`
+						)
+					)
+				: active(groupId)
+		)
 		.orderBy(desc(expenses.date), desc(expenses.createdAt))
 		.limit(limit)
 		.offset(offset);

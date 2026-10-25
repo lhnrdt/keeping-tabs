@@ -8,6 +8,7 @@
 	import BalanceList from '#lib/components/group/BalanceList.svelte';
 	import BetweenYou from '#lib/components/group/BetweenYou.svelte';
 	import ExpenseList from '#lib/components/group/ExpenseList.svelte';
+	import ExpenseSearch from '#lib/components/group/ExpenseSearch.svelte';
 	import DeleteGroup from '#lib/components/group/DeleteGroup.svelte';
 	import GroupDetails from '#lib/components/group/GroupDetails.svelte';
 	import GroupHero from '#lib/components/group/GroupHero.svelte';
@@ -45,14 +46,21 @@
 	{/snippet}
 
 	{#if tab === 'expenses'}
-		<BlockTitle>{m.expenses_title()}</BlockTitle>
-		<ExpenseList
-			token={data.group.shareToken}
-			currency={data.group.currency}
-			members={[...data.members, ...data.formerMembers]}
-			entries={data.entries}
-			hasMore={data.hasMore}
-		/>
+		<BlockTitle class="!mb-3">{m.expenses_title()}</BlockTitle>
+		{#if data.entries.length || data.query}
+			<ExpenseSearch query={data.query} />
+		{/if}
+		<!-- A new search starts the list (and its older pages) afresh -->
+		{#key data.query}
+			<ExpenseList
+				token={data.group.shareToken}
+				currency={data.group.currency}
+				members={[...data.members, ...data.formerMembers]}
+				entries={data.entries}
+				hasMore={data.hasMore}
+				query={data.query}
+			/>
+		{/key}
 		<FloatingLink
 			href={resolve('/g/[token]/expenses/new', { token: data.group.shareToken })}
 			icon="add"
