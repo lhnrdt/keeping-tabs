@@ -12,7 +12,7 @@ import { balances, parseAmount } from '#lib/money.ts';
 import { settleTransfers } from '#lib/settle.ts';
 import { formContext as context, requireGroup } from '#lib/server/context.ts';
 import { entryPage } from '#lib/server/expense-entries.ts';
-import { findDeletedEntry, listExpenses, restoreEntry } from '#lib/server/expenses.ts';
+import { findDeletedEntry, listExpenses, listLedger, restoreEntry } from '#lib/server/expenses.ts';
 import { deleteGroup } from '#lib/server/group-deletion.ts';
 import { joinGroup, letJoinAgain, removeMember, stepBack } from '#lib/server/membership.ts';
 import {
@@ -40,10 +40,13 @@ export const load: PageServerLoad = async ({ locals, parent, url }) => {
 	const { group, members } = await parent();
 	const shown = shownCount(url.searchParams.get('show'));
 	const query = readQuery(url.searchParams);
-	// Balances and settling up need everything; the list only its first page(s)
+	// Balances and settling up need only sums (#58), the list its first page(s); every entry
+	// only for the insights
 	const deletedId = url.searchParams.get(UNDO_PARAM);
-	const [expenses, page, justDeleted] = await Promise.all([
-		listExpenses(locals.db, group.id),
+	const onInsights = currentTab(url) === 'insights';
+	const [ledger, expenses, page, justDeleted] = await Promise.all([
+		listLedger(locals.db, group.id),
+		onInsights ? listExpenses(locals.db, group.id) : undefined,
 		entryPage(
 			locals.db,
 			group.id,
@@ -57,9 +60,9 @@ export const load: PageServerLoad = async ({ locals, parent, url }) => {
 	]);
 	const memberIds = members.map((member) => member.id);
 	const today = todayInputValue();
-	const transfers = settleTransfers(group.simplifyDebts, memberIds, expenses);
+	const transfers = settleTransfers(group.simplifyDebts, memberIds, ledger);
 	return {
-		balances: Object.fromEntries(balances(memberIds, expenses)),
+		balances: Object.fromEntries(balances(memberIds, ledger)),
 		transfers,
 		entries: page.entries,
 		hasMore: page.hasMore,
@@ -68,7 +71,7 @@ export const load: PageServerLoad = async ({ locals, parent, url }) => {
 		today,
 		// Only on its tab: everything else doesn't need it (#161)
 		insights:
-			currentTab(url) === 'insights'
+			onInsights && expenses
 				? groupInsights(
 						expenses,
 						memberIds,

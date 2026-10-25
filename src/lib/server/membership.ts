@@ -8,7 +8,7 @@ import { normalizeText, parseMemberName, type Result } from '#lib/validation.ts'
 import { log, type Action } from './activity';
 import type { Db } from './db';
 import { activityLog, members } from './db/schema';
-import { listExpenses } from './expenses';
+import { listLedger } from './expenses';
 import { isUniqueViolation, listMembers } from './groups';
 
 const current = (groupId: string, memberId: string) =>
@@ -119,10 +119,10 @@ export async function removeMember(
 	actorId: string,
 	memberId: string
 ): Promise<Result<null>> {
-	const [all, expenses] = await Promise.all([listMembers(db, groupId), listExpenses(db, groupId)]);
+	const [all, ledger] = await Promise.all([listMembers(db, groupId), listLedger(db, groupId)]);
 	if (!all.some((member) => member.id === memberId))
 		return { ok: false, error: 'member_not_found' };
-	const balance = balances([memberId], expenses).get(memberId) ?? 0;
+	const balance = balances([memberId], ledger).get(memberId) ?? 0;
 	if (balance !== 0) return { ok: false, error: 'member_not_settled' };
 	await db.batch([
 		db.update(members).set({ deletedAt: new Date() }).where(current(groupId, memberId)),
