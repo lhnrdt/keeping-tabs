@@ -438,5 +438,11 @@
 	"spending_by_month": "By month",
 	"spending_by_group": "By group",
 	"spending_shared_with": "Shared most with",
-	"spending_shared_hint": "Your share of what you took part in together"
+	"spending_shared_hint": "Your share of what you took part in together",
+	"insights_kind_months": "Month by month",
+	"section_kind_months_hint": "Each month: fixed costs and what came on top",
+	"insights_places": "Favourite places",
+	"section_places_hint": "Where you go again and again",
+	"insights_per_meal": "Per meal",
+	"places_times": "{count} times"
 }

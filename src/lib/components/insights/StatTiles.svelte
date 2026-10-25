@@ -49,6 +49,13 @@
 				return insights.fixedPerMonth > 0
 					? { label: m.insights_fixed_per_month(), value: money(insights.fixedPerMonth) }
 					: null;
+			case 'perMeal':
+				return insights.count > 0
+					? {
+							label: m.insights_per_meal(),
+							value: money(Math.round(insights.total / insights.count))
+						}
+					: null;
 			case 'count':
 				return { label: m.insights_expenses(), value: String(insights.count) };
 			case 'change': {
