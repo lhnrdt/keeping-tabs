@@ -12,6 +12,7 @@ export const errorMessages = {
 	member_not_found: m.error_member_not_found,
 	expense_title_required: m.error_expense_title_required,
 	expense_title_too_long: m.error_expense_title_too_long,
+	expense_note_too_long: m.error_expense_note_too_long,
 	amount_invalid: m.error_amount_invalid,
 	date_invalid: m.error_date_invalid,
 	payer_invalid: m.error_payer_invalid,
