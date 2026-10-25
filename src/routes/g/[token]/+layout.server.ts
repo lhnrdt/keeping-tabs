@@ -1,7 +1,7 @@
 import { requireGroup } from '#lib/server/context.ts';
 import { listFormerMembers, listMembers } from '#lib/server/groups.ts';
 import { hasTakenPart } from '#lib/server/membership.ts';
-import { findPerson } from '#lib/server/people.ts';
+import { personOf } from '#lib/server/people.ts';
 import type { LayoutServerLoad } from './$types';
 
 /**
@@ -14,7 +14,7 @@ export const load: LayoutServerLoad = async ({ locals, params }) => {
 	const [members, formerMembers, person] = await Promise.all([
 		listMembers(locals.db, group.id),
 		listFormerMembers(locals.db, group.id),
-		findPerson(locals.db, locals.deviceKey)
+		personOf(locals)
 	]);
 	const mine = members.find((member) => person && member.personId === person.id);
 	return {

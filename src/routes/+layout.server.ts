@@ -1,6 +1,6 @@
 import { ACCENT_COOKIE, DEFAULT_ACCENT, isAccent } from '#lib/settings.ts';
 import { needsNote } from '#lib/server/note.ts';
-import { findPerson } from '#lib/server/people.ts';
+import { personOf } from '#lib/server/people.ts';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ locals, cookies, url }) => {
@@ -12,6 +12,6 @@ export const load: LayoutServerLoad = async ({ locals, cookies, url }) => {
 	if (url.pathname.startsWith('/welcome') || url.pathname.startsWith('/device/link')) {
 		return { theme, showNote: false };
 	}
-	const person = await findPerson(locals.db, locals.deviceKey);
+	const person = await personOf(locals);
 	return { theme, showNote: await needsNote(locals.db, cookies, person) };
 };
