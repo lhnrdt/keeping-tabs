@@ -1,8 +1,8 @@
 // Highlights (#162): a few friendly facts about a group, only the ones its data makes true
 // and worth telling. Most telling first, at most MAX_HIGHLIGHTS.
 import type { ExpenseCategory } from '#lib/expense/categories.ts';
-import { normalizeTitle } from '#lib/expense/normalize.ts';
 import type { Kind } from './expense-kinds';
+import { placesOf } from './places';
 
 type Expense = {
 	id: string;
@@ -30,8 +30,6 @@ const TOP_CATEGORY_SHARE = 0.35;
 const TOP_CATEGORY_OBVIOUS = 0.8;
 /** A busiest day: at least this many times an average day with expenses */
 const BUSIEST_FACTOR = 1.5;
-/** A place (a title that isn't a fixed cost) used at least this often */
-const PLACE_MIN_TIMES = 3;
 /** Who pays most often: from this many expenses, at least half of them and clearly more
  * than a fair turn (this many times their part) */
 const MOST_OFTEN_MIN_COUNT = 4;
@@ -84,25 +82,8 @@ function busiestDay(expenses: readonly Expense[], total: number): Highlight | nu
 }
 
 function place(expenses: readonly Expense[], kinds: ReadonlyMap<string, Kind>): Highlight | null {
-	const byTitle = Map.groupBy(
-		expenses.filter((expense) => kinds.get(expense.id) !== 'fixed'),
-		(expense) => normalizeTitle(expense.title)
-	);
-	const top = [...byTitle]
-		.filter(([key, group]) => key && group.length >= PLACE_MIN_TIMES)
-		.map(([, group]) => group)
-		.sort(
-			(a, b) =>
-				b.length - a.length || sum(b.map((e) => e.amountCents)) - sum(a.map((e) => e.amountCents))
-		)[0];
-	if (!top) return null;
-	const latest = top.toSorted((a, b) => a.date.localeCompare(b.date)).at(-1)!;
-	return {
-		kind: 'place',
-		title: latest.title,
-		times: top.length,
-		amount: sum(top.map((expense) => expense.amountCents))
-	};
+	const [top] = placesOf(expenses, kinds);
+	return top ? { kind: 'place', ...top } : null;
 }
 
 function mostOften(expenses: readonly Expense[], memberCount: number): Highlight | null {
