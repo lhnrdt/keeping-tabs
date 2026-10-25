@@ -16,7 +16,7 @@
 		{@const balance = balances[member.id] ?? 0}
 		<ListItem title={member.name} style={transitionName('balance', member.id)}>
 			{#snippet media()}
-				<Avatar id={member.avatarId} name={member.name} />
+				<Avatar id={member.avatarId} name={member.name} avatar={member.avatar} />
 			{/snippet}
 			{#snippet after()}
 				<MemberBalance {balance} {currency} />

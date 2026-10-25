@@ -43,10 +43,12 @@
 <Dialog {opened} onBackdropClick={onClose} role="dialog" aria-modal="true" aria-label={heading}>
 	<!-- Konsta 5.5.0's Dialog crashes on string titles (missing printText import), so pass a snippet -->
 	{#snippet title()}{heading}{/snippet}
+	<!-- Long content scrolls inside, so the buttons below stay on screen -->
 	<form
 		id={formId}
 		method="POST"
 		{action}
+		class="max-h-[60dvh] overflow-y-auto overscroll-contain"
 		use:enhance={(input) => {
 			onSubmit?.();
 			return submission.enhance(input);

@@ -1,5 +1,7 @@
-import { and, desc, eq, inArray, isNotNull, isNull } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNotNull, isNull, or, sql } from 'drizzle-orm';
+import { LIKE_ESCAPE, likePattern } from '#lib/group/search.ts';
 
+import { ledgerEntries } from '#lib/ledger.ts';
 import type { ExpenseInput } from '#lib/validation.ts';
 import { log, type Action } from './activity';
 import type { Db } from './db';
@@ -9,6 +11,7 @@ const expenseColumns = {
 	id: expenses.id,
 	type: expenses.type,
 	title: expenses.title,
+	notes: expenses.notes,
 	amountCents: expenses.amountCents,
 	paidBy: expenses.paidBy,
 	date: expenses.date,
@@ -17,6 +20,40 @@ const expenseColumns = {
 
 export const active = (groupId: string) =>
 	and(eq(expenses.groupId, groupId), isNull(expenses.deletedAt));
+
+/**
+ * The group's ledger in two sums (#58): what each member paid, and each payer–member total.
+ * Enough for balances and settling up without sending every entry (ledger.ts).
+ */
+export async function listLedger(db: Db, groupId: string) {
+	const [paid, shares] = await db.batch([
+		db
+			.select({ paidBy: expenses.paidBy, amountCents: sql<number>`sum(${expenses.amountCents})` })
+			.from(expenses)
+			.where(active(groupId))
+			.groupBy(expenses.paidBy),
+		db
+			.select({
+				paidBy: expenses.paidBy,
+				memberId: expenseSplits.memberId,
+				shareCents: sql<number>`sum(${expenseSplits.shareCents})`
+			})
+			.from(expenseSplits)
+			.innerJoin(expenses, eq(expenseSplits.expenseId, expenses.id))
+			.where(active(groupId))
+			.groupBy(expenses.paidBy, expenseSplits.memberId)
+	]);
+	return ledgerEntries(paid, shares);
+}
+
+/** The date of the group's latest entry, if any (#46) */
+export async function lastEntryDate(db: Db, groupId: string) {
+	const [row] = await db
+		.select({ date: sql<string | null>`max(${expenses.date})` })
+		.from(expenses)
+		.where(active(groupId));
+	return row?.date ?? null;
+}
 
 /** Current expenses with their splits, newest first (E-9). */
 export async function listExpenses(db: Db, groupId: string) {
@@ -44,11 +81,30 @@ export async function listExpenses(db: Db, groupId: string) {
  * A page of the expense list, newest first: only these rows (not the group's whole
  * history), plus each payment's recipient.
  */
-export async function listEntryPage(db: Db, groupId: string, offset: number, limit: number) {
+/** A page of entries, newest first; with a query, the expenses whose title or note has it (#68) */
+export async function listEntryPage(
+	db: Db,
+	groupId: string,
+	offset: number,
+	limit: number,
+	query = ''
+) {
+	const pattern = likePattern(query);
 	const rows = await db
 		.select(expenseColumns)
 		.from(expenses)
-		.where(active(groupId))
+		.where(
+			query
+				? and(
+						active(groupId),
+						eq(expenses.type, 'expense'),
+						or(
+							sql`lower(${expenses.title}) like ${pattern} escape ${LIKE_ESCAPE}`,
+							sql`lower(${expenses.notes}) like ${pattern} escape ${LIKE_ESCAPE}`
+						)
+					)
+				: active(groupId)
+		)
 		.orderBy(desc(expenses.date), desc(expenses.createdAt))
 		.limit(limit)
 		.offset(offset);
@@ -131,6 +187,7 @@ export async function createExpense(
 			type: 'expense',
 			splitMode: input.splitMode,
 			title: input.title,
+			notes: input.notes,
 			amountCents: input.amountCents,
 			paidBy: input.paidBy,
 			date: input.date,
@@ -155,6 +212,7 @@ export async function updateExpense(
 			.update(expenses)
 			.set({
 				title: input.title,
+				notes: input.notes,
 				amountCents: input.amountCents,
 				paidBy: input.paidBy,
 				date: input.date,

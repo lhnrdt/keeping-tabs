@@ -90,7 +90,7 @@
 						disabled={submission.pending}
 						class="flex min-h-14 items-center gap-3 rounded-2xl bg-surface px-4 text-start text-lg font-medium shadow-[0_0_0_1px_rgb(37_40_34/0.08)] hover:bg-surface-muted focus-visible:ring-2 active:scale-[0.99] dark:bg-surface-night dark:hover:bg-surface-muted-night"
 					>
-						<Avatar id={member.avatarId} name={member.name} />
+						<Avatar id={member.avatarId} name={member.name} avatar={member.avatar} />
 						{m.join_i_am({ name: member.name })}
 					</button>
 				{/each}

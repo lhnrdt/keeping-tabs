@@ -1,13 +1,18 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
+import { todayInputValue } from '#lib/dates.ts';
 import type { ErrorCode } from '#lib/errors.ts';
 import { shownCount } from '#lib/group/expense-pages.ts';
-import { UNDO_PARAM } from '#lib/group/tabs.ts';
-import { balances } from '#lib/money.ts';
+import { readQuery } from '#lib/group/search.ts';
+import { currentTab, UNDO_PARAM } from '#lib/group/tabs.ts';
+import { groupInsights } from '#lib/insights/group.ts';
+import { defaultPeriod, parsePeriod } from '#lib/insights/period.ts';
+import { choiceToStore, isSection } from '#lib/insights/sections.ts';
+import { balances, parseAmount } from '#lib/money.ts';
 import { settleTransfers } from '#lib/settle.ts';
-import { formContext as context, requireGroup } from '#lib/server/context.ts';
+import { formContext as context, groupOf, membersOf, requireGroup } from '#lib/server/context.ts';
 import { entryPage } from '#lib/server/expense-entries.ts';
-import { findDeletedEntry, listExpenses, restoreEntry } from '#lib/server/expenses.ts';
+import { findDeletedEntry, listExpenses, listLedger, restoreEntry } from '#lib/server/expenses.ts';
 import { deleteGroup } from '#lib/server/group-deletion.ts';
 import { joinGroup, letJoinAgain, removeMember, stepBack } from '#lib/server/membership.ts';
 import {
@@ -15,37 +20,64 @@ import {
 	isUniqueViolation,
 	listMembers,
 	regenerateShareToken,
+	setBudget,
+	setInsightSections,
 	renameMember,
 	updateGroup
 } from '#lib/server/groups.ts';
-import { ensurePerson, setProfileName } from '#lib/server/people.ts';
+import { ensurePerson, personOf, setProfileName } from '#lib/server/people.ts';
 import {
 	parseDescription,
 	parseGroupName,
 	parseKind,
+	parseDate,
 	parseMemberName,
 	parseTint
 } from '#lib/validation.ts';
 import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ locals, parent, url }) => {
-	const { group, members } = await parent();
+export const load: PageServerLoad = async ({ locals, params, url }) => {
+	// Shared with the layout but not waiting for it (#58)
+	const group = await groupOf(locals, params.token);
+	const [members, person] = await Promise.all([membersOf(locals, group.id), personOf(locals)]);
+	const mine = members.find((member) => person && member.personId === person.id)?.id ?? null;
 	const shown = shownCount(url.searchParams.get('show'));
-	// Balances and settling up need everything; the list only its first page(s)
+	const query = readQuery(url.searchParams);
+	// Balances and settling up need only sums (#58), the list its first page(s); every entry
+	// only for the insights
 	const deletedId = url.searchParams.get(UNDO_PARAM);
-	const [expenses, page, justDeleted] = await Promise.all([
-		listExpenses(locals.db, group.id),
-		entryPage(locals.db, group.id, members.find((member) => member.mine)?.id ?? null, 0, shown),
+	const onInsights = currentTab(url) === 'insights';
+	const [ledger, expenses, page, justDeleted] = await Promise.all([
+		listLedger(locals.db, group.id),
+		onInsights ? listExpenses(locals.db, group.id) : undefined,
+		entryPage(locals.db, group.id, mine, 0, shown, query),
 		// Right after deleting: offer "Undo" (#78); gone once it's restored
 		deletedId ? findDeletedEntry(locals.db, group.id, deletedId) : undefined
 	]);
 	const memberIds = members.map((member) => member.id);
+	const today = todayInputValue();
+	const transfers = settleTransfers(group.simplifyDebts, memberIds, ledger);
 	return {
-		balances: Object.fromEntries(balances(memberIds, expenses)),
-		transfers: settleTransfers(group.simplifyDebts, memberIds, expenses),
+		balances: Object.fromEntries(balances(memberIds, ledger)),
+		transfers,
 		entries: page.entries,
 		hasMore: page.hasMore,
-		justDeleted: justDeleted ?? null
+		justDeleted: justDeleted ?? null,
+		query,
+		today,
+		// Only on its tab: everything else doesn't need it (#161)
+		insights:
+			onInsights && expenses
+				? groupInsights(
+						expenses,
+						memberIds,
+						mine,
+						transfers,
+						{ budget: group.budgetCents, endsOn: group.endsOn },
+						today,
+						parsePeriod(url.searchParams, defaultPeriod(group.kind, today))
+					)
+				: null
 	};
 };
 
@@ -164,6 +196,33 @@ export const actions: Actions = {
 		const { form, group, actorId } = await context(locals, params.token, request);
 		const entry = await findDeletedEntry(locals.db, group.id, String(form.get('entryId') ?? ''));
 		if (entry) await restoreEntry(locals.db, group.id, actorId, entry);
+	},
+
+	/** Which insights the group shows (#174); "reset" goes back to the type's suggestions */
+	insightSections: async ({ locals, params, request, url }) => {
+		const { form, group, actorId } = await context(locals, params.token, request);
+		const chosen = url.searchParams.has('reset') ? [] : form.getAll('section').filter(isSection);
+		await setInsightSections(locals.db, group.id, actorId, choiceToStore(group.kind, chosen));
+	},
+
+	/** A budget and end date for the insights (#168); "remove" clears both */
+	budget: async ({ locals, params, request, url }) => {
+		const { form, group, actorId } = await context(locals, params.token, request);
+		const invalid = (error: ErrorCode) => fail(400, { action: 'budget' as const, error });
+		if (url.searchParams.has('remove')) {
+			await setBudget(locals.db, group.id, actorId, { budgetCents: null, endsOn: null });
+			return;
+		}
+		const amount = String(form.get('amount') ?? '').trim();
+		const budgetCents = amount ? parseAmount(amount, group.currency) : null;
+		if (amount && budgetCents === null) return invalid('amount_invalid');
+		const date = String(form.get('endsOn') ?? '').trim();
+		const endsOn = date ? parseDate(date) : null;
+		if (endsOn && !endsOn.ok) return invalid(endsOn.error);
+		await setBudget(locals.db, group.id, actorId, {
+			budgetCents,
+			endsOn: endsOn?.ok ? endsOn.value : null
+		});
 	},
 
 	removeMember: async ({ locals, params, request }) => {

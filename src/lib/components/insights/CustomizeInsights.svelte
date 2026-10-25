@@ -1,0 +1,74 @@
+<script lang="ts">
+	// Choose which insights the group shows (#174): every section, the type's suggestions
+	// marked; saved for the whole group. "Back to suggested" forgets the choice.
+	import { Block, Button } from 'konsta/svelte';
+	import FormDialog from '#lib/components/group/FormDialog.svelte';
+	import Icon from '#lib/components/Icon.svelte';
+	import type { GroupKind } from '#lib/group/kinds.ts';
+	import { tabAction } from '#lib/group/tabs.ts';
+	import { m } from '#lib/paraglide/messages.js';
+	import { LAYOUTS, SECTIONS, type Section } from '#lib/insights/sections.ts';
+	import { sectionHints, sectionTitles } from './section-texts';
+
+	let { kind, shown }: { kind: GroupKind; shown: readonly Section[] } = $props();
+
+	let editing = $state(false);
+	const suggested = $derived(LAYOUTS[kind].sections);
+</script>
+
+<Block class="!mt-6">
+	<Button large rounded tonal type="button" class="gap-2" onclick={() => (editing = true)}>
+		<Icon name="edit" size={20} />
+		{m.insights_customize()}
+	</Button>
+</Block>
+
+<FormDialog
+	opened={editing}
+	title={m.insights_customize()}
+	action={tabAction('insightSections', 'insights')}
+	submitLabel={m.save()}
+	onClose={() => (editing = false)}
+>
+	<fieldset>
+		<legend class="mb-2 text-sm text-muted">{m.insights_customize_hint()}</legend>
+		<ul class="space-y-1">
+			{#each SECTIONS as section (section)}
+				<li>
+					<label
+						class="flex cursor-pointer items-start gap-3 rounded-xl px-1 py-2 has-focus-visible:ring-2"
+					>
+						<input
+							type="checkbox"
+							name="section"
+							value={section}
+							checked={shown.includes(section)}
+							class="mt-1 h-5 w-5 shrink-0 accent-accent dark:accent-accent-night"
+						/>
+						<span class="min-w-0">
+							<span class="block text-sm font-medium">
+								{sectionTitles[section]()}
+								{#if suggested.includes(section)}
+									<span
+										class="ms-1 rounded-full bg-surface-muted px-2 py-0.5 text-xs font-normal text-muted dark:bg-surface-muted-night"
+										>{m.insights_suggested()}</span
+									>
+								{/if}
+							</span>
+							<span class="block text-xs text-muted">{sectionHints[section]()}</span>
+						</span>
+					</label>
+				</li>
+			{/each}
+		</ul>
+	</fieldset>
+	<!-- Forgets the choice: the group type's suggestions again (red, like every reset) -->
+	<button
+		type="submit"
+		formaction={`${tabAction('insightSections', 'insights')}&reset`}
+		formnovalidate
+		class="mt-3 text-sm font-medium tone-destructive"
+	>
+		{m.insights_back_to_suggested()}
+	</button>
+</FormDialog>

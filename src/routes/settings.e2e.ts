@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { open } from './e2e-helpers';
+import { createGroup, open, openFold } from './e2e-helpers';
 
 test('settings are saved and follow you to another device', async ({ browser }) => {
 	test.setTimeout(60_000);
@@ -22,7 +22,8 @@ test('settings are saved and follow you to another device', async ({ browser }) 
 	await expect(phone.getByLabel('Dein Name')).toHaveValue('Anna');
 
 	// A second device linked to Anna starts in German and dark as well
-	await open(phone, '/device');
+	await open(phone, '/you/devices');
+	await openFold(phone, 'Weiteres Gerät hinzufügen');
 	await phone.getByRole('button', { name: 'Link erstellen' }).click();
 	const link = (await phone.getByRole('listitem', { name: 'One-Time-Link' }).innerText()).trim();
 	const laptop = await (await browser.newContext({ locale: 'en-US' })).newPage();
@@ -57,9 +58,12 @@ test('everything about you is in one place: profile, settings, devices (#146)', 
 	await page.getByLabel('Your name').press('Tab');
 	await expect(page.getByText('Saved').first()).toBeVisible();
 
-	// The start screen has a way to you, at the top
+	// The start screen has a way to you, at the top: the same menu as in a group (#156)
 	await open(page, '/');
-	await page.getByRole('link', { name: 'Profile' }).click();
+	await page.getByRole('link', { name: 'Anna', exact: true }).click();
+	const menu = page.getByRole('dialog', { name: 'Anna' });
+	await expect(menu.getByRole('link', { name: 'Devices & recovery' })).toBeVisible();
+	await menu.getByRole('link', { name: 'Profile' }).click();
 	await expect(page).toHaveURL(/\/you$/);
 	await expect(page.getByRole('heading', { name: 'Profile' })).toBeVisible();
 	await expect(page.getByText('Anna', { exact: true })).toBeVisible();
@@ -89,4 +93,25 @@ test('a nature theme switches at once and is remembered (#60)', async ({ page })
 	await open(page, '/you');
 	await page.getByRole('group', { name: 'Theme' }).getByText('Forest', { exact: true }).click();
 	await expect(page.locator('html')).not.toHaveAttribute('data-accent');
+});
+
+test('choose an avatar and see it wherever you appear (#61)', async ({ page }) => {
+	const groupUrl = await createGroup(page, 'Trip', 'Anna', ['Ben']);
+	await open(page, '/you');
+	await page.getByRole('group', { name: 'Color' }).getByTitle('Moss').click();
+	await page.getByRole('group', { name: 'Picture' }).getByTitle('Deer').click();
+	await expect(page.getByRole('radio', { name: 'Deer' })).toBeChecked();
+	await expect(page.getByText('Saved').first()).toBeVisible();
+
+	// In the group: your pill and balance show the deer, not initials
+	await open(page, `${groupUrl}?tab=group`);
+	const members = page.getByRole('list', { name: 'Members' });
+	await expect(members.locator('li').filter({ hasText: 'Anna' }).locator('svg')).toBeVisible();
+	await expect(
+		members.locator('li').filter({ hasText: 'Ben' }).locator('[data-initials="B"]')
+	).toBeVisible();
+
+	// And on the start screen's profile button, after a reload
+	await open(page, '/');
+	await expect(page.getByRole('link', { name: 'Anna', exact: true }).locator('svg')).toBeVisible();
 });

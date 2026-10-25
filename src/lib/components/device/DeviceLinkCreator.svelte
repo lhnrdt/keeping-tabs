@@ -2,6 +2,7 @@
 	// Creates a one-time link for another device and offers to share or copy it (A-14).
 	import { enhance } from '$app/forms';
 	import { Block, Button, List, ListItem, Toast } from 'konsta/svelte';
+	import CopyButton from '#lib/components/CopyButton.svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import SubmitButton from '#lib/components/SubmitButton.svelte';
 	import { Submission } from '#lib/forms/submission.svelte.ts';
@@ -28,11 +29,12 @@
 			aria-label={m.device_link_label()}
 		/>
 	</List>
-	<Block>
+	<Block class="grid grid-cols-2 gap-3">
 		<Button large rounded type="button" class="gap-2" onclick={() => share(link)}>
 			<Icon name="share" />
 			{m.share_button()}
 		</Button>
+		<CopyButton text={link} label={m.copy_link()} />
 	</Block>
 	<Toast position="center" opened={copied}>{m.share_copied()}</Toast>
 {:else}

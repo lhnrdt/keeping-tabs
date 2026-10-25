@@ -36,6 +36,16 @@ export function formatAmount(amount: number, currency: string, locale: string): 
 	);
 }
 
+/** Short, for chart axes: "€2K", "€500" */
+export function formatCompact(amount: number, currency: string, locale: string): string {
+	return new Intl.NumberFormat(locale, {
+		style: 'currency',
+		currency,
+		notation: 'compact',
+		maximumFractionDigits: 0
+	}).format(amount / 10 ** minorDigits(currency));
+}
+
 /**
  * Splits an amount equally. The remainder goes one unit each to the first
  * participants in the given order, so the shares always sum to the amount (E-5).

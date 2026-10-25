@@ -10,6 +10,7 @@
 	const values = $derived(
 		form?.values ?? {
 			title: '',
+			notes: '',
 			amount: '',
 			date: '',
 			paidBy: '',

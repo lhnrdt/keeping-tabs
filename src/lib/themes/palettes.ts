@@ -86,6 +86,17 @@ export const MEANING = {
 	dark: { positive: '#93b391', negative: '#dc9c86', destructive: '#e88a7f' }
 } as const;
 
+/**
+ * Chart series (#183): five hues in a fixed order, checked for colour-blind safety between
+ * neighbours (a donut's ring included), plus a grey for "everything else". The same in
+ * every theme, so a category keeps its colour.
+ */
+export const SERIES = {
+	light: ['#3a72b5', '#d8622f', '#24a073', '#e09b10', '#d5729c'],
+	dark: ['#4a86d0', '#e0703c', '#26a676', '#bd8216', '#d06f98'],
+	rest: { light: '#a29e95', dark: '#6f6b64' }
+} as const;
+
 export const isThemeId = (value: unknown): value is ThemeId => THEME_IDS.includes(value as ThemeId);
 
 /** Colors in Palette order, written compactly above */

@@ -3,7 +3,7 @@ import type { GroupKind } from '#lib/group/kinds.ts';
 import type { Tint } from '#lib/tints.ts';
 import { log } from './activity';
 import type { Db } from './db';
-import { groups, members } from './db/schema';
+import { groups, members, people } from './db/schema';
 import { newShareToken, SHARE_TOKEN_PATTERN } from './token';
 
 export async function findGroupByToken(db: Db, token: string) {
@@ -17,7 +17,10 @@ export async function findGroupByToken(db: Db, token: string) {
 			currency: true,
 			kind: true,
 			tint: true,
-			simplifyDebts: true
+			simplifyDebts: true,
+			insightSections: true,
+			budgetCents: true,
+			endsOn: true
 		},
 		where: and(eq(groups.shareToken, token), isNull(groups.deletedAt))
 	});
@@ -43,12 +46,20 @@ export async function isDeletedGroupToken(db: Db, token: string) {
 	return Boolean(group);
 }
 
+/** Current members, with the avatar their person chose (#61) */
 export function listMembers(db: Db, groupId: string) {
-	return db.query.members.findMany({
-		columns: { id: true, name: true, personId: true },
-		where: and(eq(members.groupId, groupId), isNull(members.deletedAt)),
-		orderBy: [asc(members.createdAt), asc(members.name)]
-	});
+	return db
+		.select({
+			id: members.id,
+			name: members.name,
+			personId: members.personId,
+			avatar: people.avatar,
+			paymentDetails: people.paymentDetails
+		})
+		.from(members)
+		.leftJoin(people, eq(members.personId, people.id))
+		.where(and(eq(members.groupId, groupId), isNull(members.deletedAt)))
+		.orderBy(asc(members.createdAt), asc(members.name));
 }
 
 /** Members who were removed (M-6): their past expenses still show their name. */
@@ -193,4 +204,30 @@ export async function listGroupsOf(db: Db, personId: string) {
 		.innerJoin(groups, eq(members.groupId, groups.id))
 		.where(and(eq(members.personId, personId), isNull(members.deletedAt), isNull(groups.deletedAt)))
 		.orderBy(desc(groups.createdAt));
+}
+
+/** Which insights the group shows (#174); null = its type's suggestions */
+export async function setInsightSections(
+	db: Db,
+	groupId: string,
+	actorId: string | null,
+	insightSections: string | null
+) {
+	await db.batch([
+		db.update(groups).set({ insightSections }).where(eq(groups.id, groupId)),
+		log(db, groupId, actorId, 'group.update', { insightSections })
+	]);
+}
+
+/** A trip's or event's budget and end date (#168); null clears either */
+export async function setBudget(
+	db: Db,
+	groupId: string,
+	actorId: string | null,
+	plan: { budgetCents: number | null; endsOn: string | null }
+) {
+	await db.batch([
+		db.update(groups).set(plan).where(eq(groups.id, groupId)),
+		log(db, groupId, actorId, 'group.update', plan)
+	]);
 }

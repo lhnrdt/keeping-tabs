@@ -42,6 +42,12 @@ export const groups = sqliteTable('groups', {
 	// Settle up via the fewest payments (A owes B, B owes C → A pays C) instead of paying
 	// back each person directly (B-6)
 	simplifyDebts: integer('simplify_debts', { mode: 'boolean' }).notNull().default(true),
+	// Insight sections chosen for this group, in order, e.g. "overTime,fixedCosts" (#174);
+	// null = the group type's suggestions
+	insightSections: text('insight_sections'),
+	// Budget (minor units) and end date for trips and events, both optional (#168)
+	budgetCents: integer('budget_cents'),
+	endsOn: text('ends_on'),
 	createdAt: createdAt(),
 	deletedAt: deletedAt()
 });
@@ -55,8 +61,12 @@ export const people = sqliteTable('people', {
 	locale: text('locale').$type<Locale>(),
 	theme: text('theme').$type<Theme>(),
 	accent: text('accent').$type<Accent>(),
+	// Chosen avatar, e.g. "deer:moss" (#61, src/lib/avatars.ts); null = initials, derived tint
+	avatar: text('avatar'),
 	// When they read the friendly note about what the app's creator can see (#112)
 	notedAt: integer('noted_at', { mode: 'timestamp_ms' }),
+	// How to pay them, e.g. a PayPal.me link or IBAN (#47); shown to people in their groups
+	paymentDetails: text('payment_details'),
 	// Hash of the person's recovery key, if they created one (A-16)
 	recoveryHash: text('recovery_hash').unique(),
 	createdAt: createdAt()
@@ -70,6 +80,9 @@ export const devices = sqliteTable(
 		personId: text('person_id')
 			.notNull()
 			.references(() => people.id),
+		// e.g. "Chrome · Android", from the browser; when it was last used (#126, at most daily)
+		label: text('label'),
+		lastSeenAt: integer('last_seen_at', { mode: 'timestamp_ms' }),
 		createdAt: createdAt()
 	},
 	(t) => [index('devices_person_idx').on(t.personId)]

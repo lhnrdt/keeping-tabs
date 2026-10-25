@@ -1,7 +1,7 @@
-import { requireGroup } from '#lib/server/context.ts';
-import { listFormerMembers, listMembers } from '#lib/server/groups.ts';
+import { groupOf, membersOf } from '#lib/server/context.ts';
+import { listFormerMembers } from '#lib/server/groups.ts';
 import { hasTakenPart } from '#lib/server/membership.ts';
-import { findPerson } from '#lib/server/people.ts';
+import { personOf } from '#lib/server/people.ts';
 import type { LayoutServerLoad } from './$types';
 
 /**
@@ -10,21 +10,23 @@ import type { LayoutServerLoad } from './$types';
  * the same in every group (A-13).
  */
 export const load: LayoutServerLoad = async ({ locals, params }) => {
-	const group = await requireGroup(locals.db, params.token);
+	const group = await groupOf(locals, params.token);
 	const [members, formerMembers, person] = await Promise.all([
-		listMembers(locals.db, group.id),
+		membersOf(locals, group.id),
 		listFormerMembers(locals.db, group.id),
-		findPerson(locals.db, locals.deviceKey)
+		personOf(locals)
 	]);
 	const mine = members.find((member) => person && member.personId === person.id);
 	return {
 		group,
-		members: members.map(({ id, name, personId }) => ({
+		members: members.map(({ id, name, personId, avatar, paymentDetails }) => ({
 			id,
 			name,
 			avatarId: personId ?? id,
+			avatar,
 			claimed: personId !== null,
-			mine: personId !== null && personId === person?.id
+			mine: personId !== null && personId === person?.id,
+			paymentDetails
 		})),
 		formerMembers,
 		// "Not you?" is possible until you've added or changed something here

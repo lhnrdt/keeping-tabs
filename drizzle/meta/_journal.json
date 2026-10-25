@@ -78,6 +78,41 @@
       "when": 1792863128480,
       "tag": "0010_person_accent",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1792866270918,
+      "tag": "0011_person_avatar",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1792870094048,
+      "tag": "0012_device_label_last_seen",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "6",
+      "when": 1792873629871,
+      "tag": "0013_group_insight_sections",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "6",
+      "when": 1792875908923,
+      "tag": "0014_group_budget",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "6",
+      "when": 1792946638044,
+      "tag": "0015_person_payment_details",
+      "breakpoints": true
     }
   ]
 }

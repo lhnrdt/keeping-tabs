@@ -1,6 +1,7 @@
 import { and, eq, gt, isNull } from 'drizzle-orm';
 import type { Accent, Locale, Theme } from '#lib/settings.ts';
 import type { Db } from './db';
+import { once } from './request-cache';
 import { deviceLinks, devices, people } from './db/schema';
 import { newRecoveryKey, normalizeRecoveryKey } from './recovery-key';
 import { hashSecret, randomSecret } from './secrets';
@@ -16,11 +17,21 @@ export type Person = {
 	locale: Locale | null;
 	theme: Theme | null;
 	accent: Accent | null;
+	avatar: string | null;
+	/** How to pay them (#47) */
+	paymentDetails: string | null;
 	/** When they read the friendly note (#112) */
 	notedAt: Date | null;
 };
 
 /** The person this device belongs to, if any. */
+/**
+ * For loads (#58): this device's person, looked up once per request and shared by the
+ * layouts and the page. Actions use findPerson, as they may change who that is.
+ */
+export const personOf = (locals: App.Locals) =>
+	once(locals, 'person', () => findPerson(locals.db, locals.deviceKey));
+
 export async function findPerson(db: Db, deviceKey: string): Promise<Person | undefined> {
 	const [row] = await db
 		.select({
@@ -29,6 +40,8 @@ export async function findPerson(db: Db, deviceKey: string): Promise<Person | un
 			locale: people.locale,
 			theme: people.theme,
 			accent: people.accent,
+			avatar: people.avatar,
+			paymentDetails: people.paymentDetails,
 			notedAt: people.notedAt
 		})
 		.from(devices)
@@ -46,7 +59,16 @@ export async function ensurePerson(db: Db, deviceKey: string): Promise<Person> {
 		db.insert(people).values({ id }),
 		db.insert(devices).values({ keyHash: await hashSecret(deviceKey), personId: id })
 	]);
-	return { id, name: null, locale: null, theme: null, accent: null, notedAt: null };
+	return {
+		id,
+		name: null,
+		locale: null,
+		theme: null,
+		accent: null,
+		avatar: null,
+		paymentDetails: null,
+		notedAt: null
+	};
 }
 
 /** Remembers the name someone uses, to pre-fill it next time (A-13). */
@@ -119,4 +141,13 @@ export async function restoreWithRecoveryKey(
 	if (!person) return false;
 	await attachDevice(db, deviceKey, person.id);
 	return true;
+}
+
+/** Whether the person has made a recovery key (#151, for the backup's status) */
+export async function hasRecoveryKey(db: Db, personId: string) {
+	const [row] = await db
+		.select({ hash: people.recoveryHash })
+		.from(people)
+		.where(eq(people.id, personId));
+	return Boolean(row?.hash);
 }

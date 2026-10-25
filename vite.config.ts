@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vitest/config';
@@ -11,7 +12,18 @@ if (!/^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$/.test(appVersion)) {
 	throw new Error(`APP_VERSION is not a semantic version: ${appVersion}`);
 }
 
+// `pnpm dev:phone` (scripts/dev-phone.ts): HTTPS with its self-signed certificate
+const devHttps = process.env.DEV_HTTPS;
+
 export default defineConfig({
+	server: devHttps
+		? {
+				https: {
+					key: readFileSync(`${devHttps}key.pem`),
+					cert: readFileSync(`${devHttps}cert.pem`)
+				}
+			}
+		: undefined,
 	plugins: [
 		tailwindcss(),
 		sveltekit({

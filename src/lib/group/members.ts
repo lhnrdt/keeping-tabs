@@ -4,9 +4,13 @@ export type Member = { id: string; name: string };
 export type GroupMember = Member & {
 	/** Stable per person across groups, for the avatar color (A-13) */
 	avatarId: string;
+	/** The person's chosen avatar, e.g. "deer:moss" (#61); null for initials */
+	avatar: string | null;
 	claimed: boolean;
 	/** Claimed by this device's person */
 	mine: boolean;
+	/** How to pay them (#47), from their profile */
+	paymentDetails?: string | null;
 };
 
 /** Member names by id, for showing who paid. */

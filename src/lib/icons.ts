@@ -2,7 +2,13 @@
 import IconBed from '@tabler/icons-svelte-runes/icons/bed';
 import IconBeer from '@tabler/icons-svelte-runes/icons/beer';
 import IconBus from '@tabler/icons-svelte-runes/icons/bus';
+import IconHistory from '@tabler/icons-svelte-runes/icons/history';
+import IconSearch from '@tabler/icons-svelte-runes/icons/search';
+import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
+import IconCalendarEvent from '@tabler/icons-svelte-runes/icons/calendar-event';
 import IconFirstAidKit from '@tabler/icons-svelte-runes/icons/first-aid-kit';
+import IconFlame from '@tabler/icons-svelte-runes/icons/flame';
+import IconMapPin from '@tabler/icons-svelte-runes/icons/map-pin';
 import IconGift from '@tabler/icons-svelte-runes/icons/gift';
 import IconShoppingBag from '@tabler/icons-svelte-runes/icons/shopping-bag';
 import IconShoppingCart from '@tabler/icons-svelte-runes/icons/shopping-cart';
@@ -14,7 +20,10 @@ import IconHeart from '@tabler/icons-svelte-runes/icons/heart';
 import IconHome from '@tabler/icons-svelte-runes/icons/home';
 import IconPlane from '@tabler/icons-svelte-runes/icons/plane';
 import IconToolsKitchen2 from '@tabler/icons-svelte-runes/icons/tools-kitchen-2';
+import IconChartBar from '@tabler/icons-svelte-runes/icons/chart-bar';
 import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
+import IconDeviceLaptop from '@tabler/icons-svelte-runes/icons/device-laptop';
+import IconDeviceMobile from '@tabler/icons-svelte-runes/icons/device-mobile';
 import IconChevronRight from '@tabler/icons-svelte-runes/icons/chevron-right';
 import IconTableExport from '@tabler/icons-svelte-runes/icons/table-export';
 import IconTableImport from '@tabler/icons-svelte-runes/icons/table-import';
@@ -49,7 +58,13 @@ export const icons = {
 	import: IconTableImport,
 	export: IconTableExport,
 	expand: IconChevronDown,
+	insights: IconChartBar,
+	phone: IconDeviceMobile,
+	computer: IconDeviceLaptop,
 	next: IconChevronRight,
+	previous: IconChevronLeft,
+	search: IconSearch,
+	activity: IconHistory,
 	member: IconUser,
 	payment: IconCash,
 	newLink: IconRefresh,
@@ -74,7 +89,11 @@ export const icons = {
 	categoryFun: IconTicket,
 	categoryShopping: IconShoppingBag,
 	categoryGifts: IconGift,
-	categoryHealth: IconFirstAidKit
+	categoryHealth: IconFirstAidKit,
+	// Highlights (src/lib/insights/highlights.ts)
+	day: IconCalendarEvent,
+	place: IconMapPin,
+	streak: IconFlame
 };
 
 export type IconName = keyof typeof icons;

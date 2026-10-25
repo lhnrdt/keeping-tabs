@@ -1,0 +1,23 @@
+/* LayerChart (#188) in the app's colours: its components read these, light and dark.
+   Tooltips are portaled outside the chart, hence both selectors. */
+.lc-root-container,
+.lc-tooltip-root {
+	--color-primary: var(--color-accent);
+	--color-surface-100: var(--color-surface);
+	--color-surface-200: var(--color-surface-muted);
+	--color-surface-300: var(--color-surface-muted);
+	--color-surface-content: var(--color-ink);
+	--color-success: var(--color-positive);
+	--color-danger: var(--color-negative);
+}
+
+:root.dark .lc-root-container,
+:root.dark .lc-tooltip-root {
+	--color-primary: var(--color-accent-night);
+	--color-surface-100: var(--color-surface-night);
+	--color-surface-200: var(--color-surface-muted-night);
+	--color-surface-300: var(--color-surface-muted-night);
+	--color-surface-content: var(--color-ink-night);
+	--color-success: var(--color-positive-night);
+	--color-danger: var(--color-negative-night);
+}

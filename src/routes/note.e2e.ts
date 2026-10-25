@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { createGroup, open } from './e2e-helpers';
+import { createGroup, open, openFold } from './e2e-helpers';
 
 test('a new person reads the friendly note once, also from a group link', async ({
 	page,
@@ -32,13 +32,15 @@ test('people who read it on one device are not asked on their others', async ({ 
 	await phone.getByRole('button', { name: 'Create group' }).click();
 	await expect(phone.getByTestId('identity')).toHaveText('Anna');
 
-	await open(phone, '/device');
+	await open(phone, '/you/devices');
+	await openFold(phone, 'Add another device');
 	await phone.getByRole('button', { name: 'Create link' }).click();
 	const link = (await phone.getByRole('listitem', { name: 'One-time link' }).innerText()).trim();
 	const laptop = await (await browser.newContext()).newPage();
 	await laptop.goto(link);
-	// A device link is an invitation too, and the note shows before the device is Anna
-	await laptop.getByRole('button', { name: 'Got it' }).click();
+	// No note on a device link: sent before the page is ready, it would lose the #token.
+	// Anna has read it already, so it doesn't come afterwards either.
+	await expect(laptop.getByRole('dialog', { name: 'Good to know' })).toHaveCount(0);
 	await laptop.getByRole('button', { name: 'Use this device' }).click();
 	await expect(laptop).toHaveURL(/\/$/);
 	await expect(laptop.getByRole('dialog', { name: 'Good to know' })).toHaveCount(0);

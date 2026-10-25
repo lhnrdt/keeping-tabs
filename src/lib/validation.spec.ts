@@ -5,6 +5,7 @@ import {
 	normalizeText,
 	parseDate,
 	parseExpense,
+	parseNote,
 	parsePayment,
 	parseKind,
 	parseTint,
@@ -81,6 +82,21 @@ describe('parseDate', () => {
 	});
 });
 
+describe('parseNote', () => {
+	it('keeps line breaks, trims, and has none when empty', () => {
+		expect(parseNote('  Includes the deposit\r\nand the keys  ')).toEqual({
+			ok: true,
+			value: 'Includes the deposit\nand the keys'
+		});
+		expect(parseNote('   ')).toEqual({ ok: true, value: null });
+		expect(parseNote(undefined)).toEqual({ ok: true, value: null });
+	});
+
+	it('has a length limit', () => {
+		expect(parseNote('x'.repeat(501))).toEqual({ ok: false, error: 'expense_note_too_long' });
+	});
+});
+
 describe('parseExpense', () => {
 	const group = { memberIds: ['a', 'b', 'c'], currency: 'EUR' };
 	const values = {
@@ -99,6 +115,7 @@ describe('parseExpense', () => {
 			ok: true,
 			value: {
 				title: 'Dinner',
+				notes: null,
 				amountCents: 3000,
 				date: '2026-10-21',
 				paidBy: 'b',

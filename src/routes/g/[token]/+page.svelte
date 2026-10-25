@@ -2,12 +2,15 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { BlockTitle, List, ListItem } from 'konsta/svelte';
+	import { onMount } from 'svelte';
+	import { loadGroupInsights, warmUp } from '#lib/components/insights/load.ts';
 	import AppPage from '#lib/components/AppPage.svelte';
 	import FloatingLink from '#lib/components/FloatingLink.svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import BalanceList from '#lib/components/group/BalanceList.svelte';
 	import BetweenYou from '#lib/components/group/BetweenYou.svelte';
 	import ExpenseList from '#lib/components/group/ExpenseList.svelte';
+	import ExpenseSearch from '#lib/components/group/ExpenseSearch.svelte';
 	import DeleteGroup from '#lib/components/group/DeleteGroup.svelte';
 	import GroupDetails from '#lib/components/group/GroupDetails.svelte';
 	import GroupHero from '#lib/components/group/GroupHero.svelte';
@@ -25,6 +28,9 @@
 
 	const tab = $derived(currentTab(page.url));
 	const errorFor = (action: string) => (form?.action === action ? form.error : undefined);
+
+	// Fetch the insights' charts while idle, so the tab opens without waiting
+	onMount(() => warmUp(loadGroupInsights));
 </script>
 
 <svelte:head>
@@ -45,21 +51,33 @@
 	{/snippet}
 
 	{#if tab === 'expenses'}
-		<BlockTitle>{m.expenses_title()}</BlockTitle>
-		<ExpenseList
-			token={data.group.shareToken}
-			currency={data.group.currency}
-			members={[...data.members, ...data.formerMembers]}
-			entries={data.entries}
-			hasMore={data.hasMore}
-		/>
+		<BlockTitle class="!mb-3">{m.expenses_title()}</BlockTitle>
+		{#if data.entries.length || data.query}
+			<ExpenseSearch query={data.query} />
+		{/if}
+		<!-- A new search starts the list (and its older pages) afresh -->
+		{#key data.query}
+			<ExpenseList
+				token={data.group.shareToken}
+				currency={data.group.currency}
+				members={[...data.members, ...data.formerMembers]}
+				entries={data.entries}
+				hasMore={data.hasMore}
+				query={data.query}
+			/>
+		{/key}
 		<FloatingLink
 			href={resolve('/g/[token]/expenses/new', { token: data.group.shareToken })}
 			icon="add"
 			label={m.add_expense()}
 		/>
 	{:else if tab === 'balances'}
-		<BetweenYou members={data.members} transfers={data.transfers} currency={data.group.currency} />
+		<BetweenYou
+			members={data.members}
+			transfers={data.transfers}
+			currency={data.group.currency}
+			group={data.group}
+		/>
 		<BlockTitle>{m.balances_title()}</BlockTitle>
 		<BalanceList currency={data.group.currency} members={data.members} balances={data.balances} />
 		<BlockTitle>{m.settle_title()}</BlockTitle>
@@ -69,6 +87,18 @@
 			members={data.members}
 			transfers={data.transfers}
 		/>
+	{:else if tab === 'insights' && data.insights}
+		<!-- Loaded with the tab, fetched ahead while idle (load.ts) -->
+		{#await loadGroupInsights() then { default: GroupInsights }}
+			<GroupInsights
+				insights={data.insights}
+				today={data.today}
+				budgetError={errorFor('budget')}
+				group={data.group}
+				members={data.members}
+				everyone={[...data.members, ...data.formerMembers]}
+			/>
+		{/await}
 	{:else}
 		<BlockTitle>{m.members_title()}</BlockTitle>
 		<PeoplePills
@@ -86,6 +116,15 @@
 		<ShareLink token={data.group.shareToken} groupName={data.group.name} />
 		<DeleteGroup groupId={data.group.id} name={data.group.name} />
 		<List strong inset>
+			<ListItem
+				link
+				title={m.activity_title()}
+				href={resolve('/g/[token]/activity', { token: data.group.shareToken })}
+			>
+				{#snippet media()}
+					<Icon name="activity" />
+				{/snippet}
+			</ListItem>
 			<ListItem
 				link
 				title={m.import_link()}

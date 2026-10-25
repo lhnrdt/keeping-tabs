@@ -15,11 +15,13 @@
 
 	const submission = new Submission();
 	let token = $state('');
+	/** Before the page script runs, a tap would send the form without the token */
+	let ready = $state(false);
 
 	onMount(() => {
+		// Stays in the address until it's used, so a reload still works. Once only anyway.
 		token = location.hash.slice(1);
-		// Keep the secret out of the history and anything that shows the URL
-		history.replaceState(history.state, '', location.pathname);
+		ready = true;
 	});
 </script>
 
@@ -31,9 +33,11 @@
 	<Block><p class="text-muted">{m.device_adopt_intro()}</p></Block>
 	<form method="POST" action="?/use" use:enhance={submission.enhance}>
 		<input type="hidden" name="token" value={token} />
-		<FormError error={form?.error} />
+		<FormError error={form?.error ?? (ready && !token ? 'device_link_invalid' : undefined)} />
 		<Block>
-			<SubmitButton pending={submission.pending}>{m.device_adopt_button()}</SubmitButton>
+			<SubmitButton pending={submission.pending} disabled={!token}
+				>{m.device_adopt_button()}</SubmitButton
+			>
 		</Block>
 	</form>
 </AppPage>

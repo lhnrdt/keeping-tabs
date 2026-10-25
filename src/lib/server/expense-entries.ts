@@ -13,11 +13,13 @@ export async function entryPage(
 	groupId: string,
 	me: string | null,
 	offset: number,
-	limit: number
+	limit: number,
+	/** Only the expenses matching this (#68) */
+	query = ''
 ) {
 	// One extra row tells whether there are more
 	const [rows, chosen, dataset] = await Promise.all([
-		listEntryPage(db, groupId, offset, limit + 1),
+		listEntryPage(db, groupId, offset, limit + 1, query),
 		listChosenCategories(db, groupId),
 		loadDataset()
 	]);

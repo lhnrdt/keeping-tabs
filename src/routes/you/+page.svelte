@@ -4,13 +4,17 @@
 	// Without JavaScript, each has its own Save button.
 	import { enhance, type SubmitFunction } from '$app/forms';
 	import { resolve } from '$app/paths';
-	import { Block, List, ListItem } from 'konsta/svelte';
+	import { Block, BlockTitle, List, ListItem } from 'konsta/svelte';
 	import AppPage from '#lib/components/AppPage.svelte';
+	import DeleteIdentity from '#lib/components/device/DeleteIdentity.svelte';
 	import Avatar from '#lib/components/Avatar.svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import Field from '#lib/components/Field.svelte';
 	import FormError from '#lib/components/FormError.svelte';
 	import AccentPicker from '#lib/components/pickers/AccentPicker.svelte';
+	import AvatarPicker from '#lib/components/pickers/AvatarPicker.svelte';
+	import { parseAvatar } from '#lib/avatars.ts';
+	import { tintFor } from '#lib/tints.ts';
 	import SegmentedPicker from '#lib/components/pickers/SegmentedPicker.svelte';
 	import SavedHint from '#lib/components/SavedHint.svelte';
 	import { m } from '#lib/paraglide/messages.js';
@@ -72,10 +76,23 @@
 <AppPage title={m.you_title()} back={{ href: resolve('/'), label: m.app_name() }}>
 	{#if data.name}
 		<div class="flex items-center gap-3 px-4 pt-4 pb-2">
-			<Avatar id={data.personId ?? ''} name={data.name} />
+			<Avatar id={data.personId ?? ''} name={data.name} avatar={data.avatar} />
 			<p class="font-display text-2xl font-semibold">{data.name}</p>
 		</div>
 	{/if}
+	<!-- Your avatar, shown wherever you appear (#61) -->
+	<form method="POST" action="?/avatar" use:enhance={saveQuietly} onchange={submitOnChange}>
+		<h2 class="mx-4 mt-4 mb-2 text-sm font-medium text-muted">{m.avatar_title()}</h2>
+		<AvatarPicker
+			id={data.personId ?? ''}
+			name={data.name}
+			value={parseAvatar(data.avatar) ?? { icon: null, tint: tintFor(data.personId ?? '') }}
+		/>
+		<SavedHint shown={saved === 'avatar'} />
+		<FormError error={errorFor('avatar')} />
+		<noscript><Block><button type="submit">{m.save()}</button></Block></noscript>
+	</form>
+
 	<form method="POST" action="?/name" use:enhance={saveQuietly} onchange={submitOnChange}>
 		<List strong inset class="!mb-2">
 			<Field
@@ -89,6 +106,23 @@
 		<Block class="!my-0"><p class="text-sm text-muted">{m.settings_name_hint()}</p></Block>
 		<SavedHint shown={saved === 'name'} />
 		<FormError error={errorFor('name')} />
+		<noscript><Block><button type="submit">{m.save()}</button></Block></noscript>
+	</form>
+
+	<form method="POST" action="?/payment" use:enhance={saveQuietly} onchange={submitOnChange}>
+		<List strong inset class="!mb-2">
+			<Field
+				label={m.field_payment_details()}
+				name="paymentDetails"
+				maxlength={LIMITS.paymentDetails}
+				autocomplete="off"
+				placeholder={m.payment_details_placeholder()}
+				value={data.paymentDetails}
+			/>
+		</List>
+		<Block class="!my-0"><p class="text-sm text-muted">{m.payment_details_hint()}</p></Block>
+		<SavedHint shown={saved === 'payment'} />
+		<FormError error={errorFor('payment')} />
 		<noscript><Block><button type="submit">{m.save()}</button></Block></noscript>
 	</form>
 
@@ -134,4 +168,9 @@
 			{/snippet}
 		</ListItem>
 	</List>
+
+	<!-- Removing you entirely, at the very end and in red (#151) -->
+	<BlockTitle class="!mb-2">{m.delete_identity_title()}</BlockTitle>
+	<Block class="!my-2"><p class="text-sm text-muted">{m.delete_identity_intro()}</p></Block>
+	<DeleteIdentity />
 </AppPage>

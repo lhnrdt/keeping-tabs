@@ -1,8 +1,8 @@
 <script lang="ts">
 	// Creates a recovery key and shows it once (A-16).
 	import { enhance } from '$app/forms';
-	import { Block, Button, Toast } from 'konsta/svelte';
-	import Icon from '#lib/components/Icon.svelte';
+	import { Block } from 'konsta/svelte';
+	import CopyButton from '#lib/components/CopyButton.svelte';
 	import SubmitButton from '#lib/components/SubmitButton.svelte';
 	import { Submission } from '#lib/forms/submission.svelte.ts';
 	import { m } from '#lib/paraglide/messages.js';
@@ -10,13 +10,6 @@
 	let { recoveryKey }: { recoveryKey?: string } = $props();
 
 	const submission = new Submission();
-	let copied = $state(false);
-
-	async function copy(key: string) {
-		await navigator.clipboard.writeText(key);
-		copied = true;
-		setTimeout(() => (copied = false), 2000);
-	}
 </script>
 
 {#if recoveryKey}
@@ -30,12 +23,8 @@
 		</p>
 	</Block>
 	<Block>
-		<Button large rounded tonal type="button" class="gap-2" onclick={() => copy(recoveryKey)}>
-			<Icon name="copy" />
-			{m.recovery_copy()}
-		</Button>
+		<CopyButton text={recoveryKey} label={m.recovery_copy()} />
 	</Block>
-	<Toast position="center" opened={copied}>{m.recovery_copied()}</Toast>
 {:else}
 	<form method="POST" action="?/createRecoveryKey" use:enhance={submission.enhance}>
 		<Block>
