@@ -5,6 +5,7 @@
 	import { BlockTitle } from 'konsta/svelte';
 	import Avatar from '#lib/components/Avatar.svelte';
 	import GroupTile from '#lib/components/GroupTile.svelte';
+	import { groupTabUrl } from '#lib/group/tabs.ts';
 	import { formatAmount } from '#lib/money.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
@@ -48,10 +49,12 @@
 		>
 			{#each spending.byGroup as group (group.id)}
 				<li>
+					<!-- eslint-disable svelte/no-navigation-without-resolve -- resolve() plus ?tab= -->
 					<a
-						href={resolve('/g/[token]', { token: group.token }) + '?tab=insights'}
+						href={groupTabUrl(resolve('/g/[token]', { token: group.token }), 'insights')}
 						class="flex items-center gap-3"
 					>
+						<!-- eslint-enable svelte/no-navigation-without-resolve -->
 						<GroupTile kind={group.kind} tint={group.tint} />
 						<span class="block min-w-0 flex-1">
 							<span class="flex items-baseline justify-between gap-2 text-sm">
