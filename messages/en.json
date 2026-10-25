@@ -3,6 +3,8 @@
 	"app_name": "Keeping Tabs",
 	"home_tagline": "Split shared expenses with friends. No signup.",
 	"between_you_title": "Between you and others",
+	"remind": "Remind",
+	"reminder_text": "Hi {name}, just a friendly reminder: you still owe me {amount} for “{group}”. {link}",
 	"between_you_settled": "You're even with everyone.",
 	"person_owes_you_label": "owes you",
 	"person_you_owe_label": "you owe",
