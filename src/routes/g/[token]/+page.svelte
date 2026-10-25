@@ -11,7 +11,6 @@
 	import DeleteGroup from '#lib/components/group/DeleteGroup.svelte';
 	import GroupDetails from '#lib/components/group/GroupDetails.svelte';
 	import GroupHero from '#lib/components/group/GroupHero.svelte';
-	import GroupInsights from '#lib/components/insights/GroupInsights.svelte';
 	import GroupTabs from '#lib/components/group/GroupTabs.svelte';
 	import IdentityButton from '#lib/components/group/IdentityButton.svelte';
 	import SettleUp from '#lib/components/group/SettleUp.svelte';
@@ -71,13 +70,17 @@
 			transfers={data.transfers}
 		/>
 	{:else if tab === 'insights' && data.insights}
-		<GroupInsights
-			insights={data.insights}
-			budgetError={errorFor('budget')}
-			group={data.group}
-			members={data.members}
-			everyone={[...data.members, ...data.formerMembers]}
-		/>
+		<!-- Loaded with the tab: the charts are the app's largest code (#188) -->
+		{#await import('#lib/components/insights/GroupInsights.svelte') then { default: GroupInsights }}
+			<GroupInsights
+				insights={data.insights}
+				today={data.today}
+				budgetError={errorFor('budget')}
+				group={data.group}
+				members={data.members}
+				everyone={[...data.members, ...data.formerMembers]}
+			/>
+		{/await}
 	{:else}
 		<BlockTitle>{m.members_title()}</BlockTitle>
 		<PeoplePills

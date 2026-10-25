@@ -26,6 +26,13 @@
 		return `${arrow} ${percent.format(ratio)}`;
 	}
 
+	const against: Record<NonNullable<Insights['change']>['against'], () => string> = {
+		day: m.insights_vs_day_before,
+		week: m.insights_vs_last_week,
+		month: m.insights_vs_last_month,
+		year: m.insights_vs_last_year
+	};
+
 	function tile(id: Tile) {
 		switch (id) {
 			case 'spent':
@@ -46,11 +53,9 @@
 				return { label: m.insights_expenses(), value: String(insights.count) };
 			case 'change': {
 				const text = changeText();
-				const unit =
-					insights.overTime.unit === 'month'
-						? m.insights_vs_last_month()
-						: m.insights_vs_last_week();
-				return text ? { label: unit, value: text } : null;
+				return text && insights.change
+					? { label: against[insights.change.against](), value: text }
+					: null;
 			}
 		}
 	}
