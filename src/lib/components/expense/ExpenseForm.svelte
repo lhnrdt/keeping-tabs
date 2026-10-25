@@ -17,6 +17,8 @@
 	import ParticipantChecklist from './ParticipantChecklist.svelte';
 	import SplitInputs from './SplitInputs.svelte';
 	import SplitModePicker from './SplitModePicker.svelte';
+	import TwoPersonPresets from './TwoPersonPresets.svelte';
+	import { presetOf } from '#lib/split/presets.ts';
 
 	type Props = {
 		members: Member[];
@@ -50,6 +52,15 @@
 	let amount = $derived(values.amount);
 	let mode = $derived<SplitMode>(isSplitMode(values.splitMode) ? values.splitMode : 'equal');
 	const paidBy = $derived(values.paidBy || identity.memberId || members[0]?.id);
+	// Two people: quick choices instead of the payer and split (#40), unless more is wanted
+	const pair = $derived.by(() => {
+		const me = identity.memberId;
+		const other = members.find((member) => member.id !== me);
+		return members.length === 2 && me && other ? { me, other } : null;
+	});
+	let preset = $derived(pair ? presetOf(values, { me: pair.me, other: pair.other.id }) : null);
+	let more = $state(false);
+	const quick = $derived(pair !== null && preset !== null && !more);
 	// Folded away until wanted, so the form stays short (#123)
 	let noting = $derived(values.notes !== '');
 </script>
@@ -65,7 +76,9 @@
 		/>
 		<AmountField bind:value={amount} {currency} />
 		<DateField value={values.date} />
-		<MemberSelect label={m.field_paid_by()} name="paidBy" {members} value={paidBy} />
+		{#if !quick}
+			<MemberSelect label={m.field_paid_by()} name="paidBy" {members} value={paidBy} />
+		{/if}
 		{#if noting}
 			<Field
 				label={m.field_note()}
@@ -90,20 +103,24 @@
 	{/if}
 
 	<BlockTitle>{m.field_split()}</BlockTitle>
-	<SplitModePicker bind:mode />
-	{#if mode === 'equal'}
-		<ParticipantChecklist {members} selected={values.participants} />
+	{#if quick && pair && preset}
+		<TwoPersonPresets me={pair.me} other={pair.other} bind:preset onMore={() => (more = true)} />
 	{:else}
-		<SplitInputs
-			{mode}
-			{members}
-			{currency}
-			{amount}
-			initial={{
-				mode: isSplitMode(values.splitMode) ? values.splitMode : 'equal',
-				inputs: values.inputs
-			}}
-		/>
+		<SplitModePicker bind:mode />
+		{#if mode === 'equal'}
+			<ParticipantChecklist {members} selected={values.participants} />
+		{:else}
+			<SplitInputs
+				{mode}
+				{members}
+				{currency}
+				{amount}
+				initial={{
+					mode: isSplitMode(values.splitMode) ? values.splitMode : 'equal',
+					inputs: values.inputs
+				}}
+			/>
+		{/if}
 	{/if}
 
 	<!-- A card, not a List: pickers are fieldsets, not list items (#79) -->
