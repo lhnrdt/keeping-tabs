@@ -30,7 +30,7 @@
 
 <figure class="mx-4 rounded-2xl bg-surface px-4 pt-3 pb-2 dark:bg-surface-night">
 	<ul class="mb-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted" aria-hidden="true">
-		{#each used as kind, i (kind)}
+		{#each used as kind (kind)}
 			<li class="flex items-center gap-1.5">
 				<span class="h-2.5 w-2.5 rounded-full" style:background-color={colorOf(KINDS.indexOf(kind))}
 				></span>{kindLabels[kind]()}
