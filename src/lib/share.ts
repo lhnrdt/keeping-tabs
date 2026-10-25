@@ -1,3 +1,5 @@
+import { copyText } from './clipboard';
+
 /**
  * Opens the system share sheet where available (G-4), otherwise copies the URL.
  * Returns "copied" when it fell back to the clipboard, so the caller can say so.
@@ -11,6 +13,5 @@ export async function shareOrCopy(title: string, url: string): Promise<'shared' 
 		}
 		return 'shared';
 	}
-	await navigator.clipboard.writeText(url);
-	return 'copied';
+	return (await copyText(url)) ? 'copied' : 'shared';
 }
