@@ -65,6 +65,8 @@ export const people = sqliteTable('people', {
 	avatar: text('avatar'),
 	// When they read the friendly note about what the app's creator can see (#112)
 	notedAt: integer('noted_at', { mode: 'timestamp_ms' }),
+	// How to pay them, e.g. a PayPal.me link or IBAN (#47); shown to people in their groups
+	paymentDetails: text('payment_details'),
 	// Hash of the person's recovery key, if they created one (A-16)
 	recoveryHash: text('recovery_hash').unique(),
 	createdAt: createdAt()

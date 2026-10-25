@@ -109,6 +109,23 @@
 		<noscript><Block><button type="submit">{m.save()}</button></Block></noscript>
 	</form>
 
+	<form method="POST" action="?/payment" use:enhance={saveQuietly} onchange={submitOnChange}>
+		<List strong inset class="!mb-2">
+			<Field
+				label={m.field_payment_details()}
+				name="paymentDetails"
+				maxlength={LIMITS.paymentDetails}
+				autocomplete="off"
+				placeholder={m.payment_details_placeholder()}
+				value={data.paymentDetails}
+			/>
+		</List>
+		<Block class="!my-0"><p class="text-sm text-muted">{m.payment_details_hint()}</p></Block>
+		<SavedHint shown={saved === 'payment'} />
+		<FormError error={errorFor('payment')} />
+		<noscript><Block><button type="submit">{m.save()}</button></Block></noscript>
+	</form>
+
 	<!-- A plain post: the page is served again, so the new language applies everywhere -->
 	<form method="POST" action="?/language" onchange={submitOnChange}>
 		<input type="hidden" name="next" value={resolve('/you')} />

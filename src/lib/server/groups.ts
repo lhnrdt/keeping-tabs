@@ -53,7 +53,8 @@ export function listMembers(db: Db, groupId: string) {
 			id: members.id,
 			name: members.name,
 			personId: members.personId,
-			avatar: people.avatar
+			avatar: people.avatar,
+			paymentDetails: people.paymentDetails
 		})
 		.from(members)
 		.leftJoin(people, eq(members.personId, people.id))

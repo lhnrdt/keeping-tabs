@@ -35,7 +35,8 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
 		locale: getLocale(),
 		theme: isTheme(theme) ? theme : (person?.theme ?? 'system'),
 		accent: isAccent(accent) ? accent : (person?.accent ?? DEFAULT_ACCENT),
-		avatar: person?.avatar ?? null
+		avatar: person?.avatar ?? null,
+		paymentDetails: person?.paymentDetails ?? ''
 	};
 };
 
@@ -51,6 +52,17 @@ export const actions: Actions = {
 		const person = await ensurePerson(locals.db, locals.deviceKey);
 		await saveSettings(locals.db, person.id, { name });
 		return { setting: 'name' };
+	},
+
+	/** How to pay you (#47), shown to people in your groups when they pay you */
+	payment: async ({ locals, request }) => {
+		const details = normalizeText((await request.formData()).get('paymentDetails'));
+		if (details.length > LIMITS.paymentDetails) {
+			return fail(400, { setting: 'payment', error: 'payment_details_too_long' as ErrorCode });
+		}
+		const person = await ensurePerson(locals.db, locals.deviceKey);
+		await saveSettings(locals.db, person.id, { paymentDetails: details || null });
+		return { setting: 'payment' };
 	},
 
 	/** Your avatar (#61): an icon or "initials", on a tint */
