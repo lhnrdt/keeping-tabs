@@ -36,6 +36,22 @@ export function positionOverTime(entries: readonly Entry[], memberId: string): P
 }
 
 /**
+ * A position within a period (#184): the days in it, starting from the balance carried in
+ * at its first day, so the line begins where the member stood
+ */
+export function positionWithin(
+	points: readonly Point[],
+	range: { from: string; to: string } | null
+) {
+	if (!range) return [...points];
+	const before = points.filter((point) => point.date < range.from).at(-1);
+	const within = points.filter((point) => point.date >= range.from && point.date <= range.to);
+	return before && within[0]?.date !== range.from
+		? [{ date: range.from, balance: before.balance }, ...within]
+		: within;
+}
+
+/**
  * Since when a member has owed without a break: the first day of the run of days on which
  * their balance has been below zero up to now. null when they don't owe.
  */

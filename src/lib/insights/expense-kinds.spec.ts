@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fixedCosts, kindsOf } from './expense-kinds';
+import { fixedCosts, fixedCostsWithin, kindsOf } from './expense-kinds';
 
 let next = 0;
 const expense = (date: string, title: string, amountCents: number) => ({
@@ -83,5 +83,22 @@ describe('fixedCosts', () => {
 			month: '2026-03',
 			amount: 0
 		});
+	});
+});
+
+describe('fixedCostsWithin', () => {
+	it('keeps the months of a period, and the costs that occur in it', () => {
+		const rows = [
+			...['2026-01', '2026-02', '2026-03'].map((month) => expense(`${month}-01`, 'Netflix', 1399)),
+			...['2026-01', '2026-02', '2026-03'].map((month) => expense(`${month}-02`, 'Gym', 3000))
+		];
+		const [march] = fixedCostsWithin(fixedCosts(rows), {
+			from: '2026-03-01',
+			to: '2026-03-31'
+		}).filter((cost) => cost.title === 'Netflix');
+		expect(march.months).toEqual([{ month: '2026-03', amount: 1399 }]);
+		expect(fixedCostsWithin(fixedCosts(rows), { from: '2026-05-01', to: '2026-05-31' })).toEqual(
+			[]
+		);
 	});
 });
