@@ -1,5 +1,5 @@
-import { requireGroup } from '#lib/server/context.ts';
-import { listFormerMembers, listMembers } from '#lib/server/groups.ts';
+import { groupOf, membersOf } from '#lib/server/context.ts';
+import { listFormerMembers } from '#lib/server/groups.ts';
 import { hasTakenPart } from '#lib/server/membership.ts';
 import { personOf } from '#lib/server/people.ts';
 import type { LayoutServerLoad } from './$types';
@@ -10,9 +10,9 @@ import type { LayoutServerLoad } from './$types';
  * the same in every group (A-13).
  */
 export const load: LayoutServerLoad = async ({ locals, params }) => {
-	const group = await requireGroup(locals.db, params.token);
+	const group = await groupOf(locals, params.token);
 	const [members, formerMembers, person] = await Promise.all([
-		listMembers(locals.db, group.id),
+		membersOf(locals, group.id),
 		listFormerMembers(locals.db, group.id),
 		personOf(locals)
 	]);
