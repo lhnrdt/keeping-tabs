@@ -19,13 +19,14 @@ export const load: LayoutServerLoad = async ({ locals, params }) => {
 	const mine = members.find((member) => person && member.personId === person.id);
 	return {
 		group,
-		members: members.map(({ id, name, personId, avatar }) => ({
+		members: members.map(({ id, name, personId, avatar, paymentDetails }) => ({
 			id,
 			name,
 			avatarId: personId ?? id,
 			avatar,
 			claimed: personId !== null,
-			mine: personId !== null && personId === person?.id
+			mine: personId !== null && personId === person?.id,
+			paymentDetails
 		})),
 		formerMembers,
 		// "Not you?" is possible until you've added or changed something here

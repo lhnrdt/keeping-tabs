@@ -9,6 +9,8 @@ export type GroupMember = Member & {
 	claimed: boolean;
 	/** Claimed by this device's person */
 	mine: boolean;
+	/** How to pay them (#47), from their profile */
+	paymentDetails?: string | null;
 };
 
 /** Member names by id, for showing who paid. */
