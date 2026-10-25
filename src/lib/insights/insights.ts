@@ -4,6 +4,7 @@ import type { ExpenseCategory } from '#lib/expense/categories.ts';
 import type { Transfer } from '#lib/settle.ts';
 import { fixedCosts, kindsOf, KINDS, type FixedCost, type Kind } from './expense-kinds';
 import { highlightsOf, type Highlight } from './highlights';
+import { categoriesByMonth, seriesCategories, type MonthCategories } from './monthly';
 import { owingSince, paidBack, positionOverTime, type Point } from './standing';
 
 export type InsightEntry = {
@@ -53,6 +54,8 @@ export type Insights = {
 	/** The latest week or month against the one before (not for day-by-day spans) */
 	change: { current: number; previous: number } | null;
 	byCategory: CategoryShare[];
+	/** Each month by category (#183): the group's largest categories, then the rest */
+	byMonth: { series: ExpenseCategory[]; months: MonthCategories[] };
 	/** Fixed, everyday, occasional, big: how much of each (#167) */
 	byKind: KindShare[];
 	/** The recurring costs, largest first (#167) */
@@ -180,6 +183,8 @@ export function insightsOf(
 		const kind = kinds.get(expense.id)!;
 		kindAmounts.set(kind, (kindAmounts.get(kind) ?? 0) + expense.amountCents);
 	}
+	const categories = total > 0 ? byCategory(expenses, total) : [];
+	const series = seriesCategories(categories);
 	const withoutBig = expenses.filter((expense) => kinds.get(expense.id) !== 'big');
 	return {
 		total,
@@ -199,7 +204,8 @@ export function insightsOf(
 			unit !== 'day' && buckets.length >= 2
 				? { current: buckets.at(-1)!.amount, previous: buckets.at(-2)!.amount }
 				: null,
-		byCategory: total > 0 ? byCategory(expenses, total) : [],
+		byCategory: categories,
+		byMonth: { series, months: categoriesByMonth(expenses, series) },
 		byKind: KINDS.filter((kind) => kindAmounts.has(kind)).map((kind) => ({
 			kind,
 			amount: kindAmounts.get(kind)!,
