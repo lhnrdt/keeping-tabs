@@ -72,7 +72,12 @@
 			label={m.add_expense()}
 		/>
 	{:else if tab === 'balances'}
-		<BetweenYou members={data.members} transfers={data.transfers} currency={data.group.currency} />
+		<BetweenYou
+			members={data.members}
+			transfers={data.transfers}
+			currency={data.group.currency}
+			group={data.group}
+		/>
 		<BlockTitle>{m.balances_title()}</BlockTitle>
 		<BalanceList currency={data.group.currency} members={data.members} balances={data.balances} />
 		<BlockTitle>{m.settle_title()}</BlockTitle>
