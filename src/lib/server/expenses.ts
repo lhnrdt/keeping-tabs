@@ -1,6 +1,7 @@
 import { and, desc, eq, inArray, isNotNull, isNull, or, sql } from 'drizzle-orm';
 import { LIKE_ESCAPE, likePattern } from '#lib/group/search.ts';
 
+import { ledgerEntries } from '#lib/ledger.ts';
 import type { ExpenseInput } from '#lib/validation.ts';
 import { log, type Action } from './activity';
 import type { Db } from './db';
@@ -19,6 +20,31 @@ const expenseColumns = {
 
 export const active = (groupId: string) =>
 	and(eq(expenses.groupId, groupId), isNull(expenses.deletedAt));
+
+/**
+ * The group's ledger in two sums (#58): what each member paid, and each payer–member total.
+ * Enough for balances and settling up without sending every entry (ledger.ts).
+ */
+export async function listLedger(db: Db, groupId: string) {
+	const [paid, shares] = await db.batch([
+		db
+			.select({ paidBy: expenses.paidBy, amountCents: sql<number>`sum(${expenses.amountCents})` })
+			.from(expenses)
+			.where(active(groupId))
+			.groupBy(expenses.paidBy),
+		db
+			.select({
+				paidBy: expenses.paidBy,
+				memberId: expenseSplits.memberId,
+				shareCents: sql<number>`sum(${expenseSplits.shareCents})`
+			})
+			.from(expenseSplits)
+			.innerJoin(expenses, eq(expenseSplits.expenseId, expenses.id))
+			.where(active(groupId))
+			.groupBy(expenses.paidBy, expenseSplits.memberId)
+	]);
+	return ledgerEntries(paid, shares);
+}
 
 /** Current expenses with their splits, newest first (E-9). */
 export async function listExpenses(db: Db, groupId: string) {
