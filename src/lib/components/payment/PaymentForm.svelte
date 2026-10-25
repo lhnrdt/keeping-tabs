@@ -29,14 +29,21 @@
 </script>
 
 <GroupForm {error} {submitLabel}>
-	<List strong inset>
-		<MemberSelect label={m.field_payment_from()} name="from" {members} value={values.from} />
-		<div onchange={(event) => (to = (event.target as HTMLSelectElement).value)} class="contents">
+	<!-- Listens around the list, so the list keeps only list items -->
+	<div
+		class="contents"
+		onchange={(event) => {
+			const field = event.target as HTMLSelectElement;
+			if (field.name === 'to') to = field.value;
+		}}
+	>
+		<List strong inset>
+			<MemberSelect label={m.field_payment_from()} name="from" {members} value={values.from} />
 			<MemberSelect label={m.field_payment_to()} name="to" {members} value={values.to} />
-		</div>
-		<AmountField value={values.amount} {currency} />
-		<DateField value={values.date} />
-	</List>
+			<AmountField value={values.amount} {currency} />
+			<DateField value={values.date} />
+		</List>
+	</div>
 	{#if details}
 		<Block strong inset class="!my-2">
 			<p class="text-sm text-muted">{m.payment_details_of({ name: toName })}</p>
