@@ -28,13 +28,16 @@
 		entries: Entry[];
 		/** Whether there are older entries */
 		hasMore: boolean;
+		/** Only the expenses matching this, when searching (#68) */
+		query?: string;
 	};
 
-	let { token, currency, members, entries, hasMore }: Props = $props();
+	let { token, currency, members, entries, hasMore, query = '' }: Props = $props();
 
 	// Older pages load while scrolling (seamless); the link is the fallback without JS
 	const older = new OlderEntries(
-		(offset) => `${resolve('/g/[token]/entries', { token })}?offset=${offset}`
+		(offset) =>
+			`${resolve('/g/[token]/entries', { token })}?${new URLSearchParams({ offset: String(offset), q: query })}`
 	);
 	const expenses = $derived(uniqueById([...entries, ...older.items]));
 	const more = $derived(older.more ?? hasMore);
@@ -160,5 +163,5 @@
 		</p>
 	{/if}
 {:else}
-	<EmptyState text={m.expenses_empty()} />
+	<EmptyState text={query ? m.search_none({ query }) : m.expenses_empty()} />
 {/if}
