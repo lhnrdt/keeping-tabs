@@ -421,5 +421,12 @@
 	"recap_top_category": "Vor allem {category}: {share}",
 	"recap_share": "Rückblick teilen",
 	"recap_copied": "Kopiert",
-	"recap_share_text": "{name}, {dates}: {total} in {days} Tagen, {perPerson} pro Person"
+	"recap_share_text": "{name}, {dates}: {total} in {days} Tagen, {perPerson} pro Person",
+	"spending_title": "Deine Ausgaben",
+	"spending_total": "Dein Anteil über all deine Gruppen",
+	"spending_other_currencies": "Gruppen in {currencies} sind hier nicht mitgezählt.",
+	"spending_by_month": "Pro Monat",
+	"spending_by_group": "Pro Gruppe",
+	"spending_shared_with": "Am meisten geteilt mit",
+	"spending_shared_hint": "Dein Anteil an dem, was ihr gemeinsam hattet"
 }

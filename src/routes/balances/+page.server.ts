@@ -4,5 +4,5 @@ import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const person = await findPerson(locals.db, locals.deviceKey);
-	return { people: person ? await peopleOverview(locals.db, person.id) : [] };
+	return person ? await peopleOverview(locals.db, person.id) : { people: [], spending: null };
 };
