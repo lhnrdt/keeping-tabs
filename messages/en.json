@@ -415,5 +415,11 @@
 	"highlight_place": "{title}: {count} times, {amount} in all",
 	"highlight_most_often": "{name} paid {times} of {count} times",
 	"highlight_streak": "{days} days in a row with expenses, from {date}",
-	"highlight_weekday": "Most goes on {weekday}s: {share}"
+	"highlight_weekday": "Most goes on {weekday}s: {share}",
+	"insights_recap": "Recap",
+	"section_recap_hint": "Once it's over: the whole thing in a few numbers",
+	"recap_top_category": "Mostly {category}: {share}",
+	"recap_share": "Share recap",
+	"recap_copied": "Copied",
+	"recap_share_text": "{name}, {dates}: {total} in {days} days, {perPerson} per person"
 }

@@ -19,6 +19,8 @@
 	import HowOften from './HowOften.svelte';
 	import OverTimeChart from './OverTimeChart.svelte';
 	import PositionChart from './PositionChart.svelte';
+	import Recap from './Recap.svelte';
+	import { sectionTitles } from './section-texts';
 	import Settling from './Settling.svelte';
 	import StatTiles from './StatTiles.svelte';
 	import WhoPays from './WhoPays.svelte';
@@ -28,6 +30,7 @@
 		/** The budget form's error, if it was just sent */
 		budgetError: ErrorCode | undefined;
 		group: {
+			name: string;
 			kind: GroupKind;
 			currency: string;
 			shareToken: string;
@@ -45,38 +48,23 @@
 	// The group's own choice, else what suits its type (#174)
 	const chosen = $derived(sectionsFor(group.kind, group.insightSections));
 	const names = $derived(namesById(everyone));
-	const titles: Record<Section, () => string> = {
-		budget: m.insights_budget,
-		highlights: m.insights_highlights,
-		overTime: m.insights_over_time,
-		categories: m.insights_by_category,
-		kinds: m.insights_kinds,
-		fixedCosts: m.insights_fixed,
-		biggest: m.insights_biggest,
-		whoPays: m.insights_who_pays,
-		howOften: m.insights_how_often,
-		myPosition: m.insights_position,
-		settling: m.insights_settling
+	// Whether a section has something to show; who-pays ones need two people to compare
+	const hasData: Record<Section, () => boolean> = {
+		recap: () => insights.recap !== null,
+		budget: () => true,
+		highlights: () => insights.highlights.length > 0,
+		overTime: () => true,
+		categories: () => true,
+		kinds: () => insights.byKind.length > 1,
+		fixedCosts: () => insights.fixed.length > 0,
+		biggest: () => true,
+		whoPays: () => insights.byMember.length > 1,
+		howOften: () => insights.byMember.length > 1,
+		myPosition: () => (insights.position?.length ?? 0) > 1,
+		settling: () =>
+			insights.byMember.length > 1 && insights.settling.paidBack + insights.settling.open > 0
 	};
-	// Who-pays sections need at least two people to compare
-	const shown = $derived(
-		chosen.filter((section) =>
-			section === 'whoPays' || section === 'howOften'
-				? insights.byMember.length > 1
-				: section === 'fixedCosts'
-					? insights.fixed.length > 0
-					: section === 'highlights'
-						? insights.highlights.length > 0
-						: section === 'kinds'
-							? insights.byKind.length > 1
-							: section === 'myPosition'
-								? (insights.position?.length ?? 0) > 1
-								: section === 'settling'
-									? insights.byMember.length > 1 &&
-										insights.settling.paidBack + insights.settling.open > 0
-									: true
-		)
-	);
+	const shown = $derived(chosen.filter((section) => hasData[section]()));
 </script>
 
 {#if insights.count === 0}
@@ -84,8 +72,10 @@
 {:else}
 	<div class="pt-4"><StatTiles {insights} currency={group.currency} tiles={layout.tiles} /></div>
 	{#each shown as section (section)}
-		<BlockTitle class="!mb-2">{titles[section]()}</BlockTitle>
-		{#if section === 'budget'}
+		<BlockTitle class="!mb-2">{sectionTitles[section]()}</BlockTitle>
+		{#if section === 'recap' && insights.recap}
+			<Recap recap={insights.recap} name={group.name} currency={group.currency} />
+		{:else if section === 'budget'}
 			<Budget view={insights.budget} currency={group.currency} error={budgetError} />
 		{:else if section === 'highlights'}
 			<Highlights highlights={insights.highlights} {members} {names} currency={group.currency} />

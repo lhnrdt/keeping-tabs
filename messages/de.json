@@ -415,5 +415,11 @@
 	"highlight_place": "{title}: {count}-mal, insgesamt {amount}",
 	"highlight_most_often": "{name} hat {times} von {count} Mal bezahlt",
 	"highlight_streak": "{days} Tage am Stück mit Ausgaben, ab {date}",
-	"highlight_weekday": "An {weekday}en geht am meisten drauf: {share}"
+	"highlight_weekday": "An {weekday}en geht am meisten drauf: {share}",
+	"insights_recap": "Rückblick",
+	"section_recap_hint": "Wenn alles vorbei ist: das Ganze in ein paar Zahlen",
+	"recap_top_category": "Vor allem {category}: {share}",
+	"recap_share": "Rückblick teilen",
+	"recap_copied": "Kopiert",
+	"recap_share_text": "{name}, {dates}: {total} in {days} Tagen, {perPerson} pro Person"
 }
