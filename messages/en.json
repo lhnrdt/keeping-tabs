@@ -11,6 +11,7 @@
 	"person_you_owe": "you owe {amount}",
 	"people_groups": "Groups with {name}",
 	"home_your_groups": "Your groups",
+	"home_settled_groups": "Settled groups ({count})",
 	"create_title": "Start a group",
 	"field_group_name": "Group name",
 	"field_description": "Description (optional)",
