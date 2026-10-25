@@ -198,3 +198,21 @@
 	--negative-night: #dc9c86;
 	--destructive-night: #e88a7f;
 }
+
+:root {
+	--chart-1: #3a72b5;
+	--chart-2: #d8622f;
+	--chart-3: #24a073;
+	--chart-4: #e09b10;
+	--chart-5: #d5729c;
+	--chart-rest: #a29e95;
+}
+
+:root.dark {
+	--chart-1: #4a86d0;
+	--chart-2: #e0703c;
+	--chart-3: #26a676;
+	--chart-4: #bd8216;
+	--chart-5: #d06f98;
+	--chart-rest: #6f6b64;
+}
