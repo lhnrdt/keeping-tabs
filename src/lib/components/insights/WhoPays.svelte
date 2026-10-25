@@ -1,6 +1,7 @@
 <script lang="ts">
-	// Who pays (#161): per person a dumbbell on one scale, what they paid (filled dot) and
-	// their share (ring), the gap between them labelled: who paid more than their share.
+	// Who pays (#185): per person how much more or less they paid than their share, as a bar
+	// from a centre line (more to the right, less to the left) on one scale, the amount in
+	// words beside it, and what they paid and their share below.
 	import Avatar from '#lib/components/Avatar.svelte';
 	import type { GroupMember } from '#lib/group/members.ts';
 	import { formatAmount } from '#lib/money.ts';
@@ -13,65 +14,55 @@
 	let { rows, members, currency }: Props = $props();
 
 	const byId = $derived(new Map(members.map((member) => [member.id, member])));
-	const scale = $derived(Math.max(1, ...rows.flatMap((row) => [row.paid, row.share])));
-	const at = (amount: number) => `${(amount / scale) * 100}%`;
+	const reach = $derived(Math.max(1, ...rows.map((row) => Math.abs(row.paid - row.share))));
+	/** Half the track is the largest difference */
+	const width = (gap: number) => `${(Math.abs(gap) / reach) * 50}%`;
 	const money = (amount: number) => formatAmount(amount, currency, getLocale());
 </script>
 
-<div class="mx-4 rounded-2xl bg-surface px-4 py-3 dark:bg-surface-night">
-	<!-- The legend: which dot is which -->
-	<p class="mb-3 flex gap-4 text-xs text-muted">
-		<span class="flex items-center gap-1.5"
-			><span class="h-2.5 w-2.5 rounded-full bg-accent dark:bg-accent-night"
-			></span>{m.insights_paid()}</span
-		>
-		<span class="flex items-center gap-1.5"
-			><span class="h-2.5 w-2.5 rounded-full border-2 border-accent dark:border-accent-night"
-			></span>{m.insights_share()}</span
-		>
-	</p>
-	<ul class="space-y-4" aria-label={m.insights_who_pays()}>
-		{#each rows as row (row.memberId)}
-			{@const member = byId.get(row.memberId)}
-			{@const gap = row.paid - row.share}
-			{#if member}
-				<li>
-					<div class="mb-1.5 flex items-center gap-2">
-						<Avatar id={member.avatarId} name={member.name} avatar={member.avatar} size="sm" />
-						<span class="flex-1 truncate text-sm font-medium">{member.name}</span>
+<ul
+	class="mx-4 space-y-4 rounded-2xl bg-surface px-4 py-4 dark:bg-surface-night"
+	aria-label={m.insights_who_pays()}
+>
+	{#each rows as row (row.memberId)}
+		{@const member = byId.get(row.memberId)}
+		{@const gap = row.paid - row.share}
+		{#if member}
+			<li>
+				<div class="flex items-center gap-2">
+					<Avatar id={member.avatarId} name={member.name} avatar={member.avatar} size="sm" />
+					<span class="min-w-0 flex-1 truncate text-sm font-medium">{member.name}</span>
+					<span
+						class="text-sm {gap > 0 ? 'tone-positive' : gap < 0 ? 'tone-negative' : 'text-muted'}"
+					>
+						{gap > 0
+							? m.insights_paid_more({ amount: money(gap) })
+							: gap < 0
+								? m.insights_paid_less({ amount: money(-gap) })
+								: m.insights_paid_even()}
+					</span>
+				</div>
+				<!-- The centre line is their share: right of it they paid more, left of it less -->
+				<div class="relative mt-2 h-2.5" aria-hidden="true">
+					<span class="absolute inset-y-0 w-full rounded-full bg-ink/5 dark:bg-ink-night/10"></span>
+					<span
+						class="absolute -inset-y-1 left-1/2 w-px -translate-x-1/2 bg-ink/30 dark:bg-ink-night/30"
+					></span>
+					{#if gap !== 0}
 						<span
-							class="text-sm {gap > 0 ? 'tone-positive' : gap < 0 ? 'tone-negative' : 'text-muted'}"
-						>
-							{gap > 0
-								? m.insights_paid_more({ amount: money(gap) })
-								: gap < 0
-									? m.insights_paid_less({ amount: money(-gap) })
-									: m.insights_paid_even()}
-						</span>
-					</div>
-					<div class="relative h-4" aria-hidden="true">
-						<span class="absolute top-1/2 h-px w-full bg-ink/10 dark:bg-ink-night/15"></span>
-						<span
-							class="absolute top-1/2 h-0.5 -translate-y-1/2 bg-accent/50 dark:bg-accent-night/50"
-							style:left={at(Math.min(row.paid, row.share))}
-							style:width={at(Math.abs(gap))}
+							class="absolute inset-y-0 {gap > 0
+								? 'left-1/2 rounded-r-full bg-positive dark:bg-positive-night'
+								: 'right-1/2 rounded-l-full bg-negative dark:bg-negative-night'}"
+							style:width={width(gap)}
 						></span>
-						<span
-							class="absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-accent bg-surface dark:border-accent-night dark:bg-surface-night"
-							style:left={at(row.share)}
-						></span>
-						<span
-							class="absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent ring-2 ring-surface dark:bg-accent-night dark:ring-surface-night"
-							style:left={at(row.paid)}
-						></span>
-					</div>
-					<p class="sr-only">
-						{m.insights_paid()}
-						{money(row.paid)}, {m.insights_share()}
-						{money(row.share)}
-					</p>
-				</li>
-			{/if}
-		{/each}
-	</ul>
-</div>
+					{/if}
+				</div>
+				<p class="mt-1.5 text-xs text-muted">
+					{m.insights_paid()}
+					{money(row.paid)} · {m.insights_share()}
+					{money(row.share)}
+				</p>
+			</li>
+		{/if}
+	{/each}
+</ul>
