@@ -432,6 +432,7 @@
 	"period_day": "Day",
 	"period_previous": "Previous",
 	"period_next": "Next",
+	"period_choose": "Choose another",
 	"period_empty": "Nothing spent in this period.",
 	"insights_vs_last_year": "vs. last year",
 	"insights_vs_day_before": "vs. the day before",

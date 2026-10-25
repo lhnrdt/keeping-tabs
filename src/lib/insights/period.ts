@@ -92,6 +92,17 @@ export function canStep(period: Period, span: DateRange | null, by: -1 | 1) {
 	return by < 0 ? next.to >= span.from : next.from <= span.to;
 }
 
+/** Every year, month or day from the group's first expense to its last, oldest first */
+export function periodsWithin(kind: Exclude<PeriodKind, 'all'>, span: DateRange): string[] {
+	const list: string[] = [];
+	const last = atOf(kind, span.to);
+	for (let at = atOf(kind, span.from); at <= last;) {
+		list.push(at);
+		at = (stepPeriod({ kind, at }, 1) as { at: string }).at;
+	}
+	return list;
+}
+
 /** The chart's columns for a period; for all of it, they follow its length */
 export const unitFor = (period: Period): Unit | null =>
 	period.kind === 'year' ? 'month' : period.kind === 'month' ? 'day' : null;
