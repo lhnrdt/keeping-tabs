@@ -11,6 +11,7 @@
 	"person_you_owe": "du schuldest {amount}",
 	"people_groups": "Gruppen mit {name}",
 	"home_your_groups": "Deine Gruppen",
+	"home_settled_groups": "Ausgeglichene Gruppen ({count})",
 	"create_title": "Gruppe erstellen",
 	"field_group_name": "Gruppenname",
 	"field_description": "Beschreibung (optional)",

@@ -46,6 +46,15 @@ export async function listLedger(db: Db, groupId: string) {
 	return ledgerEntries(paid, shares);
 }
 
+/** The date of the group's latest entry, if any (#46) */
+export async function lastEntryDate(db: Db, groupId: string) {
+	const [row] = await db
+		.select({ date: sql<string | null>`max(${expenses.date})` })
+		.from(expenses)
+		.where(active(groupId));
+	return row?.date ?? null;
+}
+
 /** Current expenses with their splits, newest first (E-9). */
 export async function listExpenses(db: Db, groupId: string) {
 	const [rows, splits] = await db.batch([

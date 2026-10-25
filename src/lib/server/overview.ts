@@ -4,7 +4,7 @@ import { balances } from '#lib/money.ts';
 import { betweenYou, summarizePeople } from '#lib/people-summary.ts';
 import { settleTransfers } from '#lib/settle.ts';
 import type { Db } from './db';
-import { listExpenses, listLedger } from './expenses';
+import { lastEntryDate, listExpenses, listLedger } from './expenses';
 import { listGroupsOf, listMembers } from './groups';
 
 type YourGroup = Awaited<ReturnType<typeof listGroupsOf>>[number];
@@ -31,7 +31,10 @@ export async function yourGroupsWithBalances(db: Db, personId: string) {
 	const groups = await listGroupsOf(db, personId);
 	return Promise.all(
 		groups.map(async (group) => {
-			const { members, ledger, transfers } = await settle(db, group);
+			const [{ members, ledger, transfers }, lastEntry] = await Promise.all([
+				settle(db, group),
+				lastEntryDate(db, group.id)
+			]);
 			const names = new Map(members.map((member) => [member.id, member.name]));
 			const { id, name, token, currency, kind, tint, memberId } = group;
 			return {
@@ -42,6 +45,7 @@ export async function yourGroupsWithBalances(db: Db, personId: string) {
 				kind,
 				tint,
 				balance: balances([memberId], ledger).get(memberId) ?? 0,
+				lastEntry,
 				open: betweenYou(transfers, memberId).map(({ memberId: other, amount }) => ({
 					name: names.get(other) ?? '?',
 					amount
