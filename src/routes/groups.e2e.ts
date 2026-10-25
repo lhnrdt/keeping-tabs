@@ -339,3 +339,13 @@ test('a note on an expense, folded away until wanted (#123)', async ({ page }) =
 	await page.getByRole('button', { name: 'Save' }).click();
 	await expect(page.getByRole('link', { name: /Kaution/ })).not.toContainText('with a note');
 });
+test('copy the group link to pass it on (#124)', async ({ page }) => {
+	const groupUrl = await createGroup(page, 'Flat', 'Anna', ['Ben']);
+	await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+	await open(page, `${groupUrl}?tab=group`);
+	await page.getByRole('button', { name: 'Copy link' }).click();
+	await expect(page.getByRole('button', { name: 'Copied' })).toBeVisible();
+	expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(groupUrl);
+	// Back to its label after a moment
+	await expect(page.getByRole('button', { name: 'Copy link' })).toBeVisible({ timeout: 5000 });
+});

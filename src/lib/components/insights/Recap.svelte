@@ -2,6 +2,7 @@
 	// A recap for a finished trip or event (#163): when it was, what it came to, and the
 	// story in two lines, on a card with the theme's motif. Shareable as text.
 	import { Button } from 'konsta/svelte';
+	import { copyText } from '#lib/clipboard.ts';
 	import Icon from '#lib/components/Icon.svelte';
 	import ThemeMotif from '#lib/components/illustrations/ThemeMotif.svelte';
 	import { categoryLabels } from '#lib/expense/category-style.ts';
@@ -55,7 +56,10 @@
 				await navigator.share({ text });
 				return;
 			}
-			await navigator.clipboard.writeText(text);
+			if (!(await copyText(text))) {
+				window.prompt(m.recap_share(), text);
+				return;
+			}
 			copied = true;
 			setTimeout(() => (copied = false), 2000);
 		} catch {
@@ -101,6 +105,6 @@
 	{/if}
 	<Button rounded tonal small type="button" class="mt-4 gap-1.5" onclick={share}>
 		<Icon name={copied ? 'check' : 'share'} size={16} />
-		<span aria-live="polite">{copied ? m.recap_copied() : m.recap_share()}</span>
+		<span aria-live="polite">{copied ? m.copied() : m.recap_share()}</span>
 	</Button>
 </article>

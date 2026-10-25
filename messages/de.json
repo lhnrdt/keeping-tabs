@@ -187,7 +187,6 @@
 	"recovery_replace_hint": "Ein neuer Recovery-Key macht ältere ungültig.",
 	"recovery_shown": "Dein Recovery-Key. Speichere ihn jetzt, er wird nicht noch einmal angezeigt.",
 	"recovery_copy": "Recovery-Key kopieren",
-	"recovery_copied": "Recovery-Key kopiert",
 	"restore_title": "Recovery",
 	"restore_intro": "Gerät verloren oder Browserdaten gelöscht? Gib deinen Recovery-Key ein, um auf diesem Gerät wieder du zu sein.",
 	"field_recovery_key": "Recovery-Key",
@@ -420,7 +419,6 @@
 	"section_recap_hint": "Wenn alles vorbei ist: das Ganze in ein paar Zahlen",
 	"recap_top_category": "Vor allem {category}: {share}",
 	"recap_share": "Rückblick teilen",
-	"recap_copied": "Kopiert",
 	"recap_share_text": "{name}, {dates}: {total} in {days} Tagen, {perPerson} pro Person",
 	"period_label": "Zeitraum",
 	"period_all": "Alles",
@@ -448,5 +446,7 @@
 	"field_note": "Notiz",
 	"add_note": "+ Notiz hinzufügen",
 	"has_note": "mit Notiz",
-	"error_expense_note_too_long": "Die Notiz ist zu lang (höchstens 500 Zeichen)."
+	"error_expense_note_too_long": "Die Notiz ist zu lang (höchstens 500 Zeichen).",
+	"copy_link": "Link kopieren",
+	"copied": "Kopiert"
 }
