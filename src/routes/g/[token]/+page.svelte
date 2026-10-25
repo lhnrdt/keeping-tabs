@@ -2,6 +2,8 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { BlockTitle, List, ListItem } from 'konsta/svelte';
+	import { onMount } from 'svelte';
+	import { loadGroupInsights, warmUp } from '#lib/components/insights/load.ts';
 	import AppPage from '#lib/components/AppPage.svelte';
 	import FloatingLink from '#lib/components/FloatingLink.svelte';
 	import Icon from '#lib/components/Icon.svelte';
@@ -26,6 +28,9 @@
 
 	const tab = $derived(currentTab(page.url));
 	const errorFor = (action: string) => (form?.action === action ? form.error : undefined);
+
+	// Fetch the insights' charts while idle, so the tab opens without waiting
+	onMount(() => warmUp(loadGroupInsights));
 </script>
 
 <svelte:head>
@@ -78,8 +83,8 @@
 			transfers={data.transfers}
 		/>
 	{:else if tab === 'insights' && data.insights}
-		<!-- Loaded with the tab: the charts are the app's largest code (#188) -->
-		{#await import('#lib/components/insights/GroupInsights.svelte') then { default: GroupInsights }}
+		<!-- Loaded with the tab, fetched ahead while idle (load.ts) -->
+		{#await loadGroupInsights() then { default: GroupInsights }}
 			<GroupInsights
 				insights={data.insights}
 				today={data.today}

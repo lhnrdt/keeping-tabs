@@ -5,7 +5,7 @@
 	import AppPage from '#lib/components/AppPage.svelte';
 	import EmptyState from '#lib/components/EmptyState.svelte';
 	import PeopleSummary from '#lib/components/home/PeopleSummary.svelte';
-	import YourSpending from '#lib/components/insights/YourSpending.svelte';
+	import { loadYourSpending } from '#lib/components/insights/load.ts';
 	import YourBalance from '#lib/components/YourBalance.svelte';
 	import { totalsByCurrency } from '#lib/money.ts';
 	import { m } from '#lib/paraglide/messages.js';
@@ -31,7 +31,10 @@
 		<EmptyState text={m.between_you_settled()} role="status" />
 	{/if}
 	{#if data.spending}
-		<YourSpending spending={data.spending} />
+		<!-- The charts load after the balances are on screen -->
+		{#await loadYourSpending() then { default: YourSpending }}
+			<YourSpending spending={data.spending} />
+		{/await}
 	{/if}
 	<div class="h-6"></div>
 </AppPage>
