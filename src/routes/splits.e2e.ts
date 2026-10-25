@@ -14,6 +14,8 @@ test('split by percentages, with a live remainder, and edit it again', async ({ 
 	const groupUrl = await createGroup(page, 'Flat', 'Anna', ['Ben']);
 
 	await addExpense(page, 'Rent', '1000');
+	// Two people get quick choices first (#40); percentages are among the more options
+	await page.getByRole('button', { name: 'More options' }).click();
 	await choose(page, 'Split', 'Percent');
 	await page.getByLabel('Percent for Anna').fill('40');
 	await expect(page.getByTestId('split-summary')).toHaveText('40 % of 100 %, 60 % left');
