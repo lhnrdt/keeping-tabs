@@ -4,7 +4,8 @@ import type { ExpenseCategory } from '#lib/expense/categories.ts';
 import type { Transfer } from '#lib/settle.ts';
 import { fixedCosts, kindsOf, KINDS, type FixedCost, type Kind } from './expense-kinds';
 import { highlightsOf, type Highlight } from './highlights';
-import { categoriesByMonth, seriesCategories, type MonthCategories } from './monthly';
+import { seriesCategories, slicesOf, type Slice } from './category-slices';
+import { inRange, type DateRange } from './period';
 import { owingSince, paidBack, positionOverTime, type Point } from './standing';
 
 export type InsightEntry = {
@@ -51,11 +52,12 @@ export type Insights = {
 		/** The same without big one-offs, when there are any (#167) */
 		withoutBig: Bucket[] | null;
 	};
-	/** The latest week or month against the one before (not for day-by-day spans) */
-	change: { current: number; previous: number } | null;
+	/** This period against the one before; for all of it, the latest week or month */
+	change: { current: number; previous: number; against: 'day' | Unit | 'year' } | null;
 	byCategory: CategoryShare[];
-	/** Each month by category (#183): the group's largest categories, then the rest */
-	byMonth: { series: ExpenseCategory[]; months: MonthCategories[] };
+	/** The period by category for the donut (#183): the group's largest categories keep
+	 * their colour in every period, the others are the rest */
+	donut: { series: ExpenseCategory[]; slices: Slice[] };
 	/** Fixed, everyday, occasional, big: how much of each (#167) */
 	byKind: KindShare[];
 	/** The recurring costs, largest first (#167) */
@@ -105,8 +107,12 @@ function nextStart(iso: string, unit: Unit): string {
 	return toIso(date);
 }
 
-/** Every bucket from the first to the last expense, empty ones included */
-export function overTime(expenses: readonly InsightEntry[], unit: Unit): Bucket[] {
+/** Every bucket from the first to the last expense (or over the whole range), empty ones included */
+export function overTime(
+	expenses: readonly InsightEntry[],
+	unit: Unit,
+	range: DateRange | null = null
+): Bucket[] {
 	if (expenses.length === 0) return [];
 	const sums = new Map<string, number>();
 	for (const { date, amountCents } of expenses) {
@@ -114,8 +120,10 @@ export function overTime(expenses: readonly InsightEntry[], unit: Unit): Bucket[
 		sums.set(start, (sums.get(start) ?? 0) + amountCents);
 	}
 	const starts = [...sums.keys()].sort();
+	const first = range ? bucketStart(range.from, unit) : starts[0];
+	const last = range ? bucketStart(range.to, unit) : starts.at(-1)!;
 	const buckets: Bucket[] = [];
-	for (let start = starts[0]; start <= starts.at(-1)!; start = nextStart(start, unit)) {
+	for (let start = first; start <= last; start = nextStart(start, unit)) {
 		buckets.push({ start, amount: sums.get(start) ?? 0 });
 	}
 	return buckets;
@@ -159,32 +167,66 @@ export function byMember(expenses: readonly InsightEntry[], memberIds: readonly 
 	return [...rows.values()];
 }
 
+/** A period against the one before; for all of it, the latest week or month against the one before */
+function changeOf(
+	range: DateRange | null,
+	previous: number | null,
+	total: number,
+	buckets: readonly Bucket[],
+	unit: Unit
+): Insights['change'] {
+	if (range && previous !== null) {
+		const days =
+			Math.round((toDate(range.to).getTime() - toDate(range.from).getTime()) / DAY_MS) + 1;
+		const against = days === 1 ? 'day' : days <= 31 ? 'month' : 'year';
+		return { current: total, previous, against };
+	}
+	if (range || unit === 'day' || buckets.length < 2) return null;
+	return { current: buckets.at(-1)!.amount, previous: buckets.at(-2)!.amount, against: unit };
+}
+
 export function insightsOf(
 	entries: readonly InsightEntry[],
 	memberIds: readonly string[],
 	you: string | null,
 	/** The group's settle-up payments (as on the balances tab) */
-	transfers: readonly Transfer[] = []
+	transfers: readonly Transfer[] = [],
+	/**
+	 * The period to sum up (#184), the one before it for the change, and its chart columns.
+	 * What needs the whole history (fixed costs, kinds of costs, colours, your position,
+	 * settling up) still looks at everything.
+	 */
+	period: { range?: DateRange | null; previous?: DateRange | null; unit?: Unit | null } = {}
 ): Insights {
-	const expenses = entries.filter((entry) => entry.type === 'expense');
+	const everything = entries.filter((entry) => entry.type === 'expense');
+	const range = period.range ?? null;
+	const expenses = everything.filter((expense) => inRange(expense.date, range));
 	const total = expenses.reduce((sum, { amountCents }) => sum + amountCents, 0);
 	const dates = expenses.map(({ date }) => date).sort();
 	const first = dates[0] ?? null;
 	const last = dates.at(-1) ?? null;
 	const days =
 		first && last ? Math.round((toDate(last).getTime() - toDate(first).getTime()) / DAY_MS) + 1 : 0;
-	const unit = unitFor(days);
-	const buckets = overTime(expenses, unit);
+	const unit = period.unit ?? unitFor(days);
+	const buckets = overTime(expenses, unit, range);
 	const members = byMember(expenses, memberIds);
-	const kinds = kindsOf(expenses);
-	const fixed = fixedCosts(expenses);
+	const kinds = kindsOf(everything);
+	const fixed = fixedCosts(everything);
 	const kindAmounts = new Map<Kind, number>();
 	for (const expense of expenses) {
 		const kind = kinds.get(expense.id)!;
 		kindAmounts.set(kind, (kindAmounts.get(kind) ?? 0) + expense.amountCents);
 	}
 	const categories = total > 0 ? byCategory(expenses, total) : [];
-	const series = seriesCategories(categories);
+	const everythingTotal = everything.reduce((sum, { amountCents }) => sum + amountCents, 0);
+	const series = seriesCategories(
+		everythingTotal > 0 ? byCategory(everything, everythingTotal) : []
+	);
+	const previous = period.previous
+		? everything
+				.filter((expense) => inRange(expense.date, period.previous!))
+				.reduce((sum, { amountCents }) => sum + amountCents, 0)
+		: null;
 	const withoutBig = expenses.filter((expense) => kinds.get(expense.id) !== 'big');
 	return {
 		total,
@@ -198,14 +240,11 @@ export function insightsOf(
 		overTime: {
 			unit,
 			buckets,
-			withoutBig: withoutBig.length < expenses.length ? overTime(withoutBig, unit) : null
+			withoutBig: withoutBig.length < expenses.length ? overTime(withoutBig, unit, range) : null
 		},
-		change:
-			unit !== 'day' && buckets.length >= 2
-				? { current: buckets.at(-1)!.amount, previous: buckets.at(-2)!.amount }
-				: null,
+		change: changeOf(range, previous, total, buckets, unit),
 		byCategory: categories,
-		byMonth: { series, months: categoriesByMonth(expenses, series) },
+		donut: { series, slices: slicesOf(expenses, series) },
 		byKind: KINDS.filter((kind) => kindAmounts.has(kind)).map((kind) => ({
 			kind,
 			amount: kindAmounts.get(kind)!,

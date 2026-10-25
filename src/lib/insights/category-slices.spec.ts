@@ -1,11 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { categoriesByMonth, seriesCategories } from './monthly';
+import { seriesCategories, slicesOf } from './category-slices';
 
 const expense = (
-	date: string,
 	amountCents: number,
-	category: Parameters<typeof categoriesByMonth>[0][number]['category']
-) => ({ date, amountCents, category });
+	category: Parameters<typeof slicesOf>[0][number]['category']
+) => ({
+	amountCents,
+	category
+});
 
 describe('seriesCategories', () => {
 	it('takes the five largest, in the fixed category order', () => {
@@ -25,41 +27,28 @@ describe('seriesCategories', () => {
 	});
 });
 
-describe('categoriesByMonth', () => {
-	const series = ['groceries', 'dining'] as const;
-
-	it('sums each month by category, the others as the rest', () => {
-		const months = categoriesByMonth(
-			[
-				expense('2026-08-02', 3000, 'groceries'),
-				expense('2026-08-20', 2000, 'dining'),
-				expense('2026-08-21', 500, 'gifts'),
-				expense('2026-08-25', 1000, 'groceries')
-			],
-			series
-		);
-		expect(months).toEqual([
-			{
-				month: '2026-08-01',
-				total: 6500,
-				slices: [
-					{ category: 'groceries', amount: 4000 },
-					{ category: 'dining', amount: 2000 },
-					{ category: 'rest', amount: 500 }
-				]
-			}
+describe('slicesOf', () => {
+	it('sums by category in the series order, the others as the rest', () => {
+		expect(
+			slicesOf(
+				[
+					expense(1000, 'dining'),
+					expense(3000, 'groceries'),
+					expense(500, 'gifts'),
+					expense(1000, 'groceries')
+				],
+				['groceries', 'dining']
+			)
+		).toEqual([
+			{ category: 'groceries', amount: 4000 },
+			{ category: 'dining', amount: 1000 },
+			{ category: 'rest', amount: 500 }
 		]);
 	});
 
-	it('keeps empty months in between', () => {
-		const months = categoriesByMonth(
-			[expense('2026-06-10', 1000, 'dining'), expense('2026-08-10', 1000, 'dining')],
-			series
-		);
-		expect(months.map(({ month, total }) => [month, total])).toEqual([
-			['2026-06-01', 1000],
-			['2026-07-01', 0],
-			['2026-08-01', 1000]
+	it('leaves out what wasn’t spent on', () => {
+		expect(slicesOf([expense(1000, 'dining')], ['groceries', 'dining'])).toEqual([
+			{ category: 'dining', amount: 1000 }
 		]);
 	});
 });

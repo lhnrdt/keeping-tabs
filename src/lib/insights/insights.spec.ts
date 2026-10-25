@@ -89,7 +89,7 @@ describe('insightsOf', () => {
 		);
 		expect(overTime.unit).toBe('month');
 		expect(overTime.buckets).toHaveLength(9);
-		expect(change).toEqual({ current: 200, previous: 300 });
+		expect(change).toEqual({ current: 200, previous: 300, against: 'month' });
 	});
 
 	it('orders categories by amount and folds the small ones into the rest', () => {
