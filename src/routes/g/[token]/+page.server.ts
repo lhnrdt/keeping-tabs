@@ -5,6 +5,7 @@ import type { ErrorCode } from '#lib/errors.ts';
 import { shownCount } from '#lib/group/expense-pages.ts';
 import { currentTab, UNDO_PARAM } from '#lib/group/tabs.ts';
 import { groupInsights } from '#lib/insights/group.ts';
+import { defaultPeriod, parsePeriod } from '#lib/insights/period.ts';
 import { choiceToStore, isSection } from '#lib/insights/sections.ts';
 import { balances, parseAmount } from '#lib/money.ts';
 import { settleTransfers } from '#lib/settle.ts';
@@ -46,6 +47,7 @@ export const load: PageServerLoad = async ({ locals, parent, url }) => {
 		deletedId ? findDeletedEntry(locals.db, group.id, deletedId) : undefined
 	]);
 	const memberIds = members.map((member) => member.id);
+	const today = todayInputValue();
 	const transfers = settleTransfers(group.simplifyDebts, memberIds, expenses);
 	return {
 		balances: Object.fromEntries(balances(memberIds, expenses)),
@@ -53,6 +55,7 @@ export const load: PageServerLoad = async ({ locals, parent, url }) => {
 		entries: page.entries,
 		hasMore: page.hasMore,
 		justDeleted: justDeleted ?? null,
+		today,
 		// Only on its tab: everything else doesn't need it (#161)
 		insights:
 			currentTab(url) === 'insights'
@@ -62,7 +65,8 @@ export const load: PageServerLoad = async ({ locals, parent, url }) => {
 						members.find((member) => member.mine)?.id ?? null,
 						transfers,
 						{ budget: group.budgetCents, endsOn: group.endsOn },
-						todayInputValue()
+						today,
+						parsePeriod(url.searchParams, defaultPeriod(group.kind, today))
 					)
 				: null
 	};

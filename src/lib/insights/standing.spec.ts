@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { owingSince, paidBack, positionOverTime } from './standing';
+import { owingSince, paidBack, positionOverTime, positionWithin } from './standing';
 
 /** Paid by `paidBy`, split equally between Anna and Ben */
 const expense = (date: string, amountCents: number, paidBy: string) => ({
@@ -53,5 +53,26 @@ describe('owingSince', () => {
 describe('paidBack', () => {
 	it('adds up the payments', () => {
 		expect(paidBack(history)).toBe(2000);
+	});
+});
+
+describe('positionWithin', () => {
+	const points = [
+		{ date: '2026-08-05', balance: 1000 },
+		{ date: '2026-09-03', balance: 1500 },
+		{ date: '2026-09-20', balance: -200 },
+		{ date: '2026-10-02', balance: 0 }
+	];
+
+	it('starts from where you stood when the period began', () => {
+		expect(positionWithin(points, { from: '2026-09-01', to: '2026-09-30' })).toEqual([
+			{ date: '2026-09-01', balance: 1000 },
+			{ date: '2026-09-03', balance: 1500 },
+			{ date: '2026-09-20', balance: -200 }
+		]);
+	});
+
+	it('is all of it without a period', () => {
+		expect(positionWithin(points, null)).toEqual(points);
 	});
 });

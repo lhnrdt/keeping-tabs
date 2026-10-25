@@ -106,3 +106,18 @@ function nextMonth(month: string) {
 	const [year, number] = month.split('-').map(Number);
 	return number === 12 ? `${year + 1}-01` : `${year}-${String(number + 1).padStart(2, '0')}`;
 }
+
+/** The recurring costs within a period (#184): their months in it, those that occur there */
+export function fixedCostsWithin(
+	costs: readonly FixedCost[],
+	range: { from: string; to: string } | null
+) {
+	if (!range) return [...costs];
+	const [from, to] = [range.from.slice(0, 7), range.to.slice(0, 7)];
+	return costs
+		.map((cost) => ({
+			...cost,
+			months: cost.months.filter(({ month }) => month >= from && month <= to)
+		}))
+		.filter((cost) => cost.months.some(({ amount }) => amount > 0));
+}
