@@ -10,7 +10,7 @@ import { defaultPeriod, parsePeriod } from '#lib/insights/period.ts';
 import { choiceToStore, isSection } from '#lib/insights/sections.ts';
 import { balances, parseAmount } from '#lib/money.ts';
 import { settleTransfers } from '#lib/settle.ts';
-import { formContext as context, requireGroup } from '#lib/server/context.ts';
+import { formContext as context, groupOf, membersOf, requireGroup } from '#lib/server/context.ts';
 import { entryPage } from '#lib/server/expense-entries.ts';
 import { findDeletedEntry, listExpenses, listLedger, restoreEntry } from '#lib/server/expenses.ts';
 import { deleteGroup } from '#lib/server/group-deletion.ts';
@@ -25,7 +25,7 @@ import {
 	renameMember,
 	updateGroup
 } from '#lib/server/groups.ts';
-import { ensurePerson, setProfileName } from '#lib/server/people.ts';
+import { ensurePerson, personOf, setProfileName } from '#lib/server/people.ts';
 import {
 	parseDescription,
 	parseGroupName,
@@ -36,8 +36,11 @@ import {
 } from '#lib/validation.ts';
 import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ locals, parent, url }) => {
-	const { group, members } = await parent();
+export const load: PageServerLoad = async ({ locals, params, url }) => {
+	// Shared with the layout but not waiting for it (#58)
+	const group = await groupOf(locals, params.token);
+	const [members, person] = await Promise.all([membersOf(locals, group.id), personOf(locals)]);
+	const mine = members.find((member) => person && member.personId === person.id)?.id ?? null;
 	const shown = shownCount(url.searchParams.get('show'));
 	const query = readQuery(url.searchParams);
 	// Balances and settling up need only sums (#58), the list its first page(s); every entry
@@ -47,14 +50,7 @@ export const load: PageServerLoad = async ({ locals, parent, url }) => {
 	const [ledger, expenses, page, justDeleted] = await Promise.all([
 		listLedger(locals.db, group.id),
 		onInsights ? listExpenses(locals.db, group.id) : undefined,
-		entryPage(
-			locals.db,
-			group.id,
-			members.find((member) => member.mine)?.id ?? null,
-			0,
-			shown,
-			query
-		),
+		entryPage(locals.db, group.id, mine, 0, shown, query),
 		// Right after deleting: offer "Undo" (#78); gone once it's restored
 		deletedId ? findDeletedEntry(locals.db, group.id, deletedId) : undefined
 	]);
@@ -75,7 +71,7 @@ export const load: PageServerLoad = async ({ locals, parent, url }) => {
 				? groupInsights(
 						expenses,
 						memberIds,
-						members.find((member) => member.mine)?.id ?? null,
+						mine,
 						transfers,
 						{ budget: group.budgetCents, endsOn: group.endsOn },
 						today,
