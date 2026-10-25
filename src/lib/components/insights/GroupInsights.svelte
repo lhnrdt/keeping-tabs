@@ -129,6 +129,9 @@
 			<HowOften rows={insights.byMember} {members} />
 		{/if}
 	{/each}
+{/if}
+{#if insights.span}
+	<!-- Also on a quiet period: choosing what to see doesn't depend on it -->
 	<CustomizeInsights kind={group.kind} shown={chosen} />
 	<div class="h-6"></div>
 {/if}
