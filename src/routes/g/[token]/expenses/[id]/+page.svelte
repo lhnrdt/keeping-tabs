@@ -13,6 +13,7 @@
 	const values = $derived(
 		form?.values ?? {
 			title: data.expense.title,
+			notes: data.expense.notes ?? '',
 			amount: amountInputValue(data.expense.amountCents, data.group.currency),
 			date: data.expense.date,
 			paidBy: data.expense.paidBy,

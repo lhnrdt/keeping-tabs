@@ -75,7 +75,7 @@
 			: `${formatDate(entry.date)} · ${m.expense_paid_by({
 					name: nameOf(entry.paidBy),
 					amount: formatAmount(entry.amountCents, currency, getLocale())
-				})}`;
+				})}${entry.notes ? ` · ${m.has_note()}` : ''}`;
 	const hrefOf = (entry: Entry) =>
 		entry.type === 'payment'
 			? resolve('/g/[token]/payments/[id]', { token, id: entry.id })

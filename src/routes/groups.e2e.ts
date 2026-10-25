@@ -319,3 +319,23 @@ test('delete a recently deleted group for good, right away (#118)', async ({ pag
 	const response = await page.goto(groupUrl);
 	expect(response?.status()).toBe(404);
 });
+
+test('a note on an expense, folded away until wanted (#123)', async ({ page }) => {
+	await createGroup(page, 'Flat', 'Anna', ['Ben']);
+	await page.getByRole('link', { name: 'Add expense' }).click();
+	await expect(page.getByLabel('Note')).toHaveCount(0);
+	await page.getByLabel('What was it for?').fill('Kaution');
+	await page.getByLabel('Amount (EUR)').fill('500');
+	await page.getByRole('button', { name: '+ Add a note' }).click();
+	await page.getByLabel('Note').fill('Includes the keys\nBack when we move out');
+	await page.getByRole('button', { name: 'Add expense' }).click();
+
+	await expect(page.getByRole('link', { name: /Kaution/ })).toContainText('with a note');
+	await page.getByRole('link', { name: /Kaution/ }).click();
+	await expect(page.getByLabel('Note')).toHaveValue('Includes the keys\nBack when we move out');
+
+	// Emptied, it's gone
+	await page.getByLabel('Note').fill('');
+	await page.getByRole('button', { name: 'Save' }).click();
+	await expect(page.getByRole('link', { name: /Kaution/ })).not.toContainText('with a note');
+});

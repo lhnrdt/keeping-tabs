@@ -444,5 +444,9 @@
 	"insights_places": "Favourite places",
 	"section_places_hint": "Where you go again and again",
 	"insights_per_meal": "Per meal",
-	"places_times": "{count} times"
+	"places_times": "{count} times",
+	"field_note": "Note",
+	"add_note": "+ Add a note",
+	"has_note": "with a note",
+	"error_expense_note_too_long": "That note is too long (500 characters at most)."
 }
