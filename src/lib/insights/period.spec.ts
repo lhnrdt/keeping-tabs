@@ -6,6 +6,7 @@ import {
 	parsePeriod,
 	periodParams,
 	periodRange,
+	periodsWithin,
 	stepPeriod,
 	switchKind
 } from './period';
@@ -113,4 +114,10 @@ it('starts monthly groups on this month, the others on all of it', () => {
 it('writes the period into the address', () => {
 	expect(periodParams({ kind: 'month', at: '2026-10' })).toBe('period=month&at=2026-10');
 	expect(periodParams(all)).toBe('period=all');
+});
+
+it('lists the years or months the group has expenses in', () => {
+	const span = { from: '2025-11-20', to: '2026-02-03' };
+	expect(periodsWithin('year', span)).toEqual(['2025', '2026']);
+	expect(periodsWithin('month', span)).toEqual(['2025-11', '2025-12', '2026-01', '2026-02']);
 });
