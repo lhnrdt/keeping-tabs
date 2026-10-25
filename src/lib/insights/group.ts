@@ -5,6 +5,7 @@ import type { ExpenseCategory } from '#lib/expense/categories.ts';
 import type { Transfer } from '#lib/settle.ts';
 import { budgetOf } from './budget';
 import { insightsOf, type InsightEntry } from './insights';
+import { recapOf } from './recap';
 
 type Entry = Omit<InsightEntry, 'category'> & { category: ExpenseCategory | null };
 
@@ -19,13 +20,15 @@ export function groupInsights(
 	today: string
 ) {
 	const learned = learnCategories(entries);
+	const insights = insightsOf(
+		entries.map((entry) => ({ ...entry, category: categoryOf(entry, learned) })),
+		memberIds,
+		you,
+		transfers
+	);
 	return {
-		...insightsOf(
-			entries.map((entry) => ({ ...entry, category: categoryOf(entry, learned) })),
-			memberIds,
-			you,
-			transfers
-		),
+		...insights,
+		recap: recapOf(insights, plan.endsOn, today),
 		budget: budgetOf(
 			entries.filter((entry) => entry.type === 'expense'),
 			plan,

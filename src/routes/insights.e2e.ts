@@ -78,6 +78,30 @@ test('a group shows where the money went (#161)', async ({ page }) => {
 	expect(groupUrl).toBeTruthy();
 });
 
+test('a finished trip gets a recap to look back on and share (#163)', async ({ page }) => {
+	// Its last expense was more than two weeks ago (August 2026)
+	const groupUrl = await tripWithExpenses(page);
+	await open(page, `${groupUrl}?tab=insights`);
+	await page.getByRole('button', { name: 'Customize insights' }).click();
+	const customize = page.getByRole('dialog', { name: 'Customize insights' });
+	await customize.getByRole('checkbox', { name: /^Recap/ }).check();
+	await customize.getByRole('button', { name: 'Save' }).click();
+	await expect(customize).toBeHidden();
+
+	const recap = page.getByRole('article', { name: 'Recap' });
+	await expect(recap).toContainText('€480.00');
+	await expect(recap).toContainText('Aug 1 – 5, 2026');
+	await expect(recap).toContainText('Mostly Stay: 63%');
+
+	await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+	await page.evaluate(() => Object.defineProperty(navigator, 'share', { value: undefined }));
+	await recap.getByRole('button', { name: 'Share recap' }).click();
+	await expect(recap.getByRole('button', { name: 'Copied' })).toBeVisible();
+	expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+		'Lofoten, Aug 1 – 5, 2026: €480.00 in 5 days, €240.00 per person'
+	);
+});
+
 test('an empty group invites to add expenses first', async ({ page }) => {
 	const groupUrl = await createGroup(page, 'New flat', 'Anna', ['Ben']);
 	await open(page, `${groupUrl}?tab=insights`);
