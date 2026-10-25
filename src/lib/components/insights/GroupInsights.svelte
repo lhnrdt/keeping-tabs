@@ -15,10 +15,12 @@
 	import CategoryDonut from './CategoryDonut.svelte';
 	import FixedCosts from './FixedCosts.svelte';
 	import KindBars from './KindBars.svelte';
+	import KindMonths from './KindMonths.svelte';
 	import Highlights from './Highlights.svelte';
 	import HowOften from './HowOften.svelte';
 	import OverTimeChart from './OverTimeChart.svelte';
 	import PeriodPicker from './PeriodPicker.svelte';
+	import Places from './Places.svelte';
 	import PositionChart from './PositionChart.svelte';
 	import Recap from './Recap.svelte';
 	import { sectionTitles } from './section-texts';
@@ -59,6 +61,8 @@
 		overTime: () => insights.overTime.buckets.length > 1,
 		categories: () => true,
 		kinds: () => insights.byKind.length > 1,
+		kindMonths: () => insights.kindMonths.length > 1,
+		places: () => insights.places.length > 0,
 		fixedCosts: () => insights.fixed.length > 0,
 		biggest: () => true,
 		whoPays: () => insights.byMember.length > 1,
@@ -100,6 +104,10 @@
 				slices={insights.donut.slices}
 				currency={group.currency}
 			/>
+		{:else if section === 'kindMonths'}
+			<KindMonths months={insights.kindMonths} currency={group.currency} />
+		{:else if section === 'places'}
+			<Places places={insights.places} currency={group.currency} />
 		{:else if section === 'kinds'}
 			<KindBars rows={insights.byKind} currency={group.currency} />
 		{:else if section === 'fixedCosts'}

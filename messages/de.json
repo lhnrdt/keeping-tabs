@@ -438,5 +438,11 @@
 	"spending_by_month": "Pro Monat",
 	"spending_by_group": "Pro Gruppe",
 	"spending_shared_with": "Am meisten geteilt mit",
-	"spending_shared_hint": "Dein Anteil an dem, was ihr gemeinsam hattet"
+	"spending_shared_hint": "Dein Anteil an dem, was ihr gemeinsam hattet",
+	"insights_kind_months": "Monat für Monat",
+	"section_kind_months_hint": "Jeder Monat: Fixkosten und was dazukam",
+	"insights_places": "Lieblingsorte",
+	"section_places_hint": "Wo ihr immer wieder hingeht",
+	"insights_per_meal": "Pro Essen",
+	"places_times": "{count}-mal"
 }

@@ -5,23 +5,11 @@
 	import { formatAmount } from '#lib/money.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
-	import type { Kind } from '#lib/insights/expense-kinds.ts';
 	import type { KindShare } from '#lib/insights/insights.ts';
+	import { kindHints, kindLabels } from './kind-texts';
 
 	let { rows, currency }: { rows: KindShare[]; currency: string } = $props();
 
-	const labels: Record<Kind, () => string> = {
-		fixed: m.kind_fixed,
-		everyday: m.kind_everyday,
-		occasional: m.kind_occasional,
-		big: m.kind_big
-	};
-	const hints: Record<Kind, () => string> = {
-		fixed: m.kind_fixed_hint,
-		everyday: m.kind_everyday_hint,
-		occasional: m.kind_occasional_hint,
-		big: m.kind_big_hint
-	};
 	const percent = new Intl.NumberFormat(getLocale(), {
 		style: 'percent',
 		maximumFractionDigits: 0
@@ -29,7 +17,7 @@
 	const valueText = (row: KindShare) =>
 		`${formatAmount(row.amount, currency, getLocale())} · ${percent.format(row.share)}`;
 	const data = $derived(
-		rows.map((row) => ({ ...row, label: labels[row.kind](), text: valueText(row) }))
+		rows.map((row) => ({ ...row, label: kindLabels[row.kind](), text: valueText(row) }))
 	);
 </script>
 
@@ -61,15 +49,15 @@
 	</div>
 	<dl class="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-xs">
 		{#each rows as row (row.kind)}
-			<dt class="font-medium">{labels[row.kind]()}</dt>
-			<dd class="text-muted">{hints[row.kind]()}</dd>
+			<dt class="font-medium">{kindLabels[row.kind]()}</dt>
+			<dd class="text-muted">{kindHints[row.kind]()}</dd>
 		{/each}
 	</dl>
 	<table class="sr-only">
 		<caption>{m.insights_kinds()}</caption>
 		<tbody>
 			{#each rows as row (row.kind)}
-				<tr><th scope="row">{labels[row.kind]()}</th><td>{valueText(row)}</td></tr>
+				<tr><th scope="row">{kindLabels[row.kind]()}</th><td>{valueText(row)}</td></tr>
 			{/each}
 		</tbody>
 	</table>
