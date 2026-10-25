@@ -22,6 +22,21 @@ export type Person = {
 };
 
 /** The person this device belongs to, if any. */
+const loaded = new WeakMap<App.Locals, Promise<Person | undefined>>();
+
+/**
+ * For loads (#58): this device's person, looked up once per request and shared by the
+ * layouts and the page. Actions use findPerson, as they may change who that is.
+ */
+export function personOf(locals: App.Locals) {
+	let person = loaded.get(locals);
+	if (!person) {
+		person = findPerson(locals.db, locals.deviceKey);
+		loaded.set(locals, person);
+	}
+	return person;
+}
+
 export async function findPerson(db: Db, deviceKey: string): Promise<Person | undefined> {
 	const [row] = await db
 		.select({
