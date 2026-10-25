@@ -28,7 +28,15 @@
 	}
 </script>
 
-<Button large rounded {tonal} type="button" class="gap-2" onclick={copy}>
+<!-- Ink text: the tonal accent on its tint is just under 4.5:1 at this size -->
+<Button
+	large
+	rounded
+	{tonal}
+	type="button"
+	class="gap-2 {tonal ? '!text-ink dark:!text-ink-night' : ''}"
+	onclick={copy}
+>
 	<Icon name={copied ? 'check' : 'copy'} />
 	<span aria-live="polite">{copied ? m.copied() : label}</span>
 </Button>
