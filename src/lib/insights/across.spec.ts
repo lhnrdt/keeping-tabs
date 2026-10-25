@@ -79,9 +79,9 @@ describe('spendingAcross', () => {
 			{ start: '2026-08-01', amount: 5000 },
 			{ start: '2026-09-01', amount: 10000 }
 		]);
-		expect(spending.byCategory.map(({ category, amount }) => [category, amount])).toEqual([
-			['lodging', 10000],
-			['groceries', 5000]
+		expect(spending.donut.slices).toEqual([
+			{ category: 'groceries', amount: 5000 },
+			{ category: 'lodging', amount: 10000 }
 		]);
 		expect(spending.byGroup.map(({ id, amount }) => [id, amount])).toEqual([
 			['trip', 10000],
