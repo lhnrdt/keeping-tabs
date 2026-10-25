@@ -3,6 +3,7 @@ import { resolve } from '$app/paths';
 import { todayInputValue } from '#lib/dates.ts';
 import type { ErrorCode } from '#lib/errors.ts';
 import { shownCount } from '#lib/group/expense-pages.ts';
+import { readQuery } from '#lib/group/search.ts';
 import { currentTab, UNDO_PARAM } from '#lib/group/tabs.ts';
 import { groupInsights } from '#lib/insights/group.ts';
 import { defaultPeriod, parsePeriod } from '#lib/insights/period.ts';
@@ -38,11 +39,19 @@ import type { Actions, PageServerLoad } from './$types';
 export const load: PageServerLoad = async ({ locals, parent, url }) => {
 	const { group, members } = await parent();
 	const shown = shownCount(url.searchParams.get('show'));
+	const query = readQuery(url.searchParams);
 	// Balances and settling up need everything; the list only its first page(s)
 	const deletedId = url.searchParams.get(UNDO_PARAM);
 	const [expenses, page, justDeleted] = await Promise.all([
 		listExpenses(locals.db, group.id),
-		entryPage(locals.db, group.id, members.find((member) => member.mine)?.id ?? null, 0, shown),
+		entryPage(
+			locals.db,
+			group.id,
+			members.find((member) => member.mine)?.id ?? null,
+			0,
+			shown,
+			query
+		),
 		// Right after deleting: offer "Undo" (#78); gone once it's restored
 		deletedId ? findDeletedEntry(locals.db, group.id, deletedId) : undefined
 	]);
@@ -55,6 +64,7 @@ export const load: PageServerLoad = async ({ locals, parent, url }) => {
 		entries: page.entries,
 		hasMore: page.hasMore,
 		justDeleted: justDeleted ?? null,
+		query,
 		today,
 		// Only on its tab: everything else doesn't need it (#161)
 		insights:
