@@ -153,7 +153,7 @@
 	</List>
 
 	<!-- Removing you entirely, at the very end and in red (#151) -->
-	<BlockTitle>{m.delete_identity_title()}</BlockTitle>
+	<BlockTitle class="!mb-2">{m.delete_identity_title()}</BlockTitle>
 	<Block class="!my-2"><p class="text-sm text-muted">{m.delete_identity_intro()}</p></Block>
 	<DeleteIdentity />
 </AppPage>
