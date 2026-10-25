@@ -3,13 +3,9 @@
 // don't add up, so it's per currency: the one you spend most in, the others named.
 import type { GroupKind } from '#lib/group/kinds.ts';
 import type { Tint } from '#lib/tints.ts';
-import {
-	byCategory,
-	overTime,
-	type Bucket,
-	type CategoryShare,
-	type InsightEntry
-} from './insights';
+import type { ExpenseCategory } from '#lib/expense/categories.ts';
+import { seriesCategories, slicesOf, type Slice } from './category-slices';
+import { byCategory, overTime, type Bucket, type InsightEntry } from './insights';
 
 type Member = { id: string; name: string; personId: string | null; avatar?: string | null };
 
@@ -47,7 +43,8 @@ export type Spending = {
 	total: number;
 	/** Your share per month, the last MAX_MONTHS with expenses at most */
 	months: Bucket[];
-	byCategory: CategoryShare[];
+	/** By category for the donut, the largest categories in their colours (#183) */
+	donut: { series: ExpenseCategory[]; slices: Slice[] };
 	byGroup: GroupSpend[];
 	/** Largest first, at most MAX_SHARED */
 	sharedWith: SharedWith[];
@@ -79,6 +76,7 @@ export function spendingAcross(groups: readonly SpendingGroup[]): Spending | nul
 	const [currency, total] = main;
 	const counted = groups.filter((group) => group.currency === currency);
 	const all = counted.flatMap((group) => shares.get(group.id)!);
+	const series = seriesCategories(byCategory(all, total));
 
 	const shared = new Map<string, SharedWith>();
 	for (const group of counted) {
@@ -105,7 +103,7 @@ export function spendingAcross(groups: readonly SpendingGroup[]): Spending | nul
 		currency,
 		total,
 		months: overTime(all, 'month').slice(-MAX_MONTHS),
-		byCategory: byCategory(all, total),
+		donut: { series, slices: slicesOf(all, series) },
 		byGroup: counted
 			.map(({ id, name, token, kind, tint }) => ({
 				id,
