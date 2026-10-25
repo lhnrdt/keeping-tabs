@@ -96,10 +96,15 @@ jobs:
         run: pnpm exec playwright install chromium
       - run: pnpm exec vitest --run
 
+  # Split across parallel runners, so a PR waits about half as long
   e2e:
-    name: End-to-end tests
+    name: End-to-end tests (${{ matrix.shard }}/3)
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
     steps:
       - uses: actions/checkout@v7
       - uses: jdx/mise-action@v5
@@ -108,7 +113,7 @@ jobs:
       - *browser-cache
       - *browser-install
       - run: pnpm db:migrate:local
-      - run: pnpm exec playwright test
+      - run: pnpm exec playwright test --shard=${{ matrix.shard }}/3
 
   # The required status check: passes only when both jobs above pass
   test:
