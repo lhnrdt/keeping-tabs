@@ -444,5 +444,9 @@
 	"insights_places": "Lieblingsorte",
 	"section_places_hint": "Wo ihr immer wieder hingeht",
 	"insights_per_meal": "Pro Essen",
-	"places_times": "{count}-mal"
+	"places_times": "{count}-mal",
+	"field_note": "Notiz",
+	"add_note": "+ Notiz hinzufügen",
+	"has_note": "mit Notiz",
+	"error_expense_note_too_long": "Die Notiz ist zu lang (höchstens 500 Zeichen)."
 }

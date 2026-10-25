@@ -24,6 +24,8 @@
 		/** Raw form values; empty strings for a new expense */
 		values: {
 			title: string;
+			/** A note on it (#123) */
+			notes: string;
 			amount: string;
 			date: string;
 			paidBy: string;
@@ -48,6 +50,8 @@
 	let amount = $derived(values.amount);
 	let mode = $derived<SplitMode>(isSplitMode(values.splitMode) ? values.splitMode : 'equal');
 	const paidBy = $derived(values.paidBy || identity.memberId || members[0]?.id);
+	// Folded away until wanted, so the form stays short (#123)
+	let noting = $derived(values.notes !== '');
 </script>
 
 <GroupForm {error} {submitLabel}>
@@ -62,7 +66,28 @@
 		<AmountField bind:value={amount} {currency} />
 		<DateField value={values.date} />
 		<MemberSelect label={m.field_paid_by()} name="paidBy" {members} value={paidBy} />
+		{#if noting}
+			<Field
+				label={m.field_note()}
+				name="notes"
+				type="textarea"
+				inputClass="!h-24 resize-none"
+				maxlength={LIMITS.expenseNote}
+				value={values.notes}
+			/>
+		{/if}
 	</List>
+	{#if !noting}
+		<Block class="!-mt-4 !mb-2">
+			<button
+				type="button"
+				class="text-sm font-medium text-accent dark:text-accent-night"
+				onclick={() => (noting = true)}
+			>
+				{m.add_note()}
+			</button>
+		</Block>
+	{/if}
 
 	<BlockTitle>{m.field_split()}</BlockTitle>
 	<SplitModePicker bind:mode />

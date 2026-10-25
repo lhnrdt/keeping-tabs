@@ -9,6 +9,7 @@ const expenseColumns = {
 	id: expenses.id,
 	type: expenses.type,
 	title: expenses.title,
+	notes: expenses.notes,
 	amountCents: expenses.amountCents,
 	paidBy: expenses.paidBy,
 	date: expenses.date,
@@ -131,6 +132,7 @@ export async function createExpense(
 			type: 'expense',
 			splitMode: input.splitMode,
 			title: input.title,
+			notes: input.notes,
 			amountCents: input.amountCents,
 			paidBy: input.paidBy,
 			date: input.date,
@@ -155,6 +157,7 @@ export async function updateExpense(
 			.update(expenses)
 			.set({
 				title: input.title,
+				notes: input.notes,
 				amountCents: input.amountCents,
 				paidBy: input.paidBy,
 				date: input.date,

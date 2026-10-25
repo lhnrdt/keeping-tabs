@@ -11,7 +11,8 @@ export const LIMITS = {
 	groupName: 60,
 	description: 280,
 	memberName: 40,
-	expenseTitle: 80
+	expenseTitle: 80,
+	expenseNote: 500
 } as const;
 
 export type Result<T> = { ok: true; value: T } | { ok: false; error: ErrorCode };
@@ -100,6 +101,8 @@ export function parseSplit(
 
 export type ExpenseInput = {
 	title: string;
+	/** A note on it (#123); null when there's none */
+	notes: string | null;
 	amountCents: number;
 	date: string;
 	paidBy: string;
@@ -109,6 +112,13 @@ export type ExpenseInput = {
 	/** Each member's share, in member order; they add up to the amount */
 	shares: Share[];
 };
+
+/** An optional note (#123): line breaks kept, trimmed, empty = none */
+export function parseNote(value: unknown): Result<string | null> {
+	const note = typeof value === 'string' ? value.replace(/\r\n?/g, '\n').trim() : '';
+	if (note.length > LIMITS.expenseNote) return { ok: false, error: 'expense_note_too_long' };
+	return { ok: true, value: note || null };
+}
 
 export function parseDate(value: unknown): Result<string> {
 	const date = normalizeText(value);
@@ -122,6 +132,7 @@ export function parseDate(value: unknown): Result<string> {
 export function parseExpense(
 	values: {
 		title: unknown;
+		notes?: unknown;
 		amount: unknown;
 		date: unknown;
 		paidBy: unknown;
@@ -137,6 +148,9 @@ export function parseExpense(
 	const title = normalizeText(values.title);
 	if (!title) return { ok: false, error: 'expense_title_required' };
 	if (title.length > LIMITS.expenseTitle) return { ok: false, error: 'expense_title_too_long' };
+
+	const notes = parseNote(values.notes);
+	if (!notes.ok) return notes;
 
 	const amountCents = parseAmount(normalizeText(values.amount), group.currency);
 	if (amountCents === null) return { ok: false, error: 'amount_invalid' };
@@ -157,6 +171,7 @@ export function parseExpense(
 		ok: true,
 		value: {
 			title,
+			notes: notes.value,
 			amountCents,
 			date: date.value,
 			paidBy,
