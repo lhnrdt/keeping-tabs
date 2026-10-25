@@ -2,12 +2,12 @@
 	// A recap for a finished trip or event (#163): when it was, what it came to, and the
 	// story in two lines, on a card with the theme's motif. Shareable as text.
 	import { Button } from 'konsta/svelte';
-	import { copyText } from '#lib/clipboard.ts';
 	import Icon from '#lib/components/Icon.svelte';
 	import ThemeMotif from '#lib/components/illustrations/ThemeMotif.svelte';
 	import { categoryLabels } from '#lib/expense/category-style.ts';
 	import { formatAmount } from '#lib/money.ts';
 	import { m } from '#lib/paraglide/messages.js';
+	import { shareText } from '#lib/share.ts';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import type { Recap } from '#lib/insights/recap.ts';
 
@@ -51,20 +51,11 @@
 			days: recap.days,
 			perPerson: money(recap.perPerson)
 		});
-		try {
-			if (navigator.share) {
-				await navigator.share({ text });
-				return;
-			}
-			if (!(await copyText(text))) {
-				window.prompt(m.recap_share(), text);
-				return;
-			}
-			copied = true;
-			setTimeout(() => (copied = false), 2000);
-		} catch {
-			// Closed the share sheet: nothing to do
-		}
+		const result = await shareText(text);
+		if (result === 'failed') window.prompt(m.recap_share(), text);
+		if (result !== 'copied') return;
+		copied = true;
+		setTimeout(() => (copied = false), 2000);
 	}
 </script>
 
