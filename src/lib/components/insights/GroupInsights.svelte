@@ -15,6 +15,7 @@
 	import CategoryBars from './CategoryBars.svelte';
 	import FixedCosts from './FixedCosts.svelte';
 	import KindBars from './KindBars.svelte';
+	import MonthDonut from './MonthDonut.svelte';
 	import Highlights from './Highlights.svelte';
 	import HowOften from './HowOften.svelte';
 	import OverTimeChart from './OverTimeChart.svelte';
@@ -55,6 +56,7 @@
 		highlights: () => insights.highlights.length > 0,
 		overTime: () => true,
 		categories: () => true,
+		monthCategories: () => insights.byMonth.months.length > 0,
 		kinds: () => insights.byKind.length > 1,
 		fixedCosts: () => insights.fixed.length > 0,
 		biggest: () => true,
@@ -88,6 +90,12 @@
 			/>
 		{:else if section === 'categories'}
 			<CategoryBars rows={insights.byCategory} currency={group.currency} />
+		{:else if section === 'monthCategories'}
+			<MonthDonut
+				series={insights.byMonth.series}
+				months={insights.byMonth.months}
+				currency={group.currency}
+			/>
 		{:else if section === 'kinds'}
 			<KindBars rows={insights.byKind} currency={group.currency} />
 		{:else if section === 'fixedCosts'}

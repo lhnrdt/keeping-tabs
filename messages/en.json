@@ -421,5 +421,10 @@
 	"recap_top_category": "Mostly {category}: {share}",
 	"recap_share": "Share recap",
 	"recap_copied": "Copied",
-	"recap_share_text": "{name}, {dates}: {total} in {days} days, {perPerson} per person"
+	"recap_share_text": "{name}, {dates}: {total} in {days} days, {perPerson} per person",
+	"insights_month_categories": "Categories by month",
+	"section_month_categories_hint": "Each month's spending as a donut, month by month",
+	"month_previous": "Previous month",
+	"month_next": "Next month",
+	"month_nothing": "Nothing spent this month"
 }

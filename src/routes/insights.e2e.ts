@@ -193,3 +193,17 @@ test('a trip on the way sees its budget, where the pace leads, and what’s left
 	await change.getByRole('button', { name: 'Remove budget' }).click();
 	await expect(page.getByRole('button', { name: 'Set a budget' })).toBeVisible();
 });
+
+test('categories by month: a donut per month, stepping between months (#183)', async ({ page }) => {
+	const groupUrl = await tripWithExpenses(page);
+	await open(page, `${groupUrl}?tab=insights`);
+	const donut = page.getByRole('region', { name: 'Categories by month' });
+	await expect(donut).toContainText('August 2026');
+	await expect(donut).toContainText('€480.00');
+	const slices = donut.getByRole('list', { name: 'Categories by month' }).getByRole('listitem');
+	await expect(slices).toHaveCount(3);
+	await expect(slices.filter({ hasText: 'Stay' })).toContainText('€300.00');
+	// One month only: nowhere to step
+	await expect(donut.getByRole('button', { name: 'Previous month' })).toBeDisabled();
+	await expect(donut.getByRole('button', { name: 'Next month' })).toBeDisabled();
+});

@@ -11,6 +11,7 @@ export const SECTIONS = [
 	'highlights',
 	'overTime',
 	'categories',
+	'monthCategories',
 	'kinds',
 	'fixedCosts',
 	'biggest',
@@ -59,7 +60,7 @@ export const LAYOUTS: Record<GroupKind, Layout> = {
 			'fixedCosts',
 			'overTime',
 			'kinds',
-			'categories',
+			'monthCategories',
 			'howOften',
 			'whoPays',
 			'biggest',
@@ -68,7 +69,15 @@ export const LAYOUTS: Record<GroupKind, Layout> = {
 	},
 	partner: {
 		tiles: ['spent', 'myShare', 'change', 'count'],
-		sections: ['myPosition', 'highlights', 'whoPays', 'overTime', 'categories', 'kinds', 'biggest']
+		sections: [
+			'myPosition',
+			'highlights',
+			'whoPays',
+			'overTime',
+			'monthCategories',
+			'kinds',
+			'biggest'
+		]
 	},
 	friends: {
 		tiles: ['spent', 'myShare', 'count', 'perPerson'],
@@ -84,7 +93,16 @@ export const LAYOUTS: Record<GroupKind, Layout> = {
 	},
 	other: {
 		tiles: ['spent', 'myShare', 'perPerson', 'perDay'],
-		sections: ['highlights', 'overTime', 'categories', 'kinds', 'biggest', 'whoPays', 'settling']
+		sections: [
+			'highlights',
+			'overTime',
+			'categories',
+			'monthCategories',
+			'kinds',
+			'biggest',
+			'whoPays',
+			'settling'
+		]
 	}
 };
 
