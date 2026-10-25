@@ -1,6 +1,8 @@
 <script lang="ts">
-	// The recurring costs (#167): each with its monthly average, a sparkline of its months on
-	// its own scale, and how the latest compares to the one before (arrow, percent and words).
+	// The recurring costs (#167, #188): each with its monthly average, a sparkline of its
+	// months on its own scale (LayerChart), and how the latest compares to the one before
+	// (arrow, percent and words).
+	import { LineChart } from 'layerchart';
 	import { formatAmount } from '#lib/money.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
@@ -14,24 +16,6 @@
 		maximumFractionDigits: 0,
 		signDisplay: 'exceptZero'
 	});
-	const W = 72;
-	const H = 24;
-
-	/** The months as a 2px line, from the lowest to the highest month of this cost */
-	function line(months: FixedCost['months']) {
-		const values = months.map((month) => month.amount);
-		const max = Math.max(...values);
-		const min = Math.min(...values);
-		const range = max - min || 1;
-		const step = values.length > 1 ? W / (values.length - 1) : 0;
-		return values
-			.map(
-				(value, i) =>
-					`${i ? 'L' : 'M'}${(i * step).toFixed(1)} ${(H - 3 - ((value - min) / range) * (H - 6)).toFixed(1)}`
-			)
-			.join('');
-	}
-
 	function change(cost: FixedCost) {
 		if (cost.previous === null || cost.previous === 0) return null;
 		const ratio = (cost.latest - cost.previous) / cost.previous;
@@ -55,16 +39,19 @@
 					>{m.kind_per_month({ amount: money(cost.average) })}</span
 				>
 			</span>
-			<svg viewBox="0 0 {W} {H}" class="h-6 w-18 overflow-visible" aria-hidden="true">
-				<path
-					d={line(cost.months)}
-					fill="none"
-					stroke-width="2"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					class="stroke-accent dark:stroke-accent-night"
+			<div class="h-6 w-18" aria-hidden="true">
+				<LineChart
+					data={cost.months}
+					x="month"
+					y="amount"
+					yDomain={null}
+					axis={false}
+					grid={false}
+					rule={false}
+					tooltipContext={false}
+					props={{ spline: { class: 'stroke-2 stroke-accent dark:stroke-accent-night' } }}
 				/>
-			</svg>
+			</div>
 			<span class="w-20 text-end text-sm">
 				<span class="block font-medium tabular-nums">{money(cost.latest)}</span>
 				{#if delta}

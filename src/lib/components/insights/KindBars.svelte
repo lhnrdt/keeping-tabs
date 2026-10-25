@@ -1,6 +1,7 @@
 <script lang="ts">
-	// What kind of costs (#167): fixed, everyday, occasional, big one-offs, one bar each in the
-	// theme's accent with the amount and share written out.
+	// What kind of costs (#167, #188): fixed, everyday, occasional, big one-offs, one bar each
+	// (LayerChart) with the amount and share written beside it; what each kind means below.
+	import { BarChart } from 'layerchart';
 	import { formatAmount } from '#lib/money.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
@@ -25,28 +26,51 @@
 		style: 'percent',
 		maximumFractionDigits: 0
 	});
-	const largest = $derived(Math.max(...rows.map((row) => row.amount)));
+	const valueText = (row: KindShare) =>
+		`${formatAmount(row.amount, currency, getLocale())} · ${percent.format(row.share)}`;
+	const data = $derived(
+		rows.map((row) => ({ ...row, label: labels[row.kind](), text: valueText(row) }))
+	);
 </script>
 
-<ul
-	class="mx-4 space-y-3 rounded-2xl bg-surface px-4 py-4 dark:bg-surface-night"
-	aria-label={m.insights_kinds()}
->
-	{#each rows as row (row.kind)}
-		<li class="grid grid-cols-[1fr_auto] items-center gap-x-3 gap-y-1">
-			<span class="min-w-0">
-				<span class="block text-sm font-medium">{labels[row.kind]()}</span>
-				<span class="block truncate text-xs text-muted">{hints[row.kind]()}</span>
-			</span>
-			<span class="text-sm tabular-nums">
-				{formatAmount(row.amount, currency, getLocale())}
-				<span class="text-muted"> · {percent.format(row.share)}</span>
-			</span>
-			<span
-				class="col-span-2 h-2 rounded-r bg-accent dark:bg-accent-night"
-				style:width="{Math.max(2, (row.amount / largest) * 100)}%"
-				aria-hidden="true"
-			></span>
-		</li>
-	{/each}
-</ul>
+<div class="mx-4 rounded-2xl bg-surface px-4 py-3 dark:bg-surface-night">
+	<div style:height="{data.length * 44}px" role="img" aria-label={m.insights_kinds()}>
+		<BarChart
+			{data}
+			x="amount"
+			y="label"
+			orientation="horizontal"
+			bandPadding={0.45}
+			axis="y"
+			grid={false}
+			rule={false}
+			tooltipContext={false}
+			labels={{
+				value: 'text',
+				class: 'fill-ink text-xs dark:fill-ink-night'
+			}}
+			props={{
+				bars: { strokeWidth: 0 },
+				yAxis: {
+					tickMarks: false,
+					tickLabelProps: { class: 'fill-ink text-sm font-medium dark:fill-ink-night' }
+				}
+			}}
+			padding={{ left: 92, right: 112 }}
+		/>
+	</div>
+	<dl class="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-xs">
+		{#each rows as row (row.kind)}
+			<dt class="font-medium">{labels[row.kind]()}</dt>
+			<dd class="text-muted">{hints[row.kind]()}</dd>
+		{/each}
+	</dl>
+	<table class="sr-only">
+		<caption>{m.insights_kinds()}</caption>
+		<tbody>
+			{#each rows as row (row.kind)}
+				<tr><th scope="row">{labels[row.kind]()}</th><td>{valueText(row)}</td></tr>
+			{/each}
+		</tbody>
+	</table>
+</div>

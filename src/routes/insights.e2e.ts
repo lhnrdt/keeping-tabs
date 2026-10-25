@@ -52,8 +52,8 @@ test('a group shows where the money went (#161)', async ({ page }) => {
 		.locator('figure')
 		.filter({ has: page.getByRole('img', { name: 'Over time' }) });
 	await expect(overTime.locator('table tr')).toHaveCount(5);
-	await overTime.locator('rect').first().click();
-	await expect(overTime.locator('figcaption')).toContainText('€360.00');
+	await overTime.locator('.lc-tooltip-rect').first().hover();
+	await expect(page.locator('.lc-tooltip-root')).toContainText('€360.00');
 
 	// By category, each with its share
 	const categories = page.getByRole('list', { name: 'By category' }).getByRole('listitem');
