@@ -12,13 +12,13 @@
 	import CustomizeInsights from './CustomizeInsights.svelte';
 	import Budget from './Budget.svelte';
 	import BiggestList from './BiggestList.svelte';
-	import CategoryBars from './CategoryBars.svelte';
+	import CategoryDonut from './CategoryDonut.svelte';
 	import FixedCosts from './FixedCosts.svelte';
 	import KindBars from './KindBars.svelte';
-	import MonthDonut from './MonthDonut.svelte';
 	import Highlights from './Highlights.svelte';
 	import HowOften from './HowOften.svelte';
 	import OverTimeChart from './OverTimeChart.svelte';
+	import PeriodPicker from './PeriodPicker.svelte';
 	import PositionChart from './PositionChart.svelte';
 	import Recap from './Recap.svelte';
 	import { sectionTitles } from './section-texts';
@@ -28,6 +28,8 @@
 
 	type Props = {
 		insights: GroupInsights;
+		/** Today as YYYY-MM-DD, for moving between periods */
+		today: string;
 		/** The budget form's error, if it was just sent */
 		budgetError: ErrorCode | undefined;
 		group: {
@@ -43,7 +45,7 @@
 		everyone: Member[];
 	};
 
-	let { insights, budgetError, group, members, everyone }: Props = $props();
+	let { insights, today, budgetError, group, members, everyone }: Props = $props();
 
 	const layout = $derived(LAYOUTS[group.kind]);
 	// The group's own choice, else what suits its type (#174)
@@ -54,9 +56,8 @@
 		recap: () => insights.recap !== null,
 		budget: () => true,
 		highlights: () => insights.highlights.length > 0,
-		overTime: () => true,
+		overTime: () => insights.overTime.buckets.length > 1,
 		categories: () => true,
-		monthCategories: () => insights.byMonth.months.length > 0,
 		kinds: () => insights.byKind.length > 1,
 		fixedCosts: () => insights.fixed.length > 0,
 		biggest: () => true,
@@ -69,9 +70,14 @@
 	const shown = $derived(chosen.filter((section) => hasData[section]()));
 </script>
 
-{#if insights.count === 0}
+{#if !insights.span}
 	<EmptyState text={m.insights_empty()} />
 {:else}
+	<PeriodPicker period={insights.period} span={insights.span} {today} token={group.shareToken} />
+{/if}
+{#if insights.span && insights.count === 0}
+	<EmptyState text={m.period_empty()} />
+{:else if insights.span}
 	<div class="pt-4"><StatTiles {insights} currency={group.currency} tiles={layout.tiles} /></div>
 	{#each shown as section (section)}
 		<BlockTitle class="!mb-2">{sectionTitles[section]()}</BlockTitle>
@@ -89,11 +95,9 @@
 				currency={group.currency}
 			/>
 		{:else if section === 'categories'}
-			<CategoryBars rows={insights.byCategory} currency={group.currency} />
-		{:else if section === 'monthCategories'}
-			<MonthDonut
-				series={insights.byMonth.series}
-				months={insights.byMonth.months}
+			<CategoryDonut
+				series={insights.donut.series}
+				slices={insights.donut.slices}
 				currency={group.currency}
 			/>
 		{:else if section === 'kinds'}

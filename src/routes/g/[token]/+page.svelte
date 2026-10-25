@@ -73,6 +73,7 @@
 	{:else if tab === 'insights' && data.insights}
 		<GroupInsights
 			insights={data.insights}
+			today={data.today}
 			budgetError={errorFor('budget')}
 			group={data.group}
 			members={data.members}

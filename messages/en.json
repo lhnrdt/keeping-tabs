@@ -422,9 +422,14 @@
 	"recap_share": "Share recap",
 	"recap_copied": "Copied",
 	"recap_share_text": "{name}, {dates}: {total} in {days} days, {perPerson} per person",
-	"insights_month_categories": "Categories by month",
-	"section_month_categories_hint": "Each month's spending as a donut, month by month",
-	"month_previous": "Previous month",
-	"month_next": "Next month",
-	"month_nothing": "Nothing spent this month"
+	"period_label": "Period",
+	"period_all": "All",
+	"period_year": "Year",
+	"period_month": "Month",
+	"period_day": "Day",
+	"period_previous": "Previous",
+	"period_next": "Next",
+	"period_empty": "Nothing spent in this period.",
+	"insights_vs_last_year": "vs. last year",
+	"insights_vs_day_before": "vs. the day before"
 }

@@ -55,10 +55,10 @@ test('a group shows where the money went (#161)', async ({ page }) => {
 	await overTime.locator('rect').first().click();
 	await expect(overTime.locator('figcaption')).toContainText('€360.00');
 
-	// By category, largest first, with shares
+	// By category, each with its share
 	const categories = page.getByRole('list', { name: 'By category' }).getByRole('listitem');
-	await expect(categories.first()).toContainText('€300.00');
-	await expect(categories.first()).toContainText('63%');
+	await expect(categories.filter({ hasText: 'Stay' })).toContainText('€300.00');
+	await expect(categories.filter({ hasText: 'Stay' })).toContainText('63%');
 	await expect(categories).toHaveCount(3);
 
 	// The biggest expenses, and who paid more than their share
@@ -194,16 +194,39 @@ test('a trip on the way sees its budget, where the pace leads, and what’s left
 	await expect(page.getByRole('button', { name: 'Set a budget' })).toBeVisible();
 });
 
-test('categories by month: a donut per month, stepping between months (#183)', async ({ page }) => {
+test('insights for a chosen year, month or day (#184)', async ({ page }) => {
 	const groupUrl = await tripWithExpenses(page);
 	await open(page, `${groupUrl}?tab=insights`);
-	const donut = page.getByRole('region', { name: 'Categories by month' });
-	await expect(donut).toContainText('August 2026');
-	await expect(donut).toContainText('€480.00');
-	const slices = donut.getByRole('list', { name: 'Categories by month' }).getByRole('listitem');
+	const period = page.getByRole('navigation', { name: 'Period' });
+	const spent = page.locator('dt', { hasText: 'Spent' }).locator('+ dd');
+	await expect(period.getByRole('link', { name: 'All' })).toHaveAttribute('aria-current', 'true');
+	await expect(spent).toHaveText('€480.00');
+
+	// A month: the one with the last expense; nothing before or after it
+	await period.getByRole('link', { name: 'Month' }).click();
+	await expect(page).toHaveURL(/period=month&at=2026-08/);
+	await expect(period).toContainText('August 2026');
+	await expect(spent).toHaveText('€480.00');
+	await expect(period.getByRole('link', { name: 'Previous' })).toHaveAttribute(
+		'aria-disabled',
+		'true'
+	);
+
+	// A day, and the one after it
+	await open(page, `${groupUrl}?tab=insights&period=day&at=2026-08-01`);
+	await expect(spent).toHaveText('€360.00');
+	const donut = page.getByRole('list', { name: 'By category' }).getByRole('listitem');
+	await expect(donut).toHaveCount(2);
+	await period.getByRole('link', { name: 'Next' }).click();
+	await expect(page).toHaveURL(/at=2026-08-02/);
+	await expect(page.getByText('Nothing spent in this period.')).toBeVisible();
+});
+
+test('categories as a donut that names each slice (#183)', async ({ page }) => {
+	const groupUrl = await tripWithExpenses(page);
+	await open(page, `${groupUrl}?tab=insights`);
+	await expect(page.getByRole('img', { name: 'By category' })).toBeVisible();
+	const slices = page.getByRole('list', { name: 'By category' }).getByRole('listitem');
 	await expect(slices).toHaveCount(3);
 	await expect(slices.filter({ hasText: 'Stay' })).toContainText('€300.00');
-	// One month only: nowhere to step
-	await expect(donut.getByRole('button', { name: 'Previous month' })).toBeDisabled();
-	await expect(donut.getByRole('button', { name: 'Next month' })).toBeDisabled();
 });
