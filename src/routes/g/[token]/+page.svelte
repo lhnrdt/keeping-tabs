@@ -118,6 +118,15 @@
 		<List strong inset>
 			<ListItem
 				link
+				title={m.activity_title()}
+				href={resolve('/g/[token]/activity', { token: data.group.shareToken })}
+			>
+				{#snippet media()}
+					<Icon name="activity" />
+				{/snippet}
+			</ListItem>
+			<ListItem
+				link
 				title={m.import_link()}
 				href={resolve('/g/[token]/import', { token: data.group.shareToken })}
 			>
