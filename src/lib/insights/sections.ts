@@ -3,7 +3,7 @@
 import type { GroupKind } from '#lib/group/kinds.ts';
 
 export type Tile =
-	'spent' | 'myShare' | 'perPerson' | 'perDay' | 'change' | 'count' | 'fixedPerMonth';
+	'spent' | 'myShare' | 'perPerson' | 'perDay' | 'perMeal' | 'change' | 'count' | 'fixedPerMonth';
 /** Every insight section there is, in the order they're offered (#174) */
 export const SECTIONS = [
 	'recap',
@@ -12,8 +12,10 @@ export const SECTIONS = [
 	'overTime',
 	'categories',
 	'kinds',
+	'kindMonths',
 	'fixedCosts',
 	'biggest',
+	'places',
 	'whoPays',
 	'howOften',
 	'myPosition',
@@ -57,7 +59,7 @@ export const LAYOUTS: Record<GroupKind, Layout> = {
 		tiles: ['fixedPerMonth', 'change', 'perPerson', 'myShare'],
 		sections: [
 			'fixedCosts',
-			'overTime',
+			'kindMonths',
 			'kinds',
 			'categories',
 			'howOften',
@@ -72,15 +74,24 @@ export const LAYOUTS: Record<GroupKind, Layout> = {
 	},
 	friends: {
 		tiles: ['spent', 'myShare', 'count', 'perPerson'],
-		sections: ['highlights', 'howOften', 'settling', 'whoPays', 'biggest', 'categories', 'overTime']
+		sections: [
+			'highlights',
+			'howOften',
+			'settling',
+			'whoPays',
+			'biggest',
+			'categories',
+			'overTime',
+			'places'
+		]
 	},
 	food: {
-		tiles: ['spent', 'count', 'perPerson', 'myShare'],
-		sections: ['highlights', 'howOften', 'overTime', 'biggest', 'whoPays']
+		tiles: ['perMeal', 'count', 'perPerson', 'myShare'],
+		sections: ['highlights', 'places', 'howOften', 'overTime', 'biggest', 'whoPays']
 	},
 	car: {
 		tiles: ['spent', 'fixedPerMonth', 'change', 'myShare'],
-		sections: ['overTime', 'fixedCosts', 'kinds', 'whoPays', 'biggest', 'highlights']
+		sections: ['kindMonths', 'fixedCosts', 'kinds', 'whoPays', 'biggest', 'highlights']
 	},
 	other: {
 		tiles: ['spent', 'myShare', 'perPerson', 'perDay'],
