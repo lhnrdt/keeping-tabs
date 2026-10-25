@@ -2,6 +2,7 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { Block, Button, List, ListButton, ListItem, Toast } from 'konsta/svelte';
+	import CopyButton from '#lib/components/CopyButton.svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import FormDialog from './FormDialog.svelte';
 	import { tabAction } from '#lib/group/tabs.ts';
@@ -35,11 +36,12 @@
 		{m.regenerate_link()}
 	</ListButton>
 </List>
-<Block>
+<Block class="grid grid-cols-2 gap-3">
 	<Button large rounded type="button" class="gap-2" onclick={share}>
 		<Icon name="share" />
 		{m.share_button()}
 	</Button>
+	<CopyButton text={shareUrl} label={m.copy_link()} />
 </Block>
 
 <Toast position="center" opened={copied}>{m.share_copied()}</Toast>

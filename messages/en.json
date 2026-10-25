@@ -187,7 +187,6 @@
 	"recovery_replace_hint": "Creating a new key makes any older one stop working.",
 	"recovery_shown": "Your recovery key. Save it now; it won't be shown again.",
 	"recovery_copy": "Copy key",
-	"recovery_copied": "Key copied",
 	"restore_title": "Restore",
 	"restore_intro": "Lost your device or cleared your browser? Enter your recovery key to be you again on this device.",
 	"field_recovery_key": "Recovery key",
@@ -420,7 +419,6 @@
 	"section_recap_hint": "Once it's over: the whole thing in a few numbers",
 	"recap_top_category": "Mostly {category}: {share}",
 	"recap_share": "Share recap",
-	"recap_copied": "Copied",
 	"recap_share_text": "{name}, {dates}: {total} in {days} days, {perPerson} per person",
 	"period_label": "Period",
 	"period_all": "All",
@@ -448,5 +446,7 @@
 	"field_note": "Note",
 	"add_note": "+ Add a note",
 	"has_note": "with a note",
-	"error_expense_note_too_long": "That note is too long (500 characters at most)."
+	"error_expense_note_too_long": "That note is too long (500 characters at most).",
+	"copy_link": "Copy link",
+	"copied": "Copied"
 }
