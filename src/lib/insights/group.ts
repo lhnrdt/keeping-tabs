@@ -5,6 +5,7 @@ import type { ExpenseCategory } from '#lib/expense/categories.ts';
 import type { Transfer } from '#lib/settle.ts';
 import { budgetOf } from './budget';
 import { insightsOf, type InsightEntry } from './insights';
+import { periodRange, stepPeriod, unitFor, type DateRange, type Period } from './period';
 import { recapOf } from './recap';
 
 type Entry = Omit<InsightEntry, 'category'> & { category: ExpenseCategory | null };
@@ -17,18 +18,28 @@ export function groupInsights(
 	transfers: readonly Transfer[],
 	/** The group's budget and end date (#168), and today as YYYY-MM-DD */
 	plan: { budget: number | null; endsOn: string | null },
-	today: string
+	today: string,
+	/** The period to sum up (#184) */
+	period: Period = { kind: 'all' }
 ) {
 	const learned = learnCategories(entries);
-	const insights = insightsOf(
-		entries.map((entry) => ({ ...entry, category: categoryOf(entry, learned) })),
-		memberIds,
-		you,
-		transfers
-	);
+	const categorized = entries.map((entry) => ({ ...entry, category: categoryOf(entry, learned) }));
+	const insights = insightsOf(categorized, memberIds, you, transfers, {
+		range: periodRange(period),
+		previous: period.kind === 'all' ? null : periodRange(stepPeriod(period, -1)),
+		unit: unitFor(period)
+	});
+	// The recap is about the whole group, whatever period is shown
+	const whole =
+		period.kind === 'all' ? insights : insightsOf(categorized, memberIds, you, transfers);
 	return {
 		...insights,
-		recap: recapOf(insights, plan.endsOn, today),
+		period,
+		/** From the first expense to the last, for stepping between periods */
+		span: (whole.first && whole.last
+			? { from: whole.first, to: whole.last }
+			: null) satisfies DateRange | null,
+		recap: recapOf(whole, plan.endsOn, today),
 		budget: budgetOf(
 			entries.filter((entry) => entry.type === 'expense'),
 			plan,
