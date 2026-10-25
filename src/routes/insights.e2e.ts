@@ -193,3 +193,17 @@ test('a trip on the way sees its budget, where the pace leads, and what’s left
 	await change.getByRole('button', { name: 'Remove budget' }).click();
 	await expect(page.getByRole('button', { name: 'Set a budget' })).toBeVisible();
 });
+
+test('your spending across your groups: total, categories, and who you share with (#164)', async ({
+	page
+}) => {
+	await tripWithExpenses(page);
+	await open(page, '/balances');
+	const spending = page.getByRole('region', { name: 'Your spending' });
+	await expect(spending).toContainText('Your share across all your groups');
+	await expect(spending).toContainText('€240.00');
+	await expect(
+		spending.getByRole('list', { name: 'By category' }).getByRole('listitem')
+	).toHaveCount(3);
+	await expect(spending.getByRole('list', { name: 'Shared most with' })).toContainText('Ben');
+});

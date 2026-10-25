@@ -1,3 +1,5 @@
+import { categoryOf, learnCategories } from '#lib/expense/learned.ts';
+import { spendingAcross } from '#lib/insights/across.ts';
 import { balances } from '#lib/money.ts';
 import { betweenYou, summarizePeople } from '#lib/people-summary.ts';
 import { settleTransfers } from '#lib/settle.ts';
@@ -49,11 +51,29 @@ export async function yourGroupsWithBalances(db: Db, personId: string) {
 	);
 }
 
-/** Across your groups: who owes you and whom you owe (#117) */
+/**
+ * Across your groups: who owes you and whom you owe (#117), and what you spent, by month,
+ * category, group and the people you share with (#164). Each group is read once.
+ */
 export async function peopleOverview(db: Db, personId: string) {
 	const groups = await listGroupsOf(db, personId);
 	const settled = await Promise.all(
 		groups.map(async (group) => ({ ...group, ...(await settle(db, group)) }))
 	);
-	return summarizePeople(settled);
+	return {
+		people: summarizePeople(settled),
+		spending: spendingAcross(
+			settled.map((group) => {
+				// Each expense in its category as the group shows it
+				const learned = learnCategories(group.expenses);
+				return {
+					...group,
+					entries: group.expenses.map((entry) => ({
+						...entry,
+						category: categoryOf(entry, learned)
+					}))
+				};
+			})
+		)
+	};
 }

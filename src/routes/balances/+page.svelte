@@ -1,10 +1,11 @@
 <script lang="ts">
 	// Who owes you and whom you owe, across your groups (#117), opened from the start screen's
-	// overall balance.
+	// overall balance; then what you spent across them (#164).
 	import { resolve } from '$app/paths';
 	import AppPage from '#lib/components/AppPage.svelte';
 	import EmptyState from '#lib/components/EmptyState.svelte';
 	import PeopleSummary from '#lib/components/home/PeopleSummary.svelte';
+	import YourSpending from '#lib/components/insights/YourSpending.svelte';
 	import YourBalance from '#lib/components/YourBalance.svelte';
 	import { totalsByCurrency } from '#lib/money.ts';
 	import { m } from '#lib/paraglide/messages.js';
@@ -29,4 +30,8 @@
 	{:else}
 		<EmptyState text={m.between_you_settled()} role="status" />
 	{/if}
+	{#if data.spending}
+		<YourSpending spending={data.spending} />
+	{/if}
+	<div class="h-6"></div>
 </AppPage>
