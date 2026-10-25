@@ -2,6 +2,7 @@
 import IconBed from '@tabler/icons-svelte-runes/icons/bed';
 import IconBeer from '@tabler/icons-svelte-runes/icons/beer';
 import IconBus from '@tabler/icons-svelte-runes/icons/bus';
+import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
 import IconCalendarEvent from '@tabler/icons-svelte-runes/icons/calendar-event';
 import IconFirstAidKit from '@tabler/icons-svelte-runes/icons/first-aid-kit';
 import IconFlame from '@tabler/icons-svelte-runes/icons/flame';
@@ -59,6 +60,7 @@ export const icons = {
 	phone: IconDeviceMobile,
 	computer: IconDeviceLaptop,
 	next: IconChevronRight,
+	previous: IconChevronLeft,
 	member: IconUser,
 	payment: IconCash,
 	newLink: IconRefresh,
