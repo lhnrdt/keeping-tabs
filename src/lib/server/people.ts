@@ -18,6 +18,8 @@ export type Person = {
 	theme: Theme | null;
 	accent: Accent | null;
 	avatar: string | null;
+	/** How to pay them (#47) */
+	paymentDetails: string | null;
 	/** When they read the friendly note (#112) */
 	notedAt: Date | null;
 };
@@ -39,6 +41,7 @@ export async function findPerson(db: Db, deviceKey: string): Promise<Person | un
 			theme: people.theme,
 			accent: people.accent,
 			avatar: people.avatar,
+			paymentDetails: people.paymentDetails,
 			notedAt: people.notedAt
 		})
 		.from(devices)
@@ -56,7 +59,16 @@ export async function ensurePerson(db: Db, deviceKey: string): Promise<Person> {
 		db.insert(people).values({ id }),
 		db.insert(devices).values({ keyHash: await hashSecret(deviceKey), personId: id })
 	]);
-	return { id, name: null, locale: null, theme: null, accent: null, avatar: null, notedAt: null };
+	return {
+		id,
+		name: null,
+		locale: null,
+		theme: null,
+		accent: null,
+		avatar: null,
+		paymentDetails: null,
+		notedAt: null
+	};
 }
 
 /** Remembers the name someone uses, to pre-fill it next time (A-13). */

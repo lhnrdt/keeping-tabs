@@ -12,7 +12,8 @@ export const LIMITS = {
 	description: 280,
 	memberName: 40,
 	expenseTitle: 80,
-	expenseNote: 500
+	expenseNote: 500,
+	paymentDetails: 200
 } as const;
 
 export type Result<T> = { ok: true; value: T } | { ok: false; error: ErrorCode };
