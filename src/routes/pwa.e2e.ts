@@ -21,6 +21,9 @@ test('the app is installable', async ({ page, request }) => {
 	// No theme_color: Chrome on Android paints the installed app's navigation bar with it, and
 	// one color can't fit light and dark mode (#145). The status bar follows <meta theme-color>.
 	expect(manifest).not.toHaveProperty('theme_color');
+	// Chromium before 156 paints that bar with background_color instead, and a manifest has
+	// no dark variant: dark, so dark mode has no bright bar (light mode gets a dark one)
+	expect(manifest.background_color).toBe('#141a16');
 	for (const icon of manifest.icons) {
 		expect((await request.get(icon.src)).ok()).toBe(true);
 	}
