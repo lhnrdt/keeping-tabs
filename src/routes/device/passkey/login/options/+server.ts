@@ -4,8 +4,8 @@ import { authenticationOptions, relyingPartyFor } from '#lib/server/passkeys.ts'
 import type { RequestHandler } from './$types';
 
 /** Options for continuing with any passkey saved for this site */
-export const POST: RequestHandler = async ({ url, cookies }) => {
+export const POST: RequestHandler = async ({ locals, url, cookies }) => {
 	const options = await authenticationOptions(relyingPartyFor(url));
-	setChallenge(cookies, options.challenge);
+	await setChallenge(locals.db, cookies, options.challenge);
 	return json(options);
 };

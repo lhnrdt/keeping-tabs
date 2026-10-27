@@ -141,6 +141,13 @@
       "when": 1793084811294,
       "tag": "0019_push_subscriptions",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "6",
+      "when": 1793085866086,
+      "tag": "0020_passkey_challenges",
+      "breakpoints": true
     }
   ]
 }

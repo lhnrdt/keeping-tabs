@@ -7,7 +7,7 @@ import type { RequestHandler } from './$types';
 
 /** Makes this device the person behind a verified passkey (A-18) */
 export const POST: RequestHandler = async ({ locals, url, cookies, request }) => {
-	const challenge = takeChallenge(cookies);
+	const challenge = await takeChallenge(locals.db, cookies);
 	if (!challenge) error(403);
 	const personId = await verifyPasskey(
 		locals.db,
