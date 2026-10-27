@@ -12,6 +12,7 @@
 	import { Block, BlockTitle, List, ListItem } from 'konsta/svelte';
 	import AppPage from '#lib/components/AppPage.svelte';
 	import DeleteIdentity from '#lib/components/device/DeleteIdentity.svelte';
+	import PushToggle from '#lib/components/device/PushToggle.svelte';
 	import Avatar from '#lib/components/Avatar.svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import Field from '#lib/components/Field.svelte';
@@ -171,6 +172,11 @@
 		<FormError error={errorFor('accent')} />
 		<noscript><Block><button type="submit">{m.save()}</button></Block></noscript>
 	</form>
+
+	{#if data.pushPublicKey}
+		<BlockTitle class="!mb-2">{m.push_title()}</BlockTitle>
+		<PushToggle publicKey={data.pushPublicKey} />
+	{/if}
 
 	<!-- Everything about you is reachable from here (#146) -->
 	<List strong inset>
