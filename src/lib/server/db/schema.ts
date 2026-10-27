@@ -75,6 +75,15 @@ export const people = sqliteTable('people', {
 });
 
 /**
+ * Passkey challenges handed out and not used yet (#71): crossed off when answered, so a
+ * captured answer can't be sent again. Only hashes; expired ones are worthless.
+ */
+export const passkeyChallenges = sqliteTable('passkey_challenges', {
+	challengeHash: text('challenge_hash').primaryKey(),
+	expiresAt: integer('expires_at', { mode: 'timestamp_ms' }).notNull()
+});
+
+/**
  * Where to send a person's notifications (#56): one browser's Web Push subscription. The
  * endpoint is the push service's address for that browser; the keys encrypt the message.
  */
