@@ -12,15 +12,20 @@
 		name: string;
 		/** The person's choice, e.g. "deer:moss" */
 		avatar?: string | null;
-		size?: 'sm' | 'md' | 'lg';
+		size?: 'xs' | 'sm' | 'md' | 'lg';
 	};
 
 	let { id, name, avatar, size = 'md' }: Props = $props();
 
 	const choice = $derived(parseAvatar(avatar));
 	const Glyph = $derived(choice?.icon ? avatarIcons[choice.icon] : null);
-	const sizes = { sm: 'h-7 w-7 text-xs', md: 'h-9 w-9 text-sm', lg: 'h-12 w-12 text-base' };
-	const iconSizes = { sm: 16, md: 20, lg: 26 };
+	const sizes = {
+		xs: 'h-[22px] w-[22px] text-[10px]',
+		sm: 'h-7 w-7 text-xs',
+		md: 'h-9 w-9 text-sm',
+		lg: 'h-12 w-12 text-base'
+	};
+	const iconSizes = { xs: 14, sm: 16, md: 20, lg: 26 };
 </script>
 
 <span

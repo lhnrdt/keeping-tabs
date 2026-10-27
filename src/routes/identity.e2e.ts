@@ -1,5 +1,5 @@
 import { expect, test, type Browser, type Page } from '@playwright/test';
-import { open, openFold } from './e2e-helpers';
+import { open, openFold, participants as participantsOf } from './e2e-helpers';
 
 // Each browser context is a separate device with its own identity cookie (A-12).
 
@@ -213,7 +213,7 @@ test('join as someone new, without picking someone else, and remove people who a
 	await anna.getByRole('link', { name: 'Add expense' }).click();
 	await anna.getByLabel('What was it for?').fill('Fuel');
 	await anna.getByLabel('Amount (€)').fill('30');
-	const participants = anna.getByRole('group', { name: 'Split equally between' });
+	const participants = await participantsOf(anna);
 	await participants.getByText('Cara').click();
 	await anna.getByRole('button', { name: 'Add expense' }).click();
 	await expect(anna).toHaveURL(groupUrl);

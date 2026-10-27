@@ -5,7 +5,6 @@
 	import { enhance, type SubmitFunction } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import { Block } from 'konsta/svelte';
 	import type { Snippet } from 'svelte';
 	import FormError from '#lib/components/FormError.svelte';
 	import SubmitButton from '#lib/components/SubmitButton.svelte';
@@ -65,7 +64,10 @@
 <form method="POST" action="?/save" use:enhance={submit}>
 	{@render children()}
 	<FormError {error} />
-	<Block>
+	<!-- Always in reach: the button stays at the bottom of the screen while the form scrolls -->
+	<div
+		class="sticky bottom-0 z-10 bg-canvas/95 px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur-sm dark:bg-canvas-night/95"
+	>
 		<SubmitButton pending={submission.pending}>{submitLabel}</SubmitButton>
-	</Block>
+	</div>
 </form>

@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { choose, createGroup } from './e2e-helpers';
+import { splitBy, createGroup } from './e2e-helpers';
 
 const balanceOf = (page: Page, name: string) =>
 	page.getByRole('region', { name: 'Balances' }).getByRole('listitem').filter({ hasText: name });
@@ -14,9 +14,7 @@ test('split by percentages, with a live remainder, and edit it again', async ({ 
 	const groupUrl = await createGroup(page, 'Flat', 'Anna', ['Ben']);
 
 	await addExpense(page, 'Rent', '1000');
-	// Two people get quick choices first (#40); percentages are among the more options
-	await page.getByRole('button', { name: 'More options' }).click();
-	await choose(page, 'Split', 'Percent');
+	await splitBy(page, 'Percent');
 	await page.getByLabel('Percent for Anna').fill('40');
 	await expect(page.getByTestId('split-summary')).toHaveText('40 % of 100 %, 60 % left');
 	await page.getByLabel('Percent for Ben').fill('70');
@@ -42,7 +40,7 @@ test('split by percentages, with a live remainder, and edit it again', async ({ 
 
 	await page.goto(groupUrl);
 	await page.getByRole('link', { name: /Rent/ }).click();
-	await expect(page.getByRole('radio', { name: 'Percent' })).toBeChecked();
+	await expect(page.getByLabel('Split', { exact: true })).toHaveValue('percent');
 	await expect(page.getByLabel('Percent for Ben')).toHaveValue('60');
 });
 
@@ -51,7 +49,7 @@ test('split by amounts, parts and difference', async ({ page }) => {
 
 	// Amounts: Anna 10, Ben 20, Cara nothing
 	await addExpense(page, 'Tickets', '30');
-	await choose(page, 'Split', 'Amounts');
+	await splitBy(page, 'Amounts');
 	await page.getByLabel('Amount for Anna').fill('10');
 	await expect(page.getByTestId('split-summary')).toHaveText('€10.00 of €30.00, €20.00 left');
 	await page.getByLabel('Amount for Ben').fill('20');
@@ -60,7 +58,7 @@ test('split by amounts, parts and difference', async ({ page }) => {
 
 	// Parts 2:1:1 of 40 → 20, 10, 10
 	await addExpense(page, 'Dinner', '40');
-	await choose(page, 'Split', 'Parts');
+	await splitBy(page, 'Parts');
 	await page.getByLabel('Parts for Anna').fill('2');
 	await page.getByLabel('Parts for Ben').fill('1');
 	await page.getByLabel('Parts for Cara').fill('1');
@@ -69,7 +67,7 @@ test('split by amounts, parts and difference', async ({ page }) => {
 
 	// Difference: 30 split equally, Cara +6 → Anna 8, Ben 8, Cara 14
 	await addExpense(page, 'Taxi', '30');
-	await choose(page, 'Split', 'Adjust');
+	await splitBy(page, 'Adjust');
 	await page.getByLabel('Difference for Cara').fill('6');
 	await page.getByRole('button', { name: 'Add expense' }).click();
 	await expect(page).toHaveURL(groupUrl);

@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { createGroup, openFold } from './e2e-helpers';
+import { createGroup } from './e2e-helpers';
 
 test('an expense in another currency, converted at the day’s rate (#54)', async ({ page }) => {
 	// The day's rate, without asking the real source
@@ -7,7 +7,6 @@ test('an expense in another currency, converted at the day’s rate (#54)', asyn
 	const groupUrl = await createGroup(page, 'Japan', 'Anna', ['Ben']);
 	await page.getByRole('link', { name: 'Add expense' }).click();
 	await page.getByLabel('What was it for?').fill('Ramen');
-	await openFold(page, 'More details');
 	await page.getByLabel('Currency').selectOption('JPY');
 	await page.getByLabel('Amount (¥)').fill('3000');
 	// Looked up, not typed: only the result shows

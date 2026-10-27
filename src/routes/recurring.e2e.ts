@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { createGroup, open, openFold } from './e2e-helpers';
+import { createGroup, open } from './e2e-helpers';
 
 /** The same day of the month, `months` ago, as YYYY-MM-DD (days 1–28 exist in every month) */
 const monthsAgo = (months: number) => {
@@ -15,7 +15,6 @@ test('an expense that repeats every month, caught up and stoppable (#45)', async
 	await page.getByLabel('What was it for?').fill('Rent');
 	await page.getByLabel('Amount (€)').fill('1000');
 	await page.getByLabel('Date').fill(monthsAgo(2));
-	await openFold(page, 'More details');
 	await page.getByLabel('Repeats').selectOption({ label: 'Every month' });
 	await page.getByRole('button', { name: 'Add expense' }).click();
 	await expect(page).toHaveURL(groupUrl);
