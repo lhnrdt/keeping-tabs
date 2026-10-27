@@ -85,7 +85,13 @@
 					names: listFormat.format(entry.payers.map((payer) => nameOf(payer.memberId))),
 					amount
 				})
-			: m.expense_paid_by({ name: nameOf(entry.paidBy), amount });
+			: entry.originalCurrency && entry.originalAmountCents
+				? m.expense_paid_original({
+						name: nameOf(entry.paidBy),
+						original: formatAmount(entry.originalAmountCents, entry.originalCurrency, getLocale()),
+						amount
+					})
+				: m.expense_paid_by({ name: nameOf(entry.paidBy), amount });
 	}
 	const hrefOf = (entry: Entry) =>
 		entry.type === 'payment'

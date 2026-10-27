@@ -21,6 +21,9 @@
 	import PayerAmounts from './PayerAmounts.svelte';
 	import { SEVERAL_PAYERS } from '#lib/validation.ts';
 	import { presetOf } from '#lib/split/presets.ts';
+	import { convert, parseRate, RATE_CURRENCIES } from '#lib/expense/exchange.ts';
+	import { amountInputValue, formatAmount, parseAmount } from '#lib/money.ts';
+	import { getLocale } from '#lib/paraglide/runtime.js';
 	import { canBeDefault } from '#lib/split/default-split.ts';
 
 	type Props = {
@@ -31,6 +34,9 @@
 			title: string;
 			/** A note on it (#123) */
 			notes: string;
+			/** The amount's currency when not the group's (#54), and the rate as typed */
+			currency?: string;
+			rate?: string;
 			/** With paidBy "several" (#39): what each paid as typed, by member id */
 			payers?: Record<string, string>;
 			amount: string;
@@ -70,6 +76,40 @@
 	let title = $derived(values.title);
 	// Follows the typed amount, so the split shows each share live
 	let amount = $derived(values.amount);
+	// Another currency (#54): typed in it, split and kept in the group's at the rate
+	let amountCurrency = $derived(values.currency || currency);
+	let rate = $derived(values.rate ?? '');
+	// A saved rate counts as typed; the date follows its field (both from the first values)
+	const startWith = () => ({ typed: Boolean(values.rate), date: values.date });
+	let rateTyped = $state(startWith().typed);
+	let date = $state(startWith().date);
+	let showSource = $state(false);
+	const foreign = $derived(amountCurrency !== currency);
+	const converted = $derived.by(() => {
+		if (!foreign) return amount;
+		const typed = parseAmount(amount.trim(), amountCurrency);
+		const parsed = parseRate(rate);
+		return typed && parsed
+			? amountInputValue(
+					convert({ currency: amountCurrency, amountCents: typed, rate: parsed }, currency),
+					currency
+				)
+			: '';
+	});
+	const currencies = $derived([
+		...new Set([currency, ...(values.currency ? [values.currency] : []), ...RATE_CURRENCIES])
+	]);
+	// The day's rate, until one is typed by hand
+	$effect(() => {
+		if (!foreign || rateTyped) return;
+		const query = new URLSearchParams({ from: amountCurrency, to: currency, date });
+		fetch(`/fx?${query}`)
+			.then((response) => response.json() as Promise<{ rate: string | null }>)
+			.then((answer) => {
+				if (answer.rate && !rateTyped) rate = answer.rate;
+			})
+			.catch(() => {});
+	});
 	let mode = $derived<SplitMode>(isSplitMode(values.splitMode) ? values.splitMode : 'equal');
 	const paidBy = $derived(values.paidBy || identity.memberId || members[0]?.id);
 	// Follows the payer choice: several people show what each paid (#39)
@@ -95,6 +135,12 @@
 		onchange={(event) => {
 			const field = event.target as HTMLSelectElement;
 			if (field.name === 'paidBy') payer = field.value;
+			if (field.name === 'currency') {
+				amountCurrency = field.value;
+				rateTyped = false;
+				rate = '';
+			}
+			if (field.name === 'date') date = field.value;
 		}}
 	>
 		<List strong inset>
@@ -105,7 +151,29 @@
 				maxlength={LIMITS.expenseTitle}
 				bind:value={title}
 			/>
-			<AmountField bind:value={amount} {currency} />
+			<Field
+				label={m.field_currency()}
+				name="currency"
+				type="select"
+				dropdown
+				value={amountCurrency}
+			>
+				{#each currencies as code (code)}
+					<option value={code} selected={code === amountCurrency}>{code}</option>
+				{/each}
+			</Field>
+			<AmountField bind:value={amount} currency={amountCurrency} />
+			{#if foreign}
+				<Field
+					label={m.field_rate({ from: amountCurrency, to: currency })}
+					name="rate"
+					inputmode="decimal"
+					autocomplete="off"
+					required
+					bind:value={rate}
+					oninput={() => (rateTyped = true)}
+				/>
+			{/if}
 			<DateField value={values.date} />
 			{#if canRepeat}
 				<Field label={m.field_repeats()} name="repeats" type="select" dropdown value="">
@@ -136,8 +204,30 @@
 			{/if}
 		</List>
 	</div>
+	{#if foreign}
+		<Block class="!-mt-4 !mb-2">
+			<p class="text-sm text-muted" aria-live="polite" data-testid="converted">
+				<!-- Where the rate comes from, for whoever wonders: a faint "i" to tap -->
+				<button
+					type="button"
+					class="float-end ms-2 size-5 rounded-full text-xs opacity-50"
+					aria-expanded={showSource}
+					aria-label={m.rate_source_label()}
+					onclick={() => (showSource = !showSource)}>i</button
+				>
+				{converted
+					? m.converted_amount({
+							amount: formatAmount(parseAmount(converted, currency) ?? 0, currency, getLocale())
+						})
+					: m.converted_needs_rate()}
+			</p>
+			{#if showSource}
+				<p class="mt-1 text-xs text-muted opacity-75">{m.rate_source()}</p>
+			{/if}
+		</Block>
+	{/if}
 	{#if !quick && payer === SEVERAL_PAYERS}
-		<PayerAmounts {members} {currency} {amount} initial={values.payers ?? {}} />
+		<PayerAmounts {members} {currency} amount={converted} initial={values.payers ?? {}} />
 	{/if}
 	{#if !noting}
 		<Block class="!-mt-4 !mb-2">
@@ -163,7 +253,7 @@
 				{mode}
 				{members}
 				{currency}
-				{amount}
+				amount={converted}
 				initial={{
 					mode: isSplitMode(values.splitMode) ? values.splitMode : 'equal',
 					inputs: values.inputs
