@@ -46,9 +46,19 @@
 		chosen: { title: string; category: ExpenseCategory | null }[];
 		error?: ErrorCode;
 		submitLabel: string;
+		/** A new expense can repeat (#45) */
+		canRepeat?: boolean;
 	};
 
-	let { members, currency, values, chosen, error, submitLabel }: Props = $props();
+	let {
+		members,
+		currency,
+		values,
+		chosen,
+		error,
+		submitLabel,
+		canRepeat = false
+	}: Props = $props();
 
 	const identity = useIdentity();
 	// Follows the typed title, so the automatic category can show its guess
@@ -91,6 +101,14 @@
 			/>
 			<AmountField bind:value={amount} {currency} />
 			<DateField value={values.date} />
+			{#if canRepeat}
+				<Field label={m.field_repeats()} name="repeats" type="select" dropdown value="">
+					<option value="">{m.repeats_never()}</option>
+					<option value="weekly">{m.repeats_weekly()}</option>
+					<option value="monthly">{m.repeats_monthly()}</option>
+					<option value="yearly">{m.repeats_yearly()}</option>
+				</Field>
+			{/if}
 			{#if !quick}
 				<MemberSelect
 					label={m.field_paid_by()}

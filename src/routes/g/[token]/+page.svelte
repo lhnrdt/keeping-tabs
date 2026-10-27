@@ -17,6 +17,7 @@
 	import GroupTabs from '#lib/components/group/GroupTabs.svelte';
 	import IdentityButton from '#lib/components/group/IdentityButton.svelte';
 	import SettleUp from '#lib/components/group/SettleUp.svelte';
+	import RecurringList from '#lib/components/group/RecurringList.svelte';
 	import ShareLink from '#lib/components/group/ShareLink.svelte';
 	import UndoToast from '#lib/components/group/UndoToast.svelte';
 	import PeoplePills from '#lib/components/people/PeoplePills.svelte';
@@ -112,6 +113,7 @@
 		/>
 		<BlockTitle>{m.group_details()}</BlockTitle>
 		<GroupDetails group={data.group} members={data.members} error={errorFor('updateGroup')} />
+		<RecurringList rules={data.recurring} currency={data.group.currency} />
 		<BlockTitle>{m.share_title()}</BlockTitle>
 		<ShareLink token={data.group.shareToken} groupName={data.group.name} />
 		<DeleteGroup groupId={data.group.id} name={data.group.name} />
