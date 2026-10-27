@@ -20,6 +20,10 @@ declare global {
 		}
 		// interface PageData {}
 		// interface PageState {}
+		/** Cloudflare's, e.g. waitUntil for work after the answer (#56) */
+		interface Platform {
+			ctx: ExecutionContext;
+		}
 	}
 }
 

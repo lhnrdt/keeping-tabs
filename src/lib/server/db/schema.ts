@@ -74,6 +74,20 @@ export const people = sqliteTable('people', {
 	createdAt: createdAt()
 });
 
+/**
+ * Where to send a person's notifications (#56): one browser's Web Push subscription. The
+ * endpoint is the push service's address for that browser; the keys encrypt the message.
+ */
+export const pushSubscriptions = sqliteTable('push_subscriptions', {
+	endpoint: text('endpoint').primaryKey(),
+	personId: text('person_id')
+		.notNull()
+		.references(() => people.id, { onDelete: 'cascade' }),
+	p256dh: text('p256dh').notNull(),
+	auth: text('auth').notNull(),
+	createdAt: createdAt()
+});
+
 /** A browser of a person, identified by the hash of its secret cookie key. */
 export const devices = sqliteTable(
 	'devices',

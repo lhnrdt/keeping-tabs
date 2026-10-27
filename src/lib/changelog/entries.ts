@@ -31,6 +31,10 @@ export const CHANGELOG: ChangelogEntry[] = [
 				de: 'Keine Verbindung? Neue Ausgaben warten auf deinem Handy und werden gesendet, sobald du wieder online bist.'
 			},
 			{
+				en: 'Notifications: turn them on in your profile to hear when someone adds an expense.',
+				de: 'Benachrichtigungen: schalte sie in deinem Profil ein, um zu erfahren, wenn jemand eine Ausgabe hinzufügt.'
+			},
+			{
 				en: 'What’s new: this page, to see what changed.',
 				de: 'Neuigkeiten: diese Seite, um zu sehen, was sich geändert hat.'
 			}

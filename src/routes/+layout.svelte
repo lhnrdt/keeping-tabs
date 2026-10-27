@@ -1,7 +1,5 @@
 <script lang="ts">
-	import type { Path } from '$app/types';
 	import { beforeNavigate, onNavigate } from '$app/navigation';
-	import { resolve } from '$app/paths';
 	import { page, updated } from '$app/state';
 	import { App } from 'konsta/svelte';
 	import { onMount, untrack } from 'svelte';
@@ -68,6 +66,7 @@
 
 <div style="display:none">
 	{#each locales as locale (locale)}
-		<a href={resolve(localizeHref(page.url.pathname, { locale }) as Path)}>{locale}</a>
+		<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- this page, in another language -->
+		<a href={localizeHref(page.url.pathname, { locale })}>{locale}</a>
 	{/each}
 </div>
