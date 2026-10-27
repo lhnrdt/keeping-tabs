@@ -46,5 +46,9 @@ export function activityText({ action, who: by, entry, name, previousName }: Ite
 			return m.activity_group_delete({ who });
 		case 'group.restore':
 			return m.activity_group_restore({ who });
+		case 'recurring.create':
+			return m.activity_recurring_create({ who, title: name ?? '…' });
+		case 'recurring.stop':
+			return m.activity_recurring_stop({ who });
 	}
 }

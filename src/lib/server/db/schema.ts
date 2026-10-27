@@ -219,6 +219,31 @@ export const expensePayers = sqliteTable(
 	(t) => [primaryKey({ columns: [t.expenseId, t.memberId] })]
 );
 
+/**
+ * Expenses that repeat (#45): the expense as entered (template, with its first date), how
+ * often, and how many times it has been added so far. Stopped ones stay for the record.
+ */
+export const recurringExpenses = sqliteTable(
+	'recurring_expenses',
+	{
+		id: id(),
+		groupId: text('group_id')
+			.notNull()
+			.references(() => groups.id),
+		// The member who set it up; the expenses it adds are theirs
+		memberId: text('member_id').references(() => members.id),
+		template: text('template', { mode: 'json' }).notNull(),
+		frequency: text('frequency', { enum: ['weekly', 'monthly', 'yearly'] }).notNull(),
+		// Added this many times; the next one is time number `added` after the first date
+		added: integer('added').notNull().default(1),
+		// When the next one is due, for finding what's due quickly
+		nextOn: text('next_on').notNull(),
+		createdAt: createdAt(),
+		stoppedAt: integer('stopped_at', { mode: 'timestamp_ms' })
+	},
+	(t) => [index('recurring_expenses_due_idx').on(t.stoppedAt, t.nextOn)]
+);
+
 export const activityLog = sqliteTable(
 	'activity_log',
 	{

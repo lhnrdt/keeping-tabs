@@ -4,7 +4,15 @@
 import { and, eq, inArray, isNotNull, lt, type SQL } from 'drizzle-orm';
 import { DELETED_GROUP_DAYS } from '#lib/group/retention.ts';
 import type { Db } from './db';
-import { activityLog, expensePayers, expenses, expenseSplits, groups, members } from './db/schema';
+import {
+	activityLog,
+	expensePayers,
+	recurringExpenses,
+	expenses,
+	expenseSplits,
+	groups,
+	members
+} from './db/schema';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -21,6 +29,7 @@ async function removeGroups(db: Db, which: SQL | undefined) {
 		db.delete(expensePayers).where(inArray(expensePayers.expenseId, theirExpenses)),
 		db.delete(expenses).where(inArray(expenses.groupId, chosen)),
 		db.delete(activityLog).where(inArray(activityLog.groupId, chosen)),
+		db.delete(recurringExpenses).where(inArray(recurringExpenses.groupId, chosen)),
 		db.delete(members).where(inArray(members.groupId, chosen)),
 		db.delete(groups).where(which)
 	]);

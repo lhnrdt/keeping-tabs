@@ -45,5 +45,6 @@
 		{values}
 		error={form?.error}
 		submitLabel={m.add_expense()}
+		canRepeat
 	/>
 </AppPage>

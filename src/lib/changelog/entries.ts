@@ -23,6 +23,10 @@ export const CHANGELOG: ChangelogEntry[] = [
 				de: 'Eine Gruppe kann sich eine Aufteilung merken, etwa 60/40, für neue Ausgaben.'
 			},
 			{
+				en: 'Expenses that repeat, like rent: choose “Every month” and they’re added on their dates.',
+				de: 'Wiederkehrende Ausgaben, etwa die Miete: „Jeden Monat“ wählen, und sie kommen an ihren Tagen dazu.'
+			},
+			{
 				en: 'What’s new: this page, to see what changed.',
 				de: 'Neuigkeiten: diese Seite, um zu sehen, was sich geändert hat.'
 			}
