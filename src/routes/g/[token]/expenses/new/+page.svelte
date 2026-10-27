@@ -46,5 +46,6 @@
 		error={form?.error}
 		submitLabel={m.add_expense()}
 		canRepeat
+		offlineToken={data.group.shareToken}
 	/>
 </AppPage>

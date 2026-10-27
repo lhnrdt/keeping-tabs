@@ -27,6 +27,10 @@ export const CHANGELOG: ChangelogEntry[] = [
 				de: 'Wiederkehrende Ausgaben, etwa die Miete: „Jeden Monat“ wählen, und sie kommen an ihren Tagen dazu.'
 			},
 			{
+				en: 'No connection? Expenses you add wait on your phone and are sent once you’re back online.',
+				de: 'Keine Verbindung? Neue Ausgaben warten auf deinem Handy und werden gesendet, sobald du wieder online bist.'
+			},
+			{
 				en: 'What’s new: this page, to see what changed.',
 				de: 'Neuigkeiten: diese Seite, um zu sehen, was sich geändert hat.'
 			}

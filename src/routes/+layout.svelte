@@ -5,6 +5,7 @@
 	import { page, updated } from '$app/state';
 	import { App } from 'konsta/svelte';
 	import { onMount, untrack } from 'svelte';
+	import { startSync } from '#lib/offline/sync.ts';
 	import { prefersReducedMotion } from 'svelte/motion';
 	import FriendlyNote from '#lib/components/FriendlyNote.svelte';
 	import NavigationProgress from '#lib/components/NavigationProgress.svelte';
@@ -34,6 +35,8 @@
 	});
 
 	onMount(refreshOnReturn);
+	// Expenses kept while offline go out when the connection is back (#55)
+	onMount(startSync);
 
 	// Page transitions (N-12)
 	onNavigate((navigation) => {
