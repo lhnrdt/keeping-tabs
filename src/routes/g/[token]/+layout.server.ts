@@ -26,7 +26,8 @@ export const load: LayoutServerLoad = async ({ locals, params }) => {
 			avatar,
 			claimed: personId !== null,
 			mine: personId !== null && personId === person?.id,
-			paymentDetails
+			// How to pay someone is for the people in the group, not everyone with its link (#71)
+			paymentDetails: mine ? paymentDetails : null
 		})),
 		formerMembers,
 		// "Not you?" is possible until you've added or changed something here

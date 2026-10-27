@@ -26,3 +26,18 @@ test('whoever pays you back sees how to pay you (#47)', async ({ page }) => {
 	await page.getByLabel('To', { exact: true }).selectOption({ label: 'Ben' });
 	await expect(page.getByTestId('payment-details')).toHaveCount(0);
 });
+
+test('payment details stay with the people in the group (#71)', async ({ page, browser }) => {
+	const groupUrl = await createGroup(page, 'Flat', 'Anna', ['Ben']);
+	await open(page, '/you');
+	await page.getByLabel('How to pay you').fill('DE02120300000000202051');
+	await page.getByLabel('How to pay you').blur();
+	await expect(page.getByText('Saved')).toBeVisible();
+
+	// Someone with the link who hasn't joined: not in the page, not in its data
+	const stranger = await (await browser.newContext()).newPage();
+	await open(stranger, groupUrl);
+	const data = await stranger.request.get(`${groupUrl.split('?')[0]}/__data.json`);
+	expect(await data.text()).not.toContain('DE02120300000000202051');
+	expect(await stranger.content()).not.toContain('DE02120300000000202051');
+});
