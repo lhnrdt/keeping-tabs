@@ -5,7 +5,7 @@ import { createGroup, open } from './e2e-helpers';
 async function addExpense(page: Page, title: string, payer: string, between: string[]) {
 	await page.getByRole('link', { name: 'Add expense' }).click();
 	await page.getByLabel('What was it for?').fill(title);
-	await page.getByLabel('Amount (EUR)').fill('30');
+	await page.getByLabel('Amount (€)').fill('30');
 	await page.getByLabel('Paid by').selectOption({ label: payer });
 	const participants = page.getByRole('group', { name: 'Split equally between' });
 	for (const name of ['Anna', 'Ben', 'Cara']) {

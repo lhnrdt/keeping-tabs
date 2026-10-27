@@ -11,7 +11,7 @@ test('an expense added without a connection waits on the device and goes out lat
 	await page.reload();
 	await page.getByRole('link', { name: 'Add expense' }).click();
 	await page.getByLabel('What was it for?').fill('Bread');
-	await page.getByLabel('Amount (EUR)').fill('4.20');
+	await page.getByLabel('Amount (€)').fill('4.20');
 
 	await context.setOffline(true);
 	await page.getByRole('button', { name: 'Add expense' }).click();

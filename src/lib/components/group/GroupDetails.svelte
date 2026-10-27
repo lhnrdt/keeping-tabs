@@ -89,6 +89,7 @@
 	<List nested class="-mx-4 my-0">
 		<Field
 			label={m.field_group_name()}
+			placeholder={m.placeholder_group_name()}
 			name="name"
 			required
 			maxlength={LIMITS.groupName}
@@ -96,6 +97,7 @@
 		/>
 		<Field
 			label={m.field_description()}
+			placeholder={m.placeholder_description()}
 			name="description"
 			type="textarea"
 			maxlength={LIMITS.description}

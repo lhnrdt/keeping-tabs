@@ -21,7 +21,7 @@ test('pages send security headers and nothing breaks the content security policy
 	const groupUrl = await createGroup(page, 'Trip', 'Anna', ['Ben']);
 	await page.getByRole('link', { name: 'Add expense' }).click();
 	await page.getByLabel('What was it for?').fill('Pizza');
-	await page.getByLabel('Amount (EUR)').fill('30');
+	await page.getByLabel('Amount (€)').fill('30');
 	await page.getByRole('button', { name: 'Add expense' }).click();
 	await expect(page.getByRole('link', { name: /Pizza/ })).toBeVisible();
 	for (const path of [

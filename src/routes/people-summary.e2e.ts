@@ -4,7 +4,7 @@ import { createGroup, open } from './e2e-helpers';
 async function addExpense(page: Page, groupUrl: string, title: string, amount: string) {
 	await open(page, `${groupUrl}/expenses/new`);
 	await page.getByLabel('What was it for?').fill(title);
-	await page.getByLabel('Amount (EUR)').fill(amount);
+	await page.getByLabel('Amount (€)').fill(amount);
 	await page.getByRole('button', { name: 'Add expense' }).click();
 	await expect(page.getByRole('link', { name: new RegExp(title) })).toBeVisible();
 }

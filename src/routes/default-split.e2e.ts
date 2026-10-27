@@ -5,7 +5,7 @@ test('a group remembers a split for its new expenses (#41)', async ({ page }) =>
 	const groupUrl = await createGroup(page, 'Anna & Ben', 'Anna', ['Ben']);
 	await page.getByRole('link', { name: 'Add expense' }).click();
 	await page.getByLabel('What was it for?').fill('Rent');
-	await page.getByLabel('Amount (EUR)').fill('1000');
+	await page.getByLabel('Amount (€)').fill('1000');
 	await page.getByRole('button', { name: 'More options' }).click();
 	await choose(page, 'Split', 'Percent');
 	await page.getByLabel('Percent for Anna').fill('60');

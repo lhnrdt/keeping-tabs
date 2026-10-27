@@ -4,7 +4,7 @@ import { createGroup, open } from './e2e-helpers';
 async function addExpense(page: Page, title: string, amount: string) {
 	await page.getByRole('link', { name: 'Add expense' }).click();
 	await page.getByLabel('What was it for?').fill(title);
-	await page.getByLabel('Amount (EUR)').fill(amount);
+	await page.getByLabel('Amount (€)').fill(amount);
 	await page.getByRole('button', { name: 'Add expense' }).click();
 	await page.getByRole('link', { name: new RegExp(title) }).click();
 	return page.url().split('/').pop()!;
@@ -45,7 +45,7 @@ test("an expense can't be edited through the payment form (#135)", async ({ page
 	await open(page, `${groupUrl}/payments/new`);
 	await page.getByLabel('From', { exact: true }).selectOption({ label: 'Ben' });
 	await page.getByLabel('To', { exact: true }).selectOption({ label: 'Anna' });
-	await page.getByLabel('Amount (EUR)').fill('10');
+	await page.getByLabel('Amount (€)').fill('10');
 	const sent = page.waitForResponse((response) => response.request().method() === 'POST');
 	await page
 		.locator('form[method="POST"]')

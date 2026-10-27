@@ -43,6 +43,7 @@
 		<List strong inset>
 			<Field
 				label={m.field_group_name()}
+				placeholder={m.placeholder_group_name()}
 				name="name"
 				required
 				maxlength={LIMITS.groupName}
@@ -50,6 +51,7 @@
 			/>
 			<Field
 				label={m.field_description()}
+				placeholder={m.placeholder_description()}
 				name="description"
 				type="textarea"
 				maxlength={LIMITS.description}
@@ -62,6 +64,7 @@
 			</Field>
 			<Field
 				label={m.field_your_name()}
+				placeholder={m.placeholder_name()}
 				name="you"
 				required
 				maxlength={LIMITS.memberName}

@@ -7,7 +7,7 @@ const balanceOf = (page: Page, name: string) =>
 async function addExpense(page: Page, title: string, amount: string) {
 	await page.getByRole('link', { name: 'Add expense' }).click();
 	await page.getByLabel('What was it for?').fill(title);
-	await page.getByLabel('Amount (EUR)').fill(amount);
+	await page.getByLabel('Amount (€)').fill(amount);
 }
 
 test('split by percentages, with a live remainder, and edit it again', async ({ page }) => {
