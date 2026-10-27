@@ -3,6 +3,7 @@ import { resolve } from '$app/paths';
 import { todayInputValue } from '#lib/dates.ts';
 import { isFrequency } from '#lib/expense/recurrence.ts';
 import { formContext } from '#lib/server/context.ts';
+import { notifyNewExpense } from '#lib/server/push.ts';
 import { addDueRecurring, startRecurring } from '#lib/server/recurring.ts';
 import { readExpenseForm, rememberDefaultSplit } from '#lib/server/group-forms.ts';
 import { createExpense, entryGroupOf, listChosenCategories } from '#lib/server/expenses.ts';
@@ -17,7 +18,7 @@ export const load: PageServerLoad = async ({ locals, parent }) => {
 };
 
 export const actions: Actions = {
-	save: async ({ locals, params, request }) => {
+	save: async ({ locals, params, request, platform }) => {
 		const { form, group, actorId } = await formContext(locals, params.token, request);
 		// Sent again after a lost connection (#55): it's there already, nothing more to do
 		const clientId = String(form.get('clientId') ?? '');
@@ -34,6 +35,10 @@ export const actions: Actions = {
 			existing === null ? fromDevice : undefined
 		);
 		await rememberDefaultSplit(locals.db, group.id, actorId, form, result.input);
+		// The others hear about it after the answer is sent (#56)
+		platform?.ctx.waitUntil(
+			notifyNewExpense(locals.db, group, actorId, result.input).catch(() => {})
+		);
 		// Repeats (#45): from its date on; a date in the past catches up right away
 		const repeats = form.get('repeats');
 		if (isFrequency(repeats)) {
