@@ -134,6 +134,13 @@
       "when": 1793083648862,
       "tag": "0018_recurring_expenses",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "6",
+      "when": 1793084811294,
+      "tag": "0019_push_subscriptions",
+      "breakpoints": true
     }
   ]
 }
