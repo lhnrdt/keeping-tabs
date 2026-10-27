@@ -8,7 +8,7 @@ test('two people pick who paid and how in one tap (#40)', async ({ page }) => {
 	await expect(page.getByLabel('You paid, split equally')).toBeChecked();
 
 	await page.getByLabel('What was it for?').fill('Kino');
-	await page.getByLabel('Amount (EUR)').fill('24');
+	await page.getByLabel('Amount (€)').fill('24');
 	await page.getByLabel('Ben paid, you owe all of it').check();
 	await page.getByRole('button', { name: 'Add expense' }).click();
 	await expect(page.getByRole('link', { name: /Kino/ })).toContainText('Ben paid €24.00');

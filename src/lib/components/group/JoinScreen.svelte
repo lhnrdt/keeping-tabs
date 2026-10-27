@@ -110,6 +110,7 @@
 			<List strong inset>
 				<Field
 					label={m.join_name()}
+					placeholder={m.placeholder_name()}
 					name="name"
 					required
 					maxlength={LIMITS.memberName}

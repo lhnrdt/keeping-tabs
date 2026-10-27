@@ -14,7 +14,7 @@ test('groups settled and quiet for a month fold away on the start screen (#46)',
 	const groupUrl = await createGroup(page, 'Old trip', 'Anna', ['Ben']);
 	await page.getByRole('link', { name: 'Add expense' }).click();
 	await page.getByLabel('What was it for?').fill('Hütte');
-	await page.getByLabel('Amount (EUR)').fill('100');
+	await page.getByLabel('Amount (€)').fill('100');
 	await page.getByLabel('Date').fill(daysAgo(60));
 	await page.getByRole('button', { name: 'Add expense' }).click();
 	await expect(page).toHaveURL(groupUrl);

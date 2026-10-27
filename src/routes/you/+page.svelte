@@ -110,6 +110,7 @@
 		<List strong inset class="!mb-2">
 			<Field
 				label={m.field_your_name()}
+				placeholder={m.placeholder_name()}
 				name="name"
 				maxlength={LIMITS.memberName}
 				autocomplete="given-name"

@@ -39,7 +39,7 @@ test('join as yourself, stay yourself, rejoin after losing access, and identitie
 	await ben.getByRole('button', { name: 'Close' }).click();
 	await ben.getByRole('link', { name: 'Add expense' }).click();
 	await ben.getByLabel('What was it for?').fill('Bread');
-	await ben.getByLabel('Amount (EUR)').fill('4');
+	await ben.getByLabel('Amount (€)').fill('4');
 	await ben.getByRole('button', { name: 'Add expense' }).click();
 	await expect(ben).toHaveURL(groupUrl);
 	await ben.getByTestId('identity').click();
@@ -212,7 +212,7 @@ test('join as someone new, without picking someone else, and remove people who a
 	await open(anna, groupUrl);
 	await anna.getByRole('link', { name: 'Add expense' }).click();
 	await anna.getByLabel('What was it for?').fill('Fuel');
-	await anna.getByLabel('Amount (EUR)').fill('30');
+	await anna.getByLabel('Amount (€)').fill('30');
 	const participants = anna.getByRole('group', { name: 'Split equally between' });
 	await participants.getByText('Cara').click();
 	await anna.getByRole('button', { name: 'Add expense' }).click();

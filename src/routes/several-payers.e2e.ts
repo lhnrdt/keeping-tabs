@@ -5,7 +5,7 @@ test('several people pay one expense (#39)', async ({ page }) => {
 	const groupUrl = await createGroup(page, 'Trip', 'Anna', ['Ben', 'Cara']);
 	await page.getByRole('link', { name: 'Add expense' }).click();
 	await page.getByLabel('What was it for?').fill('Dinner');
-	await page.getByLabel('Amount (EUR)').fill('90');
+	await page.getByLabel('Amount (€)').fill('90');
 	await page.getByLabel('Paid by').selectOption({ label: 'Several people' });
 	await page.getByLabel('Anna paid').fill('60');
 	await expect(page.getByTestId('payers-summary')).toContainText('€60.00 of €90.00, €30.00 left');

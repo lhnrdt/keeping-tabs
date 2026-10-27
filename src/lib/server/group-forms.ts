@@ -1,9 +1,11 @@
 import { fail } from '@sveltejs/kit';
+import { formatRate } from '#lib/expense/exchange.ts';
 import { defaultFrom } from '#lib/split/default-split.ts';
 import { readSplitInputs } from '#lib/split/form.ts';
 import { parseExpense, parsePayment, type ExpenseInput, type Result } from '#lib/validation.ts';
 import type { Db } from './db';
 import { listMembers, setDefaultSplit } from './groups';
+import { rateFor } from './rates';
 
 type Group = { id: string; currency: string };
 
@@ -34,7 +36,18 @@ const readPayers = (form: FormData) =>
 			.map((key) => [key.slice('paid.'.length), text(form, key)])
 	);
 
-export const readExpenseForm = (db: Db, group: Group, form: FormData) =>
+/**
+ * The rate another currency's amount is kept at (#54): the one the form looked up, or, when
+ * it couldn't (offline), the day's rate looked up now
+ */
+async function rateOf(group: Group, form: FormData) {
+	const currency = text(form, 'currency');
+	if (text(form, 'rate') || !currency || currency === group.currency) return text(form, 'rate');
+	const rate = await rateFor(currency, group.currency, text(form, 'date'));
+	return rate === null ? '' : formatRate(rate);
+}
+
+export const readExpenseForm = async (db: Db, group: Group, form: FormData) =>
 	validate(
 		db,
 		group,
@@ -43,7 +56,7 @@ export const readExpenseForm = (db: Db, group: Group, form: FormData) =>
 			notes: text(form, 'notes'),
 			amount: text(form, 'amount'),
 			currency: text(form, 'currency'),
-			rate: text(form, 'rate'),
+			rate: await rateOf(group, form),
 			date: text(form, 'date'),
 			paidBy: text(form, 'paidBy'),
 			payers: readPayers(form),

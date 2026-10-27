@@ -170,10 +170,10 @@ test('a trip on the way sees its budget, where the pace leads, and what’s left
 
 	await page.getByRole('button', { name: 'Set a budget' }).click();
 	const dialog = page.getByRole('dialog', { name: 'Set a budget' });
-	await dialog.getByLabel('Budget (EUR)').fill('abc');
+	await dialog.getByLabel('Budget (€)').fill('abc');
 	await dialog.getByRole('button', { name: 'Save' }).click();
 	await expect(dialog.getByRole('alert')).toContainText('Enter an amount');
-	await dialog.getByLabel('Budget (EUR)').fill('700');
+	await dialog.getByLabel('Budget (€)').fill('700');
 	await dialog.getByLabel('Ends on').fill(daysFromToday(3));
 	await dialog.getByRole('button', { name: 'Save' }).click();
 	await expect(dialog).toBeHidden();
@@ -188,7 +188,7 @@ test('a trip on the way sees its budget, where the pace leads, and what’s left
 	// Changing starts from what's set
 	await page.getByRole('button', { name: 'Change budget' }).click();
 	const change = page.getByRole('dialog', { name: 'Change budget' });
-	await expect(change.getByLabel('Budget (EUR)')).toHaveValue('700.00');
+	await expect(change.getByLabel('Budget (€)')).toHaveValue('700.00');
 	await expect(change.getByLabel('Ends on')).toHaveValue(daysFromToday(3));
 	await change.getByRole('button', { name: 'Remove budget' }).click();
 	await expect(page.getByRole('button', { name: 'Set a budget' })).toBeVisible();

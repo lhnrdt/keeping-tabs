@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Block, BlockTitle, List } from 'konsta/svelte';
+	import Fold from '#lib/components/Fold.svelte';
 	import Field from '#lib/components/Field.svelte';
 	import AmountField from '#lib/components/fields/AmountField.svelte';
 	import DateField from '#lib/components/fields/DateField.svelte';
@@ -22,7 +23,7 @@
 	import { SEVERAL_PAYERS } from '#lib/validation.ts';
 	import { presetOf } from '#lib/split/presets.ts';
 	import { convert, parseRate, RATE_CURRENCIES } from '#lib/expense/exchange.ts';
-	import { amountInputValue, formatAmount, parseAmount } from '#lib/money.ts';
+	import { amountInputValue, currencyLabel, formatAmount, parseAmount } from '#lib/money.ts';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import { canBeDefault } from '#lib/split/default-split.ts';
 
@@ -34,7 +35,7 @@
 			title: string;
 			/** A note on it (#123) */
 			notes: string;
-			/** The amount's currency when not the group's (#54), and the rate as typed */
+			/** The amount's currency when not the group's (#54), and the rate it was saved with */
 			currency?: string;
 			rate?: string;
 			/** With paidBy "several" (#39): what each paid as typed, by member id */
@@ -79,10 +80,12 @@
 	// Another currency (#54): typed in it, split and kept in the group's at the rate
 	let amountCurrency = $derived(values.currency || currency);
 	let rate = $derived(values.rate ?? '');
-	// A saved rate counts as typed; the date follows its field (both from the first values)
-	const startWith = () => ({ typed: Boolean(values.rate), date: values.date });
-	let rateTyped = $state(startWith().typed);
+	// The day's rate, looked up and not typed: a saved one stays until the currency or date
+	// changes. The date follows its field (both from the first values)
+	const startWith = () => ({ saved: Boolean(values.rate), date: values.date });
+	let keepRate = $state(startWith().saved);
 	let date = $state(startWith().date);
+	let rateFailed = $state(false);
 	let showSource = $state(false);
 	const foreign = $derived(amountCurrency !== currency);
 	const converted = $derived.by(() => {
@@ -99,16 +102,18 @@
 	const currencies = $derived([
 		...new Set([currency, ...(values.currency ? [values.currency] : []), ...RATE_CURRENCIES])
 	]);
-	// The day's rate, until one is typed by hand
+	// Without an answer (offline), the server looks it up when the expense is saved
 	$effect(() => {
-		if (!foreign || rateTyped) return;
+		if (!foreign || keepRate) return;
 		const query = new URLSearchParams({ from: amountCurrency, to: currency, date });
+		rateFailed = false;
 		fetch(`/fx?${query}`)
 			.then((response) => response.json() as Promise<{ rate: string | null }>)
 			.then((answer) => {
-				if (answer.rate && !rateTyped) rate = answer.rate;
+				if (answer.rate) rate = answer.rate;
+				else rateFailed = true;
 			})
-			.catch(() => {});
+			.catch(() => (rateFailed = true));
 	});
 	let mode = $derived<SplitMode>(isSplitMode(values.splitMode) ? values.splitMode : 'equal');
 	const paidBy = $derived(values.paidBy || identity.memberId || members[0]?.id);
@@ -123,8 +128,8 @@
 	let preset = $derived(pair ? presetOf(values, { me: pair.me, other: pair.other.id }) : null);
 	let more = $state(false);
 	const quick = $derived(pair !== null && preset !== null && !more);
-	// Folded away until wanted, so the form stays short (#123)
-	let noting = $derived(values.notes !== '');
+	// Less used choices are folded away, so the form stays short (#123); open when one is set
+	const moreOpen = $derived(values.notes !== '' || Boolean(values.currency));
 </script>
 
 <GroupForm {error} {submitLabel} {offlineToken}>
@@ -137,52 +142,26 @@
 			if (field.name === 'paidBy') payer = field.value;
 			if (field.name === 'currency') {
 				amountCurrency = field.value;
-				rateTyped = false;
+				keepRate = false;
 				rate = '';
 			}
-			if (field.name === 'date') date = field.value;
+			if (field.name === 'date') {
+				date = field.value;
+				keepRate = false;
+			}
 		}}
 	>
 		<List strong inset>
 			<Field
 				label={m.field_expense_title()}
+				placeholder={m.placeholder_expense_title()}
 				name="title"
 				required
 				maxlength={LIMITS.expenseTitle}
 				bind:value={title}
 			/>
-			<Field
-				label={m.field_currency()}
-				name="currency"
-				type="select"
-				dropdown
-				value={amountCurrency}
-			>
-				{#each currencies as code (code)}
-					<option value={code} selected={code === amountCurrency}>{code}</option>
-				{/each}
-			</Field>
 			<AmountField bind:value={amount} currency={amountCurrency} />
-			{#if foreign}
-				<Field
-					label={m.field_rate({ from: amountCurrency, to: currency })}
-					name="rate"
-					inputmode="decimal"
-					autocomplete="off"
-					required
-					bind:value={rate}
-					oninput={() => (rateTyped = true)}
-				/>
-			{/if}
 			<DateField value={values.date} />
-			{#if canRepeat}
-				<Field label={m.field_repeats()} name="repeats" type="select" dropdown value="">
-					<option value="">{m.repeats_never()}</option>
-					<option value="weekly">{m.repeats_weekly()}</option>
-					<option value="monthly">{m.repeats_monthly()}</option>
-					<option value="yearly">{m.repeats_yearly()}</option>
-				</Field>
-			{/if}
 			{#if !quick}
 				<MemberSelect
 					label={m.field_paid_by()}
@@ -192,53 +171,71 @@
 					extra={{ value: SEVERAL_PAYERS, label: m.payers_several() }}
 				/>
 			{/if}
-			{#if noting}
+		</List>
+		{#if foreign}
+			<input type="hidden" name="rate" value={rate} />
+			<Block class="!-mt-4 !mb-4">
+				<p class="text-sm text-muted" aria-live="polite" data-testid="converted">
+					<!-- Where the rate comes from, for whoever wonders: a faint "i" to tap -->
+					<button
+						type="button"
+						class="float-end ms-2 size-5 rounded-full text-xs opacity-50"
+						aria-expanded={showSource}
+						aria-label={m.rate_source_label()}
+						onclick={() => (showSource = !showSource)}>i</button
+					>
+					{converted
+						? m.converted_amount({
+								amount: formatAmount(parseAmount(converted, currency) ?? 0, currency, getLocale())
+							})
+						: rate || !amount.trim()
+							? ''
+							: rateFailed
+								? m.converted_rate_later()
+								: m.converted_looking_up()}
+				</p>
+				{#if showSource}
+					<p class="mt-1 text-xs text-muted opacity-75">{m.rate_source()}</p>
+				{/if}
+			</Block>
+		{/if}
+		<Fold title={m.expense_more()} open={moreOpen}>
+			<List nested class="!my-0">
+				<Field
+					label={m.field_currency()}
+					name="currency"
+					type="select"
+					dropdown
+					value={amountCurrency}
+				>
+					{#each currencies as code (code)}
+						<option value={code} selected={code === amountCurrency}
+							>{currencyLabel(code, getLocale())}</option
+						>
+					{/each}
+				</Field>
+				{#if canRepeat}
+					<Field label={m.field_repeats()} name="repeats" type="select" dropdown value="">
+						<option value="">{m.repeats_never()}</option>
+						<option value="weekly">{m.repeats_weekly()}</option>
+						<option value="monthly">{m.repeats_monthly()}</option>
+						<option value="yearly">{m.repeats_yearly()}</option>
+					</Field>
+				{/if}
 				<Field
 					label={m.field_note()}
+					placeholder={m.placeholder_note()}
 					name="notes"
 					type="textarea"
 					inputClass="!h-24 resize-none"
 					maxlength={LIMITS.expenseNote}
 					value={values.notes}
 				/>
-			{/if}
-		</List>
+			</List>
+		</Fold>
 	</div>
-	{#if foreign}
-		<Block class="!-mt-4 !mb-2">
-			<p class="text-sm text-muted" aria-live="polite" data-testid="converted">
-				<!-- Where the rate comes from, for whoever wonders: a faint "i" to tap -->
-				<button
-					type="button"
-					class="float-end ms-2 size-5 rounded-full text-xs opacity-50"
-					aria-expanded={showSource}
-					aria-label={m.rate_source_label()}
-					onclick={() => (showSource = !showSource)}>i</button
-				>
-				{converted
-					? m.converted_amount({
-							amount: formatAmount(parseAmount(converted, currency) ?? 0, currency, getLocale())
-						})
-					: m.converted_needs_rate()}
-			</p>
-			{#if showSource}
-				<p class="mt-1 text-xs text-muted opacity-75">{m.rate_source()}</p>
-			{/if}
-		</Block>
-	{/if}
 	{#if !quick && payer === SEVERAL_PAYERS}
 		<PayerAmounts {members} {currency} amount={converted} initial={values.payers ?? {}} />
-	{/if}
-	{#if !noting}
-		<Block class="!-mt-4 !mb-2">
-			<button
-				type="button"
-				class="text-sm font-medium text-accent dark:text-accent-night"
-				onclick={() => (noting = true)}
-			>
-				{m.add_note()}
-			</button>
-		</Block>
 	{/if}
 
 	<BlockTitle>{m.field_split()}</BlockTitle>
