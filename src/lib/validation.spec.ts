@@ -97,6 +97,40 @@ describe('parseNote', () => {
 	});
 });
 
+describe('several payers (#39)', () => {
+	const group = { memberIds: ['anna', 'ben', 'cara'], currency: 'EUR' };
+	const base = {
+		title: 'Dinner',
+		amount: '90',
+		date: '2026-10-27',
+		paidBy: 'several',
+		category: '',
+		splitMode: 'equal',
+		participants: ['anna', 'ben', 'cara'],
+		inputs: {}
+	};
+
+	it('takes what each paid, most first', () => {
+		const result = parseExpense({ ...base, payers: { anna: '30', ben: '60', cara: '' } }, group);
+		expect(result.ok && result.value.payers).toEqual([
+			{ memberId: 'ben', amountCents: 6000 },
+			{ memberId: 'anna', amountCents: 3000 }
+		]);
+		expect(result.ok && result.value.paidBy).toBe('ben');
+	});
+
+	it('needs two people and the parts to add up', () => {
+		expect(parseExpense({ ...base, payers: { anna: '90' } }, group)).toEqual({
+			ok: false,
+			error: 'payers_too_few'
+		});
+		expect(parseExpense({ ...base, payers: { anna: '30', ben: '50' } }, group)).toEqual({
+			ok: false,
+			error: 'payers_mismatch'
+		});
+	});
+});
+
 describe('parseExpense', () => {
 	const group = { memberIds: ['a', 'b', 'c'], currency: 'EUR' };
 	const values = {
@@ -116,9 +150,11 @@ describe('parseExpense', () => {
 			value: {
 				title: 'Dinner',
 				notes: null,
+				original: null,
 				amountCents: 3000,
 				date: '2026-10-21',
 				paidBy: 'b',
+				payers: null,
 				category: null,
 				splitMode: 'equal',
 				shares: [

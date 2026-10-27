@@ -25,7 +25,10 @@ export async function networkFirst(request: Request) {
 		if (response.status === 200) await pages.put(request, response.clone());
 		return response;
 	} catch (error) {
-		const cached = await pages.match(request);
+		// The same page with other parameters (SvelteKit adds some to its data requests) beats
+		// no page: e.g. back to a group after keeping an expense offline (#55)
+		const cached =
+			(await pages.match(request)) ?? (await pages.match(request, { ignoreSearch: true }));
 		if (cached) return cached;
 		if (request.mode !== 'navigate') throw error;
 		return (await (await caches.open(APP_CACHE)).match(OFFLINE_PAGE)) ?? Response.error();

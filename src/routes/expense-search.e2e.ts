@@ -6,7 +6,7 @@ test('search the expenses by title or note (#68)', async ({ page }) => {
 	for (const title of ['Pizza', 'Groceries', 'Pizza night']) {
 		await page.getByRole('link', { name: 'Add expense' }).click();
 		await page.getByLabel('What was it for?').fill(title);
-		await page.getByLabel('Amount (EUR)').fill('10');
+		await page.getByLabel('Amount (€)').fill('10');
 		await page.getByRole('button', { name: 'Add expense' }).click();
 		await expect(page.getByRole('link', { name: new RegExp(title) }).first()).toBeVisible();
 	}

@@ -1,5 +1,5 @@
 import { expect, test, type Browser, type Page } from '@playwright/test';
-import { open, openFold } from './e2e-helpers';
+import { open, openFold, participants as participantsOf } from './e2e-helpers';
 
 // Each browser context is a separate device with its own identity cookie (A-12).
 
@@ -39,7 +39,7 @@ test('join as yourself, stay yourself, rejoin after losing access, and identitie
 	await ben.getByRole('button', { name: 'Close' }).click();
 	await ben.getByRole('link', { name: 'Add expense' }).click();
 	await ben.getByLabel('What was it for?').fill('Bread');
-	await ben.getByLabel('Amount (EUR)').fill('4');
+	await ben.getByLabel('Amount (€)').fill('4');
 	await ben.getByRole('button', { name: 'Add expense' }).click();
 	await expect(ben).toHaveURL(groupUrl);
 	await ben.getByTestId('identity').click();
@@ -151,9 +151,29 @@ test('a synced passkey brings you and your groups back on a new device', async (
 	}
 
 	await open(laptop, '/device');
+	// Keep what's sent, to try it again below
+	const sent = laptop.waitForRequest(
+		(request) => request.method() === 'POST' && request.url().endsWith('/device/passkey/login')
+	);
 	await laptop.getByRole('button', { name: 'Continue with passkey' }).click();
 	await expect(laptop).toHaveURL(/\/$/);
 	await expect(laptop.getByRole('link', { name: 'Holiday' })).toBeVisible();
+
+	// The same answer with the same challenge again: crossed off already (#71)
+	const login = await sent;
+	const challenge = (await login.allHeaders()).cookie?.match(/kt-passkey-challenge=([^;]+)/)?.[1];
+	expect(challenge).toBeTruthy();
+	await laptop
+		.context()
+		.addCookies([
+			{ name: 'kt-passkey-challenge', value: challenge!, url: new URL(login.url()).origin }
+		]);
+	const replay = await laptop.request.post(login.url(), {
+		headers: { 'content-type': 'application/json', origin: new URL(login.url()).origin },
+		data: login.postData(),
+		maxRedirects: 0
+	});
+	expect(replay.status()).toBe(403);
 	await open(laptop, groupUrl);
 	await expect(laptop.getByTestId('identity')).toHaveText('Mia');
 });
@@ -192,8 +212,8 @@ test('join as someone new, without picking someone else, and remove people who a
 	await open(anna, groupUrl);
 	await anna.getByRole('link', { name: 'Add expense' }).click();
 	await anna.getByLabel('What was it for?').fill('Fuel');
-	await anna.getByLabel('Amount (EUR)').fill('30');
-	const participants = anna.getByRole('group', { name: 'Split equally between' });
+	await anna.getByLabel('Amount (€)').fill('30');
+	const participants = await participantsOf(anna);
 	await participants.getByText('Cara').click();
 	await anna.getByRole('button', { name: 'Add expense' }).click();
 	await expect(anna).toHaveURL(groupUrl);

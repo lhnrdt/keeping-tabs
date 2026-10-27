@@ -2,6 +2,7 @@
 // files; a new version takes over right away and the app reloads on its next navigation.
 import { self } from '$app/service-worker';
 import { APP_CACHE, fetchForCache, PAGES_CACHE, precached } from './caches';
+import './push';
 import { fromCache, networkFirst, strategyFor } from './respond';
 
 self.addEventListener('install', (event) => {

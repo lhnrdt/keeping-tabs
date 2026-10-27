@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { choose, createGroup, open } from './e2e-helpers';
+import { choose, createGroup, open, participants } from './e2e-helpers';
 
 test('a new visitor starts from the empty home screen', async ({ page }) => {
 	await open(page, '/');
@@ -102,7 +102,7 @@ test('expenses update the balances', async ({ page }) => {
 	// Paid by Anna (the default payer), split between everyone
 	await page.getByRole('link', { name: 'Add expense' }).click();
 	await page.getByLabel('What was it for?').fill('Pizza');
-	await page.getByLabel('Amount (EUR)').fill('30,01');
+	await page.getByLabel('Amount (€)').fill('30,01');
 	await page.getByRole('button', { name: 'Add expense' }).click();
 
 	await expect(page.getByRole('link', { name: /Pizza/ })).toContainText('Anna paid €30.01');
@@ -111,9 +111,8 @@ test('expenses update the balances', async ({ page }) => {
 
 	// Leave Cara out
 	await page.getByRole('link', { name: /Pizza/ }).click();
-	await expect(page.getByLabel('Amount (EUR)')).toHaveValue('30.01');
-	// Konsta draws its own checkbox over the real input, so tap the row like a user
-	await page.getByRole('group', { name: 'Split equally between' }).getByText('Cara').click();
+	await expect(page.getByLabel('Amount (€)')).toHaveValue('30.01');
+	await (await participants(page)).getByText('Cara').click();
 	await expect(page.getByRole('checkbox', { name: 'Cara' })).not.toBeChecked();
 	await page.getByRole('button', { name: 'Save' }).click();
 	await expect(page).toHaveURL(groupUrl);
@@ -122,7 +121,7 @@ test('expenses update the balances', async ({ page }) => {
 	// Validation keeps the input
 	await page.getByRole('link', { name: 'Add expense' }).click();
 	await page.getByLabel('What was it for?').fill('Drinks');
-	await page.getByLabel('Amount (EUR)').fill('0');
+	await page.getByLabel('Amount (€)').fill('0');
 	await page.getByRole('button', { name: 'Add expense' }).click();
 	await expect(page.getByRole('alert')).toHaveText(
 		'Enter an amount greater than zero, like 12.50.'
@@ -153,7 +152,7 @@ test('settle up with suggested payments', async ({ page }) => {
 
 	await page.getByRole('link', { name: 'Add expense' }).click();
 	await page.getByLabel('What was it for?').fill('Rent');
-	await page.getByLabel('Amount (EUR)').fill('1000');
+	await page.getByLabel('Amount (€)').fill('1000');
 	await page.getByRole('button', { name: 'Add expense' }).click();
 	await expect(page).toHaveURL(groupUrl);
 
@@ -164,7 +163,7 @@ test('settle up with suggested payments', async ({ page }) => {
 	await expect(settle).toContainText('€500.00');
 	await settle.getByRole('link', { name: /Ben pays Anna/ }).click();
 	await expect(page.getByLabel('From')).toHaveValue(/.+/);
-	await expect(page.getByLabel('Amount (EUR)')).toHaveValue('500.00');
+	await expect(page.getByLabel('Amount (€)')).toHaveValue('500.00');
 	// Before paying, the home screen shows what Anna gets back overall and per group (SP-5)
 	await open(page, '/');
 	await expect(page.getByTestId('overall-balance')).toHaveText('You get back €500.00');
@@ -225,14 +224,16 @@ test('expenses get a category from their title unless one is chosen', async ({ p
 	await page.getByRole('button', { name: 'Create group' }).click();
 	await expect(page.getByTestId('identity')).toHaveText('Anna');
 
-	// "Automatic" shows its guess while typing
+	// The automatic pick shows while typing, marked "Auto"
 	await page.getByRole('link', { name: 'Add expense' }).click();
-	const automatic = page.getByRole('group', { name: 'Category' }).locator('label').first();
+	const automatic = page
+		.getByRole('group', { name: 'Category' })
+		.locator('label', { hasText: 'Auto' });
 	await page.getByLabel('What was it for?').fill('Lidl');
 	await expect(automatic).toContainText('Groceries');
 	await page.getByLabel('What was it for?').fill('Taxi home');
 	await expect(automatic).toContainText('Transport');
-	await page.getByLabel('Amount (EUR)').fill('20');
+	await page.getByLabel('Amount (€)').fill('20');
 	await page.getByRole('button', { name: 'Add expense' }).click();
 
 	// A category chosen by hand sticks
@@ -320,22 +321,24 @@ test('delete a recently deleted group for good, right away (#118)', async ({ pag
 	expect(response?.status()).toBe(404);
 });
 
-test('a note on an expense, folded away until wanted (#123)', async ({ page }) => {
+test('a note on an expense, folded away with other choices (#123)', async ({ page }) => {
 	await createGroup(page, 'Flat', 'Anna', ['Ben']);
 	await page.getByRole('link', { name: 'Add expense' }).click();
-	await expect(page.getByLabel('Note')).toHaveCount(0);
+	await expect(page.getByLabel('Note', { exact: true })).toBeHidden();
 	await page.getByLabel('What was it for?').fill('Kaution');
-	await page.getByLabel('Amount (EUR)').fill('500');
-	await page.getByRole('button', { name: '+ Add a note' }).click();
-	await page.getByLabel('Note').fill('Includes the keys\nBack when we move out');
+	await page.getByLabel('Amount (€)').fill('500');
+	await page.getByRole('button', { name: 'Add a note' }).click();
+	await page.getByLabel('Note', { exact: true }).fill('Includes the keys\nBack when we move out');
 	await page.getByRole('button', { name: 'Add expense' }).click();
 
 	await expect(page.getByRole('link', { name: /Kaution/ })).toContainText('with a note');
 	await page.getByRole('link', { name: /Kaution/ }).click();
-	await expect(page.getByLabel('Note')).toHaveValue('Includes the keys\nBack when we move out');
+	await expect(page.getByLabel('Note', { exact: true })).toHaveValue(
+		'Includes the keys\nBack when we move out'
+	);
 
 	// Emptied, it's gone
-	await page.getByLabel('Note').fill('');
+	await page.getByLabel('Note', { exact: true }).fill('');
 	await page.getByRole('button', { name: 'Save' }).click();
 	await expect(page.getByRole('link', { name: /Kaution/ })).not.toContainText('with a note');
 });

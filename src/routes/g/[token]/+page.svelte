@@ -11,12 +11,14 @@
 	import BetweenYou from '#lib/components/group/BetweenYou.svelte';
 	import ExpenseList from '#lib/components/group/ExpenseList.svelte';
 	import ExpenseSearch from '#lib/components/group/ExpenseSearch.svelte';
+	import PendingExpenses from '#lib/components/group/PendingExpenses.svelte';
 	import DeleteGroup from '#lib/components/group/DeleteGroup.svelte';
 	import GroupDetails from '#lib/components/group/GroupDetails.svelte';
 	import GroupHero from '#lib/components/group/GroupHero.svelte';
 	import GroupTabs from '#lib/components/group/GroupTabs.svelte';
 	import IdentityButton from '#lib/components/group/IdentityButton.svelte';
 	import SettleUp from '#lib/components/group/SettleUp.svelte';
+	import RecurringList from '#lib/components/group/RecurringList.svelte';
 	import ShareLink from '#lib/components/group/ShareLink.svelte';
 	import UndoToast from '#lib/components/group/UndoToast.svelte';
 	import PeoplePills from '#lib/components/people/PeoplePills.svelte';
@@ -51,10 +53,10 @@
 	{/snippet}
 
 	{#if tab === 'expenses'}
-		<BlockTitle class="!mb-3">{m.expenses_title()}</BlockTitle>
 		{#if data.entries.length || data.query}
 			<ExpenseSearch query={data.query} />
 		{/if}
+		<PendingExpenses token={data.group.shareToken} currency={data.group.currency} />
 		<!-- A new search starts the list (and its older pages) afresh -->
 		{#key data.query}
 			<ExpenseList
@@ -111,7 +113,8 @@
 			}}
 		/>
 		<BlockTitle>{m.group_details()}</BlockTitle>
-		<GroupDetails group={data.group} error={errorFor('updateGroup')} />
+		<GroupDetails group={data.group} members={data.members} error={errorFor('updateGroup')} />
+		<RecurringList rules={data.recurring} currency={data.group.currency} />
 		<BlockTitle>{m.share_title()}</BlockTitle>
 		<ShareLink token={data.group.shareToken} groupName={data.group.name} />
 		<DeleteGroup groupId={data.group.id} name={data.group.name} />

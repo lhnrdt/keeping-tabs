@@ -234,3 +234,42 @@
 		--tint-line: rgb(179 201 202 / 0.12);
 	}
 }
+
+/* Fields look like something to type into: each a soft, rounded well with its label above */
+.k-list-input .hairline-b::after {
+	display: none;
+}
+.k-list-input label {
+	font-size: 0.8125rem;
+	font-weight: 500;
+	opacity: 0.8;
+}
+.k-list-input :is(input, select, textarea) {
+	margin-block: 0.5rem 0.25rem;
+	min-height: 3rem;
+	padding-inline: 1rem;
+	border-radius: 1rem;
+	background-color: color-mix(in srgb, currentColor 6%, transparent);
+	outline: 1.5px solid transparent;
+	transition: outline-color 150ms;
+}
+.k-list-input :is(input, select, textarea):focus {
+	outline-color: var(--color-accent);
+}
+.dark .k-list-input :is(input, select, textarea):focus {
+	outline-color: var(--color-accent-night);
+}
+.k-list-input textarea {
+	padding-block: 0.75rem;
+}
+/* A card of fields gets room around them, like the other cards */
+.k-list:has(> ul > .k-list-input) > ul {
+	padding-block: 0.625rem;
+}
+/* The dropdown arrow sits inside the well */
+.k-list-input select {
+	padding-inline-end: 2.5rem;
+}
+.k-list-input select ~ svg {
+	inset-inline-end: 1rem;
+}

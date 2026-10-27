@@ -1,6 +1,7 @@
 // A group's insights (#161): the numbers behind the Insights tab, from its entries. Spending
 // means expenses only; payments move money between people and aren't spent.
 import type { ExpenseCategory } from '#lib/expense/categories.ts';
+import { payersOf, type Payer } from '#lib/expense/payers.ts';
 import type { Transfer } from '#lib/settle.ts';
 import {
 	fixedCosts,
@@ -23,6 +24,8 @@ export type InsightEntry = {
 	title: string;
 	amountCents: number;
 	paidBy: string;
+	/** When several people paid (#39) */
+	payers?: readonly Payer[] | null;
 	/** ISO date, YYYY-MM-DD */
 	date: string;
 	category: ExpenseCategory;
@@ -166,13 +169,15 @@ export function byMember(expenses: readonly InsightEntry[], memberIds: readonly 
 	const rows = new Map<string, MemberSpend>(
 		memberIds.map((memberId) => [memberId, { memberId, paid: 0, share: 0, times: 0 }])
 	);
-	for (const { paidBy, amountCents, splits } of expenses) {
-		const payer = rows.get(paidBy);
-		if (payer) {
-			payer.paid += amountCents;
-			payer.times += 1;
+	for (const expense of expenses) {
+		for (const { memberId, amountCents } of payersOf(expense)) {
+			const payer = rows.get(memberId);
+			if (payer) {
+				payer.paid += amountCents;
+				payer.times += 1;
+			}
 		}
-		for (const { memberId, shareCents } of splits) {
+		for (const { memberId, shareCents } of expense.splits) {
 			const row = rows.get(memberId);
 			if (row) row.share += shareCents;
 		}

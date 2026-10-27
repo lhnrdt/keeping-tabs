@@ -61,3 +61,9 @@ export function clearRecentGroups() {
 		// Nothing was remembered, or storage is unavailable
 	}
 }
+
+const SEEN_CHANGELOG_KEY = 'keeping-tabs:seen-changelog';
+
+/** The newest version read about in What's new on this device (#212) */
+export const getSeenChangelog = () => read<string | null>(SEEN_CHANGELOG_KEY, null);
+export const setSeenChangelog = (version: string) => write(SEEN_CHANGELOG_KEY, version);

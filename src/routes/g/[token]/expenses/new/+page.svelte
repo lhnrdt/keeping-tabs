@@ -3,6 +3,7 @@
 	import AppPage from '#lib/components/AppPage.svelte';
 	import ExpenseForm from '#lib/components/expense/ExpenseForm.svelte';
 	import { m } from '#lib/paraglide/messages.js';
+	import { defaultFormValues } from '#lib/split/default-split.ts';
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();
@@ -17,8 +18,14 @@
 			// E-4: everyone takes part by default
 			participants: data.members.map((member) => member.id),
 			category: '',
-			splitMode: '',
-			inputs: {}
+			// The group's default split, if it has one (#41)
+			...(data.group.defaultSplit
+				? defaultFormValues(
+						data.group.defaultSplit,
+						data.members.map((member) => member.id),
+						data.group.currency
+					)
+				: { splitMode: '', inputs: {} })
 		}
 	);
 </script>
@@ -38,5 +45,7 @@
 		{values}
 		error={form?.error}
 		submitLabel={m.add_expense()}
+		canRepeat
+		offlineToken={data.group.shareToken}
 	/>
 </AppPage>

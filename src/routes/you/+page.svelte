@@ -1,4 +1,9 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+	import { version } from '$app/env';
+	import { CHANGELOG } from '#lib/changelog/entries.ts';
+	import { visibleEntries } from '#lib/changelog/visible.ts';
+	import { getSeenChangelog } from '#lib/device.ts';
 	// Settings save as soon as they change: the name when you leave the field, the theme
 	// right away (and switches at once), the language by serving the page again in it.
 	// Without JavaScript, each has its own Save button.
@@ -7,6 +12,7 @@
 	import { Block, BlockTitle, List, ListItem } from 'konsta/svelte';
 	import AppPage from '#lib/components/AppPage.svelte';
 	import DeleteIdentity from '#lib/components/device/DeleteIdentity.svelte';
+	import PushToggle from '#lib/components/device/PushToggle.svelte';
 	import Avatar from '#lib/components/Avatar.svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import Field from '#lib/components/Field.svelte';
@@ -67,6 +73,13 @@
 		event.currentTarget.requestSubmit();
 	}
 	const errorFor = (setting: string) => (form?.setting === setting ? form.error : undefined);
+
+	// A dot on What's new when there's a version this device hasn't read about (#212)
+	let unread = $state(false);
+	onMount(() => {
+		const newest = visibleEntries(CHANGELOG, version)[0]?.version;
+		unread = Boolean(newest) && getSeenChangelog() !== newest;
+	});
 </script>
 
 <svelte:head>
@@ -97,6 +110,7 @@
 		<List strong inset class="!mb-2">
 			<Field
 				label={m.field_your_name()}
+				placeholder={m.placeholder_name()}
 				name="name"
 				maxlength={LIMITS.memberName}
 				autocomplete="given-name"
@@ -160,11 +174,28 @@
 		<noscript><Block><button type="submit">{m.save()}</button></Block></noscript>
 	</form>
 
+	{#if data.pushPublicKey}
+		<BlockTitle class="!mb-2">{m.push_title()}</BlockTitle>
+		<PushToggle publicKey={data.pushPublicKey} />
+	{/if}
+
 	<!-- Everything about you is reachable from here (#146) -->
 	<List strong inset>
 		<ListItem link title={m.home_other_device()} href={resolve('/you/devices')}>
 			{#snippet media()}
 				<Icon name="identity" />
+			{/snippet}
+		</ListItem>
+		<ListItem link title={m.whats_new_title()} href={resolve('/you/whats-new')}>
+			{#snippet media()}
+				<Icon name="sparkles" />
+			{/snippet}
+			{#snippet after()}
+				{#if unread}
+					<!-- Something new since this device last looked (#212) -->
+					<span class="h-2.5 w-2.5 rounded-full bg-accent dark:bg-accent-night"></span>
+					<span class="sr-only">{m.whats_new_unread()}</span>
+				{/if}
 			{/snippet}
 		</ListItem>
 	</List>

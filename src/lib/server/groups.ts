@@ -1,3 +1,4 @@
+import { parseDefaultSplit, type DefaultSplit } from '#lib/split/default-split.ts';
 import { and, asc, desc, eq, inArray, isNotNull, isNull } from 'drizzle-orm';
 import type { GroupKind } from '#lib/group/kinds.ts';
 import type { Tint } from '#lib/tints.ts';
@@ -8,7 +9,7 @@ import { newShareToken, SHARE_TOKEN_PATTERN } from './token';
 
 export async function findGroupByToken(db: Db, token: string) {
 	if (!SHARE_TOKEN_PATTERN.test(token)) return undefined;
-	return db.query.groups.findFirst({
+	const group = await db.query.groups.findFirst({
 		columns: {
 			id: true,
 			shareToken: true,
@@ -20,10 +21,12 @@ export async function findGroupByToken(db: Db, token: string) {
 			simplifyDebts: true,
 			insightSections: true,
 			budgetCents: true,
-			endsOn: true
+			endsOn: true,
+			defaultSplit: true
 		},
 		where: and(eq(groups.shareToken, token), isNull(groups.deletedAt))
 	});
+	return group && { ...group, defaultSplit: parseDefaultSplit(group.defaultSplit) };
 }
 
 /** Current name and look of the groups behind these links; deleted ones are left out (#125) */
@@ -229,5 +232,18 @@ export async function setBudget(
 	await db.batch([
 		db.update(groups).set(plan).where(eq(groups.id, groupId)),
 		log(db, groupId, actorId, 'group.update', plan)
+	]);
+}
+
+/** New expenses' split (#41); null goes back to equal */
+export async function setDefaultSplit(
+	db: Db,
+	groupId: string,
+	actorId: string | null,
+	defaultSplit: DefaultSplit | null
+) {
+	await db.batch([
+		db.update(groups).set({ defaultSplit }).where(eq(groups.id, groupId)),
+		log(db, groupId, actorId, 'group.update', { defaultSplit })
 	]);
 }

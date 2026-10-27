@@ -75,10 +75,24 @@
 	const subtitleOf = (entry: Entry) =>
 		entry.type === 'payment'
 			? formatDate(entry.date)
-			: `${formatDate(entry.date)} · ${m.expense_paid_by({
-					name: nameOf(entry.paidBy),
-					amount: formatAmount(entry.amountCents, currency, getLocale())
-				})}${entry.notes ? ` · ${m.has_note()}` : ''}`;
+			: `${formatDate(entry.date)} · ${paidLine(entry)}${entry.notes ? ` · ${m.has_note()}` : ''}`;
+	// "Anna paid €90", or "Anna and Ben paid €90" when several did (#39)
+	const listFormat = new Intl.ListFormat(getLocale(), { type: 'conjunction' });
+	function paidLine(entry: Entry) {
+		const amount = formatAmount(entry.amountCents, currency, getLocale());
+		return entry.payers?.length
+			? m.expense_paid_by_several({
+					names: listFormat.format(entry.payers.map((payer) => nameOf(payer.memberId))),
+					amount
+				})
+			: entry.originalCurrency && entry.originalAmountCents
+				? m.expense_paid_original({
+						name: nameOf(entry.paidBy),
+						original: formatAmount(entry.originalAmountCents, entry.originalCurrency, getLocale()),
+						amount
+					})
+				: m.expense_paid_by({ name: nameOf(entry.paidBy), amount });
+	}
 	const hrefOf = (entry: Entry) =>
 		entry.type === 'payment'
 			? resolve('/g/[token]/payments/[id]', { token, id: entry.id })

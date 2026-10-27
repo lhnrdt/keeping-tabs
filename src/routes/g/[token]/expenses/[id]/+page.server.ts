@@ -3,7 +3,7 @@ import { resolve } from '$app/paths';
 import { undoUrl } from '#lib/group/tabs.ts';
 import { m } from '#lib/paraglide/messages.js';
 import { formContext } from '#lib/server/context.ts';
-import { readExpenseForm } from '#lib/server/group-forms.ts';
+import { readExpenseForm, rememberDefaultSplit } from '#lib/server/group-forms.ts';
 import {
 	findExpense,
 	listChosenCategories,
@@ -30,6 +30,7 @@ export const actions: Actions = {
 		if (!(await updateExpense(locals.db, group.id, actorId, params.id, result.input))) {
 			error(404, m.error_expense_not_found());
 		}
+		await rememberDefaultSplit(locals.db, group.id, actorId, form, result.input);
 		redirect(303, resolve('/g/[token]', { token: params.token }));
 	},
 

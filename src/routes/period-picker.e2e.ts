@@ -10,7 +10,7 @@ test('tap the period to pick a day, month or year natively (#184)', async ({ pag
 	]) {
 		await page.getByRole('link', { name: 'Add expense' }).click();
 		await page.getByLabel('What was it for?').fill(title);
-		await page.getByLabel('Amount (EUR)').fill('100');
+		await page.getByLabel('Amount (€)').fill('100');
 		await page.getByLabel('Date').fill(date);
 		await page.getByRole('button', { name: 'Add expense' }).click();
 		await expect(page.getByRole('link', { name: new RegExp(title) })).toBeVisible();

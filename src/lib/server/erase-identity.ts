@@ -3,7 +3,7 @@
 // expenses refer to them; with `anonymizeAs` their names are replaced by that name.
 import { eq, sql } from 'drizzle-orm';
 import type { Db } from './db';
-import { deviceLinks, devices, members, passkeys, people } from './db/schema';
+import { deviceLinks, devices, members, passkeys, people, pushSubscriptions } from './db/schema';
 
 /**
  * `anonymizeAs`: the name that replaces theirs (e.g. "Former member"), or null to keep names.
@@ -23,6 +23,7 @@ export async function eraseIdentity(db: Db, personId: string, anonymizeAs: strin
 		db.delete(passkeys).where(eq(passkeys.personId, personId)),
 		db.delete(deviceLinks).where(eq(deviceLinks.personId, personId)),
 		db.delete(devices).where(eq(devices.personId, personId)),
+		db.delete(pushSubscriptions).where(eq(pushSubscriptions.personId, personId)),
 		db.delete(people).where(eq(people.id, personId))
 	]);
 }

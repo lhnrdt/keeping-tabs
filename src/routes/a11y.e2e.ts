@@ -46,7 +46,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
 			const groupUrl = await createGroup(page, 'Dinner club', 'Anna', ['Ben']);
 			await page.getByRole('link', { name: 'Add expense' }).click();
 			await page.getByLabel('What was it for?').fill('Pizza');
-			await page.getByLabel('Amount (EUR)').fill('30');
+			await page.getByLabel('Amount (€)').fill('30');
 			await page.getByRole('button', { name: 'Add expense' }).click();
 			await page.getByRole('link', { name: /Pizza/ }).click();
 			const expenseUrl = page.url();

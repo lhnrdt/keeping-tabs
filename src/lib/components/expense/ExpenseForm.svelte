@@ -1,33 +1,40 @@
 <script lang="ts">
-	import { Block, BlockTitle, List } from 'konsta/svelte';
-	import Field from '#lib/components/Field.svelte';
-	import AmountField from '#lib/components/fields/AmountField.svelte';
-	import DateField from '#lib/components/fields/DateField.svelte';
-	import MemberSelect from '#lib/components/fields/MemberSelect.svelte';
+	// Adding or editing an expense, in the order it's thought of: what it was, how much, who
+	// paid and how it's split, then category and when. One flat form without cards; the save
+	// button stays at the bottom of the screen (GroupForm).
+	import PlainField from '#lib/components/fields/PlainField.svelte';
 	import CategoryPicker from '#lib/components/pickers/CategoryPicker.svelte';
 	import GroupForm from '#lib/components/group/GroupForm.svelte';
 	import type { ErrorCode } from '#lib/errors.ts';
 	import type { ExpenseCategory } from '#lib/expense/categories.ts';
+	import { RATE_CURRENCIES } from '#lib/expense/exchange.ts';
 	import { learnCategories } from '#lib/expense/learned.ts';
 	import { useIdentity } from '#lib/group/identity.svelte.ts';
-	import type { Member } from '#lib/group/members.ts';
+	import type { GroupMember } from '#lib/group/members.ts';
 	import { m } from '#lib/paraglide/messages.js';
-	import { LIMITS } from '#lib/validation.ts';
-	import { isSplitMode, type SplitMode } from '#lib/split/modes.ts';
+	import { canBeDefault } from '#lib/split/default-split.ts';
+	import { isSplitMode, SPLIT_MODES, type SplitMode } from '#lib/split/modes.ts';
+	import { SEVERAL_PAYERS } from '#lib/validation.ts';
+	import AmountCurrencyField from './AmountCurrencyField.svelte';
+	import DateChips from './DateChips.svelte';
 	import ParticipantChecklist from './ParticipantChecklist.svelte';
+	import PayerAmounts from './PayerAmounts.svelte';
 	import SplitInputs from './SplitInputs.svelte';
-	import SplitModePicker from './SplitModePicker.svelte';
-	import TwoPersonPresets from './TwoPersonPresets.svelte';
-	import { presetOf } from '#lib/split/presets.ts';
+	import TitleNoteField from './TitleNoteField.svelte';
 
 	type Props = {
-		members: Member[];
+		members: GroupMember[];
 		currency: string;
 		/** Raw form values; empty strings for a new expense */
 		values: {
 			title: string;
 			/** A note on it (#123) */
 			notes: string;
+			/** The amount's currency when not the group's (#54), and the rate it was saved with */
+			currency?: string;
+			rate?: string;
+			/** With paidBy "several" (#39): what each paid as typed, by member id */
+			payers?: Record<string, string>;
 			amount: string;
 			date: string;
 			paidBy: string;
@@ -41,90 +48,148 @@
 		chosen: { title: string; category: ExpenseCategory | null }[];
 		error?: ErrorCode;
 		submitLabel: string;
+		/** A new expense can repeat (#45) */
+		canRepeat?: boolean;
+		/** A new expense waits on the device when the connection is gone (#55) */
+		offlineToken?: string;
 	};
 
-	let { members, currency, values, chosen, error, submitLabel }: Props = $props();
+	let {
+		members,
+		currency,
+		values,
+		chosen,
+		error,
+		submitLabel,
+		canRepeat = false,
+		offlineToken
+	}: Props = $props();
+	// Its id, made here: sending it again after a lost connection can't add it twice (#55)
+	const clientId = crypto.randomUUID();
 
 	const identity = useIdentity();
-	// Follows the typed title, so the automatic category can show its guess
-	let title = $derived(values.title);
-	// Follows the typed amount, so the split shows each share live
-	let amount = $derived(values.amount);
-	let mode = $derived<SplitMode>(isSplitMode(values.splitMode) ? values.splitMode : 'equal');
-	const paidBy = $derived(values.paidBy || identity.memberId || members[0]?.id);
-	// Two people: quick choices instead of the payer and split (#40), unless more is wanted
-	const pair = $derived.by(() => {
-		const me = identity.memberId;
-		const other = members.find((member) => member.id !== me);
-		return members.length === 2 && me && other ? { me, other } : null;
+	// What the form starts from; from there, what's typed
+	const initial = () => ({
+		title: values.title,
+		amount: values.amount,
+		currency: values.currency,
+		date: values.date,
+		paidBy: values.paidBy,
+		splitMode: values.splitMode,
+		groupCurrency: currency,
+		firstMember: members[0]?.id
 	});
-	let preset = $derived(pair ? presetOf(values, { me: pair.me, other: pair.other.id }) : null);
-	let more = $state(false);
-	const quick = $derived(pair !== null && preset !== null && !more);
-	// Folded away until wanted, so the form stays short (#123)
-	let noting = $derived(values.notes !== '');
+	// Follow what's typed: the category guess, the shares and the conversion show it live
+	let title = $state(initial().title);
+	let amount = $state(initial().amount);
+	let amountCurrency = $state(initial().currency || initial().groupCurrency);
+	let date = $state(initial().date);
+	let converted = $state('');
+	let payer = $state(initial().paidBy || identity.memberId || initial().firstMember);
+	let mode = $state<SplitMode>(
+		isSplitMode(initial().splitMode) ? (initial().splitMode as SplitMode) : 'equal'
+	);
+
+	const saved = $derived(
+		values.currency && values.rate
+			? { currency: values.currency, date: values.date, rate: values.rate }
+			: undefined
+	);
+	const currencies = $derived([
+		...new Set([currency, ...(values.currency ? [values.currency] : []), ...RATE_CURRENCIES])
+	]);
+	const modeLabels: Record<SplitMode, () => string> = {
+		equal: m.split_equal,
+		exact: m.split_exact,
+		percent: m.split_percent,
+		shares: m.split_shares,
+		adjust: m.split_adjust
+	};
 </script>
 
-<GroupForm {error} {submitLabel}>
-	<List strong inset>
-		<Field
-			label={m.field_expense_title()}
-			name="title"
-			required
-			maxlength={LIMITS.expenseTitle}
-			bind:value={title}
+<GroupForm {error} {submitLabel} {offlineToken}>
+	{#if offlineToken}<input type="hidden" name="clientId" value={clientId} />{/if}
+	<div class="flex flex-col gap-4 px-4 pt-2 pb-4">
+		<TitleNoteField bind:title notes={values.notes} />
+		<AmountCurrencyField
+			bind:amount
+			bind:currency={amountCurrency}
+			bind:converted
+			groupCurrency={currency}
+			{currencies}
+			{date}
+			{saved}
 		/>
-		<AmountField bind:value={amount} {currency} />
-		<DateField value={values.date} />
-		{#if !quick}
-			<MemberSelect label={m.field_paid_by()} name="paidBy" {members} value={paidBy} />
-		{/if}
-		{#if noting}
-			<Field
-				label={m.field_note()}
-				name="notes"
-				type="textarea"
-				inputClass="!h-24 resize-none"
-				maxlength={LIMITS.expenseNote}
-				value={values.notes}
-			/>
-		{/if}
-	</List>
-	{#if !noting}
-		<Block class="!-mt-4 !mb-2">
-			<button
-				type="button"
-				class="text-sm font-medium text-accent dark:text-accent-night"
-				onclick={() => (noting = true)}
-			>
-				{m.add_note()}
-			</button>
-		</Block>
-	{/if}
 
-	<BlockTitle>{m.field_split()}</BlockTitle>
-	{#if quick && pair && preset}
-		<TwoPersonPresets me={pair.me} other={pair.other} bind:preset onMore={() => (more = true)} />
-	{:else}
-		<SplitModePicker bind:mode />
+		<div class="grid grid-cols-2 gap-2.5">
+			<PlainField label={m.field_paid_by()} icon="paidBy" arrow>
+				{#snippet children(id)}
+					<select {id} name="paidBy" bind:value={payer}>
+						{#each members as member (member.id)}
+							<option value={member.id}>{member.name}</option>
+						{/each}
+						<option value={SEVERAL_PAYERS}>{m.payers_several()}</option>
+					</select>
+				{/snippet}
+			</PlainField>
+			<PlainField label={m.field_split()} arrow>
+				{#snippet children(id)}
+					<select {id} name="splitMode" bind:value={mode}>
+						{#each SPLIT_MODES as option (option)}
+							<option value={option}>{modeLabels[option]()}</option>
+						{/each}
+					</select>
+				{/snippet}
+			</PlainField>
+		</div>
+
+		{#if payer === SEVERAL_PAYERS}
+			<PayerAmounts {members} {currency} amount={converted} initial={values.payers ?? {}} />
+		{/if}
 		{#if mode === 'equal'}
-			<ParticipantChecklist {members} selected={values.participants} />
+			<ParticipantChecklist
+				{members}
+				selected={values.participants}
+				amount={converted}
+				{currency}
+			/>
 		{:else}
 			<SplitInputs
 				{mode}
 				{members}
 				{currency}
-				{amount}
+				amount={converted}
 				initial={{
 					mode: isSplitMode(values.splitMode) ? values.splitMode : 'equal',
 					inputs: values.inputs
 				}}
 			/>
+			{#if canBeDefault(mode)}
+				<!-- Remember this split for the group's new expenses (#41) -->
+				<label class="-mt-2 flex cursor-pointer items-center gap-3 text-sm">
+					<input
+						type="checkbox"
+						name="makeDefault"
+						class="size-[18px] shrink-0 accent-accent dark:accent-accent-night"
+					/>
+					{m.default_split_remember()}
+				</label>
+			{/if}
 		{/if}
-	{/if}
 
-	<!-- A card, not a List: pickers are fieldsets, not list items (#79) -->
-	<Block strong inset class="!px-0 !py-3">
 		<CategoryPicker value={values.category} {title} learned={learnCategories(chosen)} />
-	</Block>
+		<DateChips bind:date />
+		{#if canRepeat}
+			<PlainField label={m.field_repeats()} icon="repeats" arrow>
+				{#snippet children(id)}
+					<select {id} name="repeats">
+						<option value="">{m.repeats_never()}</option>
+						<option value="weekly">{m.repeats_weekly()}</option>
+						<option value="monthly">{m.repeats_monthly()}</option>
+						<option value="yearly">{m.repeats_yearly()}</option>
+					</select>
+				{/snippet}
+			</PlainField>
+		{/if}
+	</div>
 </GroupForm>

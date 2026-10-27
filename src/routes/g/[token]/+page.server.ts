@@ -21,11 +21,13 @@ import {
 	listMembers,
 	regenerateShareToken,
 	setBudget,
+	setDefaultSplit,
 	setInsightSections,
 	renameMember,
 	updateGroup
 } from '#lib/server/groups.ts';
 import { ensurePerson, personOf, setProfileName } from '#lib/server/people.ts';
+import { addDueRecurring, listRecurring, stopRecurring } from '#lib/server/recurring.ts';
 import {
 	parseDescription,
 	parseGroupName,
@@ -41,18 +43,21 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 	const group = await groupOf(locals, params.token);
 	const [members, person] = await Promise.all([membersOf(locals, group.id), personOf(locals)]);
 	const mine = members.find((member) => person && member.personId === person.id)?.id ?? null;
+	// Repeating expenses due by today are added before anything is shown (#45)
+	await addDueRecurring(locals.db, todayInputValue(), group.id);
 	const shown = shownCount(url.searchParams.get('show'));
 	const query = readQuery(url.searchParams);
 	// Balances and settling up need only sums (#58), the list its first page(s); every entry
 	// only for the insights
 	const deletedId = url.searchParams.get(UNDO_PARAM);
 	const onInsights = currentTab(url) === 'insights';
-	const [ledger, expenses, page, justDeleted] = await Promise.all([
+	const [ledger, expenses, page, justDeleted, recurring] = await Promise.all([
 		listLedger(locals.db, group.id),
 		onInsights ? listExpenses(locals.db, group.id) : undefined,
 		entryPage(locals.db, group.id, mine, 0, shown, query),
 		// Right after deleting: offer "Undo" (#78); gone once it's restored
-		deletedId ? findDeletedEntry(locals.db, group.id, deletedId) : undefined
+		deletedId ? findDeletedEntry(locals.db, group.id, deletedId) : undefined,
+		currentTab(url) === 'group' ? listRecurring(locals.db, group.id) : []
 	]);
 	const memberIds = members.map((member) => member.id);
 	const today = todayInputValue();
@@ -63,6 +68,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 		entries: page.entries,
 		hasMore: page.hasMore,
 		justDeleted: justDeleted ?? null,
+		recurring,
 		query,
 		today,
 		// Only on its tab: everything else doesn't need it (#161)
@@ -196,6 +202,18 @@ export const actions: Actions = {
 		const { form, group, actorId } = await context(locals, params.token, request);
 		const entry = await findDeletedEntry(locals.db, group.id, String(form.get('entryId') ?? ''));
 		if (entry) await restoreEntry(locals.db, group.id, actorId, entry);
+	},
+
+	/** A repeating expense stops; what it added stays (#45) */
+	stopRecurring: async ({ locals, params, request }) => {
+		const { form, group, actorId } = await context(locals, params.token, request);
+		await stopRecurring(locals.db, group.id, actorId, String(form.get('recurringId') ?? ''));
+	},
+
+	/** New expenses go back to an equal split (#41) */
+	clearDefaultSplit: async ({ locals, params, request }) => {
+		const { group, actorId } = await context(locals, params.token, request);
+		await setDefaultSplit(locals.db, group.id, actorId, null);
 	},
 
 	/** Which insights the group shows (#174); "reset" goes back to the type's suggestions */

@@ -3,6 +3,7 @@ import IconBed from '@tabler/icons-svelte-runes/icons/bed';
 import IconBeer from '@tabler/icons-svelte-runes/icons/beer';
 import IconBus from '@tabler/icons-svelte-runes/icons/bus';
 import IconHistory from '@tabler/icons-svelte-runes/icons/history';
+import IconSparkles from '@tabler/icons-svelte-runes/icons/sparkles';
 import IconSearch from '@tabler/icons-svelte-runes/icons/search';
 import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
 import IconCalendarEvent from '@tabler/icons-svelte-runes/icons/calendar-event';
@@ -43,6 +44,11 @@ import IconUserCircle from '@tabler/icons-svelte-runes/icons/user-circle';
 import IconUserPlus from '@tabler/icons-svelte-runes/icons/user-plus';
 import IconUsersGroup from '@tabler/icons-svelte-runes/icons/users-group';
 import IconX from '@tabler/icons-svelte-runes/icons/x';
+import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
+import IconNote from '@tabler/icons-svelte-runes/icons/note';
+import IconRepeat from '@tabler/icons-svelte-runes/icons/repeat';
+import IconTag from '@tabler/icons-svelte-runes/icons/tag';
+import IconWallet from '@tabler/icons-svelte-runes/icons/wallet';
 
 export const icons = {
 	add: IconPlus,
@@ -64,6 +70,7 @@ export const icons = {
 	next: IconChevronRight,
 	previous: IconChevronLeft,
 	search: IconSearch,
+	sparkles: IconSparkles,
 	activity: IconHistory,
 	member: IconUser,
 	payment: IconCash,
@@ -71,6 +78,12 @@ export const icons = {
 	passkey: IconFingerprint,
 	remove: IconX,
 	share: IconShare,
+	// Expense form fields
+	title: IconTag,
+	note: IconNote,
+	paidBy: IconWallet,
+	date: IconCalendar,
+	repeats: IconRepeat,
 	// Group types (src/lib/group/kinds.ts)
 	kindTrip: IconPlane,
 	kindHome: IconHome,

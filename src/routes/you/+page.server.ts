@@ -23,6 +23,7 @@ import {
 	setThemeCookie
 } from '#lib/server/settings.ts';
 import { normalizeText, LIMITS } from '#lib/validation.ts';
+import { pushPublicKey } from '#lib/server/push.ts';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, cookies }) => {
@@ -36,7 +37,9 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
 		theme: isTheme(theme) ? theme : (person?.theme ?? 'system'),
 		accent: isAccent(accent) ? accent : (person?.accent ?? DEFAULT_ACCENT),
 		avatar: person?.avatar ?? null,
-		paymentDetails: person?.paymentDetails ?? ''
+		paymentDetails: person?.paymentDetails ?? '',
+		// Notifications (#56), when this environment has its keys
+		pushPublicKey: pushPublicKey()
 	};
 };
 

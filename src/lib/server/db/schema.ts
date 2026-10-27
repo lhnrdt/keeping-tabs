@@ -45,6 +45,8 @@ export const groups = sqliteTable('groups', {
 	// Insight sections chosen for this group, in order, e.g. "overTime,fixedCosts" (#174);
 	// null = the group type's suggestions
 	insightSections: text('insight_sections'),
+	// New expenses start split this way, e.g. {"mode":"percent","inputs":{…}} (#41); null = equal
+	defaultSplit: text('default_split', { mode: 'json' }),
 	// Budget (minor units) and end date for trips and events, both optional (#168)
 	budgetCents: integer('budget_cents'),
 	endsOn: text('ends_on'),
@@ -69,6 +71,29 @@ export const people = sqliteTable('people', {
 	paymentDetails: text('payment_details'),
 	// Hash of the person's recovery key, if they created one (A-16)
 	recoveryHash: text('recovery_hash').unique(),
+	createdAt: createdAt()
+});
+
+/**
+ * Passkey challenges handed out and not used yet (#71): crossed off when answered, so a
+ * captured answer can't be sent again. Only hashes; expired ones are worthless.
+ */
+export const passkeyChallenges = sqliteTable('passkey_challenges', {
+	challengeHash: text('challenge_hash').primaryKey(),
+	expiresAt: integer('expires_at', { mode: 'timestamp_ms' }).notNull()
+});
+
+/**
+ * Where to send a person's notifications (#56): one browser's Web Push subscription. The
+ * endpoint is the push service's address for that browser; the keys encrypt the message.
+ */
+export const pushSubscriptions = sqliteTable('push_subscriptions', {
+	endpoint: text('endpoint').primaryKey(),
+	personId: text('person_id')
+		.notNull()
+		.references(() => people.id, { onDelete: 'cascade' }),
+	p256dh: text('p256dh').notNull(),
+	auth: text('auth').notNull(),
 	createdAt: createdAt()
 });
 
@@ -160,6 +185,11 @@ export const expenses = sqliteTable(
 		date: text('date').notNull(),
 		splitMode: text('split_mode', { enum: SPLIT_MODES }).notNull().default('equal'),
 		notes: text('notes'),
+		// Typed in another currency (#54): that currency, the amount in it and the rate used;
+		// amount_cents is the group's currency all the same
+		originalCurrency: text('original_currency'),
+		originalAmountCents: integer('original_amount_cents'),
+		exchangeRate: text('exchange_rate'),
 		category: text('category').$type<ExpenseCategory>(),
 		// Where an imported row came from (e.g. "sw:…" for Splitwise), so re-imports skip it (I-3)
 		importKey: text('import_key'),
@@ -197,6 +227,49 @@ export const expenseSplits = sqliteTable(
 		primaryKey({ columns: [t.expenseId, t.memberId] }),
 		index('expense_splits_member_idx').on(t.memberId)
 	]
+);
+
+/**
+ * Who paid an expense when it was several people (#39), each with their part; they add up
+ * to its amount. Without rows here, expenses.paid_by paid it all.
+ */
+export const expensePayers = sqliteTable(
+	'expense_payers',
+	{
+		expenseId: text('expense_id')
+			.notNull()
+			.references(() => expenses.id, { onDelete: 'cascade' }),
+		memberId: text('member_id')
+			.notNull()
+			.references(() => members.id),
+		amountCents: integer('amount_cents').notNull()
+	},
+	(t) => [primaryKey({ columns: [t.expenseId, t.memberId] })]
+);
+
+/**
+ * Expenses that repeat (#45): the expense as entered (template, with its first date), how
+ * often, and how many times it has been added so far. Stopped ones stay for the record.
+ */
+export const recurringExpenses = sqliteTable(
+	'recurring_expenses',
+	{
+		id: id(),
+		groupId: text('group_id')
+			.notNull()
+			.references(() => groups.id),
+		// The member who set it up; the expenses it adds are theirs
+		memberId: text('member_id').references(() => members.id),
+		template: text('template', { mode: 'json' }).notNull(),
+		frequency: text('frequency', { enum: ['weekly', 'monthly', 'yearly'] }).notNull(),
+		// Added this many times; the next one is time number `added` after the first date
+		added: integer('added').notNull().default(1),
+		// When the next one is due, for finding what's due quickly
+		nextOn: text('next_on').notNull(),
+		createdAt: createdAt(),
+		stoppedAt: integer('stopped_at', { mode: 'timestamp_ms' })
+	},
+	(t) => [index('recurring_expenses_due_idx').on(t.stoppedAt, t.nextOn)]
 );
 
 export const activityLog = sqliteTable(

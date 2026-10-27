@@ -40,7 +40,15 @@
 	});
 </script>
 
-<Dialog {opened} onBackdropClick={onClose} role="dialog" aria-modal="true" aria-label={heading}>
+<!-- As wide as the screen allows (Konsta's 300px is cramped), up to a comfortable width -->
+<Dialog
+	{opened}
+	onBackdropClick={onClose}
+	role="dialog"
+	aria-modal="true"
+	aria-label={heading}
+	class="!w-[calc(100vw-2rem)] !max-w-lg"
+>
 	<!-- Konsta 5.5.0's Dialog crashes on string titles (missing printText import), so pass a snippet -->
 	{#snippet title()}{heading}{/snippet}
 	<!-- Long content scrolls inside, so the buttons below stay on screen -->

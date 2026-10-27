@@ -5,7 +5,7 @@ test('undo deleting an expense brings it back with its balances', async ({ page 
 	await createGroup(page, 'Dinner club', 'Anna', ['Ben']);
 	await page.getByRole('link', { name: 'Add expense' }).click();
 	await page.getByLabel('What was it for?').fill('Pizza');
-	await page.getByLabel('Amount (EUR)').fill('30');
+	await page.getByLabel('Amount (€)').fill('30');
 	await page.getByRole('button', { name: 'Add expense' }).click();
 	const pizza = page.getByRole('link', { name: /Pizza/ });
 	await expect(pizza).toBeVisible();
@@ -29,7 +29,7 @@ test('the undo offer goes away by itself and not offered again on reload', async
 	await createGroup(page, 'Flat', 'Anna', ['Ben']);
 	await page.getByRole('link', { name: 'Add expense' }).click();
 	await page.getByLabel('What was it for?').fill('Rent');
-	await page.getByLabel('Amount (EUR)').fill('900');
+	await page.getByLabel('Amount (€)').fill('900');
 	await page.getByRole('button', { name: 'Add expense' }).click();
 	await page.getByRole('link', { name: /Rent/ }).click();
 	await page.getByRole('button', { name: 'Delete expense' }).click();

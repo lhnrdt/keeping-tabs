@@ -8,7 +8,7 @@
 	import Icon from '#lib/components/Icon.svelte';
 	import type { ErrorCode } from '#lib/errors.ts';
 	import { tabAction } from '#lib/group/tabs.ts';
-	import { amountInputValue, formatAmount } from '#lib/money.ts';
+	import { amountInputValue, currencySymbol, formatAmount } from '#lib/money.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import type { BudgetView } from '#lib/insights/budget.ts';
@@ -76,8 +76,9 @@
 	{#key editing}
 		<List strong inset class="!mx-0">
 			<Field
-				label={`${m.field_budget()} (${currency})`}
+				label={`${m.field_budget()} (${currencySymbol(currency, getLocale())})`}
 				name="amount"
+				placeholder={amountInputValue(0, currency)}
 				inputmode="decimal"
 				autocomplete="off"
 				value={view?.budget != null ? amountInputValue(view.budget, currency) : ''}

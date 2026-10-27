@@ -5,7 +5,7 @@ test('see who changed what, and bring a deleted expense back (#43)', async ({ pa
 	const groupUrl = await createGroup(page, 'Flat', 'Anna', ['Ben']);
 	await page.getByRole('link', { name: 'Add expense' }).click();
 	await page.getByLabel('What was it for?').fill('Pizza');
-	await page.getByLabel('Amount (EUR)').fill('20');
+	await page.getByLabel('Amount (€)').fill('20');
 	await page.getByRole('button', { name: 'Add expense' }).click();
 	await page.getByRole('link', { name: /Pizza/ }).click();
 	await page.getByRole('button', { name: 'Delete expense' }).click();

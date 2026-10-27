@@ -1,5 +1,7 @@
 // All amounts are integer minor units (E-2). Floats appear only when formatting.
 
+import { payersOf, type Payer } from './expense/payers';
+
 /** Number of minor-unit digits for a currency, e.g. 2 for EUR, 0 for JPY. */
 export function minorDigits(currency: string): number {
 	return (
@@ -36,6 +38,28 @@ export function formatAmount(amount: number, currency: string, locale: string): 
 	);
 }
 
+/** The currency's symbol in this language, e.g. "£", "$" or "CA$"; the code when there's none */
+export function currencySymbol(currency: string, locale: string): string {
+	try {
+		const parts = new Intl.NumberFormat(locale, { style: 'currency', currency }).formatToParts(0);
+		return parts.find((part) => part.type === 'currency')?.value ?? currency;
+	} catch {
+		return currency;
+	}
+}
+
+/** For currency pickers: "£ British Pound", or "CHF Swiss Franc" where the code is the symbol */
+export function currencyLabel(currency: string, locale: string): string {
+	let name: string | undefined;
+	try {
+		name = new Intl.DisplayNames([locale], { type: 'currency' }).of(currency);
+	} catch {
+		name = undefined;
+	}
+	const symbol = currencySymbol(currency, locale);
+	return name && name !== currency ? `${symbol} ${name}` : symbol;
+}
+
 /** Short, for chart axes: "€2K", "€500" */
 export function formatCompact(amount: number, currency: string, locale: string): string {
 	return new Intl.NumberFormat(locale, {
@@ -62,6 +86,8 @@ export function splitEqual(amount: number, participantIds: readonly string[]) {
 export type BalanceInput = {
 	paidBy: string;
 	amountCents: number;
+	/** When several people paid (#39); else paidBy paid it all */
+	payers?: readonly Payer[] | null;
 	splits: readonly { memberId: string; shareCents: number }[];
 };
 
@@ -70,7 +96,7 @@ export function balances(memberIds: readonly string[], expenses: readonly Balanc
 	const result = new Map(memberIds.map((id) => [id, 0]));
 	const add = (id: string, amount: number) => result.set(id, (result.get(id) ?? 0) + amount);
 	for (const expense of expenses) {
-		add(expense.paidBy, expense.amountCents);
+		for (const payer of payersOf(expense)) add(payer.memberId, payer.amountCents);
 		for (const split of expense.splits) add(split.memberId, -split.shareCents);
 	}
 	return result;

@@ -5,8 +5,9 @@ test('remind someone who owes you, with the group link (#48)', async ({ page }) 
 	const groupUrl = await createGroup(page, 'Flat', 'Anna', ['Ben']);
 	await page.getByRole('link', { name: 'Add expense' }).click();
 	await page.getByLabel('What was it for?').fill('Pizza');
-	await page.getByLabel('Amount (EUR)').fill('20');
+	await page.getByLabel('Amount (€)').fill('20');
 	await page.getByRole('button', { name: 'Add expense' }).click();
+	await expect(page).toHaveURL(groupUrl);
 
 	await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
 	await open(page, `${groupUrl}?tab=balances`);
