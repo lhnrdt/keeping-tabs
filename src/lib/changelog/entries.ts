@@ -35,6 +35,10 @@ export const CHANGELOG: ChangelogEntry[] = [
 				de: 'Benachrichtigungen: schalte sie in deinem Profil ein, um zu erfahren, wenn jemand eine Ausgabe hinzufügt.'
 			},
 			{
+				en: 'Expenses in another currency: typed in yen or dollars, converted at the day’s rate.',
+				de: 'Ausgaben in anderen Währungen: in Yen oder Dollar eingegeben, zum Tageskurs umgerechnet.'
+			},
+			{
 				en: 'What’s new: this page, to see what changed.',
 				de: 'Neuigkeiten: diese Seite, um zu sehen, was sich geändert hat.'
 			}

@@ -1,6 +1,7 @@
 import type { ErrorCode } from './errors';
 import { isExpenseCategory, type ExpenseCategory } from './expense/categories';
 import { DEFAULT_GROUP_KIND, isGroupKind, type GroupKind } from './group/kinds';
+import { convert, parseRate, type Original } from './expense/exchange';
 import type { Payer } from './expense/payers';
 import { parseAmount } from './money';
 import { computeShares, type Share, type SplitEntry } from './split/compute';
@@ -105,6 +106,8 @@ export type ExpenseInput = {
 	title: string;
 	/** A note on it (#123); null when there's none */
 	notes: string | null;
+	/** Typed in another currency (#54): what and at which rate; amountCents is converted */
+	original: Original | null;
 	amountCents: number;
 	date: string;
 	paidBy: string;
@@ -138,6 +141,10 @@ export function parseExpense(
 		title: unknown;
 		notes?: unknown;
 		amount: unknown;
+		/** The amount's currency (#54); empty or the group's own for none */
+		currency?: unknown;
+		/** 1 of that currency in the group's, as typed */
+		rate?: unknown;
 		date: unknown;
 		paidBy: unknown;
 		/** With paidBy "several" (#39): what each member paid, by member id */
@@ -158,8 +165,9 @@ export function parseExpense(
 	const notes = parseNote(values.notes);
 	if (!notes.ok) return notes;
 
-	const amountCents = parseAmount(normalizeText(values.amount), group.currency);
-	if (amountCents === null) return { ok: false, error: 'amount_invalid' };
+	const money = parseMoney(values, group.currency);
+	if (!money.ok) return money;
+	const { amountCents, original } = money.value;
 
 	const date = parseDate(values.date);
 	if (!date.ok) return date;
@@ -178,6 +186,7 @@ export function parseExpense(
 		value: {
 			title,
 			notes: notes.value,
+			original,
 			amountCents,
 			date: date.value,
 			...payers.value,
@@ -185,6 +194,31 @@ export function parseExpense(
 			...split.value
 		}
 	};
+}
+
+/** The amount, converted from another currency at the given rate when there is one (#54) */
+function parseMoney(
+	values: { amount: unknown; currency?: unknown; rate?: unknown },
+	groupCurrency: string
+): Result<{ amountCents: number; original: Original | null }> {
+	const currency = normalizeText(values.currency);
+	if (!currency || currency === groupCurrency) {
+		const amountCents = parseAmount(normalizeText(values.amount), groupCurrency);
+		return amountCents === null
+			? { ok: false, error: 'amount_invalid' }
+			: { ok: true, value: { amountCents, original: null } };
+	}
+	const code = parseCurrency(currency);
+	if (!code.ok) return code;
+	const typed = parseAmount(normalizeText(values.amount), code.value);
+	if (typed === null) return { ok: false, error: 'amount_invalid' };
+	const rate = parseRate(normalizeText(values.rate));
+	if (rate === null) return { ok: false, error: 'rate_invalid' };
+	const original = { currency: code.value, amountCents: typed, rate };
+	const amountCents = convert(original, groupCurrency);
+	return amountCents > 0
+		? { ok: true, value: { amountCents, original } }
+		: { ok: false, error: 'amount_invalid' };
 }
 
 /** The payer, or several with what each paid (#39); the parts add up to the amount */

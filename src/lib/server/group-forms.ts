@@ -42,6 +42,8 @@ export const readExpenseForm = (db: Db, group: Group, form: FormData) =>
 			title: text(form, 'title'),
 			notes: text(form, 'notes'),
 			amount: text(form, 'amount'),
+			currency: text(form, 'currency'),
+			rate: text(form, 'rate'),
 			date: text(form, 'date'),
 			paidBy: text(form, 'paidBy'),
 			payers: readPayers(form),
