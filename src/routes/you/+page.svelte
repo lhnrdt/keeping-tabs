@@ -1,4 +1,9 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+	import { version } from '$app/env';
+	import { CHANGELOG } from '#lib/changelog/entries.ts';
+	import { visibleEntries } from '#lib/changelog/visible.ts';
+	import { getSeenChangelog } from '#lib/device.ts';
 	// Settings save as soon as they change: the name when you leave the field, the theme
 	// right away (and switches at once), the language by serving the page again in it.
 	// Without JavaScript, each has its own Save button.
@@ -67,6 +72,13 @@
 		event.currentTarget.requestSubmit();
 	}
 	const errorFor = (setting: string) => (form?.setting === setting ? form.error : undefined);
+
+	// A dot on What's new when there's a version this device hasn't read about (#212)
+	let unread = $state(false);
+	onMount(() => {
+		const newest = visibleEntries(CHANGELOG, version)[0]?.version;
+		unread = Boolean(newest) && getSeenChangelog() !== newest;
+	});
 </script>
 
 <svelte:head>
@@ -165,6 +177,18 @@
 		<ListItem link title={m.home_other_device()} href={resolve('/you/devices')}>
 			{#snippet media()}
 				<Icon name="identity" />
+			{/snippet}
+		</ListItem>
+		<ListItem link title={m.whats_new_title()} href={resolve('/you/whats-new')}>
+			{#snippet media()}
+				<Icon name="sparkles" />
+			{/snippet}
+			{#snippet after()}
+				{#if unread}
+					<!-- Something new since this device last looked (#212) -->
+					<span class="h-2.5 w-2.5 rounded-full bg-accent dark:bg-accent-night"></span>
+					<span class="sr-only">{m.whats_new_unread()}</span>
+				{/if}
 			{/snippet}
 		</ListItem>
 	</List>

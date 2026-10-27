@@ -3,6 +3,7 @@ import IconBed from '@tabler/icons-svelte-runes/icons/bed';
 import IconBeer from '@tabler/icons-svelte-runes/icons/beer';
 import IconBus from '@tabler/icons-svelte-runes/icons/bus';
 import IconHistory from '@tabler/icons-svelte-runes/icons/history';
+import IconSparkles from '@tabler/icons-svelte-runes/icons/sparkles';
 import IconSearch from '@tabler/icons-svelte-runes/icons/search';
 import IconChevronLeft from '@tabler/icons-svelte-runes/icons/chevron-left';
 import IconCalendarEvent from '@tabler/icons-svelte-runes/icons/calendar-event';
@@ -64,6 +65,7 @@ export const icons = {
 	next: IconChevronRight,
 	previous: IconChevronLeft,
 	search: IconSearch,
+	sparkles: IconSparkles,
 	activity: IconHistory,
 	member: IconUser,
 	payment: IconCash,
