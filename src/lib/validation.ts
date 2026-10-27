@@ -1,6 +1,7 @@
 import type { ErrorCode } from './errors';
 import { isExpenseCategory, type ExpenseCategory } from './expense/categories';
 import { DEFAULT_GROUP_KIND, isGroupKind, type GroupKind } from './group/kinds';
+import type { Payer } from './expense/payers';
 import { parseAmount } from './money';
 import { computeShares, type Share, type SplitEntry } from './split/compute';
 import { parseSplitInput } from './split/inputs';
@@ -107,6 +108,8 @@ export type ExpenseInput = {
 	amountCents: number;
 	date: string;
 	paidBy: string;
+	/** When several people paid (#39), each with their part, most first; else null */
+	payers: Payer[] | null;
 	/** Chosen by hand; null follows the title */
 	category: ExpenseCategory | null;
 	splitMode: SplitMode;
@@ -137,6 +140,8 @@ export function parseExpense(
 		amount: unknown;
 		date: unknown;
 		paidBy: unknown;
+		/** With paidBy "several" (#39): what each member paid, by member id */
+		payers?: Record<string, unknown>;
 		category: unknown;
 		splitMode: unknown;
 		/** For an equal split: who takes part */
@@ -159,8 +164,8 @@ export function parseExpense(
 	const date = parseDate(values.date);
 	if (!date.ok) return date;
 
-	const paidBy = normalizeText(values.paidBy);
-	if (!group.memberIds.includes(paidBy)) return { ok: false, error: 'payer_invalid' };
+	const payers = parsePayers(values, amountCents, group);
+	if (!payers.ok) return payers;
 
 	const split = parseSplit(values, amountCents, group);
 	if (!split.ok) return split;
@@ -175,11 +180,40 @@ export function parseExpense(
 			notes: notes.value,
 			amountCents,
 			date: date.value,
-			paidBy,
+			...payers.value,
 			category: category.value,
 			...split.value
 		}
 	};
+}
+
+/** The payer, or several with what each paid (#39); the parts add up to the amount */
+export const SEVERAL_PAYERS = 'several';
+
+function parsePayers(
+	values: { paidBy: unknown; payers?: Record<string, unknown> },
+	amountCents: number,
+	group: { memberIds: readonly string[]; currency: string }
+): Result<{ paidBy: string; payers: Payer[] | null }> {
+	const paidBy = normalizeText(values.paidBy);
+	if (paidBy !== SEVERAL_PAYERS) {
+		return group.memberIds.includes(paidBy)
+			? { ok: true, value: { paidBy, payers: null } }
+			: { ok: false, error: 'payer_invalid' };
+	}
+	const payers: Payer[] = [];
+	for (const memberId of group.memberIds) {
+		const text = normalizeText(values.payers?.[memberId]);
+		if (!text) continue;
+		const amount = parseAmount(text, group.currency);
+		if (amount === null) return { ok: false, error: 'amount_invalid' };
+		payers.push({ memberId, amountCents: amount });
+	}
+	if (payers.length < 2) return { ok: false, error: 'payers_too_few' };
+	if (payers.reduce((sum, payer) => sum + payer.amountCents, 0) !== amountCents)
+		return { ok: false, error: 'payers_mismatch' };
+	payers.sort((a, b) => b.amountCents - a.amountCents);
+	return { ok: true, value: { paidBy: payers[0].memberId, payers } };
 }
 
 export type PaymentInput = { from: string; to: string; amountCents: number; date: string };
