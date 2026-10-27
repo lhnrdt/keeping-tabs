@@ -24,7 +24,12 @@
 	}
 </script>
 
-<form method="GET" role="search" class="mx-4 mb-2" onsubmit={(event) => event.preventDefault()}>
+<form
+	method="GET"
+	role="search"
+	class="mx-4 mt-5 mb-2"
+	onsubmit={(event) => event.preventDefault()}
+>
 	<input type="hidden" name="tab" value="expenses" />
 	<label
 		class="flex items-center gap-2 rounded-full bg-surface px-4 py-2.5 focus-within:ring-2 focus-within:ring-accent dark:bg-surface-night dark:focus-within:ring-accent-night"
