@@ -26,6 +26,14 @@ async function validate<V, T>(
 
 const text = (form: FormData, key: string) => String(form.get(key) ?? '');
 
+/** What each member paid, from fields named paid.<member id> (#39) */
+const readPayers = (form: FormData) =>
+	Object.fromEntries(
+		[...form.keys()]
+			.filter((key) => key.startsWith('paid.'))
+			.map((key) => [key.slice('paid.'.length), text(form, key)])
+	);
+
 export const readExpenseForm = (db: Db, group: Group, form: FormData) =>
 	validate(
 		db,
@@ -36,6 +44,7 @@ export const readExpenseForm = (db: Db, group: Group, form: FormData) =>
 			amount: text(form, 'amount'),
 			date: text(form, 'date'),
 			paidBy: text(form, 'paidBy'),
+			payers: readPayers(form),
 			participants: form.getAll('participants').map(String),
 			category: text(form, 'category'),
 			splitMode: text(form, 'splitMode'),
