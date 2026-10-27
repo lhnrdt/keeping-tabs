@@ -185,6 +185,11 @@ export const expenses = sqliteTable(
 		date: text('date').notNull(),
 		splitMode: text('split_mode', { enum: SPLIT_MODES }).notNull().default('equal'),
 		notes: text('notes'),
+		// Typed in another currency (#54): that currency, the amount in it and the rate used;
+		// amount_cents is the group's currency all the same
+		originalCurrency: text('original_currency'),
+		originalAmountCents: integer('original_amount_cents'),
+		exchangeRate: text('exchange_rate'),
 		category: text('category').$type<ExpenseCategory>(),
 		// Where an imported row came from (e.g. "sw:…" for Splitwise), so re-imports skip it (I-3)
 		importKey: text('import_key'),

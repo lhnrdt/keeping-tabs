@@ -13,6 +13,9 @@ const expenseColumns = {
 	type: expenses.type,
 	title: expenses.title,
 	notes: expenses.notes,
+	originalCurrency: expenses.originalCurrency,
+	originalAmountCents: expenses.originalAmountCents,
+	exchangeRate: expenses.exchangeRate,
 	amountCents: expenses.amountCents,
 	paidBy: expenses.paidBy,
 	date: expenses.date,
@@ -262,6 +265,13 @@ export async function isEntryOf(db: Db, groupId: string, id: string, type: Entry
 	return Boolean(row);
 }
 
+/** The other currency's columns (#54), empty when the amount was typed in the group's */
+const originalColumns = (input: ExpenseInput) => ({
+	originalCurrency: input.original?.currency ?? null,
+	originalAmountCents: input.original?.amountCents ?? null,
+	exchangeRate: input.original?.rate ?? null
+});
+
 /** Several payers' rows (#39); none when one person paid it all */
 const payerRows = (db: Db, expenseId: string, input: ExpenseInput) =>
 	input.payers && input.payers.length > 1
@@ -287,6 +297,7 @@ export async function createExpense(
 			splitMode: input.splitMode,
 			title: input.title,
 			notes: input.notes,
+			...originalColumns(input),
 			amountCents: input.amountCents,
 			paidBy: input.paidBy,
 			date: input.date,
@@ -313,6 +324,7 @@ export async function updateExpense(
 			.set({
 				title: input.title,
 				notes: input.notes,
+				...originalColumns(input),
 				amountCents: input.amountCents,
 				paidBy: input.paidBy,
 				date: input.date,
