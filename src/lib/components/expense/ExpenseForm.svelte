@@ -48,6 +48,8 @@
 		submitLabel: string;
 		/** A new expense can repeat (#45) */
 		canRepeat?: boolean;
+		/** A new expense waits on the device when the connection is gone (#55) */
+		offlineToken?: string;
 	};
 
 	let {
@@ -57,8 +59,11 @@
 		chosen,
 		error,
 		submitLabel,
-		canRepeat = false
+		canRepeat = false,
+		offlineToken
 	}: Props = $props();
+	// Its id, made here: sending it again after a lost connection can't add it twice (#55)
+	const clientId = crypto.randomUUID();
 
 	const identity = useIdentity();
 	// Follows the typed title, so the automatic category can show its guess
@@ -82,7 +87,8 @@
 	let noting = $derived(values.notes !== '');
 </script>
 
-<GroupForm {error} {submitLabel}>
+<GroupForm {error} {submitLabel} {offlineToken}>
+	{#if offlineToken}<input type="hidden" name="clientId" value={clientId} />{/if}
 	<!-- Listens around the list, so the list keeps only list items -->
 	<div
 		class="contents"

@@ -59,6 +59,15 @@ export async function listLedger(db: Db, groupId: string) {
 	return [...ledgerEntries(paid, shares), ...whole];
 }
 
+/** Whether an entry with this id exists, deleted or not, and in which group (#55) */
+export async function entryGroupOf(db: Db, id: string) {
+	const [row] = await db
+		.select({ groupId: expenses.groupId })
+		.from(expenses)
+		.where(eq(expenses.id, id));
+	return row?.groupId ?? null;
+}
+
 /** Payers of these expenses (#39), by expense, most first; one-payer expenses have none */
 async function payersOf(db: Db, expenseIds: readonly string[]) {
 	if (expenseIds.length === 0) return new Map<string, Payer[]>();
@@ -266,9 +275,10 @@ export async function createExpense(
 	db: Db,
 	groupId: string,
 	actorId: string | null,
-	input: ExpenseInput
+	input: ExpenseInput,
+	/** Made on the device for one sent while offline (#55); else a new one */
+	id: string = crypto.randomUUID()
 ) {
-	const id = crypto.randomUUID();
 	await db.batch([
 		db.insert(expenses).values({
 			id,

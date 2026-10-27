@@ -11,6 +11,7 @@
 	import BetweenYou from '#lib/components/group/BetweenYou.svelte';
 	import ExpenseList from '#lib/components/group/ExpenseList.svelte';
 	import ExpenseSearch from '#lib/components/group/ExpenseSearch.svelte';
+	import PendingExpenses from '#lib/components/group/PendingExpenses.svelte';
 	import DeleteGroup from '#lib/components/group/DeleteGroup.svelte';
 	import GroupDetails from '#lib/components/group/GroupDetails.svelte';
 	import GroupHero from '#lib/components/group/GroupHero.svelte';
@@ -56,6 +57,7 @@
 		{#if data.entries.length || data.query}
 			<ExpenseSearch query={data.query} />
 		{/if}
+		<PendingExpenses token={data.group.shareToken} currency={data.group.currency} />
 		<!-- A new search starts the list (and its older pages) afresh -->
 		{#key data.query}
 			<ExpenseList
