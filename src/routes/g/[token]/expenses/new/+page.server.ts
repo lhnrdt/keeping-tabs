@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
 import { formContext } from '#lib/server/context.ts';
-import { readExpenseForm } from '#lib/server/group-forms.ts';
+import { readExpenseForm, rememberDefaultSplit } from '#lib/server/group-forms.ts';
 import { createExpense, listChosenCategories } from '#lib/server/expenses.ts';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -16,6 +16,7 @@ export const actions: Actions = {
 		const result = await readExpenseForm(locals.db, group, form);
 		if (!result.ok) return result.failure;
 		await createExpense(locals.db, group.id, actorId, result.input);
+		await rememberDefaultSplit(locals.db, group.id, actorId, form, result.input);
 		redirect(303, resolve('/g/[token]', { token: params.token }));
 	}
 };
