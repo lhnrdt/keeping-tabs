@@ -13,6 +13,7 @@ test('whoever pays you back sees how to pay you (#47)', async ({ page }) => {
 	await page.getByLabel('What was it for?').fill('Pizza');
 	await page.getByLabel('Amount (EUR)').fill('20');
 	await page.getByRole('button', { name: 'Add expense' }).click();
+	await expect(page).toHaveURL(groupUrl);
 
 	// Ben pays Anna back: her details, ready to copy
 	await open(page, `${groupUrl}?tab=balances`);

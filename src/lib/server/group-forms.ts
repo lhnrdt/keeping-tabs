@@ -1,8 +1,9 @@
 import { fail } from '@sveltejs/kit';
+import { defaultFrom } from '#lib/split/default-split.ts';
 import { readSplitInputs } from '#lib/split/form.ts';
-import { parseExpense, parsePayment, type Result } from '#lib/validation.ts';
+import { parseExpense, parsePayment, type ExpenseInput, type Result } from '#lib/validation.ts';
 import type { Db } from './db';
-import { listMembers } from './groups';
+import { listMembers, setDefaultSplit } from './groups';
 
 type Group = { id: string; currency: string };
 
@@ -55,3 +56,16 @@ export const readPaymentForm = (db: Db, group: Group, form: FormData) =>
 		},
 		parsePayment
 	);
+
+/** "Use this split for new expenses" (#41): remembers a percent or parts split for the group */
+export async function rememberDefaultSplit(
+	db: Db,
+	groupId: string,
+	actorId: string | null,
+	form: FormData,
+	input: ExpenseInput
+) {
+	if (form.get('makeDefault') !== 'on') return;
+	const split = defaultFrom(input.splitMode, input.shares);
+	if (split) await setDefaultSplit(db, groupId, actorId, split);
+}

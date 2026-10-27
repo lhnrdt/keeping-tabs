@@ -15,6 +15,9 @@
 	import { LIMITS } from '#lib/validation.ts';
 
 	import type { Tint } from '#lib/tints.ts';
+	import type { Member } from '#lib/group/members.ts';
+	import type { DefaultSplit } from '#lib/split/default-split.ts';
+	import { formatSplitInput } from '#lib/split/inputs.ts';
 
 	type Group = {
 		name: string;
@@ -23,9 +26,25 @@
 		kind: GroupKind;
 		tint: Tint | null;
 		simplifyDebts: boolean;
+		/** New expenses' split (#41), null = equal */
+		defaultSplit: DefaultSplit | null;
 	};
 
-	let { group, error }: { group: Group; error?: ErrorCode } = $props();
+	type Props = { group: Group; members: Member[]; error?: ErrorCode };
+
+	let { group, members, error }: Props = $props();
+
+	/** "Anna 60 % · Ben 40 %" or "Anna 2 · Ben 1" */
+	const splitText = $derived.by(() => {
+		const split = group.defaultSplit;
+		if (!split) return m.default_split_equal();
+		return members
+			.map((member) => {
+				const value = formatSplitInput(split.mode, split.inputs[member.id] ?? 0, group.currency);
+				return `${member.name} ${split.mode === 'percent' ? `${value} %` : value}`;
+			})
+			.join(' · ');
+	});
 
 	let editing = $state(false);
 </script>
@@ -42,6 +61,18 @@
 	</ListItem>
 	<ListItem title={m.field_currency()} after={group.currency} />
 	<ListItem title={m.field_simplify_debts()} after={group.simplifyDebts ? m.on() : m.off()} />
+	<ListItem title={m.field_default_split()} text={splitText}>
+		{#snippet after()}
+			{#if group.defaultSplit}
+				<!-- Back to an equal split for new expenses (red, like every reset) -->
+				<form method="POST" action={tabAction('clearDefaultSplit', 'group')}>
+					<button type="submit" class="text-sm font-medium tone-destructive"
+						>{m.default_split_reset()}</button
+					>
+				</form>
+			{/if}
+		{/snippet}
+	</ListItem>
 	<ListButton type="button" onclick={() => (editing = true)}>
 		<Icon name="edit" />
 		{m.edit_group()}

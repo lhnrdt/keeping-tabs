@@ -21,6 +21,7 @@ import {
 	listMembers,
 	regenerateShareToken,
 	setBudget,
+	setDefaultSplit,
 	setInsightSections,
 	renameMember,
 	updateGroup
@@ -196,6 +197,12 @@ export const actions: Actions = {
 		const { form, group, actorId } = await context(locals, params.token, request);
 		const entry = await findDeletedEntry(locals.db, group.id, String(form.get('entryId') ?? ''));
 		if (entry) await restoreEntry(locals.db, group.id, actorId, entry);
+	},
+
+	/** New expenses go back to an equal split (#41) */
+	clearDefaultSplit: async ({ locals, params, request }) => {
+		const { group, actorId } = await context(locals, params.token, request);
+		await setDefaultSplit(locals.db, group.id, actorId, null);
 	},
 
 	/** Which insights the group shows (#174); "reset" goes back to the type's suggestions */

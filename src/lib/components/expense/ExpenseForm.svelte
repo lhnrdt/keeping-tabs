@@ -19,6 +19,7 @@
 	import SplitModePicker from './SplitModePicker.svelte';
 	import TwoPersonPresets from './TwoPersonPresets.svelte';
 	import { presetOf } from '#lib/split/presets.ts';
+	import { canBeDefault } from '#lib/split/default-split.ts';
 
 	type Props = {
 		members: Member[];
@@ -120,6 +121,19 @@
 					inputs: values.inputs
 				}}
 			/>
+			{#if canBeDefault(mode)}
+				<!-- Remember this split for the group's new expenses (#41) -->
+				<Block class="!-mt-2 !mb-4">
+					<label class="flex cursor-pointer items-center gap-3 text-sm">
+						<input
+							type="checkbox"
+							name="makeDefault"
+							class="h-5 w-5 shrink-0 accent-accent dark:accent-accent-night"
+						/>
+						{m.default_split_remember()}
+					</label>
+				</Block>
+			{/if}
 		{/if}
 	{/if}
 
