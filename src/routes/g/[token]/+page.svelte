@@ -111,7 +111,7 @@
 			}}
 		/>
 		<BlockTitle>{m.group_details()}</BlockTitle>
-		<GroupDetails group={data.group} error={errorFor('updateGroup')} />
+		<GroupDetails group={data.group} members={data.members} error={errorFor('updateGroup')} />
 		<BlockTitle>{m.share_title()}</BlockTitle>
 		<ShareLink token={data.group.shareToken} groupName={data.group.name} />
 		<DeleteGroup groupId={data.group.id} name={data.group.name} />
