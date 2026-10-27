@@ -18,6 +18,8 @@
 	import SplitInputs from './SplitInputs.svelte';
 	import SplitModePicker from './SplitModePicker.svelte';
 	import TwoPersonPresets from './TwoPersonPresets.svelte';
+	import PayerAmounts from './PayerAmounts.svelte';
+	import { SEVERAL_PAYERS } from '#lib/validation.ts';
 	import { presetOf } from '#lib/split/presets.ts';
 	import { canBeDefault } from '#lib/split/default-split.ts';
 
@@ -29,6 +31,8 @@
 			title: string;
 			/** A note on it (#123) */
 			notes: string;
+			/** With paidBy "several" (#39): what each paid as typed, by member id */
+			payers?: Record<string, string>;
 			amount: string;
 			date: string;
 			paidBy: string;
@@ -53,6 +57,8 @@
 	let amount = $derived(values.amount);
 	let mode = $derived<SplitMode>(isSplitMode(values.splitMode) ? values.splitMode : 'equal');
 	const paidBy = $derived(values.paidBy || identity.memberId || members[0]?.id);
+	// Follows the payer choice: several people show what each paid (#39)
+	let payer = $derived(paidBy);
 	// Two people: quick choices instead of the payer and split (#40), unless more is wanted
 	const pair = $derived.by(() => {
 		const me = identity.memberId;
@@ -67,30 +73,48 @@
 </script>
 
 <GroupForm {error} {submitLabel}>
-	<List strong inset>
-		<Field
-			label={m.field_expense_title()}
-			name="title"
-			required
-			maxlength={LIMITS.expenseTitle}
-			bind:value={title}
-		/>
-		<AmountField bind:value={amount} {currency} />
-		<DateField value={values.date} />
-		{#if !quick}
-			<MemberSelect label={m.field_paid_by()} name="paidBy" {members} value={paidBy} />
-		{/if}
-		{#if noting}
+	<!-- Listens around the list, so the list keeps only list items -->
+	<div
+		class="contents"
+		onchange={(event) => {
+			const field = event.target as HTMLSelectElement;
+			if (field.name === 'paidBy') payer = field.value;
+		}}
+	>
+		<List strong inset>
 			<Field
-				label={m.field_note()}
-				name="notes"
-				type="textarea"
-				inputClass="!h-24 resize-none"
-				maxlength={LIMITS.expenseNote}
-				value={values.notes}
+				label={m.field_expense_title()}
+				name="title"
+				required
+				maxlength={LIMITS.expenseTitle}
+				bind:value={title}
 			/>
-		{/if}
-	</List>
+			<AmountField bind:value={amount} {currency} />
+			<DateField value={values.date} />
+			{#if !quick}
+				<MemberSelect
+					label={m.field_paid_by()}
+					name="paidBy"
+					{members}
+					value={paidBy}
+					extra={{ value: SEVERAL_PAYERS, label: m.payers_several() }}
+				/>
+			{/if}
+			{#if noting}
+				<Field
+					label={m.field_note()}
+					name="notes"
+					type="textarea"
+					inputClass="!h-24 resize-none"
+					maxlength={LIMITS.expenseNote}
+					value={values.notes}
+				/>
+			{/if}
+		</List>
+	</div>
+	{#if !quick && payer === SEVERAL_PAYERS}
+		<PayerAmounts {members} {currency} {amount} initial={values.payers ?? {}} />
+	{/if}
 	{#if !noting}
 		<Block class="!-mt-4 !mb-2">
 			<button
