@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { createGroup, open } from './e2e-helpers';
+import { createGroup, open, participants as participantsOf } from './e2e-helpers';
 
 /** Adds an equal expense paid by `payer`, split between `between` only. */
 async function addExpense(page: Page, title: string, payer: string, between: string[]) {
@@ -7,7 +7,7 @@ async function addExpense(page: Page, title: string, payer: string, between: str
 	await page.getByLabel('What was it for?').fill(title);
 	await page.getByLabel('Amount (€)').fill('30');
 	await page.getByLabel('Paid by').selectOption({ label: payer });
-	const participants = page.getByRole('group', { name: 'Split equally between' });
+	const participants = await participantsOf(page);
 	for (const name of ['Anna', 'Ben', 'Cara']) {
 		const checkbox = participants.getByRole('checkbox', { name });
 		if ((await checkbox.isChecked()) !== between.includes(name)) {

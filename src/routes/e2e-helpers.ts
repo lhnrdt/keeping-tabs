@@ -43,6 +43,17 @@ export async function choose(scope: Page | Locator, picker: string, option: stri
 	await expect(scope.getByRole('radio', { name: option, exact: true })).toBeChecked();
 }
 
+/** The people sharing an equal split, opened from its one-line summary. */
+export async function participants(page: Page) {
+	const summary = page.getByRole('button').filter({ has: page.getByTestId('split-between') });
+	if ((await summary.getAttribute('aria-expanded')) !== 'true') await summary.click();
+	return page.getByRole('group', { name: 'Split equally between' });
+}
+
+/** Picks how an expense is split. */
+export const splitBy = (page: Page, mode: string) =>
+	page.getByLabel('Split', { exact: true }).selectOption({ label: mode });
+
 /** Creates a group as `you` with the other members, and waits on its page. Returns its URL. */
 export async function createGroup(page: Page, name: string, you: string, others: string[]) {
 	await open(page, '/new');

@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { choose, createGroup, open, openFold } from './e2e-helpers';
+import { choose, createGroup, open, participants } from './e2e-helpers';
 
 test('a new visitor starts from the empty home screen', async ({ page }) => {
 	await open(page, '/');
@@ -112,8 +112,7 @@ test('expenses update the balances', async ({ page }) => {
 	// Leave Cara out
 	await page.getByRole('link', { name: /Pizza/ }).click();
 	await expect(page.getByLabel('Amount (€)')).toHaveValue('30.01');
-	// Konsta draws its own checkbox over the real input, so tap the row like a user
-	await page.getByRole('group', { name: 'Split equally between' }).getByText('Cara').click();
+	await (await participants(page)).getByText('Cara').click();
 	await expect(page.getByRole('checkbox', { name: 'Cara' })).not.toBeChecked();
 	await page.getByRole('button', { name: 'Save' }).click();
 	await expect(page).toHaveURL(groupUrl);
@@ -225,9 +224,11 @@ test('expenses get a category from their title unless one is chosen', async ({ p
 	await page.getByRole('button', { name: 'Create group' }).click();
 	await expect(page.getByTestId('identity')).toHaveText('Anna');
 
-	// "Automatic" shows its guess while typing
+	// The automatic pick shows while typing, marked "Auto"
 	await page.getByRole('link', { name: 'Add expense' }).click();
-	const automatic = page.getByRole('group', { name: 'Category' }).locator('label').first();
+	const automatic = page
+		.getByRole('group', { name: 'Category' })
+		.locator('label', { hasText: 'Auto' });
 	await page.getByLabel('What was it for?').fill('Lidl');
 	await expect(automatic).toContainText('Groceries');
 	await page.getByLabel('What was it for?').fill('Taxi home');
@@ -323,19 +324,21 @@ test('delete a recently deleted group for good, right away (#118)', async ({ pag
 test('a note on an expense, folded away with other choices (#123)', async ({ page }) => {
 	await createGroup(page, 'Flat', 'Anna', ['Ben']);
 	await page.getByRole('link', { name: 'Add expense' }).click();
-	await expect(page.getByLabel('Note')).toBeHidden();
+	await expect(page.getByLabel('Note', { exact: true })).toBeHidden();
 	await page.getByLabel('What was it for?').fill('Kaution');
 	await page.getByLabel('Amount (€)').fill('500');
-	await openFold(page, 'More details');
-	await page.getByLabel('Note').fill('Includes the keys\nBack when we move out');
+	await page.getByRole('button', { name: 'Add a note' }).click();
+	await page.getByLabel('Note', { exact: true }).fill('Includes the keys\nBack when we move out');
 	await page.getByRole('button', { name: 'Add expense' }).click();
 
 	await expect(page.getByRole('link', { name: /Kaution/ })).toContainText('with a note');
 	await page.getByRole('link', { name: /Kaution/ }).click();
-	await expect(page.getByLabel('Note')).toHaveValue('Includes the keys\nBack when we move out');
+	await expect(page.getByLabel('Note', { exact: true })).toHaveValue(
+		'Includes the keys\nBack when we move out'
+	);
 
 	// Emptied, it's gone
-	await page.getByLabel('Note').fill('');
+	await page.getByLabel('Note', { exact: true }).fill('');
 	await page.getByRole('button', { name: 'Save' }).click();
 	await expect(page.getByRole('link', { name: /Kaution/ })).not.toContainText('with a note');
 });

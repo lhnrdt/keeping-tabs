@@ -1,8 +1,6 @@
 <script lang="ts">
 	// What each person paid, when several did (#39): an amount per member, and what's left of
 	// the expense's amount, live. Empty means they didn't pay.
-	import { BlockFooter, List } from 'konsta/svelte';
-	import Field from '#lib/components/Field.svelte';
 	import type { Member } from '#lib/group/members.ts';
 	import { formatAmount, parseAmount } from '#lib/money.ts';
 	import { m } from '#lib/paraglide/messages.js';
@@ -29,17 +27,24 @@
 	const money = (cents: number) => formatAmount(cents, currency, getLocale());
 </script>
 
-<List strong inset role="group" aria-label={m.payers_title()}>
+<div class="-mt-1 flex flex-col" role="group" aria-label={m.payers_title()}>
 	{#each members as member (member.id)}
-		<Field
-			label={m.payer_paid({ name: member.name })}
-			name={`paid.${member.id}`}
-			inputmode="decimal"
-			autocomplete="off"
-			bind:value={typed[member.id]}
-		/>
+		<div class="flex min-h-12 items-center gap-3">
+			<span class="flex-1">{member.name}</span>
+			<span class="field-well !min-h-10 w-32">
+				<input
+					class="text-end tabular-nums"
+					name={`paid.${member.id}`}
+					inputmode="decimal"
+					autocomplete="off"
+					placeholder="0"
+					aria-label={m.payer_paid({ name: member.name })}
+					bind:value={typed[member.id]}
+				/>
+			</span>
+		</div>
 	{/each}
-</List>
-<BlockFooter class="!-mt-2" aria-live="polite" data-testid="payers-summary">
-	{m.payers_progress({ paid: money(paid), total: money(total), left: money(total - paid) })}
-</BlockFooter>
+	<p class="mt-1 text-sm text-muted" aria-live="polite" data-testid="payers-summary">
+		{m.payers_progress({ paid: money(paid), total: money(total), left: money(total - paid) })}
+	</p>
+</div>

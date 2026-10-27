@@ -15,6 +15,10 @@ export const CHANGELOG: ChangelogEntry[] = [
 		date: '',
 		items: [
 			{
+				en: 'A calmer, shorter expense form: who paid and how it’s split side by side, and the save button always in reach.',
+				de: 'Ein ruhigeres, kürzeres Ausgabenformular: wer bezahlt hat und wie geteilt wird nebeneinander, und der Speichern-Button immer in Reichweite.'
+			},
+			{
 				en: 'Several people can pay one expense: choose “Several people” under “Paid by”.',
 				de: 'Mehrere Leute können eine Ausgabe bezahlen: „Mehrere Leute“ unter „Bezahlt von“ wählen.'
 			},

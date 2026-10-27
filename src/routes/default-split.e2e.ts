@@ -1,13 +1,12 @@
 import { expect, test } from '@playwright/test';
-import { choose, createGroup, open } from './e2e-helpers';
+import { splitBy, createGroup, open } from './e2e-helpers';
 
 test('a group remembers a split for its new expenses (#41)', async ({ page }) => {
 	const groupUrl = await createGroup(page, 'Anna & Ben', 'Anna', ['Ben']);
 	await page.getByRole('link', { name: 'Add expense' }).click();
 	await page.getByLabel('What was it for?').fill('Rent');
 	await page.getByLabel('Amount (€)').fill('1000');
-	await page.getByRole('button', { name: 'More options' }).click();
-	await choose(page, 'Split', 'Percent');
+	await splitBy(page, 'Percent');
 	await page.getByLabel('Percent for Anna').fill('60');
 	await page.getByLabel('Percent for Ben').fill('40');
 	await page.getByLabel('Use this split for new expenses').check();
@@ -26,5 +25,5 @@ test('a group remembers a split for its new expenses (#41)', async ({ page }) =>
 	await details.getByRole('button', { name: 'Back to equal' }).click();
 	await expect(details).toContainText('Equally');
 	await open(page, `${groupUrl}/expenses/new`);
-	await expect(page.getByLabel('You paid, split equally')).toBeChecked();
+	await expect(page.getByLabel('Split', { exact: true })).toHaveValue('equal');
 });

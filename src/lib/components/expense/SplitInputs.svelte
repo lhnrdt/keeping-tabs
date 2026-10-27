@@ -1,9 +1,8 @@
 <script lang="ts">
 	// One input per member for the unequal split modes, with each member's resulting share
 	// and what's left to assign (SP-22), computed by the same code as the server.
-	import { List, ListItem } from 'konsta/svelte';
 	import type { Member } from '#lib/group/members.ts';
-	import { formatAmount, parseAmount } from '#lib/money.ts';
+	import { currencySymbol, formatAmount, parseAmount } from '#lib/money.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import {
@@ -87,34 +86,36 @@
 			: mode === 'shares'
 				? '×'
 				: mode === 'adjust'
-					? `± ${currency}`
-					: currency
+					? `± ${currencySymbol(currency, getLocale())}`
+					: currencySymbol(currency, getLocale())
 	);
 </script>
 
-<List strong inset role="group" aria-label={m.field_split()}>
+<div class="-mt-1 flex flex-col">
 	{#each members as member, i (member.id)}
 		{@const share = shareOf(member.id, inputs[i].input)}
-		<ListItem title={member.name} subtitle={share === null ? '' : money(share)}>
-			{#snippet after()}
-				<span class="flex items-center gap-1.5">
-					<input
-						class="w-24 rounded-lg bg-surface-muted px-2 py-1.5 text-right text-ink tabular-nums dark:bg-surface-muted-night dark:text-ink-night"
-						name={splitInputName(member.id)}
-						inputmode={mode === 'adjust' ? 'text' : 'decimal'}
-						autocomplete="off"
-						placeholder="0"
-						aria-label={labels[mode]({ name: member.name })}
-						bind:value={texts[member.id]}
-					/>
-					<span class="w-10 text-xs text-muted">{suffix}</span>
-				</span>
-			{/snippet}
-		</ListItem>
+		<div class="flex min-h-12 items-center gap-3">
+			<span class="flex flex-1 flex-col">
+				<span>{member.name}</span>
+				{#if share !== null}<span class="text-xs text-muted tabular-nums">{money(share)}</span>{/if}
+			</span>
+			<span class="field-well !min-h-10 w-32">
+				<input
+					class="text-end tabular-nums"
+					name={splitInputName(member.id)}
+					inputmode={mode === 'adjust' ? 'text' : 'decimal'}
+					autocomplete="off"
+					placeholder="0"
+					aria-label={labels[mode]({ name: member.name })}
+					bind:value={texts[member.id]}
+				/>
+				<span class="flex-none pe-3 text-xs text-muted">{suffix}</span>
+			</span>
+		</div>
 	{/each}
-</List>
-{#if summary}
-	<p class="mx-8 -mt-4 mb-6 text-sm text-muted" aria-live="polite" data-testid="split-summary">
-		{summary}
-	</p>
-{/if}
+	{#if summary}
+		<p class="mt-1 text-sm text-muted" aria-live="polite" data-testid="split-summary">
+			{summary}
+		</p>
+	{/if}
+</div>
