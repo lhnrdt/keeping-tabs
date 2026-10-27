@@ -1,11 +1,12 @@
 import { and, desc, eq, inArray, isNotNull, isNull, or, sql } from 'drizzle-orm';
 import { LIKE_ESCAPE, likePattern } from '#lib/group/search.ts';
 
+import type { Payer } from '#lib/expense/payers.ts';
 import { ledgerEntries } from '#lib/ledger.ts';
 import type { ExpenseInput } from '#lib/validation.ts';
 import { log, type Action } from './activity';
 import type { Db } from './db';
-import { expenses, expenseSplits } from './db/schema';
+import { expensePayers, expenses, expenseSplits } from './db/schema';
 
 const expenseColumns = {
 	id: expenses.id,
@@ -26,11 +27,16 @@ export const active = (groupId: string) =>
  * Enough for balances and settling up without sending every entry (ledger.ts).
  */
 export async function listLedger(db: Db, groupId: string) {
-	const [paid, shares] = await db.batch([
+	// One payer: added up in the database. Several (#39): rare, sent whole and added up here
+	const onePayer = and(
+		active(groupId),
+		sql`not exists (select 1 from ${expensePayers} where ${expensePayers.expenseId} = ${expenses.id})`
+	);
+	const [paid, shares, several] = await db.batch([
 		db
 			.select({ paidBy: expenses.paidBy, amountCents: sql<number>`sum(${expenses.amountCents})` })
 			.from(expenses)
-			.where(active(groupId))
+			.where(onePayer)
 			.groupBy(expenses.paidBy),
 		db
 			.select({
@@ -40,10 +46,63 @@ export async function listLedger(db: Db, groupId: string) {
 			})
 			.from(expenseSplits)
 			.innerJoin(expenses, eq(expenseSplits.expenseId, expenses.id))
+			.where(onePayer)
+			.groupBy(expenses.paidBy, expenseSplits.memberId),
+		db
+			.select({ expenseId: expensePayers.expenseId })
+			.from(expensePayers)
+			.innerJoin(expenses, eq(expensePayers.expenseId, expenses.id))
 			.where(active(groupId))
-			.groupBy(expenses.paidBy, expenseSplits.memberId)
 	]);
-	return ledgerEntries(paid, shares);
+	const severalIds = [...new Set(several.map((row) => row.expenseId))];
+	const whole = severalIds.length ? await listEntriesWithSplits(db, groupId, severalIds) : [];
+	return [...ledgerEntries(paid, shares), ...whole];
+}
+
+/** Payers of these expenses (#39), by expense, most first; one-payer expenses have none */
+async function payersOf(db: Db, expenseIds: readonly string[]) {
+	if (expenseIds.length === 0) return new Map<string, Payer[]>();
+	const rows = await db
+		.select({
+			expenseId: expensePayers.expenseId,
+			memberId: expensePayers.memberId,
+			amountCents: expensePayers.amountCents
+		})
+		.from(expensePayers)
+		.where(inArray(expensePayers.expenseId, [...expenseIds]));
+	return new Map(
+		[...Map.groupBy(rows, (row) => row.expenseId)].map(([id, payers]) => [
+			id,
+			payers
+				.toSorted((a, b) => b.amountCents - a.amountCents)
+				.map(({ memberId, amountCents }) => ({ memberId, amountCents }))
+		])
+	);
+}
+
+/** These entries with their splits and payers */
+async function listEntriesWithSplits(db: Db, groupId: string, ids: readonly string[]) {
+	const [rows, splits] = await db.batch([
+		db
+			.select(expenseColumns)
+			.from(expenses)
+			.where(and(active(groupId), inArray(expenses.id, [...ids]))),
+		db
+			.select({
+				expenseId: expenseSplits.expenseId,
+				memberId: expenseSplits.memberId,
+				shareCents: expenseSplits.shareCents
+			})
+			.from(expenseSplits)
+			.where(inArray(expenseSplits.expenseId, [...ids]))
+	]);
+	const payers = await payersOf(db, ids);
+	const byExpense = Map.groupBy(splits, (split) => split.expenseId);
+	return rows.map((row) => ({
+		...row,
+		payers: payers.get(row.id) ?? null,
+		splits: byExpense.get(row.id) ?? []
+	}));
 }
 
 /** The date of the group's latest entry, if any (#46) */
@@ -74,14 +133,29 @@ export async function listExpenses(db: Db, groupId: string) {
 			.where(active(groupId))
 	]);
 	const byExpense = Map.groupBy(splits, (split) => split.expenseId);
-	return rows.map((row) => ({ ...row, splits: byExpense.get(row.id) ?? [] }));
+	const payers = await groupPayers(db, groupId);
+	return rows.map((row) => ({
+		...row,
+		payers: payers.get(row.id) ?? null,
+		splits: byExpense.get(row.id) ?? []
+	}));
+}
+
+/** Every payer row of the group's current expenses (#39), by expense */
+async function groupPayers(db: Db, groupId: string) {
+	const rows = await db
+		.select({ expenseId: expensePayers.expenseId })
+		.from(expensePayers)
+		.innerJoin(expenses, eq(expensePayers.expenseId, expenses.id))
+		.where(active(groupId));
+	return payersOf(db, [...new Set(rows.map((row) => row.expenseId))]);
 }
 
 /**
  * A page of the expense list, newest first: only these rows (not the group's whole
- * history), plus each payment's recipient.
+ * history), plus each payment's recipient and each expense's payers. With a query, only
+ * the expenses whose title or note has it (#68).
  */
-/** A page of entries, newest first; with a query, the expenses whose title or note has it (#68) */
 export async function listEntryPage(
 	db: Db,
 	groupId: string,
@@ -116,7 +190,15 @@ export async function listEntryPage(
 				.where(inArray(expenseSplits.expenseId, paymentIds))
 		: [];
 	const recipientOf = new Map(recipients.map((split) => [split.expenseId, split.memberId]));
-	return rows.map((row) => ({ ...row, recipient: recipientOf.get(row.id) }));
+	const payers = await payersOf(
+		db,
+		rows.filter((row) => row.type === 'expense').map((row) => row.id)
+	);
+	return rows.map((row) => ({
+		...row,
+		recipient: recipientOf.get(row.id),
+		payers: payers.get(row.id) ?? null
+	}));
 }
 
 /** One member's share of each of the given expenses (absent when they have none). */
@@ -153,7 +235,8 @@ export async function findExpense(db: Db, groupId: string, id: string) {
 			.from(expenseSplits)
 			.where(eq(expenseSplits.expenseId, id))
 	]);
-	return rows[0] && { ...rows[0], splits };
+	const payers = await payersOf(db, [id]);
+	return rows[0] && { ...rows[0], payers: payers.get(id) ?? null, splits };
 }
 
 type EntryType = 'expense' | 'payment';
@@ -169,6 +252,12 @@ export async function isEntryOf(db: Db, groupId: string, id: string, type: Entry
 		.where(and(eq(expenses.id, id), eq(expenses.type, type), active(groupId)));
 	return Boolean(row);
 }
+
+/** Several payers' rows (#39); none when one person paid it all */
+const payerRows = (db: Db, expenseId: string, input: ExpenseInput) =>
+	input.payers && input.payers.length > 1
+		? [db.insert(expensePayers).values(input.payers.map((payer) => ({ expenseId, ...payer })))]
+		: [];
 
 const splitRows = (expenseId: string, input: ExpenseInput) =>
 	input.shares.map((share) => ({ expenseId, ...share }));
@@ -194,6 +283,7 @@ export async function createExpense(
 			category: input.category
 		}),
 		db.insert(expenseSplits).values(splitRows(id, input)),
+		...payerRows(db, id, input),
 		log(db, groupId, actorId, 'expense.create', { expenseId: id, ...input })
 	]);
 	return id;
@@ -222,6 +312,8 @@ export async function updateExpense(
 			.where(and(eq(expenses.id, id), active(groupId))),
 		db.delete(expenseSplits).where(eq(expenseSplits.expenseId, id)),
 		db.insert(expenseSplits).values(splitRows(id, input)),
+		db.delete(expensePayers).where(eq(expensePayers.expenseId, id)),
+		...payerRows(db, id, input),
 		log(db, groupId, actorId, 'expense.update', { expenseId: id, ...input })
 	]);
 	return true;
