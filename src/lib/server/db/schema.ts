@@ -201,6 +201,24 @@ export const expenseSplits = sqliteTable(
 	]
 );
 
+/**
+ * Who paid an expense when it was several people (#39), each with their part; they add up
+ * to its amount. Without rows here, expenses.paid_by paid it all.
+ */
+export const expensePayers = sqliteTable(
+	'expense_payers',
+	{
+		expenseId: text('expense_id')
+			.notNull()
+			.references(() => expenses.id, { onDelete: 'cascade' }),
+		memberId: text('member_id')
+			.notNull()
+			.references(() => members.id),
+		amountCents: integer('amount_cents').notNull()
+	},
+	(t) => [primaryKey({ columns: [t.expenseId, t.memberId] })]
+);
+
 export const activityLog = sqliteTable(
 	'activity_log',
 	{

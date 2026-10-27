@@ -120,6 +120,13 @@
       "when": 1793088235202,
       "tag": "0016_group_default_split",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "6",
+      "when": 1793089219600,
+      "tag": "0017_expense_payers",
+      "breakpoints": true
     }
   ]
 }
