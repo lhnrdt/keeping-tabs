@@ -5,7 +5,9 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 		<meta name="text-scale" content="scale" />
 		<meta name="color-scheme" content="light dark" />
-		<!-- Installable app (N-3); colors match the canvas tokens in src/lib/styles/theme.css -->
+		<!-- Installable app (N-3). Its background_color is the dark canvas: Chromium before 156
+		     paints the installed app's navigation bar with it, and a bright bar in dark mode is
+		     worse than a dark one in light mode -->
 		<link
 			rel="manifest"
 			href="%sveltekit.assets%/manifest.webmanifest"
