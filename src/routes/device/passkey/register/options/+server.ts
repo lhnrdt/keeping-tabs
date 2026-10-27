@@ -9,6 +9,6 @@ export const POST: RequestHandler = async ({ locals, url, cookies }) => {
 	const person = await findPerson(locals.db, locals.deviceKey);
 	if (!person) error(403);
 	const options = await registrationOptions(locals.db, relyingPartyFor(url), person);
-	setChallenge(cookies, options.challenge);
+	await setChallenge(locals.db, cookies, options.challenge);
 	return json(options);
 };

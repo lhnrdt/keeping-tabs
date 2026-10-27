@@ -151,9 +151,29 @@ test('a synced passkey brings you and your groups back on a new device', async (
 	}
 
 	await open(laptop, '/device');
+	// Keep what's sent, to try it again below
+	const sent = laptop.waitForRequest(
+		(request) => request.method() === 'POST' && request.url().endsWith('/device/passkey/login')
+	);
 	await laptop.getByRole('button', { name: 'Continue with passkey' }).click();
 	await expect(laptop).toHaveURL(/\/$/);
 	await expect(laptop.getByRole('link', { name: 'Holiday' })).toBeVisible();
+
+	// The same answer with the same challenge again: crossed off already (#71)
+	const login = await sent;
+	const challenge = (await login.allHeaders()).cookie?.match(/kt-passkey-challenge=([^;]+)/)?.[1];
+	expect(challenge).toBeTruthy();
+	await laptop
+		.context()
+		.addCookies([
+			{ name: 'kt-passkey-challenge', value: challenge!, url: new URL(login.url()).origin }
+		]);
+	const replay = await laptop.request.post(login.url(), {
+		headers: { 'content-type': 'application/json', origin: new URL(login.url()).origin },
+		data: login.postData(),
+		maxRedirects: 0
+	});
+	expect(replay.status()).toBe(403);
 	await open(laptop, groupUrl);
 	await expect(laptop.getByTestId('identity')).toHaveText('Mia');
 });
