@@ -45,6 +45,8 @@ export const groups = sqliteTable('groups', {
 	// Insight sections chosen for this group, in order, e.g. "overTime,fixedCosts" (#174);
 	// null = the group type's suggestions
 	insightSections: text('insight_sections'),
+	// New expenses start split this way, e.g. {"mode":"percent","inputs":{…}} (#41); null = equal
+	defaultSplit: text('default_split', { mode: 'json' }),
 	// Budget (minor units) and end date for trips and events, both optional (#168)
 	budgetCents: integer('budget_cents'),
 	endsOn: text('ends_on'),
