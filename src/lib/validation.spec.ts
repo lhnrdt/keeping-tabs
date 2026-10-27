@@ -150,6 +150,7 @@ describe('parseExpense', () => {
 			value: {
 				title: 'Dinner',
 				notes: null,
+				original: null,
 				amountCents: 3000,
 				date: '2026-10-21',
 				paidBy: 'b',
