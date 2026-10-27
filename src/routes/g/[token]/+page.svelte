@@ -53,7 +53,6 @@
 	{/snippet}
 
 	{#if tab === 'expenses'}
-		<BlockTitle class="!mb-3">{m.expenses_title()}</BlockTitle>
 		{#if data.entries.length || data.query}
 			<ExpenseSearch query={data.query} />
 		{/if}
