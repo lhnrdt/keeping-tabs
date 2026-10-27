@@ -21,7 +21,9 @@ export type Action =
 	| 'payment.create'
 	| 'payment.update'
 	| 'payment.delete'
-	| 'payment.restore';
+	| 'payment.restore'
+	| 'recurring.create'
+	| 'recurring.stop';
 
 /** Activity log entry (L-1); a query to run inside the caller's batch. */
 export const log = (
@@ -49,7 +51,7 @@ export type ActivityItem = {
 		amountCents: number;
 		deleted: boolean;
 	} | null;
-	/** A member's name it was about (added, renamed, joined, removed) */
+	/** A member's name it was about (added, renamed, joined, removed), or a repeating expense's title */
 	name: string | null;
 	previousName: string | null;
 };
@@ -99,12 +101,15 @@ export async function listActivity(db: Db, groupId: string): Promise<ActivityIte
 	return rows.map((row) => {
 		const payload = payloadOf(row.payload);
 		const entry = typeof payload.expenseId === 'string' ? byId.get(payload.expenseId) : undefined;
+		// A member's name, or a repeating expense's title (#45)
 		const memberName =
 			typeof payload.name === 'string'
 				? payload.name
-				: typeof payload.memberId === 'string'
-					? (names.get(payload.memberId) ?? null)
-					: null;
+				: typeof payload.title === 'string' && row.action.startsWith('recurring.')
+					? payload.title
+					: typeof payload.memberId === 'string'
+						? (names.get(payload.memberId) ?? null)
+						: null;
 		return {
 			id: row.id,
 			action: row.action as Action,
