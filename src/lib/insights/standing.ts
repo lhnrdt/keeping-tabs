@@ -1,11 +1,13 @@
 // Where people stand over time (#166): your running balance in a group, how long someone has
 // owed, and how much has been paid back. Payments count like in the balances: the sender is
 // owed what they paid, the recipient's split takes it.
+import { paidByMember, type Payer } from '#lib/expense/payers.ts';
 
 type Entry = {
 	type: 'expense' | 'payment';
 	amountCents: number;
 	paidBy: string;
+	payers?: readonly Payer[] | null;
 	/** ISO date, YYYY-MM-DD */
 	date: string;
 	splits: readonly { memberId: string; shareCents: number }[];
@@ -15,7 +17,7 @@ export type Point = { date: string; balance: number };
 
 /** How an entry changes a member's balance: what they paid minus their share */
 function effect(entry: Entry, memberId: string) {
-	const paid = entry.paidBy === memberId ? entry.amountCents : 0;
+	const paid = paidByMember(entry, memberId);
 	const share = entry.splits.find((split) => split.memberId === memberId)?.shareCents ?? 0;
 	return paid - share;
 }
