@@ -1,4 +1,5 @@
 // Suggested payments to settle a group (B-2), simplified or direct (B-6).
+import { owedTo } from './expense/owed-to';
 import { balances, type BalanceInput } from './money';
 
 export type Transfer = { from: string; to: string; amountCents: number };
@@ -46,10 +47,13 @@ export function directTransfers(
 ): Transfer[] {
 	const owes = new Map<string, number>();
 	const key = (from: string, to: string) => `${from}>${to}`;
-	for (const { paidBy, splits } of entries) {
-		for (const { memberId, shareCents } of splits) {
-			if (memberId === paidBy) continue;
-			owes.set(key(memberId, paidBy), (owes.get(key(memberId, paidBy)) ?? 0) + shareCents);
+	for (const entry of entries) {
+		for (const { memberId, shareCents } of entry.splits) {
+			// Several payers: the share is owed to each in proportion to what they paid (#39)
+			for (const { memberId: payer, amountCents } of owedTo(entry, shareCents)) {
+				if (memberId === payer) continue;
+				owes.set(key(memberId, payer), (owes.get(key(memberId, payer)) ?? 0) + amountCents);
+			}
 		}
 	}
 	const transfers: Transfer[] = [];
