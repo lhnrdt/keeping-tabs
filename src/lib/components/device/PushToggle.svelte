@@ -7,7 +7,7 @@
 	import { onMount } from 'svelte';
 	import { m } from '#lib/paraglide/messages.js';
 
-	let { publicKey }: { publicKey: string } = $props();
+	let { publicKey }: { publicKey: string | null } = $props();
 
 	let status = $state<'loading' | 'on' | 'off' | 'blocked' | 'unsupported'>('loading');
 	let busy = $state(false);
@@ -41,6 +41,7 @@
 	onMount(async () => {
 		ios = /iPhone|iPad/.test(navigator.userAgent);
 		if (
+			!publicKey ||
 			!('serviceWorker' in navigator) ||
 			!('PushManager' in window) ||
 			!('Notification' in window)
@@ -74,7 +75,7 @@
 			await registration()
 		).pushManager.subscribe({
 			userVisibleOnly: true,
-			applicationServerKey: publicKey
+			applicationServerKey: publicKey!
 		});
 		const response = await saveOnServer(sub);
 		status = response.ok ? 'on' : 'off';
@@ -111,7 +112,12 @@
 </script>
 
 <div class="flex flex-col gap-1.5" role="region" aria-label={m.push_title()}>
-	<div class="field-well min-h-14 justify-between gap-3 px-3.5">
+	<div
+		class="field-well min-h-14 justify-between gap-3 px-3.5 {status === 'blocked' ||
+		status === 'unsupported'
+			? 'opacity-50'
+			: ''}"
+	>
 		<span class="flex min-w-0 items-center gap-3">
 			<span class="flex-none opacity-65"><Icon name="notifications" size={20} /></span>
 			<span class="font-medium">{m.push_toggle()}</span>

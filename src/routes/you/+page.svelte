@@ -184,12 +184,11 @@
 			</form>
 		</section>
 
-		{#if data.pushPublicKey}
-			<section class="page-section">
-				<h2 class="section-label">{m.push_title()}</h2>
-				<PushToggle publicKey={data.pushPublicKey} />
-			</section>
-		{/if}
+		<!-- Also where it can't be used: then shown as off, saying why -->
+		<section class="page-section">
+			<h2 class="section-label">{m.push_title()}</h2>
+			<PushToggle publicKey={data.pushPublicKey ?? null} />
+		</section>
 
 		<section class="page-section">
 			<h2 class="section-label">{m.settings_access()}</h2>
