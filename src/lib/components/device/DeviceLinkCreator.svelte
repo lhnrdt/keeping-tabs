@@ -3,6 +3,7 @@
 	import { enhance } from '$app/forms';
 	import { Block, Button, Toast } from 'konsta/svelte';
 	import LinkField from '#lib/components/LinkField.svelte';
+	import QrCode from '#lib/components/QrCode.svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import SubmitButton from '#lib/components/SubmitButton.svelte';
 	import { Submission } from '#lib/forms/submission.svelte.ts';
@@ -23,6 +24,8 @@
 
 {#if link}
 	<div class="flex flex-col gap-3 px-4 pb-1">
+		<QrCode text={link} label={m.device_qr_label()} />
+		<p class="text-center text-sm text-muted">{m.device_qr_hint()}</p>
 		<LinkField {link} label={m.device_link_label()} />
 		<Button large rounded type="button" class="gap-2" onclick={() => share(link)}>
 			<Icon name="share" />
