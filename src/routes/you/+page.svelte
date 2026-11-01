@@ -10,6 +10,7 @@
 	import AppPage from '#lib/components/AppPage.svelte';
 	import Avatar from '#lib/components/Avatar.svelte';
 	import DeleteIdentity from '#lib/components/device/DeleteIdentity.svelte';
+	import LogOut from '#lib/components/device/LogOut.svelte';
 	import PushToggle from '#lib/components/device/PushToggle.svelte';
 	import Fold from '#lib/components/Fold.svelte';
 	import FormError from '#lib/components/FormError.svelte';
@@ -234,6 +235,15 @@
 				{/snippet}
 			</SettingsRow>
 		</section>
+
+		{#if data.personId}
+			<!-- Only this device, before removing you entirely -->
+			<section class="page-section">
+				<h2 class="section-label">{m.log_out_title()}</h2>
+				<p class="text-sm text-muted">{m.log_out_intro()}</p>
+				<LogOut onlyWayIn={data.deviceCount <= 1 && !data.backedUp} />
+			</section>
+		{/if}
 
 		<!-- Removing you entirely, at the very end and in red (#151) -->
 		<section class="page-section">
