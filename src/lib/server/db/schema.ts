@@ -50,6 +50,10 @@ export const groups = sqliteTable('groups', {
 	defaultSplit: text('default_split', { mode: 'json' }),
 	// Which key seals this group's text (#110); null = stored as plain text. Never the key itself
 	keyId: text('key_id'),
+	// Handing an existing group's key to its people when it was encrypted (#110): they only have the
+	// old link, so the server holds it for a while. Set before anything's sealed; gone at the time below
+	transitionKey: text('transition_key'),
+	transitionUntil: integer('transition_until', { mode: 'timestamp_ms' }),
 	// Optional password on top of the link (A-8), salted and slow (group-password.ts); null = none
 	passwordHash: text('password_hash'),
 	// Budget (minor units) and end date for trips and events, both optional (#168)

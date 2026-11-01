@@ -16,6 +16,7 @@
 	import { Submission } from '#lib/forms/submission.svelte.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { LIMITS, normalizeText } from '#lib/validation.ts';
+	import EncryptedNote from '#lib/components/EncryptedNote.svelte';
 	import MemberChips from './MemberChips.svelte';
 
 	const SEALED_FIELDS = ['name', 'description', 'you', 'member'];
@@ -47,7 +48,7 @@
 	const create: SubmitFunction = async (input) => {
 		const form = input.formData;
 		const plain: Record<string, FormDataEntryValue[]> = {};
-		if (form.get('encrypted') === 'on') {
+		if (form.get('plain') !== 'on') {
 			// The server can't compare sealed names
 			const names = [form.get('you'), ...form.getAll('member')].map((name) =>
 				normalizeText(String(name ?? '')).toLocaleLowerCase()
@@ -149,18 +150,7 @@
 				<h2 class="section-label mx-4">{m.field_other_members()}</h2>
 				<MemberChips names={values?.members} />
 			</section>
-			<label class="flex cursor-pointer items-start gap-3">
-				<input
-					type="checkbox"
-					name="encrypted"
-					checked
-					class="mt-0.5 size-[18px] shrink-0 accent-accent dark:accent-accent-night"
-				/>
-				<span class="flex flex-col">
-					<span class="text-sm font-medium">{m.encrypt_new_group()}</span>
-					<span class="text-sm text-muted">{m.encrypt_new_group_hint()}</span>
-				</span>
-			</label>
+			<EncryptedNote />
 			<FormError {error} />
 		</div>
 		<StickySubmit>

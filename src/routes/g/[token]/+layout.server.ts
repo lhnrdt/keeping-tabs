@@ -1,5 +1,6 @@
 import { groupOf, membersOf } from '#lib/server/context.ts';
 import { findGroupLock } from '#lib/server/group-password.ts';
+import { shouldEncrypt } from '#lib/server/encryption-handover.ts';
 import { listFormerMembers } from '#lib/server/groups.ts';
 import { hasTakenPart } from '#lib/server/membership.ts';
 import { personOf } from '#lib/server/people.ts';
@@ -41,6 +42,7 @@ export const load: LayoutServerLoad = async ({ locals, params }) => {
 		// "Not you?" is possible until you've added or changed something here
 		canStepBack: mine ? !(await hasTakenPart(locals.db, group.id, mine.id)) : false,
 		profileName: person?.name ?? null,
+		encryptNow: shouldEncrypt(group, Boolean(mine)),
 		// To keep this group's copy up to date (crypto/profile.ts)
 		myPaymentDetails: mine ? (person?.sealedPaymentDetails ?? person?.paymentDetails ?? null) : null
 	};

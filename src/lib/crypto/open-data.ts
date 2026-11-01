@@ -2,8 +2,8 @@
 // in the browser, before anything shows. The server only ever passes sealed text along.
 import { m } from '#lib/paraglide/messages.js';
 import { takeKeyFromAddress } from './key-from-address';
-import { keyFor } from './keyring';
-import { contextIn, isSealed, keyIdIn, openText, textContext } from './seal';
+import { keyFor, rememberKey } from './keyring';
+import { contextIn, isKey, isSealed, keyIdIn, openText, textContext } from './seal';
 
 export const browser = typeof window !== 'undefined';
 
@@ -71,13 +71,34 @@ export async function openDeep<T>(data: T): Promise<T> {
 		const details = await detailsOf(data as Record<string, unknown>);
 		const opened = Object.fromEntries(entries);
 		delete opened.sealedDetails;
+		delete opened.transitionKey;
 		return { ...opened, ...details } as T;
 	}
 	return data;
 }
 
+/** Keys being handed over to the people of groups encrypted since they last came (#110) */
+async function takeHandedOverKeys(data: unknown): Promise<void> {
+	if (Array.isArray(data)) {
+		await Promise.all(data.map(takeHandedOverKeys));
+	} else if (data && typeof data === 'object' && Object.getPrototypeOf(data) === Object.prototype) {
+		const { transitionKey } = data as { transitionKey?: unknown };
+		if (isKey(transitionKey)) await rememberKey(transitionKey);
+		await Promise.all(Object.values(data).map(takeHandedOverKeys));
+	}
+}
+
 /** What each page and layout with a group's text loads with */
 export const openedLoad = async <T>(data: T) => {
-	if (browser) await takeKeyFromAddress();
+	if (browser) {
+		await takeKeyFromAddress();
+		await takeHandedOverKeys(data);
+	}
 	return openDeep(data);
+};
+
+/** The same for a group's pages: after its layout, which brings a key being handed over */
+export const openedGroupLoad = async <T>(data: T, parent: () => Promise<unknown>) => {
+	await parent();
+	return openedLoad(data);
 };

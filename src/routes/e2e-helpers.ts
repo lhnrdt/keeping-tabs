@@ -54,6 +54,20 @@ export async function participants(page: Page) {
 export const splitBy = (page: Page, mode: string) =>
 	page.getByLabel('Split', { exact: true }).selectOption({ label: mode });
 
+/**
+ * Most tests look at what the server has, so their groups stay plain: only possible in tests
+ * (TEST_PLAIN_GROUPS). encrypted-groups.e2e.ts is about the real thing.
+ */
+export async function keepPlain(page: Page) {
+	await page.locator('form:has(input[name="you"])').evaluate((form: HTMLFormElement) => {
+		const plain = document.createElement('input');
+		plain.type = 'hidden';
+		plain.name = 'plain';
+		plain.value = 'on';
+		form.appendChild(plain);
+	});
+}
+
 /** Creates a group as `you` with the other members, and waits on its page. Returns its URL. */
 export async function createGroup(page: Page, name: string, you: string, others: string[]) {
 	await open(page, '/new');
@@ -64,7 +78,7 @@ export async function createGroup(page: Page, name: string, you: string, others:
 		await page.getByLabel('Add a person').fill(other);
 		await page.getByLabel('Add a person').press('Enter');
 	}
-	await page.getByLabel('Encrypt this group').uncheck();
+	await keepPlain(page);
 	await page.getByRole('button', { name: 'Create group' }).click();
 	await expect(page.getByTestId('identity')).toHaveText(you);
 	return page.url();

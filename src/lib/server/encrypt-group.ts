@@ -1,9 +1,10 @@
 // Turning an existing group into an encrypted one (#110). The browser fetches its text, seals it
 // and sends it back in batches; only when everything is in does the group count as encrypted.
 // Anything already sealed is skipped, so an interrupted run can simply be repeated.
-import { and, eq, inArray } from 'drizzle-orm';
+import { and, eq, inArray, isNull } from 'drizzle-orm';
 import { log } from './activity';
 import type { Db } from './db';
+import { handoverEnds } from './encryption-handover';
 import {
 	expenseComments,
 	expenseReceipts,
@@ -142,9 +143,32 @@ export async function storeSealedReceipt(
 		.where(and(eq(expenseReceipts.id, receiptId), inArray(expenseReceipts.expenseId, owned)));
 }
 
-/** All in: it counts as encrypted, and the history forgets the names and titles it recorded */
-export async function finishEncrypting(db: Db, groupId: string, actorId: string, keyId: string) {
+/** The key everyone uses for this group's encryption: the first browser's, if two start at once */
+export async function beginEncrypting(db: Db, groupId: string, key: string) {
+	await db
+		.update(groups)
+		.set({ transitionKey: key })
+		.where(and(eq(groups.id, groupId), isNull(groups.transitionKey), isNull(groups.keyId)));
+	const [group] = await db
+		.select({ key: groups.transitionKey })
+		.from(groups)
+		.where(eq(groups.id, groupId));
+	return group?.key ?? null;
+}
+
+/**
+ * All in: it counts as encrypted, and the history forgets the names and titles it recorded. A key
+ * replacing another isn't handed over: it's there to keep someone out.
+ */
+export async function finishEncrypting(
+	db: Db,
+	groupId: string,
+	actorId: string,
+	keyId: string,
+	replacing: boolean
+) {
 	const d1 = db.$client;
+	const until = replacing ? null : handoverEnds().getTime();
 	await d1.batch([
 		d1
 			.prepare(
@@ -154,7 +178,12 @@ export async function finishEncrypting(db: Db, groupId: string, actorId: string,
 				) where group_id = ?1`
 			)
 			.bind(groupId),
-		d1.prepare('update groups set key_id = ?1 where id = ?2').bind(keyId, groupId)
+		d1
+			.prepare(
+				`update groups set key_id = ?1, transition_until = ?2,
+				transition_key = case when ?2 is null then null else transition_key end where id = ?3`
+			)
+			.bind(keyId, until, groupId)
 	]);
 	await log(db, groupId, actorId, 'group.encrypt', {});
 }

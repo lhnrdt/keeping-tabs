@@ -1,5 +1,6 @@
-import { fail, redirect } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
 import { isSealed } from '#lib/crypto/seal.ts';
+import { allowsPlainNewGroup } from '#lib/server/encryption-handover.ts';
 import { resolve } from '$app/paths';
 import type { ErrorCode } from '#lib/errors.ts';
 import { getLocale } from '#lib/paraglide/runtime.js';
@@ -59,6 +60,9 @@ export const actions: Actions = {
 		const memberNames = parseMemberNames([values.you, ...values.members]);
 		if (!memberNames.ok) return invalid(memberNames.error);
 
+		// Every group is encrypted; the browser did that before sending this
+		const keyId = KEY_ID.test(String(form.get('keyId'))) ? String(form.get('keyId')) : null;
+		if (!allowsPlainNewGroup() && (!keyId || !isSealed(name.value))) error(400);
 		const person = await ensurePerson(locals.db, locals.deviceKey);
 		if (!isSealed(memberNames.value[0])) {
 			await setProfileName(locals.db, person.id, memberNames.value[0]);
@@ -71,7 +75,7 @@ export const actions: Actions = {
 			tint: tint.value,
 			memberNames: memberNames.value,
 			creatorPersonId: person.id,
-			keyId: KEY_ID.test(String(form.get('keyId'))) ? String(form.get('keyId')) : null
+			keyId
 		});
 		redirect(303, resolve('/g/[token]', { token: shareToken }));
 	}

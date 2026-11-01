@@ -23,11 +23,19 @@ export async function findGroupByToken(db: Db, token: string) {
 			budgetCents: true,
 			endsOn: true,
 			defaultSplit: true,
-			keyId: true
+			keyId: true,
+			transitionKey: true,
+			transitionUntil: true
 		},
 		where: and(eq(groups.shareToken, token), isNull(groups.deletedAt))
 	});
-	return group && { ...group, defaultSplit: parseDefaultSplit(group.defaultSplit) };
+	return (
+		group && {
+			...group,
+			transitionKey: handedOver(group),
+			defaultSplit: parseDefaultSplit(group.defaultSplit)
+		}
+	);
 }
 
 /** Current name and look of the groups behind these links; deleted ones are left out (#125) */
@@ -49,6 +57,15 @@ export async function isDeletedGroupToken(db: Db, token: string) {
 	});
 	return Boolean(group);
 }
+
+/** The key still being handed over, if it is (#110) */
+export const handedOver = (group: {
+	transitionKey: string | null;
+	transitionUntil: Date | null;
+}) =>
+	!group.transitionUntil || group.transitionUntil.getTime() > Date.now()
+		? group.transitionKey
+		: null;
 
 /** Current members, with the avatar their person chose (#61) */
 export function listMembers(db: Db, groupId: string) {
@@ -202,6 +219,8 @@ export async function listGroupsOf(db: Db, personId: string) {
 			id: groups.id,
 			name: groups.name,
 			keyId: groups.keyId,
+			transitionKey: groups.transitionKey,
+			transitionUntil: groups.transitionUntil,
 			token: groups.shareToken,
 			currency: groups.currency,
 			kind: groups.kind,
@@ -212,7 +231,13 @@ export async function listGroupsOf(db: Db, personId: string) {
 		.from(members)
 		.innerJoin(groups, eq(members.groupId, groups.id))
 		.where(and(eq(members.personId, personId), isNull(members.deletedAt), isNull(groups.deletedAt)))
-		.orderBy(desc(groups.createdAt));
+		.orderBy(desc(groups.createdAt))
+		.then((rows) =>
+			rows.map(({ transitionUntil, ...row }) => ({
+				...row,
+				transitionKey: handedOver({ transitionKey: row.transitionKey, transitionUntil })
+			}))
+		);
 }
 
 /** Which insights the group shows (#174); null = its type's suggestions */

@@ -6,12 +6,16 @@
 	import { takeKeyFromAddress } from '#lib/crypto/key-from-address.ts';
 	import { keyFor } from '#lib/crypto/keyring.ts';
 	import { resolve } from '$app/paths';
+	import { encryptGroup } from '#lib/crypto/encrypt-group.ts';
 	import { paymentCopies } from '#lib/crypto/profile.ts';
+	import { categorize } from '#lib/expense/categorize.ts';
 	import { syncKeys } from '#lib/crypto/vault.ts';
 	import type { ErrorCode } from '#lib/errors.ts';
 	import type { LayoutProps } from './$types';
 
 	let { data, children }: LayoutProps = $props();
+	/** Groups being encrypted from this page: one run each, and another try once it's over */
+	const encrypting: Record<string, boolean> = {};
 
 	// An encrypted group this device can't read yet (#110)
 	let locked = $state(false);
@@ -31,6 +35,19 @@
 				await invalidateAll();
 			}
 		})();
+	});
+
+	// A group from before encryption: the first of its people to come encrypts it, in the background,
+	// and the others get the key with their next visit (#110). An interrupted run is picked up later
+	$effect(() => {
+		const groupId = data.group.id;
+		if (!data.encryptNow || encrypting[groupId]) return;
+		encrypting[groupId] = true;
+		const base = resolve('/g/[token]', { token: data.group.shareToken });
+		void encryptGroup(base, null, categorize, () => {})
+			.then(() => invalidateAll())
+			.catch(() => {})
+			.finally(() => (encrypting[groupId] = false));
 	});
 
 	// The full link opened while already here: the browser stays on the page, so nothing loads

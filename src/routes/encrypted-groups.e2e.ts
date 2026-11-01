@@ -85,10 +85,10 @@ test('the server only sees sealed text; the full link reads it, the bare one is 
 	// Without the key: locked, and pasting the full link opens it
 	const bare = await newVisitor(page);
 	await open(bare, groupUrl);
-	await expect(bare.getByText('This group is encrypted')).toBeVisible();
+	await expect(bare.getByText('Open this group with its link')).toBeVisible();
 	await expect(bare.getByText('Whiskey tasting')).toHaveCount(0);
-	await bare.getByLabel('The group’s full link').fill(link);
-	await expect(bare.getByText('This group is encrypted')).toHaveCount(0);
+	await bare.getByLabel('The group’s link').fill(link);
+	await expect(bare.getByText('Open this group with its link')).toHaveCount(0);
 	await expect(bare.getByRole('heading', { name: 'Join Secret trip' })).toBeVisible();
 
 	// With the full link: readable straight away, and the key leaves the address
@@ -184,7 +184,10 @@ test('a device link carries the keys along (#110)', async ({ page, browser }) =>
 	await expect(laptop.getByRole('link', { name: /Whiskey tasting/ })).toBeVisible();
 });
 
-test('an existing group can be encrypted, photos and all (#110)', async ({ page }) => {
+test('an existing group gets encrypted by itself, and nobody has to do anything (#110)', async ({
+	page,
+	browser
+}) => {
 	const groupUrl = await createGroup(page, 'Old flat', 'Anna', ['Ben']);
 	await addExpense(page, 'Couch', '120');
 	await page.getByRole('link', { name: /Couch/ }).click();
@@ -195,71 +198,77 @@ test('an existing group can be encrypted, photos and all (#110)', async ({ page 
 	await expect(page.getByRole('img', { name: 'Receipt photo 1' })).toBeVisible();
 	const expenseUrl = page.url();
 
-	// Cut off halfway: nothing is lost, and trying again finishes with the same key
-	await open(page, `${groupUrl}/encrypt`);
+	// Ben only ever got the old link, and has it open before all this
+	const ben = await (await browser.newContext()).newPage();
+	await open(ben, groupUrl);
+	await ben.getByRole('button', { name: "I'm Ben" }).click();
+	await expect(ben.getByRole('link', { name: /Couch/ })).toBeVisible();
+
+	// The app's update is out (in tests: this name opts in). Cut off halfway: nothing is lost
+	await open(page, `${groupUrl}/edit`);
+	await page.getByLabel('Group name').fill('[auto] Old flat');
 	let posts = 0;
 	await page.route('**/encrypt/data', (route) =>
 		route.request().method() === 'POST' && ++posts === 3 ? route.abort() : route.continue()
 	);
-	await page.getByRole('button', { name: 'Encrypt the group' }).click();
-	await expect(page.getByRole('alert')).toContainText('didn’t finish');
+	await page.getByRole('button', { name: 'Save' }).click();
+	await expect.poll(() => posts).toBeGreaterThanOrEqual(3);
 	await page.unroute('**/encrypt/data');
-	await page.getByRole('button', { name: 'Encrypt the group' }).click();
-	const field = page.getByLabel('Share', { exact: true });
-	await expect(field).toHaveValue(/#key=/, { timeout: 15_000 });
-	const link = await field.inputValue();
 
-	const raw = await (await page.request.get(`${groupUrl}/__data.json`)).text();
-	for (const secret of ['Old flat', 'Couch', 'Ben']) expect(raw).not.toContain(secret);
+	// Half sealed, Ben still reads everything, without doing anything
+	await open(ben, groupUrl);
+	await expect(ben.getByRole('link', { name: /Couch/ })).toBeVisible();
+
+	// The next visit finishes it, in the background
+	await open(page, groupUrl);
+	await expect
+		.poll(
+			async () => {
+				const raw = await (await page.request.get(`${groupUrl}/__data.json`)).text();
+				return ['Old flat', 'Couch', 'Ben'].filter((secret) => raw.includes(secret));
+			},
+			{ timeout: 20_000 }
+		)
+		.toEqual([]);
 	const history = await (await page.request.get(`${groupUrl}/activity/__data.json`)).text();
 	expect(history).not.toContain('Couch');
 
-	await open(page, groupUrl);
-	await expect(page.getByRole('link', { name: /Couch/ })).toBeVisible();
-	await page.getByRole('link', { name: /Couch/ }).click();
-	await expect(page.getByRole('region', { name: 'Comments' })).toContainText('Heavy thing');
-	// The photo too, though the browser had kept it from before
 	await open(page, expenseUrl);
+	await expect(page.getByRole('region', { name: 'Comments' })).toContainText('Heavy thing');
 	await expect(page.locator('img[src^="data:image/jpeg"]').first()).toBeVisible();
 
-	// Someone else can read it with the new link, and it can't be encrypted twice
-	const friend = await newVisitor(page);
-	await open(friend, link);
-	await friend.getByRole('button', { name: "I'm Ben" }).click();
-	await expect(friend.getByRole('link', { name: /Couch/ })).toBeVisible();
+	// Ben, again: his old link keeps working and he reads it all
+	await open(ben, groupUrl);
+	await expect(ben.getByRole('link', { name: /Couch/ })).toBeVisible();
+	await expect(ben.getByRole('heading', { name: '[auto] Old flat' })).toBeVisible();
 
-	// The name someone already has is caught, though the server can't compare them
+	// A name someone already has is caught, though the server can't compare them
 	await open(page, `${groupUrl}?tab=group`);
 	await page.getByRole('button', { name: 'Add', exact: true }).click();
 	await page.getByLabel("New person's name").fill('ben');
 	await page.getByLabel("New person's name").press('Enter');
 	await expect(page.getByRole('alert').first()).toBeVisible();
 
-	// Someone left: a new key and a new address. The old key and link no longer get anywhere
-	await open(page, `${groupUrl}/encrypt`);
-	await page.getByRole('button', { name: 'Change the key' }).click();
-	const field2 = page.getByLabel('Share', { exact: true });
-	await expect(field2).toHaveValue(/#key=/, { timeout: 15_000 });
-	const newLink = await field2.inputValue();
-	expect(newLink).not.toBe(link);
+	// Someone should go: a new link, and the old one gets nowhere
+	await open(page, `${groupUrl}?tab=group`);
+	await page.getByRole('link', { name: 'Create new link' }).click();
+	await page.getByRole('button', { name: 'Create new link' }).click();
+	const field = page.getByLabel('Share', { exact: true });
+	await expect(field).toHaveValue(/#key=/, { timeout: 30_000 });
+	const newLink = await field.inputValue();
 	const newUrl = newLink.split('#')[0];
 	expect(newUrl).not.toBe(groupUrl);
 	expect((await page.request.get(groupUrl)).status()).toBe(404);
-	const oldId = new URL(link).hash.slice(5);
 	await open(page, newUrl);
 	await expect(page.getByRole('link', { name: /Couch/ })).toBeVisible();
-	const rekeyed = await (await page.request.get(`${newUrl}/__data.json`)).text();
-	expect(rekeyed).not.toContain('Couch');
-	expect(oldId.length).toBe(43);
 	await page.getByRole('link', { name: /Couch/ }).click();
 	await expect(page.getByRole('region', { name: 'Comments' })).toContainText('Heavy thing');
-	await expect(page.locator('img[src^="data:image/jpeg"]').first()).toBeVisible();
 
-	// Someone who only has the old key sees it locked, until the new link
-	await open(friend, newUrl);
-	await expect(friend.getByText('This group is encrypted')).toBeVisible();
-	await open(friend, newLink);
-	await expect(friend.getByRole('link', { name: /Couch/ })).toBeVisible();
+	// With the key no longer handed over, Ben needs the new link, and that's all he needs
+	await open(ben, newUrl);
+	await expect(ben.getByText('Open this group with its link')).toBeVisible();
+	await open(ben, newLink);
+	await expect(ben.getByRole('link', { name: /Couch/ })).toBeVisible();
 });
 
 test('a recovery key brings the keys back on a new device (#110)', async ({ page, browser }) => {

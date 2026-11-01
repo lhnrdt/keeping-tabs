@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { createGroup, open, openFold } from './e2e-helpers';
+import { createGroup, open, openFold, keepPlain } from './e2e-helpers';
 
 test('a new person reads the friendly note once, also from a group link', async ({
 	page,
@@ -29,7 +29,7 @@ test('people who read it on one device are not asked on their others', async ({ 
 	await open(phone, '/new');
 	await phone.getByLabel('Group name').fill('Cabin');
 	await phone.getByLabel('Your name').fill('Anna');
-	await phone.getByLabel('Encrypt this group').uncheck();
+	await keepPlain(phone);
 	await phone.getByRole('button', { name: 'Create group' }).click();
 	await expect(phone.getByTestId('identity')).toHaveText('Anna');
 

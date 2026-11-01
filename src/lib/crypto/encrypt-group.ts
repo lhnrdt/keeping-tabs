@@ -89,16 +89,20 @@ export async function encryptGroup(
 			body: JSON.stringify(body)
 		});
 		if (!answer.ok) throw new Error(String(answer.status));
-		return (await answer.json()) as { token?: string };
+		return (await answer.json()) as { token?: string; key?: string };
 	};
 
 	const first = await fetchText();
-	const started =
+	const resumed =
 		isSealed(first.group.name) && keyIdIn(first.group.name) !== currentKeyId
 			? await keyFor(keyIdIn(first.group.name))
-			: newKey();
-	if (!started) throw new Error('started on another device');
-	const key = started;
+			: undefined;
+	if (isSealed(first.group.name) && keyIdIn(first.group.name) !== currentKeyId && !resumed) {
+		throw new Error('started on another device');
+	}
+	// A new group key goes to the server first: whoever comes next carries on with the same one
+	const begun = currentKeyId ? undefined : (await send({ begin: newKey() })).key;
+	const key = resumed ?? begun ?? newKey();
 	const keyId = await rememberKey(key);
 	const oldKey = currentKeyId ? await keyFor(currentKeyId) : undefined;
 	if (currentKeyId && !oldKey) throw new Error('the current key is missing on this device');

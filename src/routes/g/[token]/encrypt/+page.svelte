@@ -1,5 +1,6 @@
 <script lang="ts">
-	// Encrypting an existing group (#110): what it means, then the doing, then the new link.
+	// A new link for an encrypted group (#110): everything sealed under a new key, so whoever had the
+	// old link can't follow what's added from now on.
 	import { goto, invalidateAll } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
@@ -24,9 +25,7 @@
 	// This takes the browser: before the page is ready, pressing the button would only reload it
 	let ready = $state(false);
 	onMount(() => (ready = true));
-	// Encrypted already: this page changes its key, for keeping out someone who has left
-	const rekeying = $derived(Boolean(data.group.keyId) && !link);
-	const heading = $derived(rekeying ? m.rekey_page_title() : m.encrypt_page_title());
+	const heading = m.regenerate_link();
 
 	async function start() {
 		failed = false;
@@ -63,16 +62,8 @@
 			</div>
 		{:else}
 			<div class="page-section">
-				{#if rekeying}
-					<p>{m.rekey_intro()}</p>
-					<p class="text-sm text-muted">{m.rekey_warning()}</p>
-				{:else}
-					<p>{m.encrypt_intro()}</p>
-					<p class="text-sm text-muted">{m.encrypt_warning_key()}</p>
-					<p class="text-sm text-muted">{m.encrypt_warning_limits()}</p>
-					<p class="text-sm text-muted">{m.encrypt_warning_backups()}</p>
-					<p class="text-sm font-medium tone-destructive">{m.encrypt_warning_lost()}</p>
-				{/if}
+				<p>{m.rekey_intro()}</p>
+				<p class="text-sm text-muted">{m.rekey_warning()}</p>
 				{#if failed}<p class="text-sm tone-destructive" role="alert">{m.encrypt_failed()}</p>{/if}
 				{#if progress}
 					<p class="text-sm text-muted" role="status">
@@ -91,7 +82,7 @@
 		>
 			<StickySubmit>
 				<SubmitButton pending={progress !== undefined} disabled={!ready}
-					>{rekeying ? m.rekey_button() : m.encrypt_button()}</SubmitButton
+					>{m.rekey_button()}</SubmitButton
 				>
 			</StickySubmit>
 		</form>

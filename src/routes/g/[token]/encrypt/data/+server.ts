@@ -1,9 +1,10 @@
 // What encrypting a group needs (#110): its text to seal, and the sealed batches coming back.
 import { error, json } from '@sveltejs/kit';
-import { isSealed } from '#lib/crypto/seal.ts';
+import { isKey, isSealed } from '#lib/crypto/seal.ts';
 import { MAX_RECEIPT_BYTES } from '#lib/expense/receipt-image.ts';
 import { requireGroup } from '#lib/server/context.ts';
 import {
+	beginEncrypting,
 	finishEncrypting,
 	storeSealed,
 	storeSealedReceipt,
@@ -44,8 +45,13 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		batch?: SealedBatch;
 		receipt?: { id: string; image: string };
 		finish?: string;
+		begin?: string;
 	} | null;
 	if (!body) error(400);
+	if (body.begin !== undefined) {
+		if (!isKey(body.begin) || group.keyId) error(400);
+		return json({ key: await beginEncrypting(locals.db, group.id, body.begin) });
+	}
 	if (body.batch) {
 		if (!allSealed(body.batch)) error(400);
 		await storeSealed(locals.db, group.id, body.batch);
@@ -57,7 +63,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	}
 	if (body.finish !== undefined) {
 		if (!KEY_ID.test(body.finish)) error(400);
-		await finishEncrypting(locals.db, group.id, actorId, body.finish);
+		await finishEncrypting(locals.db, group.id, actorId, body.finish, Boolean(group.keyId));
 		// A new key is for keeping someone out: so the old address goes too
 		if (group.keyId) {
 			return json({ token: await regenerateShareToken(locals.db, group.id, actorId) });

@@ -8,6 +8,7 @@
 // @ts-ignore -- exists only after the build
 import built from '../.svelte-kit/cloudflare/_worker.js';
 import { getDb } from '../src/lib/server/db/index.ts';
+import { endHandovers } from '../src/lib/server/encryption-handover.ts';
 import { purgeDeletedGroups } from '../src/lib/server/purge.ts';
 import { addDueRecurring } from '../src/lib/server/recurring.ts';
 
@@ -21,6 +22,7 @@ export default {
 		ctx.waitUntil(
 			Promise.all([
 				purgeDeletedGroups(db, now),
+				endHandovers(db, now),
 				addDueRecurring(db, now.toISOString().slice(0, 10))
 			])
 		);

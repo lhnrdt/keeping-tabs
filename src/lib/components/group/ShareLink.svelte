@@ -2,6 +2,7 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { Button, Toast } from 'konsta/svelte';
+	import EncryptedNote from '#lib/components/EncryptedNote.svelte';
 	import LinkField from '#lib/components/LinkField.svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import FormDialog from './FormDialog.svelte';
@@ -37,14 +38,26 @@
 		<Icon name="share" />
 		{m.share_button()}
 	</Button>
-	<button
-		type="button"
-		class="flex min-h-11 items-center justify-center gap-2 text-sm font-medium tone-destructive"
-		onclick={() => (confirmingRegenerate = true)}
-	>
-		<Icon name="newLink" size={18} />
-		{m.regenerate_link()}
-	</button>
+	<!-- With a key in the link, a new one means sealing everything anew: that has its own page -->
+	{#if page.data.group?.keyId}
+		<a
+			href={resolve('/g/[token]/encrypt', { token })}
+			class="flex min-h-11 items-center justify-center gap-2 text-sm font-medium tone-destructive"
+		>
+			<Icon name="newLink" size={18} />
+			{m.regenerate_link()}
+		</a>
+	{:else}
+		<button
+			type="button"
+			class="flex min-h-11 items-center justify-center gap-2 text-sm font-medium tone-destructive"
+			onclick={() => (confirmingRegenerate = true)}
+		>
+			<Icon name="newLink" size={18} />
+			{m.regenerate_link()}
+		</button>
+	{/if}
+	<EncryptedNote />
 </div>
 
 <Toast position="center" opened={copied}>{m.share_copied()}</Toast>
