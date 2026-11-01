@@ -20,4 +20,9 @@
 		error={form?.error}
 		profileName={data.profileName}
 	/>
+	<p class="mt-2 mb-6 text-center text-sm">
+		<a class="font-medium text-accent dark:text-accent-night" href={resolve('/new/backup')}
+			>{m.backup_restore_link()}</a
+		>
+	</p>
 </AppPage>
