@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Icon from '#lib/components/Icon.svelte';
 	// Notifications on this device (#56): a switch that asks the browser for permission and
 	// subscribes it with the push service, or unsubscribes. Where that isn't possible, it says
 	// why (no support, blocked, an iPhone outside the home screen).
@@ -111,7 +112,10 @@
 
 <div class="flex flex-col gap-1.5" role="region" aria-label={m.push_title()}>
 	<div class="field-well min-h-14 justify-between gap-3 px-3.5">
-		<span class="font-medium">{m.push_toggle()}</span>
+		<span class="flex min-w-0 items-center gap-3">
+			<span class="flex-none opacity-65"><Icon name="notifications" size={20} /></span>
+			<span class="font-medium">{m.push_toggle()}</span>
+		</span>
 		<Toggle
 			checked={status === 'on'}
 			disabled={busy || status === 'loading' || status === 'blocked' || status === 'unsupported'}
