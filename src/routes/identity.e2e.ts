@@ -69,7 +69,7 @@ test('join as yourself, stay yourself, rejoin after losing access, and identitie
 	await open(anna, '/you/devices');
 	await openFold(anna, 'Add another device');
 	await anna.getByRole('button', { name: 'Create link' }).click();
-	const link = await anna.getByRole('listitem', { name: 'One-time link' }).innerText();
+	const link = await anna.getByLabel('One-time link').inputValue();
 	const annasLaptop = await newDevice(browser);
 	await open(annasLaptop, link.trim());
 	await annasLaptop.getByRole('button', { name: 'Use this device' }).click();

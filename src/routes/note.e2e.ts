@@ -35,7 +35,7 @@ test('people who read it on one device are not asked on their others', async ({ 
 	await open(phone, '/you/devices');
 	await openFold(phone, 'Add another device');
 	await phone.getByRole('button', { name: 'Create link' }).click();
-	const link = (await phone.getByRole('listitem', { name: 'One-time link' }).innerText()).trim();
+	const link = (await phone.getByLabel('One-time link').inputValue()).trim();
 	const laptop = await (await browser.newContext()).newPage();
 	await laptop.goto(link);
 	// No note on a device link: sent before the page is ready, it would lose the #token.
