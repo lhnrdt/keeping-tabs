@@ -51,7 +51,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 	const sealedMoney = Boolean(group.keyId || group.transitionKey);
 	const [ledger, expenses, page, justDeleted, recurring] = await Promise.all([
 		listLedger(locals.db, group.id),
-		onInsights || sealedMoney ? listExpenses(locals.db, group.id) : undefined,
+		onInsights && !sealedMoney ? listExpenses(locals.db, group.id) : undefined,
 		// An encrypted group is searched in the browser: the server can't read it (#110)
 		entryPage(locals.db, group.id, mine, 0, shown, sealedMoney ? '' : query),
 		// Right after deleting: offer "Undo" (#78); gone once it's restored
@@ -77,7 +77,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 			onInsights && expenses && !sealedMoney
 				? groupInsights(expenses, memberIds, mine, transfers, plan, today, period)
 				: null,
-		sealed: sealedMoney ? { expenses: expenses ?? [], me: mine, onInsights, today } : null
+		sealed: sealedMoney ? { me: mine, onInsights, today } : null
 	};
 };
 

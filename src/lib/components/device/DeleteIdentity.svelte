@@ -5,6 +5,7 @@
 	import { Checkbox, List, ListItem } from 'konsta/svelte';
 	import ConfirmDelete from '#lib/components/group/ConfirmDelete.svelte';
 	import { forgetKeys } from '#lib/crypto/keyring.ts';
+	import { forgetEntries } from '#lib/group/sealed-entries.ts';
 	import { clearRecentGroups } from '#lib/device.ts';
 	import { clearOfflinePages } from '#lib/offline-pages.ts';
 	import { m } from '#lib/paraglide/messages.js';
@@ -18,7 +19,7 @@
 		// Nothing of the groups stays on this device (#138)
 		clearRecentGroups();
 		clearOfflinePages();
-		void forgetKeys();
+		void Promise.all([forgetKeys(), forgetEntries()]);
 	}}
 >
 	<p class="text-sm">{m.delete_identity_explain()}</p>

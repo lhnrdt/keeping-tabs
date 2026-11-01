@@ -129,6 +129,47 @@ export async function lastEntryDate(db: Db, groupId: string) {
 	return row?.date ?? null;
 }
 
+/** Allows for a change that was still on its way when the browser last asked */
+const CHANGES_MARGIN_MS = 10_000;
+
+/**
+ * An encrypted group's entries changed since then, or all current ones (#277): everything about their
+ * money is in `sealedDetails`, so they need nothing from other tables.
+ */
+export async function sealedEntriesSince(db: Db, groupId: string, since: number | null) {
+	const from = since === null ? null : new Date(since - CHANGES_MARGIN_MS);
+	const rows = await db
+		.select({ ...expenseColumns, createdAt: expenses.createdAt, deletedAt: expenses.deletedAt })
+		.from(expenses)
+		.where(
+			from ? and(eq(expenses.groupId, groupId), gt(expenses.updatedAt, from)) : active(groupId)
+		);
+	return {
+		removed: rows.filter((row) => row.deletedAt).map((row) => row.id),
+		rows: rows
+			.filter((row) => !row.deletedAt)
+			.map((row) => ({
+				id: row.id,
+				type: row.type,
+				title: row.title,
+				notes: row.notes,
+				date: row.date,
+				sealedDetails: row.sealedDetails,
+				amountCents: row.amountCents,
+				paidBy: row.paidBy,
+				category: row.category,
+				originalCurrency: row.originalCurrency,
+				originalAmountCents: row.originalAmountCents,
+				exchangeRate: row.exchangeRate,
+				odometerM: row.odometerM,
+				fuelMl: row.fuelMl,
+				createdAt: row.createdAt.getTime(),
+				payers: null,
+				splits: []
+			}))
+	};
+}
+
 /** Current expenses with their splits, newest first (E-9). */
 export async function listExpenses(db: Db, groupId: string) {
 	const [rows, splits] = await db.batch([

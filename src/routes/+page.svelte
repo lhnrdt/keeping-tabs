@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { invalidateAll } from '$app/navigation';
 	import { encryptGroup } from '#lib/crypto/encrypt-group.ts';
+	import ListSkeleton from '#lib/components/skeleton/ListSkeleton.svelte';
 	import { categorize } from '#lib/expense/categorize.ts';
 	import { resolve } from '$app/paths';
 	import { Block } from 'konsta/svelte';
@@ -50,7 +51,11 @@
 	{#snippet hero()}
 		<HomeHero totals={totalsByCurrency(data.yourGroups)} />
 	{/snippet}
-	<YourGroups memberOf={data.yourGroups} />
+	{#if data.opening}
+		<ListSkeleton hero={false} rows={3} />
+	{:else}
+		<YourGroups memberOf={data.yourGroups} />
+	{/if}
 	<Block>
 		<LinkButton href={resolve('/new')}>
 			<Icon name="add" />

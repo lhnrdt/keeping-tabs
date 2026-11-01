@@ -1,9 +1,15 @@
 // An encrypted group's money, worked out in the browser (#110): the server only keeps it sealed.
 // The same calculations as for any group, from entries with their amounts and splits opened.
 import { yourSide } from '#lib/expense/your-side.ts';
+import type { listExpenses } from '#lib/server/expenses.ts';
 import { balances, type BalanceInput } from '#lib/money.ts';
 import { betweenYou } from '#lib/people-summary.ts';
 import { settleTransfers } from '#lib/settle.ts';
+
+type GroupEntry = Awaited<ReturnType<typeof listExpenses>>[number];
+
+/** An entry as the rest of the app knows it, once opened */
+export type SealedEntry = GroupEntry & { createdAt: number };
 
 export function moneyOf(
 	entries: readonly BalanceInput[],

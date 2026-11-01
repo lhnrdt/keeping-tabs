@@ -428,6 +428,18 @@ test('amounts and who pays stay sealed, and everything still adds up (#110)', as
 	await open(page, '/balances');
 	await expect(page.locator('body')).toContainText('€33.57');
 
+	// Before the browser has opened anything: an outline, not dots or a balance of zero
+	const firstPaint = await (await page.request.get(groupUrl)).text();
+	expect(firstPaint).toContain('skeleton');
+	expect(firstPaint).not.toContain('…</');
+
+	// The second time, only what's changed is fetched
+	await open(page, groupUrl);
+	const again = page.waitForRequest(/entries\/sealed\?since=\d+/);
+	await page.reload();
+	await again;
+	await expect(page.locator('body')).toContainText('€33.57');
+
 	// Editing starts from the real amount
 	await open(page, groupUrl);
 	await page.getByRole('link', { name: /Secret boat/ }).click();

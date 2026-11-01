@@ -8,6 +8,7 @@
 	import FriendlyNote from '#lib/components/FriendlyNote.svelte';
 	import NavigationProgress from '#lib/components/NavigationProgress.svelte';
 	import OfflineBanner from '#lib/components/OfflineBanner.svelte';
+	import SlowNavigation from '#lib/components/skeleton/SlowNavigation.svelte';
 	import { locales, localizeHref } from '#lib/paraglide/runtime.js';
 	import { refreshOnReturn } from '#lib/refresh-on-return.ts';
 	import { provideTheme, ThemeChoice } from '#lib/themes/current.svelte.ts';
@@ -58,6 +59,7 @@
 <App theme="ios" dark safeAreas>
 	<NavigationProgress />
 	{@render children()}
+	<SlowNavigation />
 	<OfflineBanner />
 	{#if data.showNote}
 		<FriendlyNote />

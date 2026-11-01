@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import GroupScope from '#lib/components/group/GroupScope.svelte';
 	import { invalidateAll } from '$app/navigation';
+	import ListSkeleton from '#lib/components/skeleton/ListSkeleton.svelte';
 	import LockedNotice from '#lib/components/group/LockedNotice.svelte';
 	import { takeKeyFromAddress } from '#lib/crypto/key-from-address.ts';
 	import { keyFor } from '#lib/crypto/keyring.ts';
@@ -111,14 +112,18 @@
 {#if locked && data.group.keyId}
 	<LockedNotice keyId={data.group.keyId} />
 {/if}
-{#key data.group.id}
-	<GroupScope
-		group={data.group}
-		members={data.members}
-		canStepBack={data.canStepBack}
-		profileName={data.profileName}
-		error={membershipError}
-	>
-		{@render children()}
-	</GroupScope>
-{/key}
+{#if data.opening}
+	<ListSkeleton />
+{:else}
+	{#key data.group.id}
+		<GroupScope
+			group={data.group}
+			members={data.members}
+			canStepBack={data.canStepBack}
+			profileName={data.profileName}
+			error={membershipError}
+		>
+			{@render children()}
+		</GroupScope>
+	{/key}
+{/if}

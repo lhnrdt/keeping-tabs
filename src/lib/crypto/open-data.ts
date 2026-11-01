@@ -8,13 +8,28 @@ import { contextIn, isKey, isSealed, keyIdIn, openText, textContext } from './se
 
 export const browser = typeof window !== 'undefined';
 
+/** What's been opened: sealed text never changes, and the same pages come back all the time */
+const opened = new Map<string, string>();
+const OPENED_KEPT = 20_000;
+
+/** The text if this device can open it, kept for next time; otherwise null */
+async function openKept(sealed: string) {
+	const known = opened.get(sealed);
+	if (known !== undefined) return known;
+	const key = await keyFor(keyIdIn(sealed));
+	if (!key) return null;
+	const text = await openText(key, sealed).catch(() => null);
+	if (text === null) return null;
+	if (opened.size >= OPENED_KEPT) opened.clear();
+	opened.set(sealed, text);
+	return text;
+}
+
 const openOne = async (sealed: string) => {
 	if (!browser) return '…';
 	// Your own name and details: without your vault there's just nothing to fill in yet
 	const unreadable = contextIn(sealed) === 'profile' ? '' : m.locked_text();
-	const key = await keyFor(keyIdIn(sealed));
-	if (!key) return unreadable;
-	return openText(key, sealed).catch(() => unreadable);
+	return (await openKept(sealed)) ?? unreadable;
 };
 
 const DETAILS: readonly string[] = [...DETAIL_FIELDS, ...GROUP_DETAIL_FIELDS];
@@ -24,9 +39,7 @@ async function detailsOf(row: Record<string, unknown>) {
 	const sealed = row.sealedDetails;
 	if (!browser || !isSealed(sealed)) return {};
 	if (typeof row.id === 'string' && !belongsTo(sealed, 'details', row.id)) return {};
-	const key = await keyFor(keyIdIn(sealed));
-	if (!key) return {};
-	const read = JSON.parse(await openText(key, sealed).catch(() => '{}')) as Record<string, unknown>;
+	const read = JSON.parse((await openKept(sealed)) ?? '{}') as Record<string, unknown>;
 	const details: Record<string, unknown> = Object.fromEntries(
 		DETAILS.filter((name) => name in read).map((name) => [name, read[name]])
 	);
