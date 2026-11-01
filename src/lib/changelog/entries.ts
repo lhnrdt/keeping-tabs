@@ -15,6 +15,10 @@ export const CHANGELOG: ChangelogEntry[] = [
 		date: '',
 		items: [
 			{
+				en: 'An open group now shows what others add, without reloading.',
+				de: 'Eine geöffnete Gruppe zeigt jetzt, was andere hinzufügen, ohne neu zu laden.'
+			},
+			{
 				en: 'Back up a group as a file, and restore it as a new group whenever you need it.',
 				de: 'Sichere eine Gruppe als Datei und stelle sie bei Bedarf als neue Gruppe wieder her.'
 				en: 'Expense categories fit the group: a car group offers fuel, parking and repairs, a shared home rent and utilities. All the others are one tap away.',
