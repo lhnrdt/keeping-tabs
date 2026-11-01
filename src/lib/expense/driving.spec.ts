@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { drivingOf, formatKm, parseKm, parseLitres, quantityInputValue } from './driving';
+import {
+	drivingOf,
+	formatKm,
+	needleAngle,
+	odometerDigits,
+	parseKm,
+	parseLitres,
+	quantityInputValue
+} from './driving';
 
 describe('parsing', () => {
 	it('takes km and litres with a point or comma; empty is none', () => {
@@ -48,5 +56,18 @@ describe('drivingOf', () => {
 			litresPer100Km: null,
 			centsPerLitre: null
 		});
+	});
+});
+
+describe('the dashboard', () => {
+	it('shows six km digits and the tenth, more when needed', () => {
+		expect(odometerDigits(1_234_560)).toEqual({ whole: [...'001234'], tenth: '5' });
+		expect(odometerDigits(1_234_567_000)).toEqual({ whole: [...'1234567'], tenth: '0' });
+	});
+
+	it('points the needle along the scale and rests at its end', () => {
+		expect(needleAngle(0)).toBe(-90);
+		expect(needleAngle(7.5)).toBe(0);
+		expect(needleAngle(40)).toBe(90);
 	});
 });
