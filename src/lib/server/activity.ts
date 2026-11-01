@@ -27,7 +27,9 @@ export type Action =
 	| 'recurring.create'
 	| 'recurring.stop'
 	| 'comment.create'
-	| 'comment.delete';
+	| 'comment.delete'
+	| 'receipt.add'
+	| 'receipt.delete';
 
 /** Activity log entry (L-1); a query to run inside the caller's batch. */
 export const log = (

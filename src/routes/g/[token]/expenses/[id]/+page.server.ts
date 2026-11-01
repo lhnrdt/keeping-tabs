@@ -13,17 +13,20 @@ import {
 	updateExpense
 } from '#lib/server/expenses.ts';
 import { parseComment } from '#lib/validation.ts';
+import { isJpeg, MAX_RECEIPT_BYTES } from '#lib/expense/receipt-image.ts';
+import { addReceipt, deleteReceipt, listReceipts } from '#lib/server/receipts.ts';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, params, parent }) => {
 	const { group } = await parent();
-	const [expense, chosen, comments] = await Promise.all([
+	const [expense, chosen, comments, receipts] = await Promise.all([
 		findExpense(locals.db, group.id, params.id),
 		listChosenCategories(locals.db, group.id),
-		listComments(locals.db, params.id)
+		listComments(locals.db, params.id),
+		listReceipts(locals.db, params.id)
 	]);
 	if (expense?.type !== 'expense') error(404, m.error_expense_not_found());
-	return { expense, chosen, comments };
+	return { expense, chosen, comments, receipts };
 };
 
 export const actions: Actions = {
@@ -60,5 +63,25 @@ export const actions: Actions = {
 	uncomment: async ({ locals, params, request }) => {
 		const { form, group, actorId } = await formContext(locals, params.token, request);
 		await deleteComment(locals.db, group.id, actorId, params.id, String(form.get('commentId')));
+	},
+
+	addReceipt: async ({ locals, params, request }) => {
+		const { form, group, actorId } = await formContext(locals, params.token, request);
+		if (!(await isEntryOf(locals.db, group.id, params.id, 'expense'))) {
+			error(404, m.error_expense_not_found());
+		}
+		const photo = form.get('photo');
+		if (!(photo instanceof File) || photo.size === 0 || photo.size > MAX_RECEIPT_BYTES) {
+			return fail(400, { receiptError: 'receipt_invalid' as const });
+		}
+		const bytes = new Uint8Array(await photo.arrayBuffer());
+		if (!isJpeg(bytes)) return fail(400, { receiptError: 'receipt_invalid' as const });
+		const refused = await addReceipt(locals.db, group.id, actorId, params.id, bytes);
+		if (refused) return fail(400, { receiptError: refused });
+	},
+
+	removeReceipt: async ({ locals, params, request }) => {
+		const { form, group, actorId } = await formContext(locals, params.token, request);
+		await deleteReceipt(locals.db, group.id, actorId, params.id, String(form.get('receiptId')));
 	}
 };

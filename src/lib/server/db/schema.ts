@@ -275,6 +275,23 @@ export const expenseComments = sqliteTable(
 	(t) => [index('expense_comments_expense_idx').on(t.expenseId, t.createdAt)]
 );
 
+/** Photos of an expense's receipt (#52): a small JPEG as base64; see receipt-image.ts */
+export const expenseReceipts = sqliteTable(
+	'expense_receipts',
+	{
+		id: id(),
+		expenseId: text('expense_id')
+			.notNull()
+			.references(() => expenses.id, { onDelete: 'cascade' }),
+		memberId: text('member_id')
+			.notNull()
+			.references(() => members.id),
+		image: text('image').notNull(),
+		createdAt: createdAt()
+	},
+	(t) => [index('expense_receipts_expense_idx').on(t.expenseId, t.createdAt)]
+);
+
 /**
  * Expenses that repeat (#45): the expense as entered (template, with its first date), how
  * often, and how many times it has been added so far. Stopped ones stay for the record.

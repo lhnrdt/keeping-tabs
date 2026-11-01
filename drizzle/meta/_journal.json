@@ -204,6 +204,13 @@
       "when": 1793531780738,
       "tag": "0028_expense_items",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "6",
+      "when": 1793533970089,
+      "tag": "0029_expense_receipts",
+      "breakpoints": true
     }
   ]
 }

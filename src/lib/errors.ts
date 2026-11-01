@@ -16,6 +16,8 @@ export const errorMessages = {
 	expense_note_too_long: m.error_expense_note_too_long,
 	comment_required: m.error_comment_required,
 	comment_too_long: m.error_comment_too_long,
+	receipt_invalid: m.error_receipt_invalid,
+	receipt_limit: m.error_receipt_limit,
 	payment_details_too_long: m.error_payment_details_too_long,
 	amount_invalid: m.error_amount_invalid,
 	rate_invalid: m.error_rate_invalid,
