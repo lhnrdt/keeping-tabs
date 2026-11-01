@@ -75,7 +75,7 @@
 				<input class="sr-only" type="radio" name="category" value={category} bind:group={chosen} />
 				{#if !chosen && guess === category}
 					<span
-						transition:calmPop
+						in:calmPop
 						class="absolute end-1 -top-2 rounded-full bg-accent px-1.5 text-[0.625rem] leading-4 font-semibold text-white dark:bg-accent-night dark:text-canvas-night"
 						>{m.category_auto_badge()}</span
 					>
