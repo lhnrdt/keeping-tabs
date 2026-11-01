@@ -26,6 +26,7 @@ export type Person = {
 	sealedPaymentDetails: string | null;
 	/** When they read the friendly note (#112) */
 	notedAt: Date | null;
+	notedVersion: number;
 };
 
 /** The person this device belongs to, if any. */
@@ -49,7 +50,8 @@ export async function findPerson(db: Db, deviceKey: string): Promise<Person | un
 			avatar: people.avatar,
 			paymentDetails: people.paymentDetails,
 			sealedPaymentDetails: people.sealedPaymentDetails,
-			notedAt: people.notedAt
+			notedAt: people.notedAt,
+			notedVersion: people.notedVersion
 		})
 		.from(devices)
 		.innerJoin(people, eq(devices.personId, people.id))
@@ -77,7 +79,8 @@ export async function ensurePerson(db: Db, deviceKey: string): Promise<Person> {
 		avatar: null,
 		paymentDetails: null,
 		sealedPaymentDetails: null,
-		notedAt: null
+		notedAt: null,
+		notedVersion: 0
 	};
 }
 

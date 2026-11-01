@@ -1,6 +1,5 @@
 <script lang="ts">
-	// A note from the app's creator to friends, shown once (#112): what they can technically
-	// see. Warm and honest, not legal text. A plain form, so it works without JavaScript.
+	// A note from the app's creator to friends (#112): what the server can and can't read. Warm and honest, not legal text. A plain form, so it works without JavaScript.
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { Sheet } from 'konsta/svelte';

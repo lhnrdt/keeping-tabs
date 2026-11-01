@@ -83,6 +83,8 @@ export const people = sqliteTable('people', {
 	avatar: text('avatar'),
 	// When they read the friendly note about what the app's creator can see (#112)
 	notedAt: integer('noted_at', { mode: 'timestamp_ms' }),
+	// Which version of it: when what it says changes, they're shown it once more
+	notedVersion: integer('noted_version').notNull().default(0),
 	// How to pay them, e.g. a PayPal.me link or IBAN (#47); shown to people in their groups
 	paymentDetails: text('payment_details'),
 	// How to pay them, sealed with their vault key (#110): each group gets its own copy from there
