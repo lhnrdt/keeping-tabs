@@ -54,114 +54,123 @@
 		/>
 	{/snippet}
 
-	{#if tab === 'expenses'}
-		{#if data.entries.length || data.query}
-			<ExpenseSearch query={data.query} />
-		{/if}
-		<PendingExpenses token={data.group.shareToken} currency={data.group.currency} />
-		<!-- A new search starts the list (and its older pages) afresh -->
-		{#key data.query}
-			<ExpenseList
-				token={data.group.shareToken}
-				currency={data.group.currency}
-				members={[...data.members, ...data.formerMembers]}
-				entries={data.entries}
-				hasMore={data.hasMore}
-				query={data.query}
-			/>
-		{/key}
-		<FloatingLink
-			href={resolve('/g/[token]/expenses/new', { token: data.group.shareToken })}
-			icon="add"
-			label={m.add_expense()}
-		/>
-	{:else if tab === 'balances'}
-		<BetweenYou
-			members={data.members}
-			transfers={data.transfers}
-			currency={data.group.currency}
-			group={data.group}
-		/>
-		<BlockTitle>{m.balances_title()}</BlockTitle>
-		<BalanceList currency={data.group.currency} members={data.members} balances={data.balances} />
-		<BlockTitle>{m.settle_title()}</BlockTitle>
-		<SettleUp
-			token={data.group.shareToken}
-			currency={data.group.currency}
-			members={data.members}
-			transfers={data.transfers}
-		/>
-	{:else if tab === 'insights' && data.insights}
-		<!-- Loaded with the tab, fetched ahead while idle (load.ts) -->
-		{#await loadGroupInsights() then { default: GroupInsights }}
-			<GroupInsights
-				insights={data.insights}
-				today={data.today}
-				budgetError={errorFor('budget')}
-				group={data.group}
-				members={data.members}
-				everyone={[...data.members, ...data.formerMembers]}
-			/>
-		{/await}
-	{:else}
-		<BlockTitle>{m.members_title()}</BlockTitle>
-		<PeoplePills
-			members={data.members}
-			balances={data.balances}
-			errors={{
-				add: errorFor('addMember'),
-				rename: errorFor('renameMember'),
-				remove: errorFor('removeMember')
-			}}
-		/>
-		<BlockTitle>{m.group_details()}</BlockTitle>
-		<GroupDetails group={data.group} members={data.members} hasPassword={data.hasPassword} />
-		<RecurringList rules={data.recurring} currency={data.group.currency} />
-		<BlockTitle>{m.share_title()}</BlockTitle>
-		<ShareLink token={data.group.shareToken} groupName={data.group.name} />
-		<DeleteGroup groupId={data.group.id} name={data.group.name} />
-		<List strong inset>
-			<ListItem
-				link
-				title={m.activity_title()}
-				href={resolve('/g/[token]/activity', { token: data.group.shareToken })}
-			>
-				{#snippet media()}
-					<Icon name="activity" />
-				{/snippet}
-			</ListItem>
-			<ListItem
-				link
-				title={m.import_link()}
-				href={resolve('/g/[token]/import', { token: data.group.shareToken })}
-			>
-				{#snippet media()}
-					<Icon name="import" />
-				{/snippet}
-			</ListItem>
-			<!-- A download: a plain link, not a client-side navigation -->
-			<ListItem
-				link
-				title={m.export_link()}
-				href={resolve('/g/[token]/export', { token: data.group.shareToken })}
-				linkProps={{ download: '', 'data-sveltekit-reload': '' }}
-			>
-				{#snippet media()}
-					<Icon name="export" />
-				{/snippet}
-			</ListItem>
-			<ListItem
-				link
-				title={m.backup_link()}
-				href={resolve('/g/[token]/backup', { token: data.group.shareToken })}
-				linkProps={{ download: '', 'data-sveltekit-reload': '' }}
-			>
-				{#snippet media()}
-					<Icon name="export" />
-				{/snippet}
-			</ListItem>
-		</List>
-	{/if}
+	<!-- A tab's content rises in when you switch to it -->
+	{#key tab}
+		<div class="rise-in">
+			{#if tab === 'expenses'}
+				{#if data.entries.length || data.query}
+					<ExpenseSearch query={data.query} />
+				{/if}
+				<PendingExpenses token={data.group.shareToken} currency={data.group.currency} />
+				<!-- A new search starts the list (and its older pages) afresh -->
+				{#key data.query}
+					<ExpenseList
+						token={data.group.shareToken}
+						currency={data.group.currency}
+						members={[...data.members, ...data.formerMembers]}
+						entries={data.entries}
+						hasMore={data.hasMore}
+						query={data.query}
+					/>
+				{/key}
+				<FloatingLink
+					href={resolve('/g/[token]/expenses/new', { token: data.group.shareToken })}
+					icon="add"
+					label={m.add_expense()}
+				/>
+			{:else if tab === 'balances'}
+				<BetweenYou
+					members={data.members}
+					transfers={data.transfers}
+					currency={data.group.currency}
+					group={data.group}
+				/>
+				<BlockTitle>{m.balances_title()}</BlockTitle>
+				<BalanceList
+					currency={data.group.currency}
+					members={data.members}
+					balances={data.balances}
+				/>
+				<BlockTitle>{m.settle_title()}</BlockTitle>
+				<SettleUp
+					token={data.group.shareToken}
+					currency={data.group.currency}
+					members={data.members}
+					transfers={data.transfers}
+				/>
+			{:else if tab === 'insights' && data.insights}
+				<!-- Loaded with the tab, fetched ahead while idle (load.ts) -->
+				{#await loadGroupInsights() then { default: GroupInsights }}
+					<GroupInsights
+						insights={data.insights}
+						today={data.today}
+						budgetError={errorFor('budget')}
+						group={data.group}
+						members={data.members}
+						everyone={[...data.members, ...data.formerMembers]}
+					/>
+				{/await}
+			{:else}
+				<BlockTitle>{m.members_title()}</BlockTitle>
+				<PeoplePills
+					members={data.members}
+					balances={data.balances}
+					errors={{
+						add: errorFor('addMember'),
+						rename: errorFor('renameMember'),
+						remove: errorFor('removeMember')
+					}}
+				/>
+				<BlockTitle>{m.group_details()}</BlockTitle>
+				<GroupDetails group={data.group} members={data.members} hasPassword={data.hasPassword} />
+				<RecurringList rules={data.recurring} currency={data.group.currency} />
+				<BlockTitle>{m.share_title()}</BlockTitle>
+				<ShareLink token={data.group.shareToken} groupName={data.group.name} />
+				<DeleteGroup groupId={data.group.id} name={data.group.name} />
+				<List strong inset>
+					<ListItem
+						link
+						title={m.activity_title()}
+						href={resolve('/g/[token]/activity', { token: data.group.shareToken })}
+					>
+						{#snippet media()}
+							<Icon name="activity" />
+						{/snippet}
+					</ListItem>
+					<ListItem
+						link
+						title={m.import_link()}
+						href={resolve('/g/[token]/import', { token: data.group.shareToken })}
+					>
+						{#snippet media()}
+							<Icon name="import" />
+						{/snippet}
+					</ListItem>
+					<!-- A download: a plain link, not a client-side navigation -->
+					<ListItem
+						link
+						title={m.export_link()}
+						href={resolve('/g/[token]/export', { token: data.group.shareToken })}
+						linkProps={{ download: '', 'data-sveltekit-reload': '' }}
+					>
+						{#snippet media()}
+							<Icon name="export" />
+						{/snippet}
+					</ListItem>
+					<ListItem
+						link
+						title={m.backup_link()}
+						href={resolve('/g/[token]/backup', { token: data.group.shareToken })}
+						linkProps={{ download: '', 'data-sveltekit-reload': '' }}
+					>
+						{#snippet media()}
+							<Icon name="export" />
+						{/snippet}
+					</ListItem>
+				</List>
+			{/if}
+		</div>
+	{/key}
 
 	{#if data.justDeleted}
 		<!-- A new one for each deletion, so its timer starts again -->

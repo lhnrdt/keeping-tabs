@@ -77,7 +77,7 @@
 {/snippet}
 
 {#if groups.length}
-	<section aria-labelledby="your-groups">
+	<section class="rows-rise" aria-labelledby="your-groups">
 		<BlockTitle id="your-groups">{m.home_your_groups()}</BlockTitle>
 		{#if active.length}
 			<List strong inset>
