@@ -79,7 +79,7 @@
 			: [
 					formatDate(entry.date),
 					paidLine(entry),
-					entry.distanceM && formatKm(entry.distanceM, getLocale()),
+					entry.odometerM && formatKm(entry.odometerM, getLocale()),
 					entry.fuelMl && formatLitres(entry.fuelMl, getLocale()),
 					entry.notes && m.has_note(),
 					entry.comments === 1 && m.has_comment(),

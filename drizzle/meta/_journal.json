@@ -169,6 +169,20 @@
       "when": 1793528142880,
       "tag": "0023_expense_comments",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "6",
+      "when": 1793529042245,
+      "tag": "0024_expense_drop_distance",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "6",
+      "when": 1793529042800,
+      "tag": "0025_expense_odometer",
+      "breakpoints": true
     }
   ]
 }

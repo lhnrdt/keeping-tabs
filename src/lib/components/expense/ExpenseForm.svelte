@@ -34,8 +34,8 @@
 			/** The amount's currency when not the group's (#54), and the rate it was saved with */
 			currency?: string;
 			rate?: string;
-			/** In car groups: km driven and litres of fuel, as typed */
-			km?: string;
+			/** In car groups: the odometer reading and litres of fuel, as typed */
+			odometer?: string;
 			litres?: string;
 			/** With paidBy "several" (#39): what each paid as typed, by member id */
 			payers?: Record<string, string>;
@@ -128,8 +128,8 @@
 			{saved}
 		/>
 		<!-- Also when the group is no car group anymore: saving must not lose what's noted -->
-		{#if driving || values.km || values.litres}
-			<DrivingFields km={values.km ?? ''} litres={values.litres ?? ''} />
+		{#if driving || values.odometer || values.litres}
+			<DrivingFields odometer={values.odometer ?? ''} litres={values.litres ?? ''} />
 		{/if}
 
 		<div class="grid grid-cols-2 gap-2.5">

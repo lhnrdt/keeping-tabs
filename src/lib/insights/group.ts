@@ -6,7 +6,7 @@ import type { ExpenseCategory } from '#lib/expense/categories.ts';
 import type { Transfer } from '#lib/settle.ts';
 import { budgetOf } from './budget';
 import { insightsOf, type InsightEntry } from './insights';
-import { inRange, periodRange, stepPeriod, unitFor, type DateRange, type Period } from './period';
+import { periodRange, stepPeriod, unitFor, type DateRange, type Period } from './period';
 import { recapOf } from './recap';
 
 type Entry = Omit<InsightEntry, 'category'> & { category: ExpenseCategory | null } & DrivingEntry;
@@ -40,9 +40,8 @@ export function groupInsights(
 		...insights,
 		period,
 		driving: drivingOf(
-			entries.filter(
-				(entry) => entry.type === 'expense' && inRange(entry.date, periodRange(period))
-			)
+			entries.filter((entry) => entry.type === 'expense'),
+			periodRange(period)
 		),
 		/** From the first expense to the last, for stepping between periods */
 		span: (whole.first && whole.last
