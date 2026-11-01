@@ -12,7 +12,7 @@ export type Shape = {
 	d: string;
 	strength: number;
 	cut?: boolean;
-	/** White, in light and dark */
+	/** Soft white, in light and dark */
 	snow?: boolean;
 	motion?: SceneMotion;
 };

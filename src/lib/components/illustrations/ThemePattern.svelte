@@ -15,6 +15,9 @@
 
 	let { kind, settled = false, celebrate = false }: Props = $props();
 
+	/** Snow is bright, but the header's text comes first */
+	const SNOW_STRENGTH = 0.6;
+
 	const theme = useTheme();
 	/** Back to front, each at its strength */
 	const layers: { scene: Scene; strength: number; moment?: boolean }[] = $derived(
@@ -51,7 +54,7 @@
 				<path
 					d={shape.d}
 					fill={shape.snow ? '#fff' : shape.cut ? 'var(--tint-bg)' : 'var(--tint-line)'}
-					fill-opacity={shape.cut || shape.snow ? 1 : shape.strength * strength}
+					fill-opacity={shape.snow ? SNOW_STRENGTH : shape.cut ? 1 : shape.strength * strength}
 					class={shape.motion ? `scene-${shape.motion}` : undefined}
 				/>
 			{/each}
