@@ -64,6 +64,7 @@ export async function createGroup(page: Page, name: string, you: string, others:
 		await page.getByLabel('Add a person').fill(other);
 		await page.getByLabel('Add a person').press('Enter');
 	}
+	await page.getByLabel('Encrypt this group').uncheck();
 	await page.getByRole('button', { name: 'Create group' }).click();
 	await expect(page.getByTestId('identity')).toHaveText(you);
 	return page.url();

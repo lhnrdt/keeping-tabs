@@ -1,5 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
-import { createGroup, open, openFold } from './e2e-helpers';
+import { choose, createGroup, open, openFold } from './e2e-helpers';
+
+const EXPORT = new URL('./fixtures/splitwise-export.csv', import.meta.url).pathname;
 
 /** Creates an encrypted group with one expense; returns its plain address and full link */
 async function encryptedGroup(page: Page) {
@@ -9,7 +11,6 @@ async function encryptedGroup(page: Page) {
 	await page.getByLabel('Your name').fill('Anna');
 	await page.getByLabel('Add a person').fill('Benedikt');
 	await page.getByLabel('Add a person').press('Enter');
-	await page.getByLabel('Encrypt this group').check();
 	await page.getByRole('button', { name: 'Create group' }).click();
 	await expect(page.getByTestId('identity')).toHaveText('Anna');
 	await expect(page.getByRole('heading', { name: 'Secret trip' })).toBeVisible();
@@ -147,8 +148,14 @@ test('comments, search, a refused form and the downloads work in the browser (#1
 	expect(backupText).toContain('Whiskey tasting');
 	expect(backupText).not.toContain('enc1.');
 
-	// No import: the server would read it
-	await expect(page.getByRole('link', { name: /Splitwise|Import/ })).toHaveCount(0);
+	// An import is read and sealed here too
+	await page.getByRole('link', { name: 'Import from Splitwise' }).click();
+	await page.getByLabel('Splitwise export (CSV)').setInputFiles(EXPORT);
+	await page.getByRole('button', { name: 'Import' }).click();
+	await expect(page.getByRole('link', { name: /Pizza, Wein/ })).toBeVisible();
+	const after = await (await page.request.get(`${groupUrl}/__data.json`)).text();
+	expect(after).not.toContain('Pizza, Wein');
+	expect(after).not.toContain('Benedikt');
 });
 
 async function readDownload(download: import('@playwright/test').Download) {
@@ -288,7 +295,6 @@ test('categories, car data and how to pay you stay sealed too; insights work (#1
 	await page.getByLabel('Your name').fill('Anna');
 	await page.getByLabel('Add a person').fill('Benedikt');
 	await page.getByLabel('Add a person').press('Enter');
-	await page.getByLabel('Encrypt this group').check();
 	await page.getByRole('button', { name: 'Create group' }).click();
 	await expect(page.getByTestId('identity')).toHaveText('Anna');
 	const groupUrl = page.url().split('#')[0];
@@ -298,6 +304,7 @@ test('categories, car data and how to pay you stay sealed too; insights work (#1
 	await page.getByLabel('Amount (€)').fill('60');
 	await page.getByLabel(/Odometer/).fill('12345');
 	await page.getByLabel(/^Fuel \(/).fill('40');
+	await choose(page, 'Category', 'Fuel');
 	await page.getByRole('button', { name: 'Add expense' }).click();
 	await expect(page.getByRole('link', { name: /Filling up/ })).toBeVisible();
 
@@ -308,10 +315,12 @@ test('categories, car data and how to pay you stay sealed too; insights work (#1
 
 	// The browser still works out the insights, and shows what was noted
 	await open(page, `${groupUrl}?tab=insights`);
-	await expect(page.getByRole('main').or(page.locator('body'))).toContainText(/40/);
+	await expect(page.locator('body')).toContainText('12,345 km');
+	await expect(page.locator('body')).toContainText('€1.50');
 	await page.getByRole('link', { name: 'Expenses' }).click();
 	await page.getByRole('link', { name: /Filling up/ }).click();
 	await expect(page.getByLabel(/Odometer/)).toHaveValue('12345');
+	await expect(page.getByRole('radio', { name: 'Fuel', exact: true })).toBeChecked();
 
 	// How to pay you: sealed for you, and for this group
 	await open(page, '/you/profile');

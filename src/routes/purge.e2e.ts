@@ -7,6 +7,7 @@ test('deleted groups are removed for good after 30 days', async ({ page, request
 	await open(page, '/new');
 	await page.getByLabel('Group name').fill('Long gone');
 	await page.getByLabel('Your name').fill('Anna');
+	await page.getByLabel('Encrypt this group').uncheck();
 	await page.getByRole('button', { name: 'Create group' }).click();
 	await expect(page.getByTestId('identity')).toHaveText('Anna');
 

@@ -29,6 +29,7 @@ test('people who read it on one device are not asked on their others', async ({ 
 	await open(phone, '/new');
 	await phone.getByLabel('Group name').fill('Cabin');
 	await phone.getByLabel('Your name').fill('Anna');
+	await phone.getByLabel('Encrypt this group').uncheck();
 	await phone.getByRole('button', { name: 'Create group' }).click();
 	await expect(phone.getByTestId('identity')).toHaveText('Anna');
 

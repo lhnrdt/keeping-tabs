@@ -1,6 +1,6 @@
 // Saves imported expenses and payments (I-1 – I-3) in a fixed handful of queries, however
 // many rows there are: D1's free plan allows 50 queries per request and 100 bound values
-// per query, so all rows go in as one JSON value and SQLite unpacks them (json_each).
+// per query, so the rows go in as a few JSON values and SQLite unpacks them (json_each).
 import { and, eq, isNotNull } from 'drizzle-orm';
 import type { PlannedEntry } from '#lib/import/plan.ts';
 import { log } from './activity';
@@ -15,15 +15,18 @@ export type ImportInput = {
 	entries: PlannedEntry[];
 };
 
+const ROWS_PER_STATEMENT = 1_000;
+
 /** All rows of a JSON array, unpacked by SQLite: ?1 group, ?2/?3 timestamps, ?4 rows */
 const INSERT_EXPENSES = `
 	insert into expenses (id, group_id, type, split_mode, title, amount_cents, paid_by, date,
-		category, import_key, created_at, updated_at)
+		category, sealed_details, import_key, created_at, updated_at)
 	select json_extract(value, '$.id'), ?1, json_extract(value, '$.type'),
 		json_extract(value, '$.splitMode'),
 		json_extract(value, '$.title'), json_extract(value, '$.amount'),
 		json_extract(value, '$.paidBy'), json_extract(value, '$.date'),
-		json_extract(value, '$.category'), json_extract(value, '$.key'), ?2, ?3
+		json_extract(value, '$.category'), json_extract(value, '$.sealedDetails'),
+		json_extract(value, '$.key'), ?2, ?3
 	from json_each(?4)`;
 
 /** Exact splits keep each share as what was "entered", so they can be edited; equal ones need none */
@@ -59,29 +62,32 @@ export async function importEntries(
 
 	const now = Date.now();
 	const rows = entries.map((entry) => ({ ...entry, id: crypto.randomUUID() }));
-	const expenseRows = JSON.stringify(
-		rows.map((row) => ({
-			id: row.id,
-			type: row.type,
-			splitMode: row.splitMode,
-			title: row.title,
-			amount: row.amountCents,
-			paidBy: memberIds[row.paidBy],
-			date: row.date,
-			category: row.category,
-			key: row.key
-		}))
-	);
-	const splitRows = JSON.stringify(
-		rows.flatMap((row) =>
-			row.shares.map((share) => ({
-				expenseId: row.id,
-				memberId: memberIds[share.person],
-				share: share.shareCents,
-				input: row.splitMode === 'exact' ? share.shareCents : null
+	const expenseRows = (piece: typeof rows) =>
+		JSON.stringify(
+			piece.map((row) => ({
+				id: row.id,
+				type: row.type,
+				splitMode: row.splitMode,
+				title: row.title,
+				amount: row.amountCents,
+				paidBy: memberIds[row.paidBy],
+				date: row.date,
+				category: row.category,
+				sealedDetails: row.sealedDetails ?? null,
+				key: row.key
 			}))
-		)
-	);
+		);
+	const splitRows = (piece: typeof rows) =>
+		JSON.stringify(
+			piece.flatMap((row) =>
+				row.shares.map((share) => ({
+					expenseId: row.id,
+					memberId: memberIds[share.person],
+					share: share.shareCents,
+					input: row.splitMode === 'exact' ? share.shareCents : null
+				}))
+			)
+		);
 
 	const skipped = input.entries.length - entries.length;
 	const record = log(db, groupId, actorId, 'group.import', {
@@ -91,6 +97,11 @@ export async function importEntries(
 		newMembers: newMembers.map((member) => member.name)
 	});
 
+	// In pieces: sealed text is longer, and one JSON value can only be so long
+	const pieces = Array.from({ length: Math.ceil(rows.length / ROWS_PER_STATEMENT) }, (_, i) =>
+		rows.slice(i * ROWS_PER_STATEMENT, (i + 1) * ROWS_PER_STATEMENT)
+	);
+
 	// Batched on the D1 client: drizzle (0.45) can't batch raw SQL that has parameters.
 	// One transaction; members before the expenses that refer to them.
 	const d1 = db.$client;
@@ -99,8 +110,10 @@ export async function importEntries(
 	await d1.batch([
 		prepare(record.toSQL()),
 		...(newMembers.length ? [prepare(db.insert(members).values(newMembers).toSQL())] : []),
-		d1.prepare(INSERT_EXPENSES).bind(groupId, now, now, expenseRows),
-		d1.prepare(INSERT_SPLITS).bind(splitRows)
+		...pieces.flatMap((piece) => [
+			d1.prepare(INSERT_EXPENSES).bind(groupId, now, now, expenseRows(piece)),
+			d1.prepare(INSERT_SPLITS).bind(splitRows(piece))
+		])
 	]);
 
 	return { imported: entries.length, skipped };

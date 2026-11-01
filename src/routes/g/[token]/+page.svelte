@@ -138,18 +138,15 @@
 							<Icon name="activity" />
 						{/snippet}
 					</ListItem>
-					<!-- Not for an encrypted group yet: the server reads an import's names and titles (#110) -->
-					{#if !data.group.keyId}
-						<ListItem
-							link
-							title={m.import_link()}
-							href={resolve('/g/[token]/import', { token: data.group.shareToken })}
-						>
-							{#snippet media()}
-								<Icon name="import" />
-							{/snippet}
-						</ListItem>
-					{/if}
+					<ListItem
+						link
+						title={m.import_link()}
+						href={resolve('/g/[token]/import', { token: data.group.shareToken })}
+					>
+						{#snippet media()}
+							<Icon name="import" />
+						{/snippet}
+					</ListItem>
 					<!-- A download: a plain link, not a client-side navigation -->
 					<ListItem
 						link

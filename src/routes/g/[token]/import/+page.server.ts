@@ -1,6 +1,7 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
 import type { ErrorCode } from '#lib/errors.ts';
+import { MAX_IMPORT_ROWS } from '#lib/import/limits.ts';
 import { resolvePeople, personField } from '#lib/import/people.ts';
 import { planRow } from '#lib/import/plan.ts';
 import { parseSplitwise } from '#lib/import/splitwise.ts';
@@ -11,13 +12,11 @@ import type { Actions } from './$types';
 
 /** Years of a busy group's history are well below this */
 const MAX_FILE_BYTES = 2_000_000;
-/** Entries in one import: well within what the database takes in one go (#71) */
-const MAX_ROWS = 5_000;
 
 export const actions: Actions = {
 	default: async ({ locals, params, request }) => {
 		const { form, group, actorId } = await formContext(locals, params.token, request);
-		// The server would read names and titles (#110)
+		// The browser reads the file, and seals it first (crypto/seal-import.ts)
 		if (group.keyId) return fail(400, { error: 'import_encrypted' as ErrorCode });
 		const invalid = (error: ErrorCode) => fail(400, { error });
 
@@ -28,7 +27,7 @@ export const actions: Actions = {
 		const parsed = parseSplitwise(await file.text(), group.currency);
 		if (!parsed.ok) return invalid(parsed.error);
 		const { people, rows } = parsed.value;
-		if (rows.length > MAX_ROWS) return invalid('import_too_large');
+		if (rows.length > MAX_IMPORT_ROWS) return invalid('import_too_large');
 
 		const members = await listMembers(locals.db, group.id);
 		const choices = people.map((_, i) => form.get(personField(i))?.toString());

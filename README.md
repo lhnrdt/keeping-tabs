@@ -42,7 +42,16 @@ Planned work and ideas are [GitHub issues](https://github.com/lhnrdt/keeping-tab
 
 No tracking, no analytics, and fonts, icons and category keywords are bundled. Two outside services are involved, and only for these features: exchange rates come from [Frankfurter](https://frankfurter.dev) (the server sends currency codes and a date, nothing about you), and notifications, if you turn them on, go encrypted through your browser's push service (Google, Apple or Mozilla). The only personal data is the names you type in. Device keys, link tokens and recovery keys are stored only as hashes.
 
-A group can be encrypted, when it's created or later. Its names, titles, notes, comments and photos are then sealed in the browser with AES-GCM, using a key in the link's fragment, which browsers don't send to the server. Amounts, dates and who owes whom stay readable to the server, because it works out the balances. It's optional: a group is plain unless someone turns this on.
+New groups are encrypted by default, and older ones can be encrypted later. Names, titles, notes, comments, categories, car data, photos and how to pay someone are sealed in the browser with AES-256-GCM. The key is in the link's fragment, which browsers don't send to the server. Your devices keep each other's keys through a vault key the server can't read; a device link, a recovery key or a passkey with the PRF extension brings it to a new device.
+
+What this doesn't protect, so nobody assumes it does:
+
+- The server sees amounts, dates, who owes whom, group sizes, the group's type and currency, and when things happen, because it works out the balances.
+- The server delivers the app's code. A compromised server could ship code that steals keys, which is true of any encryption in a web app.
+- The link is the key. Anyone who reads it can read the group, including the chat service it was shared through.
+- A server with write access could change amounts or who paid, or swap member names, undetected. Titles, notes, comments, receipt items and categories are tied to their row, so moving those between rows shows up as locked.
+- Encrypting an existing group leaves its old plain text in the database's backups for up to 30 days.
+- The encryption hasn't had an independent security review.
 
 ## Tech stack
 

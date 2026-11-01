@@ -21,6 +21,7 @@ test('join as yourself, stay yourself, rejoin after losing access, and identitie
 	await anna.getByLabel('Your name').fill('Anna');
 	await anna.getByLabel('Add a person').fill('Ben');
 	await anna.getByLabel('Add a person').press('Enter');
+	await anna.getByLabel('Encrypt this group').uncheck();
 	await anna.getByRole('button', { name: 'Create group' }).click();
 	await expect(anna.getByTestId('identity')).toHaveText('Anna');
 	const groupUrl = anna.url();
@@ -128,6 +129,7 @@ test('a synced passkey brings you and your groups back on a new device', async (
 	await open(phone, '/new');
 	await phone.getByLabel('Group name').fill('Holiday');
 	await phone.getByLabel('Your name').fill('Mia');
+	await phone.getByLabel('Encrypt this group').uncheck();
 	await phone.getByRole('button', { name: 'Create group' }).click();
 	await expect(phone.getByTestId('identity')).toHaveText('Mia');
 	const groupUrl = phone.url();
@@ -187,6 +189,7 @@ test('join as someone new, without picking someone else, and remove people who a
 	await anna.getByLabel('Your name').fill('Anna');
 	await anna.getByLabel('Add a person').fill('Ben');
 	await anna.getByLabel('Add a person').press('Enter');
+	await anna.getByLabel('Encrypt this group').uncheck();
 	await anna.getByRole('button', { name: 'Create group' }).click();
 	await expect(anna.getByTestId('identity')).toHaveText('Anna');
 	const groupUrl = anna.url();
@@ -239,6 +242,7 @@ test('delete my identity: signed out, passkey-free, my member stays as "not here
 	await anna.getByLabel('Your name').fill('Anna');
 	await anna.getByLabel('Add a person').fill('Ben');
 	await anna.getByLabel('Add a person').press('Enter');
+	await anna.getByLabel('Encrypt this group').uncheck();
 	await anna.getByRole('button', { name: 'Create group' }).click();
 	await expect(anna.getByTestId('identity')).toHaveText('Anna');
 	const groupUrl = anna.url();

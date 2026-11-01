@@ -17,6 +17,8 @@ export type PlannedEntry = {
 	/** Splitwise doesn't export how a row was split: equal when the shares are */
 	splitMode: 'equal' | 'exact';
 	category: ExpenseCategory | null;
+	/** In an encrypted group: its category, sealed (#110) */
+	sealedDetails?: string | null;
 	key: string;
 };
 

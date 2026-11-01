@@ -15,6 +15,7 @@ test('create a group, manage members and replace its link', async ({ page }) => 
 	await page.getByLabel('Your name').fill('Anna');
 	// A typed name counts even without pressing Add
 	await page.getByLabel('Add a person').fill('Ben');
+	await page.getByLabel('Encrypt this group').uncheck();
 	await page.getByRole('button', { name: 'Create group' }).click();
 
 	// The creator lands on the group and is remembered as Anna
@@ -85,6 +86,7 @@ test('expenses update the balances', async ({ page }) => {
 	await expect(page.getByRole('list', { name: 'Who else is in the group?' })).toHaveText(
 		/Ben\s*Cara/
 	);
+	await page.getByLabel('Encrypt this group').uncheck();
 	await page.getByRole('button', { name: 'Create group' }).click();
 	await expect(page.getByTestId('identity')).toHaveText('Anna');
 	const groupUrl = page.url();
@@ -146,6 +148,7 @@ test('settle up with suggested payments', async ({ page }) => {
 	await page.getByLabel('Currency').selectOption('EUR');
 	await page.getByLabel('Your name').fill('Anna');
 	await page.getByLabel('Add a person').fill('Ben');
+	await page.getByLabel('Encrypt this group').uncheck();
 	await page.getByRole('button', { name: 'Create group' }).click();
 	await expect(page.getByTestId('identity')).toHaveText('Anna');
 	const groupUrl = page.url();
@@ -193,6 +196,7 @@ test('choose a type and color for a group, then change them', async ({ page }) =
 	await page.getByLabel('Add a person').fill('Ben');
 	await choose(page, 'Type', 'Trip');
 	await choose(page, 'Color', 'Sky');
+	await page.getByLabel('Encrypt this group').uncheck();
 	await page.getByRole('button', { name: 'Create group' }).click();
 
 	const hero = page.locator('header', { has: page.getByRole('heading', { name: 'Lake house' }) });
@@ -220,6 +224,7 @@ test('expenses get a category from their title unless one is chosen', async ({ p
 	await page.getByLabel('Group name').fill('Flat');
 	await page.getByLabel('Your name').fill('Anna');
 	await page.getByLabel('Add a person').fill('Ben');
+	await page.getByLabel('Encrypt this group').uncheck();
 	await page.getByRole('button', { name: 'Create group' }).click();
 	await expect(page.getByTestId('identity')).toHaveText('Anna');
 
@@ -265,6 +270,7 @@ test('delete a group for everyone, and restore it from the start screen', async 
 	await open(page, '/new');
 	await page.getByLabel('Group name').fill('Old flat');
 	await page.getByLabel('Your name').fill('Anna');
+	await page.getByLabel('Encrypt this group').uncheck();
 	await page.getByRole('button', { name: 'Create group' }).click();
 	await expect(page.getByTestId('identity')).toHaveText('Anna');
 	const groupUrl = page.url();

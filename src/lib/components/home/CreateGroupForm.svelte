@@ -153,6 +153,7 @@
 				<input
 					type="checkbox"
 					name="encrypted"
+					checked
 					class="mt-0.5 size-[18px] shrink-0 accent-accent dark:accent-accent-night"
 				/>
 				<span class="flex flex-col">
