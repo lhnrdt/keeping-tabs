@@ -89,6 +89,7 @@
 	title={m.rename_member({ name: shown?.name ?? '' })}
 	action={tabAction('renameMember', 'group')}
 	sealed={['name']}
+	namesMember="renameMember"
 	submitLabel={m.save()}
 	onClose={() => (renaming = false)}
 >

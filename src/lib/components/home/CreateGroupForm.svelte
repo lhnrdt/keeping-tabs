@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { enhance, type SubmitFunction } from '$app/forms';
+	import { applyAction, enhance, type SubmitFunction } from '$app/forms';
 	import { rememberKey } from '#lib/crypto/keyring.ts';
 	import { openDeep } from '#lib/crypto/open-data.ts';
 	import { newKey } from '#lib/crypto/seal.ts';
@@ -15,7 +15,7 @@
 	import { DEFAULT_GROUP_KIND } from '#lib/group/kinds.ts';
 	import { Submission } from '#lib/forms/submission.svelte.ts';
 	import { m } from '#lib/paraglide/messages.js';
-	import { LIMITS } from '#lib/validation.ts';
+	import { LIMITS, normalizeText } from '#lib/validation.ts';
 	import MemberChips from './MemberChips.svelte';
 
 	const SEALED_FIELDS = ['name', 'description', 'you', 'member'];
@@ -48,6 +48,26 @@
 		const form = input.formData;
 		const plain: Record<string, FormDataEntryValue[]> = {};
 		if (form.get('encrypted') === 'on') {
+			// The server can't compare sealed names
+			const names = [form.get('you'), ...form.getAll('member')].map((name) =>
+				normalizeText(String(name ?? '')).toLocaleLowerCase()
+			);
+			if (new Set(names).size < names.length) {
+				input.cancel();
+				const refusal = {
+					type: 'failure',
+					status: 400,
+					data: {
+						error: 'member_name_taken',
+						values: {
+							...Object.fromEntries(form.entries()),
+							members: form.getAll('member').map(String)
+						}
+					}
+				};
+				await applyAction(refusal as unknown as Parameters<typeof applyAction>[0]);
+				return;
+			}
 			const key = newKey();
 			const keyId = await rememberKey(key);
 			for (const name of SEALED_FIELDS) plain[name] = form.getAll(name);

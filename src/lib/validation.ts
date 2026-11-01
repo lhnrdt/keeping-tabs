@@ -129,8 +129,8 @@ export type ExpenseInput = {
 	payers: Payer[] | null;
 	/** Chosen by hand; null follows the title */
 	category: ExpenseCategory | null;
-	/** What the browser guessed from a sealed title, which the server can't read (#110) */
-	autoCategory: ExpenseCategory | null;
+	/** In an encrypted group: category and car data, sealed (#110) */
+	sealedDetails: string | null;
 	splitMode: SplitMode;
 	/** Each member's share, in member order; they add up to the amount */
 	shares: Share[];
@@ -189,7 +189,8 @@ export function parseExpense(
 		/** With paidBy "several" (#39): what each member paid, by member id */
 		payers?: Record<string, unknown>;
 		category: unknown;
-		autoCategory?: unknown;
+		/** In an encrypted group: category and car data, sealed (#110) */
+		details?: unknown;
 		splitMode: unknown;
 		/** For an equal split: who takes part */
 		participants: unknown[];
@@ -241,8 +242,7 @@ export function parseExpense(
 			date: date.value,
 			...payers.value,
 			category: category.value,
-			autoCategory:
-				isSealed(title) && isExpenseCategory(values.autoCategory) ? values.autoCategory : null,
+			sealedDetails: isSealed(values.details) ? values.details : null,
 			...split.value
 		}
 	};

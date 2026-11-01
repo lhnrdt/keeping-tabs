@@ -31,6 +31,7 @@ export async function saveSettings(
 		displayCurrency?: string | null;
 		avatar?: string;
 		paymentDetails?: string | null;
+		sealedPaymentDetails?: string | null;
 	}
 ) {
 	if (Object.keys(settings).length === 0) return;

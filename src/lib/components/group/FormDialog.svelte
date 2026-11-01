@@ -1,16 +1,18 @@
 <script lang="ts">
 	// A Konsta dialog around a form action (plus an optional second one, e.g. a destructive
 	// alternative); closes itself when the action succeeds.
-	import { enhance } from '$app/forms';
+	import { enhance, type SubmitFunction } from '$app/forms';
 	import { Dialog, DialogButton } from 'konsta/svelte';
 	import type { Snippet } from 'svelte';
 	import { Submission } from '#lib/forms/submission.svelte.ts';
-	import { sealing } from '#lib/crypto/seal-form.ts';
+	import { nameIsFree, sealing } from '#lib/crypto/seal-form.ts';
 	import { m } from '#lib/paraglide/messages.js';
 
 	type Props = {
 		/** Fields holding text, sealed in an encrypted group (#110) */
 		sealed?: readonly string[];
+		/** A form naming a member: which one, as the server would call it (nameIsFree) */
+		namesMember?: string;
 		opened: boolean;
 		title: string;
 		/** Form action URL, see tabAction() */
@@ -25,6 +27,7 @@
 
 	let {
 		sealed = [],
+		namesMember,
 		opened,
 		title: heading,
 		action,
@@ -36,6 +39,8 @@
 	}: Props = $props();
 
 	const formId = $props.id();
+	const nameForm = (inner: SubmitFunction) =>
+		namesMember ? nameIsFree(namesMember, inner) : inner;
 	const submission = new Submission((result) => {
 		if (result.type === 'success' || result.type === 'redirect') onClose();
 	});
@@ -58,10 +63,12 @@
 		method="POST"
 		{action}
 		class="max-h-[60dvh] overflow-y-auto overscroll-contain"
-		use:enhance={sealing(sealed, (input) => {
-			onSubmit?.();
-			return submission.enhance(input);
-		})}
+		use:enhance={nameForm(
+			sealing(sealed, (input) => {
+				onSubmit?.();
+				return submission.enhance(input);
+			})
+		)}
 	>
 		{@render children?.()}
 	</form>

@@ -230,7 +230,7 @@ function readTemplate(raw: Raw, known: ReadonlySet<string>): ExpenseInput {
 		paidBy: raw.paidBy as string,
 		payers: payers.length ? payers : null,
 		category: category(raw.category),
-		autoCategory: null,
+		sealedDetails: null,
 		splitMode: splitMode(raw.splitMode),
 		items: readItems(raw.items, known),
 		shares: readShares(list(raw.shares), amountCents, known)

@@ -22,19 +22,26 @@ export const load: LayoutServerLoad = async ({ locals, params }) => {
 	return {
 		group,
 		hasPassword: Boolean(lock?.passwordHash),
-		members: members.map(({ id, name, personId, avatar, paymentDetails }) => ({
-			id,
-			name,
-			avatarId: personId ?? id,
-			avatar,
-			claimed: personId !== null,
-			mine: personId !== null && personId === person?.id,
-			// How to pay someone is for the people in the group, not everyone with its link (#71)
-			paymentDetails: mine ? paymentDetails : null
-		})),
+		members: members.map(
+			({ id, name, personId, avatar, paymentDetails, personPaymentDetails }) => ({
+				id,
+				name,
+				avatarId: personId ?? id,
+				avatar,
+				claimed: personId !== null,
+				mine: personId !== null && personId === person?.id,
+				// How to pay someone is for the people in the group, not everyone with its link (#71)
+				// This group's copy; a plain group can fall back on the one from before there were copies
+				paymentDetails: mine
+					? (paymentDetails ?? (group.keyId ? null : personPaymentDetails))
+					: null
+			})
+		),
 		formerMembers,
 		// "Not you?" is possible until you've added or changed something here
 		canStepBack: mine ? !(await hasTakenPart(locals.db, group.id, mine.id)) : false,
-		profileName: person?.name ?? null
+		profileName: person?.name ?? null,
+		// To keep this group's copy up to date (crypto/profile.ts)
+		myPaymentDetails: mine ? (person?.sealedPaymentDetails ?? person?.paymentDetails ?? null) : null
 	};
 };

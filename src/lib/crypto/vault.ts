@@ -105,3 +105,20 @@ export async function openVaultWithRecovery(typed: string) {
 	await rememberVault(opened);
 	await syncKeys();
 }
+
+/** A key from a passkey's secret */
+async function keyFromSecret(secret: Uint8Array) {
+	const hash = await crypto.subtle.digest('SHA-256', secret as BufferSource);
+	return toBase64Url(new Uint8Array(hash));
+}
+
+export const sealVaultWithSecret = async (secret: Uint8Array) =>
+	sealText(await keyFromSecret(secret), await ensureVault());
+
+/** After signing in with a passkey: the vault, and with it the keys */
+export async function openVaultWithSecret(secret: Uint8Array, sealedVault: string) {
+	const opened = await openText(await keyFromSecret(secret), sealedVault);
+	if (!isKey(opened)) return;
+	await rememberVault(opened);
+	await syncKeys();
+}

@@ -54,7 +54,14 @@ export async function isSubscribed(db: Db, personId: string, endpoint: string) {
 }
 
 /** What the service worker shows (src/service-worker/push.ts) */
-export type PushPayload = { title: string; body: string; url: string; tag: string };
+export type PushPayload = {
+	title: string;
+	body: string;
+	url: string;
+	tag: string;
+	/** Encrypted groups: what to show if this device can't open the rest (#110) */
+	fallback?: { title: string; body: string };
+};
 
 /**
  * Sends one notification and returns what the push service answered; one it no longer knows is
@@ -153,18 +160,22 @@ export async function notifyNewExpense(
 			})();
 			const amount = formatAmount(expense.amountCents, group.currency, locale);
 			return send(db, sub, {
-				// An encrypted group's names and titles aren't readable here (#110)
-				title: group.keyId ? m.app_name({}, { locale }) : group.name,
-				body: group.keyId
-					? m.push_new_expense_sealed({ amount }, { locale })
-					: m.push_new_expense(
-							{
-								name: actor?.name ?? m.activity_someone({}, { locale }),
-								title: expense.title,
-								amount
-							},
-							{ locale }
-						),
+				// In an encrypted group these are sealed: the service worker opens them (#110)
+				title: group.name,
+				body: m.push_new_expense(
+					{
+						name: actor?.name ?? m.activity_someone({}, { locale }),
+						title: expense.title,
+						amount
+					},
+					{ locale }
+				),
+				...(group.keyId && {
+					fallback: {
+						title: m.app_name({}, { locale }),
+						body: m.push_new_expense_sealed({ amount }, { locale })
+					}
+				}),
 				url: `/g/${group.shareToken}`,
 				tag: `group-${group.id}`
 			});

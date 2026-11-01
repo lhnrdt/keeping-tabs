@@ -12,6 +12,7 @@ type Entry = BalanceInput & {
 	date: string;
 	/** Only a category chosen by hand; an empty cell imports as "Automatic" again */
 	category: ExpenseCategory | null;
+	sealedDetails?: string | null;
 };
 
 /** Splitwise's name for payments, which its import (and ours) recognizes */
@@ -45,7 +46,8 @@ export function toSplitwiseCsv(
 		return [
 			entry.date,
 			textCell(title),
-			payment ? PAYMENT_CATEGORY : (entry.category ?? ''),
+			// Sealed in an encrypted group: the browser opens it (crypto/open-download.ts)
+			payment ? PAYMENT_CATEGORY : (entry.sealedDetails ?? entry.category ?? ''),
 			amountInputValue(entry.amountCents, currency),
 			currency,
 			...netsOf(entry, members).map((net) => signedAmount(net, currency))

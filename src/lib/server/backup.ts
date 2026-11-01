@@ -101,6 +101,8 @@ export async function backupOf(db: Db, group: Group): Promise<Backup> {
 			splitMode: entry.splitMode,
 			items: entry.items,
 			category: entry.category,
+			// Sealed in an encrypted group: the browser merges it in before saving
+			sealedDetails: entry.sealedDetails,
 			originalCurrency: entry.originalCurrency,
 			originalAmountCents: entry.originalAmountCents,
 			exchangeRate: entry.exchangeRate,

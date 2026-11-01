@@ -4,14 +4,19 @@ import { resolve } from '$app/paths';
 import { textCell } from '#lib/export/csv.ts';
 import { keyFor } from './keyring';
 import { openDeep } from './open-data';
-import { keyIdIn, openText, SEALED_ANYWHERE } from './seal';
+import { contextIn, keyIdIn, openText, SEALED_ANYWHERE } from './seal';
+
+const categoryIn = (details: string) =>
+	(details ? (JSON.parse(details) as { category?: string }).category : '') ?? '';
 
 /** A CSV cell's sealed text, opened and quoted the way CSV needs it */
 async function openCsv(csv: string) {
 	const opened = new Map<string, string>();
 	for (const sealed of new Set(csv.match(SEALED_ANYWHERE))) {
 		const key = await keyFor(keyIdIn(sealed));
-		opened.set(sealed, key ? await openText(key, sealed).catch(() => '') : '');
+		const text = key ? await openText(key, sealed).catch(() => '') : '';
+		// Details stand in for the category they hold
+		opened.set(sealed, contextIn(sealed).startsWith('details_') ? categoryIn(text) : text);
 	}
 	// Sealed text has no commas or quotes, so a cell holding it is unquoted
 	return csv.replace(/(?<=^|,)[^,\r\n"]*enc1\.[^,\r\n"]*(?=,|\r?$)/gm, (cell) => {

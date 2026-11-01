@@ -23,6 +23,7 @@ export type Person = {
 	avatar: string | null;
 	/** How to pay them (#47) */
 	paymentDetails: string | null;
+	sealedPaymentDetails: string | null;
 	/** When they read the friendly note (#112) */
 	notedAt: Date | null;
 };
@@ -47,6 +48,7 @@ export async function findPerson(db: Db, deviceKey: string): Promise<Person | un
 			displayCurrency: people.displayCurrency,
 			avatar: people.avatar,
 			paymentDetails: people.paymentDetails,
+			sealedPaymentDetails: people.sealedPaymentDetails,
 			notedAt: people.notedAt
 		})
 		.from(devices)
@@ -74,6 +76,7 @@ export async function ensurePerson(db: Db, deviceKey: string): Promise<Person> {
 		displayCurrency: null,
 		avatar: null,
 		paymentDetails: null,
+		sealedPaymentDetails: null,
 		notedAt: null
 	};
 }

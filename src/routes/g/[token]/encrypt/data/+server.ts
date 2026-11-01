@@ -10,19 +10,18 @@ import {
 	textOf,
 	type SealedBatch
 } from '#lib/server/encrypt-group.ts';
-import { memberOf } from '#lib/server/groups.ts';
+import { memberOf, regenerateShareToken } from '#lib/server/groups.ts';
 import { findPerson } from '#lib/server/people.ts';
 import type { RequestHandler } from './$types';
 
 const KEY_ID = /^[\w-]{8}$/;
 
-/** Someone in the group, and it isn't encrypted yet */
+/** Someone in the group */
 async function context(locals: App.Locals, token: string) {
 	const group = await requireGroup(locals.db, token);
 	const person = await findPerson(locals.db, locals.deviceKey);
 	const actorId = await memberOf(locals.db, group.id, person?.id);
 	if (!actorId) error(403);
-	if (group.keyId) error(409);
 	return { group, actorId };
 }
 
@@ -59,6 +58,10 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	if (body.finish !== undefined) {
 		if (!KEY_ID.test(body.finish)) error(400);
 		await finishEncrypting(locals.db, group.id, actorId, body.finish);
+		// A new key is for keeping someone out: so the old address goes too
+		if (group.keyId) {
+			return json({ token: await regenerateShareToken(locals.db, group.id, actorId) });
+		}
 	}
-	return json({ ok: true });
+	return json({});
 };

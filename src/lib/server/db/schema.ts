@@ -77,6 +77,8 @@ export const people = sqliteTable('people', {
 	notedAt: integer('noted_at', { mode: 'timestamp_ms' }),
 	// How to pay them, e.g. a PayPal.me link or IBAN (#47); shown to people in their groups
 	paymentDetails: text('payment_details'),
+	// How to pay them, sealed with their vault key (#110): each group gets its own copy from there
+	sealedPaymentDetails: text('sealed_payment_details'),
 	// Their vault key, sealed with their recovery key, so a new device can get their groups' keys (#110)
 	recoveryVault: text('recovery_vault'),
 	// Hash of the person's recovery key, if they created one (A-16)
@@ -146,6 +148,8 @@ export const passkeys = sqliteTable(
 		publicKey: text('public_key').notNull(),
 		counter: integer('counter').notNull().default(0),
 		transports: text('transports', { mode: 'json' }).$type<string[]>(),
+		// The vault key, sealed with what only this passkey can produce (PRF), so it brings keys back
+		sealedVault: text('sealed_vault'),
 		createdAt: createdAt()
 	},
 	(t) => [index('passkeys_person_idx').on(t.personId)]
@@ -161,6 +165,8 @@ export const members = sqliteTable(
 		name: text('name').notNull(),
 		// The person who claimed this member (A-4); null until claimed or after release (A-15)
 		personId: text('person_id').references(() => people.id),
+		// How to pay them, this group's copy: sealed if the group is encrypted (#110)
+		paymentDetails: text('payment_details'),
 		createdAt: createdAt(),
 		// Removed members stay referenced by past expenses (M-6)
 		deletedAt: deletedAt()
@@ -206,8 +212,8 @@ export const expenses = sqliteTable(
 		odometerM: integer('odometer_m'),
 		fuelMl: integer('fuel_ml'),
 		category: text('category').$type<ExpenseCategory>(),
-		// The browser's guess when the title is sealed and the server can't guess (#110)
-		autoCategory: text('auto_category').$type<ExpenseCategory>(),
+		// An encrypted group's category and car data (#110), sealed; those columns stay empty there
+		sealedDetails: text('sealed_details'),
 		// When the group was told about it (#56); each expense only once
 		notifiedAt: integer('notified_at', { mode: 'timestamp_ms' }),
 		// Where an imported row came from (e.g. "sw:…" for Splitwise), so re-imports skip it (I-3)

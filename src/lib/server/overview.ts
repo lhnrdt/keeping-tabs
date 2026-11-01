@@ -1,5 +1,4 @@
-import { categoryOf, learnCategories } from '#lib/expense/learned.ts';
-import { spendingAcross } from '#lib/insights/across.ts';
+import { spendingWithCategories } from '#lib/insights/across.ts';
 import { balances } from '#lib/money.ts';
 import { betweenYou, summarizePeople } from '#lib/people-summary.ts';
 import { settleTransfers } from '#lib/settle.ts';
@@ -68,20 +67,13 @@ export async function peopleOverview(db: Db, personId: string) {
 			return { ...group, ...sums, expenses };
 		})
 	);
+	const spendingGroups = settled.map((group) => ({ ...group, entries: group.expenses }));
+	// With an encrypted group among them the browser works it out, since it takes categories only
+	// it can read (#110)
+	const anySealed = groups.some((group) => group.keyId);
 	return {
 		people: summarizePeople(settled),
-		spending: spendingAcross(
-			settled.map((group) => {
-				// Each expense in its category as the group shows it
-				const learned = learnCategories(group.expenses);
-				return {
-					...group,
-					entries: group.expenses.map((entry) => ({
-						...entry,
-						category: categoryOf(entry, learned)
-					}))
-				};
-			})
-		)
+		spending: anySealed ? null : spendingWithCategories(spendingGroups),
+		sealedSpending: anySealed ? spendingGroups : null
 	};
 }

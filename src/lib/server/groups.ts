@@ -58,7 +58,8 @@ export function listMembers(db: Db, groupId: string) {
 			name: members.name,
 			personId: members.personId,
 			avatar: people.avatar,
-			paymentDetails: people.paymentDetails
+			paymentDetails: members.paymentDetails,
+			personPaymentDetails: people.paymentDetails
 		})
 		.from(members)
 		.leftJoin(people, eq(members.personId, people.id))
@@ -200,6 +201,7 @@ export async function listGroupsOf(db: Db, personId: string) {
 		.select({
 			id: groups.id,
 			name: groups.name,
+			keyId: groups.keyId,
 			token: groups.shareToken,
 			currency: groups.currency,
 			kind: groups.kind,

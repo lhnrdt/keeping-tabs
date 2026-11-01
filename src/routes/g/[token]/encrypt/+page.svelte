@@ -1,6 +1,6 @@
 <script lang="ts">
 	// Encrypting an existing group (#110): what it means, then the doing, then the new link.
-	import { invalidateAll } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import AppPage from '#lib/components/AppPage.svelte';
@@ -20,18 +20,24 @@
 	let progress = $state<{ done: number; total: number }>();
 	let failed = $state(false);
 	let link = $state<string>();
+	// Encrypted already: this page changes its key, for keeping out someone who has left
+	const rekeying = $derived(Boolean(data.group.keyId) && !link);
+	const heading = $derived(rekeying ? m.rekey_page_title() : m.encrypt_page_title());
 
 	async function start() {
 		failed = false;
 		progress = { done: 0, total: 1 };
 		try {
-			const key = await encryptGroup(
+			const { key, token } = await encryptGroup(
 				base,
+				data.group.keyId,
 				categorize,
 				(done, total) => (progress = { done, total })
 			);
-			link = linkWithKey(new URL(base, page.url.origin).href, key);
-			await invalidateAll();
+			const now = token ? resolve('/g/[token]', { token }) : base;
+			link = linkWithKey(new URL(now, page.url.origin).href, key);
+			if (token) await goto(resolve('/g/[token]/encrypt', { token }), { replaceState: true });
+			else await invalidateAll();
 		} catch {
 			failed = true;
 		} finally {
@@ -41,13 +47,10 @@
 </script>
 
 <svelte:head>
-	<title>{m.encrypt_page_title()}</title>
+	<title>{heading}</title>
 </svelte:head>
 
-<AppPage
-	title={m.encrypt_page_title()}
-	back={{ href: groupTabUrl(base, 'group'), label: data.group.name }}
->
+<AppPage title={heading} back={{ href: groupTabUrl(base, 'group'), label: data.group.name }}>
 	<div class="page-sections">
 		{#if link}
 			<div class="page-section" role="status">
@@ -56,10 +59,16 @@
 			</div>
 		{:else}
 			<div class="page-section">
-				<p>{m.encrypt_intro()}</p>
-				<p class="text-sm text-muted">{m.encrypt_warning_key()}</p>
-				<p class="text-sm text-muted">{m.encrypt_warning_limits()}</p>
-				<p class="text-sm font-medium tone-destructive">{m.encrypt_warning_lost()}</p>
+				{#if rekeying}
+					<p>{m.rekey_intro()}</p>
+					<p class="text-sm text-muted">{m.rekey_warning()}</p>
+				{:else}
+					<p>{m.encrypt_intro()}</p>
+					<p class="text-sm text-muted">{m.encrypt_warning_key()}</p>
+					<p class="text-sm text-muted">{m.encrypt_warning_limits()}</p>
+					<p class="text-sm text-muted">{m.encrypt_warning_backups()}</p>
+					<p class="text-sm font-medium tone-destructive">{m.encrypt_warning_lost()}</p>
+				{/if}
 				{#if failed}<p class="text-sm tone-destructive" role="alert">{m.encrypt_failed()}</p>{/if}
 				{#if progress}
 					<p class="text-sm text-muted" role="status">
@@ -77,7 +86,9 @@
 			}}
 		>
 			<StickySubmit>
-				<SubmitButton pending={progress !== undefined}>{m.encrypt_button()}</SubmitButton>
+				<SubmitButton pending={progress !== undefined}
+					>{rekeying ? m.rekey_button() : m.encrypt_button()}</SubmitButton
+				>
 			</StickySubmit>
 		</form>
 	{/if}

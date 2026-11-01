@@ -217,8 +217,39 @@ test('an existing group can be encrypted, photos and all (#110)', async ({ page 
 	await open(friend, link);
 	await friend.getByRole('button', { name: "I'm Ben" }).click();
 	await expect(friend.getByRole('link', { name: /Couch/ })).toBeVisible();
+
+	// The name someone already has is caught, though the server can't compare them
 	await open(page, `${groupUrl}?tab=group`);
-	await expect(page.getByRole('link', { name: 'Encryption' })).toHaveCount(0);
+	await page.getByRole('button', { name: 'Add', exact: true }).click();
+	await page.getByLabel("New person's name").fill('ben');
+	await page.getByLabel("New person's name").press('Enter');
+	await expect(page.getByRole('alert').first()).toBeVisible();
+
+	// Someone left: a new key and a new address. The old key and link no longer get anywhere
+	await open(page, `${groupUrl}/encrypt`);
+	await page.getByRole('button', { name: 'Change the key' }).click();
+	const field2 = page.getByLabel('Share', { exact: true });
+	await expect(field2).toHaveValue(/#key=/, { timeout: 15_000 });
+	const newLink = await field2.inputValue();
+	expect(newLink).not.toBe(link);
+	const newUrl = newLink.split('#')[0];
+	expect(newUrl).not.toBe(groupUrl);
+	expect((await page.request.get(groupUrl)).status()).toBe(404);
+	const oldId = new URL(link).hash.slice(5);
+	await open(page, newUrl);
+	await expect(page.getByRole('link', { name: /Couch/ })).toBeVisible();
+	const rekeyed = await (await page.request.get(`${newUrl}/__data.json`)).text();
+	expect(rekeyed).not.toContain('Couch');
+	expect(oldId.length).toBe(43);
+	await page.getByRole('link', { name: /Couch/ }).click();
+	await expect(page.getByRole('region', { name: 'Comments' })).toContainText('Heavy thing');
+	await expect(page.locator('img[src^="data:image/jpeg"]').first()).toBeVisible();
+
+	// Someone who only has the old key sees it locked, until the new link
+	await open(friend, newUrl);
+	await expect(friend.getByText('This group is encrypted')).toBeVisible();
+	await open(friend, newLink);
+	await expect(friend.getByRole('link', { name: /Couch/ })).toBeVisible();
 });
 
 test('a recovery key brings the keys back on a new device (#110)', async ({ page, browser }) => {
@@ -244,4 +275,110 @@ test('a recovery key brings the keys back on a new device (#110)', async ({ page
 	expect(restoring.join()).not.toContain(recoveryKey.replace(/-/g, ''));
 	await open(newPhone, groupUrl);
 	await expect(newPhone.getByRole('link', { name: /Whiskey tasting/ })).toBeVisible();
+});
+
+test('categories, car data and how to pay you stay sealed too; insights work (#110)', async ({
+	page,
+	browser
+}) => {
+	await open(page, '/new');
+	await page.getByLabel('Group name').fill('Our car');
+	await page.getByLabel('Currency').selectOption('EUR');
+	await page.getByRole('radio', { name: 'Car' }).check({ force: true });
+	await page.getByLabel('Your name').fill('Anna');
+	await page.getByLabel('Add a person').fill('Benedikt');
+	await page.getByLabel('Add a person').press('Enter');
+	await page.getByLabel('Encrypt this group').check();
+	await page.getByRole('button', { name: 'Create group' }).click();
+	await expect(page.getByTestId('identity')).toHaveText('Anna');
+	const groupUrl = page.url().split('#')[0];
+
+	await page.getByRole('link', { name: 'Add expense' }).click();
+	await page.getByLabel('What was it for?').fill('Filling up');
+	await page.getByLabel('Amount (€)').fill('60');
+	await page.getByLabel(/Odometer/).fill('12345');
+	await page.getByLabel(/^Fuel \(/).fill('40');
+	await page.getByRole('button', { name: 'Add expense' }).click();
+	await expect(page.getByRole('link', { name: /Filling up/ })).toBeVisible();
+
+	const raw = await (await page.request.get(`${groupUrl}/__data.json?tab=insights`)).text();
+	expect(raw).not.toContain('12345000');
+	expect(raw).not.toContain('40000');
+	expect(raw).not.toMatch(/"(fuel|transport)"/);
+
+	// The browser still works out the insights, and shows what was noted
+	await open(page, `${groupUrl}?tab=insights`);
+	await expect(page.getByRole('main').or(page.locator('body'))).toContainText(/40/);
+	await page.getByRole('link', { name: 'Expenses' }).click();
+	await page.getByRole('link', { name: /Filling up/ }).click();
+	await expect(page.getByLabel(/Odometer/)).toHaveValue('12345');
+
+	// How to pay you: sealed for you, and for this group
+	await open(page, '/you/profile');
+	await page.getByLabel('How to pay you').fill('DE02120300000000202051');
+	await page.getByLabel('How to pay you').blur();
+	await expect(page.getByText('Saved').first()).toBeVisible();
+	const profile = await (await page.request.get('/you/profile/__data.json')).text();
+	expect(profile).not.toContain('DE02120300000000202051');
+	await open(page, groupUrl);
+	const group = await (await page.request.get(`${groupUrl}/__data.json`)).text();
+	expect(group).not.toContain('DE02120300000000202051');
+	await page.reload();
+	await expect(page.getByTestId('identity')).toHaveText('Anna');
+	await open(page, '/you/profile');
+	await expect(page.getByLabel('How to pay you')).toHaveValue('DE02120300000000202051');
+
+	const link = await (async () => {
+		await open(page, `${groupUrl}?tab=group`);
+		return fullLink(page);
+	})();
+	const ben = await (await browser.newContext()).newPage();
+	await open(ben, link);
+	await ben.getByRole('button', { name: "I'm Benedikt" }).click();
+	await open(ben, `${groupUrl}/payments/new`);
+	await expect(ben.getByText('DE02120300000000202051')).toBeVisible();
+});
+
+test('a passkey brings the keys along where it can (#110)', async ({ page }) => {
+	const cdp = await page.context().newCDPSession(page);
+	await cdp.send('WebAuthn.enable');
+	await cdp.send('WebAuthn.addVirtualAuthenticator', {
+		options: {
+			protocol: 'ctap2',
+			ctap2Version: 'ctap2_1',
+			transport: 'internal',
+			hasResidentKey: true,
+			hasUserVerification: true,
+			isUserVerified: true,
+			hasPrf: true,
+			automaticPresenceSimulation: true
+		}
+	});
+	const { groupUrl } = await encryptedGroup(page);
+	await open(page, '/you/backup');
+	await openFold(page, 'Passkey');
+	const saved = page.waitForResponse('**/device/passkey/vault');
+	await page
+		.getByRole('button', { name: /passkey/i })
+		.first()
+		.click();
+	expect((await saved).ok()).toBe(true);
+
+	// Everything on this device gone: only the passkey is left
+	await page.evaluate(
+		() =>
+			new Promise((done) => {
+				const request = indexedDB.deleteDatabase('keeping-tabs-keys');
+				request.onsuccess = request.onerror = request.onblocked = done;
+			})
+	);
+	await page.context().clearCookies();
+	await open(page, '/you/devices');
+	await page
+		.getByRole('button', { name: /passkey/i })
+		.first()
+		.click();
+	await expect(page).toHaveURL(/\/$/);
+	await open(page, groupUrl);
+	await expect(page.getByRole('link', { name: /Whiskey tasting/ })).toBeVisible();
 });

@@ -232,6 +232,20 @@
       "when": 1793544236478,
       "tag": "0032_person_keys_by_vault",
       "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "6",
+      "when": 1793545233432,
+      "tag": "0033_drop_auto_category",
+      "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "6",
+      "when": 1793545234022,
+      "tag": "0034_sealed_details",
+      "breakpoints": true
     }
   ]
 }

@@ -22,7 +22,7 @@ const expenseColumns = {
 	paidBy: expenses.paidBy,
 	date: expenses.date,
 	category: expenses.category,
-	autoCategory: expenses.autoCategory
+	sealedDetails: expenses.sealedDetails
 };
 
 export const active = (groupId: string) =>
@@ -236,9 +236,15 @@ export async function listSharesOf(db: Db, expenseIds: string[], memberId: strin
 /** Categories chosen by hand in a group, newest first: what its automatic guess learns from. */
 export function listChosenCategories(db: Db, groupId: string) {
 	return db
-		.select({ title: expenses.title, category: expenses.category })
+		.select({
+			title: expenses.title,
+			category: expenses.category,
+			sealedDetails: expenses.sealedDetails
+		})
 		.from(expenses)
-		.where(and(active(groupId), isNotNull(expenses.category)))
+		.where(
+			and(active(groupId), or(isNotNull(expenses.category), isNotNull(expenses.sealedDetails)))
+		)
 		.orderBy(desc(expenses.date), desc(expenses.createdAt));
 }
 
@@ -315,7 +321,7 @@ export async function createExpense(
 			paidBy: input.paidBy,
 			date: input.date,
 			category: input.category,
-			autoCategory: input.autoCategory
+			sealedDetails: input.sealedDetails
 		}),
 		db.insert(expenseSplits).values(splitRows(id, input)),
 		...payerRows(db, id, input),
@@ -346,7 +352,7 @@ export async function updateExpense(
 				paidBy: input.paidBy,
 				date: input.date,
 				category: input.category,
-				autoCategory: input.autoCategory,
+				sealedDetails: input.sealedDetails,
 				splitMode: input.splitMode
 			})
 			.where(and(eq(expenses.id, id), active(groupId))),

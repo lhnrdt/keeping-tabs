@@ -46,8 +46,13 @@ function load() {
 /** The key with this id, if this device has it */
 export async function keyFor(keyId: string) {
 	await load();
-	return memory.get(keyId);
+	const vault = memory.get(VAULT);
+	return memory.get(keyId) ?? (vault && (await keyIdOf(vault)) === keyId ? vault : undefined);
 }
+
+/** As it's stored right now: for the service worker, which outlives what a page adds */
+export const storedKey = (keyId: string) =>
+	withStore<string | undefined>('readonly', (store) => store.get(keyId)).catch(() => undefined);
 
 /** Keeps a key on this device; returns its id */
 export async function rememberKey(key: string) {

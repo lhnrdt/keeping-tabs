@@ -1,6 +1,7 @@
+import type { AuthenticationResponseJSON } from '@simplewebauthn/server';
 import { error, json } from '@sveltejs/kit';
 import { takeChallenge } from '#lib/server/passkey-challenge.ts';
-import { relyingPartyFor, verifyPasskey } from '#lib/server/passkeys.ts';
+import { relyingPartyFor, sealedVaultOf, verifyPasskey } from '#lib/server/passkeys.ts';
 import { attachDevice } from '#lib/server/people.ts';
 import { checkSettingsAgain } from '#lib/server/settings.ts';
 import type { RequestHandler } from './$types';
@@ -9,14 +10,12 @@ import type { RequestHandler } from './$types';
 export const POST: RequestHandler = async ({ locals, url, cookies, request }) => {
 	const challenge = await takeChallenge(locals.db, cookies);
 	if (!challenge) error(403);
-	const personId = await verifyPasskey(
-		locals.db,
-		relyingPartyFor(url),
-		await request.json(),
-		challenge
-	).catch(() => null);
+	const response = (await request.json()) as AuthenticationResponseJSON;
+	const personId = await verifyPasskey(locals.db, relyingPartyFor(url), response, challenge).catch(
+		() => null
+	);
 	if (!personId) error(401);
 	await attachDevice(locals.db, locals.deviceKey, personId);
 	checkSettingsAgain(cookies);
-	return json({ restored: true });
+	return json({ restored: true, sealedVault: await sealedVaultOf(locals.db, response.id) });
 };

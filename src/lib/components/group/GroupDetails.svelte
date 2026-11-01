@@ -74,24 +74,17 @@
 			<Icon name="password" />
 		{/snippet}
 	</ListItem>
-	{#if group.keyId}
-		<ListItem title={m.encryption_title()} after={m.on()}>
-			{#snippet media()}
-				<Icon name="locked" />
-			{/snippet}
-		</ListItem>
-	{:else}
-		<ListItem
-			link
-			title={m.encryption_title()}
-			after={m.off()}
-			href={resolve('/g/[token]/encrypt', { token: group.shareToken })}
-		>
-			{#snippet media()}
-				<Icon name="locked" />
-			{/snippet}
-		</ListItem>
-	{/if}
+	<ListItem
+		link
+		title={m.encryption_title()}
+		subtitle={group.keyId ? m.encryption_change_hint() : undefined}
+		after={group.keyId ? m.on() : m.off()}
+		href={resolve('/g/[token]/encrypt', { token: group.shareToken })}
+	>
+		{#snippet media()}
+			<Icon name="locked" />
+		{/snippet}
+	</ListItem>
 	<ListButton href={resolve('/g/[token]/edit', { token: group.shareToken })}>
 		<Icon name="edit" />
 		{m.edit_group()}

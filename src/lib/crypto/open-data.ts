@@ -4,14 +4,33 @@ import { m } from '#lib/paraglide/messages.js';
 import { keyFor, takeKeyFromAddress } from './keyring';
 import { contextIn, isSealed, keyIdIn, openText, textContext } from './seal';
 
-const browser = typeof window !== 'undefined';
+export const browser = typeof window !== 'undefined';
 
 const openOne = async (sealed: string) => {
 	if (!browser) return '…';
+	// Your own name and details: without your vault there's just nothing to fill in yet
+	const unreadable = contextIn(sealed) === 'profile' ? '' : m.locked_text();
 	const key = await keyFor(keyIdIn(sealed));
-	if (!key) return m.locked_text();
-	return openText(key, sealed).catch(() => m.locked_text());
+	if (!key) return unreadable;
+	return openText(key, sealed).catch(() => unreadable);
 };
+
+/** What an encrypted group's expense keeps sealed apart from its text */
+const DETAILS = ['category', 'autoCategory', 'odometerM', 'fuelMl'] as const;
+
+/** A row's sealed details as its usual fields, if they can be read and are this row's */
+async function detailsOf(row: Record<string, unknown>) {
+	const sealed = row.sealedDetails;
+	if (!browser || !isSealed(sealed)) return {};
+	if (typeof row.id === 'string' && !belongsTo(sealed, 'details', row.id)) return {};
+	const key = await keyFor(keyIdIn(sealed));
+	if (!key) return {};
+	const read = JSON.parse(await openText(key, sealed).catch(() => '{}')) as Record<string, unknown>;
+	const details = Object.fromEntries(DETAILS.map((name) => [name, read[name] ?? null]));
+	// The list's category is what to show: the guess, if nothing was chosen
+	if (row.category && !details.category) details.category = details.autoCategory;
+	return details;
+}
 
 /** Fields of a row with an id whose sealed text must say it's that row's, or nobody's in particular */
 const BOUND_TO_ROW = new Set(['title', 'notes', 'body']);
@@ -48,7 +67,10 @@ export async function openDeep<T>(data: T): Promise<T> {
 				return [name, await openDeep(value)];
 			})
 		);
-		return Object.fromEntries(entries) as T;
+		const details = await detailsOf(data as Record<string, unknown>);
+		const opened = Object.fromEntries(entries);
+		delete opened.sealedDetails;
+		return { ...opened, ...details } as T;
 	}
 	return data;
 }

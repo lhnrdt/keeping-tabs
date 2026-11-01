@@ -59,6 +59,18 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 	const memberIds = members.map((member) => member.id);
 	const today = todayInputValue();
 	const transfers = settleTransfers(group.simplifyDebts, memberIds, ledger);
+	const insightsArgs =
+		onInsights && expenses
+			? ([
+					expenses,
+					memberIds,
+					mine,
+					transfers,
+					{ budget: group.budgetCents, endsOn: group.endsOn },
+					today,
+					parsePeriod(url.searchParams, defaultPeriod(group.kind, today))
+				] as const)
+			: null;
 	return {
 		balances: Object.fromEntries(balances(memberIds, ledger)),
 		transfers,
@@ -68,19 +80,10 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 		recurring,
 		query,
 		today,
-		// Only on its tab: everything else doesn't need it (#161)
-		insights:
-			onInsights && expenses
-				? groupInsights(
-						expenses,
-						memberIds,
-						mine,
-						transfers,
-						{ budget: group.budgetCents, endsOn: group.endsOn },
-						today,
-						parsePeriod(url.searchParams, defaultPeriod(group.kind, today))
-					)
-				: null
+		// Only on its tab: everything else doesn't need it (#161). In an encrypted group the browser
+		// works it out (+page.ts), since it takes categories only it can read (#110)
+		insights: insightsArgs && !group.keyId ? groupInsights(...insightsArgs) : null,
+		sealedInsights: insightsArgs && group.keyId ? insightsArgs : null
 	};
 };
 

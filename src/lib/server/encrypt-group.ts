@@ -30,7 +30,10 @@ export async function textOf(db: Db, groupId: string) {
 				title: expenses.title,
 				notes: expenses.notes,
 				items: expenses.items,
-				category: expenses.category
+				category: expenses.category,
+				odometerM: expenses.odometerM,
+				fuelMl: expenses.fuelMl,
+				sealedDetails: expenses.sealedDetails
 			})
 			.from(expenses)
 			.where(eq(expenses.groupId, groupId)),
@@ -54,13 +57,13 @@ export async function textOf(db: Db, groupId: string) {
 
 export type SealedBatch = {
 	group?: { name: string; description: string | null };
-	members?: { id: string; name: string }[];
+	members?: { id: string; name: string; paymentDetails: string | null }[];
 	expenses?: {
 		id: string;
 		title: string;
 		notes: string | null;
 		items: string | null;
-		autoCategory: string | null;
+		details: string | null;
 	}[];
 	comments?: { id: string; body: string }[];
 	rules?: { id: string; template: string }[];
@@ -85,7 +88,8 @@ export async function storeSealed(db: Db, groupId: string, batch: SealedBatch) {
 		statements.push(
 			d1
 				.prepare(
-					`update members set name = ${column('name')}members.id) where group_id = ?2 and id in ${ids}`
+					`update members set name = ${column('name')}members.id),
+					payment_details = ${column('paymentDetails')}members.id) where group_id = ?2 and id in ${ids}`
 				)
 				.bind(JSON.stringify(batch.members), groupId)
 		);
@@ -95,7 +99,8 @@ export async function storeSealed(db: Db, groupId: string, batch: SealedBatch) {
 			d1
 				.prepare(
 					`update expenses set title = ${column('title')}expenses.id), notes = ${column('notes')}expenses.id),
-					items = ${column('items')}expenses.id), auto_category = ${column('autoCategory')}expenses.id)
+					items = ${column('items')}expenses.id), sealed_details = ${column('details')}expenses.id),
+					category = null, odometer_m = null, fuel_ml = null
 					where group_id = ?2 and id in ${ids}`
 				)
 				.bind(JSON.stringify(batch.expenses), groupId)
