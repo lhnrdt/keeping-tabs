@@ -32,6 +32,13 @@
 			{:else if shape.cut}
 				<path d={shape.d} class="text-canvas dark:text-canvas-night" />
 			{:else}
+				<!-- Solid: whatever's behind a shape shouldn't show through it -->
+				<path
+					d={shape.d}
+					class="text-canvas dark:text-canvas-night {'motion' in shape && shape.motion
+						? `scene-${shape.motion}`
+						: ''}"
+				/>
 				<path
 					d={shape.d}
 					opacity={shape.strength}
