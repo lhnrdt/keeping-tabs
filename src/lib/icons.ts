@@ -1,7 +1,6 @@
 // The app's icons by meaning: one family (Tabler, outline), one place to swap them.
 import IconAccessible from '@tabler/icons-svelte-runes/icons/accessible';
 import IconBell from '@tabler/icons-svelte-runes/icons/bell';
-import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
 import IconLanguage from '@tabler/icons-svelte-runes/icons/language';
 import IconPalette from '@tabler/icons-svelte-runes/icons/palette';
 import IconBed from '@tabler/icons-svelte-runes/icons/bed';
