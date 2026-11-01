@@ -1,10 +1,11 @@
 import { browser, openedGroupLoad } from '#lib/crypto/open-data.ts';
 import { groupInsights } from '#lib/insights/group.ts';
+import { defaultPeriod, parsePeriod } from '#lib/insights/period.ts';
 import { moneyOf, withYourSide } from '#lib/group/sealed-money.ts';
 import type { PageLoad } from './$types';
 
 /** An encrypted group's money and insights are worked out here (#110), for the server can't */
-export const load: PageLoad = async ({ data, parent }) => {
+export const load: PageLoad = async ({ data, parent, url }) => {
 	const { sealed, ...opened } = await openedGroupLoad(data, parent);
 	if (!sealed || !browser) return opened;
 	const { group, members } = await parent();
@@ -23,7 +24,7 @@ export const load: PageLoad = async ({ data, parent }) => {
 					money.transfers,
 					plan,
 					sealed.today,
-					sealed.period
+					parsePeriod(url.searchParams, defaultPeriod(group.kind, sealed.today))
 				)
 			: null
 	};

@@ -34,7 +34,9 @@ export const actions: Actions = {
 		// Repeats (#45): from its date on; a date in the past catches up right away
 		const repeats = form.get('repeats');
 		if (isFrequency(repeats)) {
-			await startRecurring(locals.db, group.id, actorId, result.input, repeats);
+			// Encrypted: under the same placeholder, not whoever set it up (#110)
+			const owner = group.keyId ? result.input.paidBy : actorId;
+			await startRecurring(locals.db, group.id, owner, result.input, repeats);
 			await addDueRecurring(locals.db, todayInputValue(), group.id);
 		}
 		redirect(303, resolve('/g/[token]', { token: params.token }));

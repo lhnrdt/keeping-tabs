@@ -4,6 +4,7 @@ import { betweenYou, summarizePeople } from '#lib/people-summary.ts';
 import { settleTransfers } from '#lib/settle.ts';
 import type { Db } from './db';
 import { lastEntryDate, listExpenses, listLedger } from './expenses';
+import { shouldEncrypt } from './encryption-handover';
 import { listGroupsOf, listMembers } from './groups';
 
 type YourGroup = Awaited<ReturnType<typeof listGroupsOf>>[number];
@@ -43,6 +44,8 @@ export async function yourGroupsWithBalances(db: Db, personId: string) {
 					: null;
 			return {
 				sealed,
+				sealedDetails: group.sealedDetails,
+				encryptNow: shouldEncrypt(group, true),
 				id,
 				name,
 				token,

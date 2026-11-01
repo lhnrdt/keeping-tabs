@@ -56,5 +56,11 @@ export async function formContext(locals: App.Locals, token: string, request: Re
 	const actorId = await memberOf(locals.db, group.id, person?.id);
 	// Joining comes first: every change has a member behind it
 	if (!actorId) error(403, m.error_not_a_member());
+	if (group.keyId) {
+		const sealed = /(?:^|; )sealed-actor=([^;]+)/.exec(request.headers.get('cookie') ?? '')?.[1];
+		if (isSealed(sealed) && keyIdIn(sealed) === group.keyId) {
+			locals.sealActivity = { groupId: group.id, memberId: actorId, sealed };
+		}
+	}
 	return { form, group, person, actorId };
 }

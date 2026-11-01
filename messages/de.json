@@ -581,7 +581,7 @@
 	"locked_reload": "Die Gruppe hat sich geändert. Lade die Seite neu und versuch es noch mal.",
 	"note_title": "Good to know",
 	"note_ok": "Alles klar",
-	"note_text": "Deine Gruppen sind verschlüsselt, außer du schaltest das aus: Namen, Titel, Notizen, Kommentare, Kategorien und Fotos lassen sich nur auf deinen Geräten und denen von Leuten mit dem Link der Gruppe lesen. Der Server sieht weiterhin Beträge, Daten, wer wem was schuldet und wann etwas passiert, weil er die Salden berechnet. Er liefert auch die App selbst aus, du vertraust also darauf, dass er sie nicht verändert. Gruppen ohne Verschlüsselung kann der Admin der App lesen.",
+	"note_text": "Deine Gruppen sind verschlüsselt: Namen, Titel, Notizen, Kommentare, Beträge, Kategorien und Fotos lassen sich nur auf deinen Geräten und denen von Leuten mit dem Link der Gruppe lesen. Der Server sieht weiterhin, dass es eine Gruppe gibt, wie viele Leute darin sind und wann etwas hinzukommt. Er liefert auch die App selbst aus, du vertraust also darauf, dass er sie nicht verändert.",
 	"insights_budget": "Budget",
 	"section_budget_hint": "Ausgaben gegen das Budget, und wohin das Tempo führt",
 	"budget_of": "von {amount}",

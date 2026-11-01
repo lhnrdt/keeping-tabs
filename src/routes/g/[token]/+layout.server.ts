@@ -43,6 +43,8 @@ export const load: LayoutServerLoad = async ({ locals, params }) => {
 		canStepBack: mine ? !(await hasTakenPart(locals.db, group.id, mine.id)) : false,
 		profileName: person?.name ?? null,
 		encryptNow: shouldEncrypt(group, Boolean(mine)),
+		// They should say so once they have the key: then the server can let go of it
+		handingOver: Boolean(group.keyId && group.transitionKey && mine && !mine.keyReceived),
 		// To keep this group's copy up to date (crypto/profile.ts)
 		myPaymentDetails: mine ? (person?.sealedPaymentDetails ?? person?.paymentDetails ?? null) : null
 	};

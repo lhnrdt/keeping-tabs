@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
+	import { sealing } from '#lib/crypto/seal-form.ts';
 	// Choose which insights the group shows (#174): every section, the type's suggestions marked.
 	import { resolve } from '$app/paths';
 	import AppPage from '#lib/components/AppPage.svelte';
@@ -26,7 +28,7 @@
 		label: data.group.name
 	}}
 >
-	<GroupForm submitLabel={m.save()}>
+	<GroupForm sealed={['sections']} submitLabel={m.save()}>
 		<div class="page-sections">
 			<fieldset class="page-section">
 				<legend class="pb-4 text-sm text-muted">{m.insights_customize_hint()}</legend>
@@ -57,7 +59,15 @@
 		</div>
 	</GroupForm>
 	<!-- Forgets the choice (red, like every reset) -->
-	<form method="POST" action="?/reset" class="px-4">
+	<form
+		method="POST"
+		action="?/reset"
+		class="px-4"
+		use:enhance={(input) => {
+			input.formData.set('reset', 'on');
+			return sealing(['sections'])(input);
+		}}
+	>
 		<button type="submit" class="min-h-11 text-sm font-medium tone-destructive"
 			>{m.insights_back_to_suggested()}</button
 		>

@@ -1,21 +1,10 @@
-// What encrypting a group needs (#110): its text to seal, and the sealed batches coming back.
+// What encrypting a group takes from a browser (#110): its text to seal, and what's sealed coming back.
 import { error, json } from '@sveltejs/kit';
-import { isKey, isSealed } from '#lib/crypto/seal.ts';
-import { MAX_RECEIPT_BYTES } from '#lib/expense/receipt-image.ts';
 import { requireGroup } from '#lib/server/context.ts';
-import {
-	beginEncrypting,
-	finishEncrypting,
-	storeSealed,
-	storeSealedReceipt,
-	textOf,
-	type SealedBatch
-} from '#lib/server/encrypt-group.ts';
-import { memberOf, regenerateShareToken } from '#lib/server/groups.ts';
+import { encryptStep, textOf, type EncryptStep } from '#lib/server/encrypt-group.ts';
+import { memberOf } from '#lib/server/groups.ts';
 import { findPerson } from '#lib/server/people.ts';
 import type { RequestHandler } from './$types';
-
-const KEY_ID = /^[\w-]{8}$/;
 
 /** Someone in the group */
 async function context(locals: App.Locals, token: string) {
@@ -31,43 +20,10 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	return json(await textOf(locals.db, group.id));
 };
 
-const allSealed = (batch: SealedBatch) =>
-	[
-		batch.group?.name,
-		...(batch.members ?? []).map((row) => row.name),
-		...(batch.expenses ?? []).map((row) => row.title),
-		...(batch.comments ?? []).map((row) => row.body)
-	].every((text) => text === undefined || isSealed(text) || text === '');
-
 export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const { group, actorId } = await context(locals, params.token);
-	const body = (await request.json().catch(() => null)) as {
-		batch?: SealedBatch;
-		receipt?: { id: string; image: string };
-		finish?: string;
-		begin?: string;
-	} | null;
-	if (!body) error(400);
-	if (body.begin !== undefined) {
-		if (!isKey(body.begin) || group.keyId) error(400);
-		return json({ key: await beginEncrypting(locals.db, group.id, body.begin) });
-	}
-	if (body.batch) {
-		if (!allSealed(body.batch)) error(400);
-		await storeSealed(locals.db, group.id, actorId, body.batch);
-	}
-	if (body.receipt) {
-		// Base64 of a photo at most the usual size, plus what sealing adds
-		if (body.receipt.image.length > ((MAX_RECEIPT_BYTES + 64) * 4) / 3 + 4) error(413);
-		await storeSealedReceipt(locals.db, group.id, body.receipt.id, body.receipt.image);
-	}
-	if (body.finish !== undefined) {
-		if (!KEY_ID.test(body.finish)) error(400);
-		await finishEncrypting(locals.db, group.id, actorId, body.finish, Boolean(group.keyId));
-		// A new key is for keeping someone out: so the old address goes too
-		if (group.keyId) {
-			return json({ token: await regenerateShareToken(locals.db, group.id, actorId) });
-		}
-	}
-	return json({});
+	const step = (await request.json().catch(() => null)) as EncryptStep | null;
+	const answer = step && (await encryptStep(locals.db, group, actorId, step));
+	if (!answer) error(400);
+	return json(answer);
 };

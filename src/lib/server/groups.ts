@@ -44,7 +44,14 @@ export function findGroupsByTokens(db: Db, tokens: readonly string[]) {
 	const valid = tokens.filter((token) => SHARE_TOKEN_PATTERN.test(token));
 	if (valid.length === 0) return Promise.resolve([]);
 	return db.query.groups.findMany({
-		columns: { id: true, name: true, shareToken: true, kind: true, tint: true },
+		columns: {
+			id: true,
+			name: true,
+			shareToken: true,
+			kind: true,
+			tint: true,
+			sealedDetails: true
+		},
 		where: and(inArray(groups.shareToken, valid), isNull(groups.deletedAt))
 	});
 }
@@ -81,7 +88,8 @@ export function listMembers(db: Db, groupId: string) {
 			personId: members.personId,
 			avatar: people.avatar,
 			paymentDetails: members.paymentDetails,
-			personPaymentDetails: people.paymentDetails
+			personPaymentDetails: people.paymentDetails,
+			keyReceived: members.keyReceived
 		})
 		.from(members)
 		.leftJoin(people, eq(members.personId, people.id))
@@ -124,6 +132,7 @@ export async function createGroup(
 		creatorPersonId: string;
 		/** Its text is sealed in the browser with this key (#110) */
 		keyId?: string | null;
+		sealedDetails?: string | null;
 	}
 ) {
 	const groupId = crypto.randomUUID();
@@ -146,7 +155,8 @@ export async function createGroup(
 			currency: input.currency,
 			kind: input.kind,
 			tint: input.tint,
-			keyId: input.keyId ?? null
+			keyId: input.keyId ?? null,
+			sealedDetails: input.sealedDetails ?? null
 		}),
 		db.insert(members).values(memberRows),
 		log(db, groupId, creatorId, 'group.create', {
@@ -226,6 +236,7 @@ export async function listGroupsOf(db: Db, personId: string) {
 			keyId: groups.keyId,
 			transitionKey: groups.transitionKey,
 			transitionUntil: groups.transitionUntil,
+			sealedDetails: groups.sealedDetails,
 			token: groups.shareToken,
 			currency: groups.currency,
 			kind: groups.kind,

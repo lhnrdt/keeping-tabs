@@ -22,8 +22,29 @@ export const DETAIL_FIELDS = [
 	'fuelMl'
 ] as const;
 
-/** A group's plan and default split, sealed the same way */
-export const GROUP_DETAIL_FIELDS = ['budgetCents', 'endsOn', 'defaultSplit'] as const;
+/** A group's settings, sealed the same way */
+export const GROUP_DETAIL_FIELDS = [
+	'budgetCents',
+	'endsOn',
+	'defaultSplit',
+	'currency',
+	'kind',
+	'tint',
+	'simplifyDebts',
+	'insightSections'
+] as const;
+
+/** What a sealed group's columns hold instead: the defaults, which say nothing */
+export const SEALED_GROUP_COLUMNS = {
+	currency: 'EUR',
+	kind: 'other',
+	tint: null,
+	simplifyDebts: true,
+	insightSections: null,
+	budgetCents: null,
+	endsOn: null,
+	defaultSplit: null
+} as const;
 
 export const detailsFromInput = (
 	input: Omit<ExpenseInput, 'sealedDetails'>,

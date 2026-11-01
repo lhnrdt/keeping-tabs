@@ -7,6 +7,7 @@
 	import { keyFor } from '#lib/crypto/keyring.ts';
 	import { resolve } from '$app/paths';
 	import { encryptGroup } from '#lib/crypto/encrypt-group.ts';
+	import { sealText } from '#lib/crypto/seal.ts';
 	import { paymentCopies } from '#lib/crypto/profile.ts';
 	import { categorize } from '#lib/expense/categorize.ts';
 	import { syncKeys } from '#lib/crypto/vault.ts';
@@ -48,6 +49,30 @@
 			.then(() => invalidateAll())
 			.catch(() => {})
 			.finally(() => (encrypting[groupId] = false));
+	});
+
+	// Having the key: the server can let go of it once everyone does. And who you are in this group,
+	// sealed, goes along with what you do, so the history can say it without the server knowing
+	$effect(() => {
+		const keyId = data.group.keyId;
+		const me = data.members.find((member) => member.mine);
+		if (!keyId || !me) return;
+		const memberId = me.id;
+		const handingOver = data.handingOver;
+		const base = resolve('/g/[token]', { token: data.group.shareToken });
+		void (async () => {
+			const key = await keyFor(keyId);
+			if (!key) return;
+			const sealed = await sealText(key, memberId, 'actor');
+			document.cookie = `sealed-actor=${sealed}; path=${base}; samesite=lax; max-age=31536000; secure`;
+			if (handingOver) {
+				await fetch(`${base}/encrypt/data`, {
+					method: 'POST',
+					headers: { 'content-type': 'application/json' },
+					body: JSON.stringify({ received: true })
+				});
+			}
+		})().catch(() => {});
 	});
 
 	// The full link opened while already here: the browser stays on the page, so nothing loads

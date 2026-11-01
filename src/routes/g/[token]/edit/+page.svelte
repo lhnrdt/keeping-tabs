@@ -25,7 +25,11 @@
 		label: data.group.name
 	}}
 >
-	<GroupForm error={form?.error} submitLabel={m.save()} sealed={['name', 'description']}>
+	<GroupForm
+		error={form?.error}
+		submitLabel={m.save()}
+		sealed={['name', 'description', 'groupForm']}
+	>
 		<div class="page-sections">
 			<div class="page-section">
 				<Field

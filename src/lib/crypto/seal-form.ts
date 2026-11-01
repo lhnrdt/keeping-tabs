@@ -5,10 +5,23 @@ import { applyAction, type SubmitFunction } from '$app/forms';
 import { page } from '$app/state';
 import { m } from '#lib/paraglide/messages.js';
 import { expenseValues, paymentValues } from '#lib/expense/form-values.ts';
-import { detailsFromInput, detailsFromPayment } from '#lib/expense/sealed-details.ts';
+import {
+	detailsFromInput,
+	detailsFromPayment,
+	GROUP_DETAIL_FIELDS
+} from '#lib/expense/sealed-details.ts';
+import type { GroupKind } from '#lib/group/kinds.ts';
+import { choiceToStore, isSection } from '#lib/insights/sections.ts';
 import { parseAmount } from '#lib/money.ts';
 import { defaultFrom } from '#lib/split/default-split.ts';
-import { normalizeText, parseDate, parseExpense, parsePayment } from '#lib/validation.ts';
+import {
+	normalizeText,
+	parseDate,
+	parseExpense,
+	parseKind,
+	parsePayment,
+	parseTint
+} from '#lib/validation.ts';
 import { keyFor } from './keyring';
 import { openDeep } from './open-data';
 import { sealText, textContext } from './seal';
@@ -55,14 +68,13 @@ const groupMemberIds = () =>
 	((page.data.members ?? []) as { id: string }[]).map((member) => member.id);
 const groupCurrency = () => String(page.data.group?.currency ?? '');
 
-/** A group's plan and default split, with these changes */
+/** A group's settings, with these changes */
 async function sealGroupDetails(key: string, changes: Record<string, unknown>) {
-	const { budgetCents = null, endsOn = null, defaultSplit = null } = page.data.group ?? {};
-	return sealText(
-		key,
-		JSON.stringify({ budgetCents, endsOn, defaultSplit, ...changes }),
-		textContext('details')
+	const group: Record<string, unknown> = page.data.group ?? {};
+	const current = Object.fromEntries(
+		GROUP_DETAIL_FIELDS.map((name) => [name, group[name] ?? null])
 	);
+	return sealText(key, JSON.stringify({ ...current, ...changes }), textContext('details'));
 }
 
 type Refusal = { error: string; values?: unknown };
@@ -122,6 +134,31 @@ async function sealPlan(form: FormData, key: string): Promise<Refusal | null> {
 	return null;
 }
 
+/** A group's look and how it settles, from the form editing it */
+async function sealGroupForm(form: FormData, key: string): Promise<Refusal | null> {
+	const kind = parseKind(form.get('kind'));
+	if (!kind.ok) return { error: kind.error };
+	const tint = parseTint(form.get('tint'));
+	if (!tint.ok) return { error: tint.error };
+	const simplifyDebts = form.get('simplifyDebts') === 'on';
+	leaveOnly(form, ['name', 'description']);
+	form.set(
+		'details',
+		await sealGroupDetails(key, { kind: kind.value, tint: tint.value, simplifyDebts })
+	);
+	return null;
+}
+
+/** Which insights the group shows; none chosen goes back to its type's suggestions */
+async function sealSections(form: FormData, key: string): Promise<Refusal | null> {
+	const chosen = form.getAll('section').filter(isSection);
+	const kind = (page.data.group?.kind ?? 'other') as GroupKind;
+	const insightSections = form.has('reset') ? null : choiceToStore(kind, chosen);
+	leaveOnly(form, []);
+	form.set('details', await sealGroupDetails(key, { insightSections }));
+	return null;
+}
+
 /** What these forms hold besides plain text, by the name standing for it in `sealing` */
 const SEAL_MONEY: Record<
 	string,
@@ -129,7 +166,9 @@ const SEAL_MONEY: Record<
 > = {
 	title: sealExpense,
 	payment: sealPayment,
-	plan: sealPlan
+	plan: sealPlan,
+	groupForm: sealGroupForm,
+	sections: sealSections
 };
 
 /** The current group's key; null if it has none, undefined if this device doesn't have it */

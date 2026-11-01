@@ -73,8 +73,22 @@ export async function openBytes(key: string, joined: Uint8Array, context = '') {
 /** The context of a text: its field, and the row it belongs to if it's bound to one */
 export const textContext = (field: string, row = '') => `${field}_${row}`;
 
+/** Text comes in steps of this many bytes, so its length says little about what it is */
+const PADDED_TO = 64;
+
+/** A marker byte and zeros up to the next step */
+function padded(bytes: Uint8Array) {
+	const length = (Math.floor(bytes.length / PADDED_TO) + 1) * PADDED_TO;
+	const result = new Uint8Array(length);
+	result.set(bytes);
+	result[bytes.length] = 0x80;
+	return result;
+}
+
+const unpadded = (bytes: Uint8Array) => bytes.subarray(0, bytes.lastIndexOf(0x80));
+
 export async function sealText(key: string, text: string, context = '') {
-	const sealed = await sealBytes(key, new TextEncoder().encode(text), context);
+	const sealed = await sealBytes(key, padded(new TextEncoder().encode(text)), context);
 	return `${PREFIX}.${await keyIdOf(key)}.${context}.${toBase64Url(sealed)}`;
 }
 
@@ -88,5 +102,5 @@ export const contextIn = (sealed: string) => sealed.split('.')[2];
 export async function openText(key: string, sealed: string) {
 	const [, , context, data] = sealed.split('.');
 	const opened = await openBytes(key, fromBase64Url(data), context);
-	return new TextDecoder().decode(opened);
+	return new TextDecoder().decode(unpadded(opened));
 }

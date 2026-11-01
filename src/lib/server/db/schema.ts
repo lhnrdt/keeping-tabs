@@ -56,6 +56,8 @@ export const groups = sqliteTable('groups', {
 	transitionUntil: integer('transition_until', { mode: 'timestamp_ms' }),
 	// An encrypted group's budget, end date and default split, sealed (#110)
 	sealedDetails: text('sealed_details'),
+	// When the server last tried encrypting this group by itself (#110), so a big one can't hold up the rest
+	encryptTriedAt: integer('encrypt_tried_at', { mode: 'timestamp_ms' }),
 	// Optional password on top of the link (A-8), salted and slow (group-password.ts); null = none
 	passwordHash: text('password_hash'),
 	// Budget (minor units) and end date for trips and events, both optional (#168)
@@ -173,6 +175,8 @@ export const members = sqliteTable(
 		personId: text('person_id').references(() => people.id),
 		// How to pay them, this group's copy: sealed if the group is encrypted (#110)
 		paymentDetails: text('payment_details'),
+		// They have the group's key, so the server needn't keep it for them (#110)
+		keyReceived: integer('key_received', { mode: 'boolean' }).notNull().default(false),
 		createdAt: createdAt(),
 		// Removed members stay referenced by past expenses (M-6)
 		deletedAt: deletedAt()
@@ -362,6 +366,8 @@ export const activityLog = sqliteTable(
 			.references(() => groups.id),
 		// Null when the visitor hasn't picked a member yet
 		memberId: text('member_id').references(() => members.id),
+		// Encrypted groups: who it was, sealed; memberId stays empty (#110)
+		sealedActor: text('sealed_actor'),
 		action: text('action').notNull(),
 		payload: text('payload', { mode: 'json' }),
 		createdAt: createdAt()

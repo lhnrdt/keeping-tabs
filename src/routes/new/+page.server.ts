@@ -75,7 +75,8 @@ export const actions: Actions = {
 			tint: tint.value,
 			memberNames: memberNames.value,
 			creatorPersonId: person.id,
-			keyId
+			keyId,
+			sealedDetails: isSealed(form.get('details')) ? String(form.get('details')) : null
 		});
 		redirect(303, resolve('/g/[token]', { token: shareToken }));
 	}

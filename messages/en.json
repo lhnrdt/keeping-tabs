@@ -581,7 +581,7 @@
 	"locked_reload": "This group has changed. Reload the page and try again.",
 	"note_title": "Good to know",
 	"note_ok": "Got it",
-	"note_text": "Your groups are encrypted unless you turn that off: names, titles, notes, comments, categories and photos can only be read on your devices and those of people with the group’s link. The server still sees amounts, dates, who owes whom and when things happen, because it works out the balances. It also delivers the app itself, so you’re trusting it not to change that. Groups without encryption are readable by the app’s admin.",
+	"note_text": "Your groups are encrypted: names, titles, notes, comments, amounts, categories and photos can only be read on your devices and those of people with the group’s link. The server still sees that a group exists, how many people are in it, and when things are added. It also delivers the app itself, so you’re trusting it not to change that.",
 	"insights_budget": "Budget",
 	"section_budget_hint": "Spent against the budget, and where this pace leads",
 	"budget_of": "of {amount}",

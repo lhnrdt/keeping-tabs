@@ -13,6 +13,22 @@ import {
 	textContext
 } from './seal';
 
+describe('a sealed text’s length', () => {
+	it('says little about what it is', async () => {
+		const key = newKey();
+		const short = await sealText(key, 'Bus');
+		const longer = await sealText(key, 'Abendessen im Fischerhaus');
+		expect(short.length).toBe(longer.length);
+		expect(await openText(key, longer)).toBe('Abendessen im Fischerhaus');
+	});
+
+	it('keeps text of exactly one step whole', async () => {
+		const key = newKey();
+		const text = 'x'.repeat(64);
+		expect(await openText(key, await sealText(key, text))).toBe(text);
+	});
+});
+
 describe('a sealed text’s context', () => {
 	it('opens only with the context it was sealed for', async () => {
 		const key = newKey();

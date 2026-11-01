@@ -2,7 +2,8 @@
 	import { applyAction, enhance, type SubmitFunction } from '$app/forms';
 	import { rememberKey } from '#lib/crypto/keyring.ts';
 	import { openDeep } from '#lib/crypto/open-data.ts';
-	import { newKey } from '#lib/crypto/seal.ts';
+	import { newKey, sealText, textContext } from '#lib/crypto/seal.ts';
+	import { SEALED_GROUP_COLUMNS } from '#lib/expense/sealed-details.ts';
 	import { sealFields } from '#lib/crypto/seal-form.ts';
 	import { syncKeys } from '#lib/crypto/vault.ts';
 	import PlainField from '#lib/components/fields/PlainField.svelte';
@@ -47,7 +48,7 @@
 	/** An encrypted group (#110): a new key, which stays here, and everything typed sealed with it */
 	const create: SubmitFunction = async (input) => {
 		const form = input.formData;
-		const plain: Record<string, FormDataEntryValue[]> = {};
+		let settings: Record<string, string> = {};
 		if (form.get('plain') !== 'on') {
 			// The server can't compare sealed names
 			const names = [form.get('you'), ...form.getAll('member')].map((name) =>
@@ -71,7 +72,22 @@
 			}
 			const key = newKey();
 			const keyId = await rememberKey(key);
-			for (const name of SEALED_FIELDS) plain[name] = form.getAll(name);
+			// Its settings too; the plain fields only hold the defaults then
+			settings = {
+				currency: String(form.get('currency') ?? ''),
+				kind: String(form.get('kind') ?? ''),
+				tint: String(form.get('tint') ?? '')
+			};
+			const details = {
+				...SEALED_GROUP_COLUMNS,
+				currency: settings.currency,
+				kind: settings.kind,
+				tint: settings.tint || null
+			};
+			form.set('details', await sealText(key, JSON.stringify(details), textContext('details')));
+			form.set('currency', SEALED_GROUP_COLUMNS.currency);
+			form.set('kind', SEALED_GROUP_COLUMNS.kind);
+			form.set('tint', '');
 			await sealFields(form, key, SEALED_FIELDS);
 			form.set('keyId', keyId);
 		}
@@ -81,7 +97,9 @@
 		>;
 		return async (options) => {
 			if (options.result.type === 'failure') {
-				options.result.data = await openDeep(options.result.data);
+				const data = await openDeep(options.result.data);
+				if (data?.values) data.values = { ...(data.values as object), ...settings };
+				options.result.data = data;
 			}
 			await after?.(options);
 			if (options.result.type === 'redirect') void syncKeys().catch(() => {});

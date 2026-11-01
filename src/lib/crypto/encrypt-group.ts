@@ -26,13 +26,18 @@ const PASSES = 3;
 type Item = { name: string };
 type Share = { memberId: string; shareCents: number; input: number | null };
 type Payer = { memberId: string; amountCents: number };
-type Text = {
+export type Text = {
 	group: {
 		name: string;
 		description: string | null;
 		budgetCents: number | null;
 		endsOn: string | null;
 		defaultSplit: unknown;
+		currency: string;
+		kind: string;
+		tint: string | null;
+		simplifyDebts: boolean;
+		insightSections: string | null;
 		sealedDetails: string | null;
 	};
 	members: { id: string; name: string; paymentDetails: string | null }[];
@@ -75,44 +80,38 @@ const toBase64 = (bytes: Uint8Array) => {
 	return btoa(binary);
 };
 
-/** Text as it was typed, whichever key it's under now */
-async function readable(value: string) {
-	if (!isSealed(value)) return value;
-	const key = await keyFor(keyIdIn(value));
-	if (!key) throw new Error('a key is missing on this device');
-	return openText(key, value);
-}
-
 /** A photo as it was taken; null if it's already under the new key */
 async function readablePhoto(bytes: Uint8Array, oldKey: string | undefined, context: string) {
 	if (isJpeg(bytes)) return bytes;
 	return oldKey ? openBytes(oldKey, bytes, context).catch(() => null) : null;
 }
 
+/** How encrypting reaches the group and the keys: from a browser, or on the server itself */
+export type EncryptIo = {
+	fetchText: () => Promise<Text>;
+	send: (step: unknown) => Promise<{ token?: string; key?: string | null }>;
+	fetchPhoto: (receipt: { id: string; expenseId: string }) => Promise<Uint8Array>;
+	keyFor: (keyId: string) => Promise<string | undefined>;
+	rememberKey: (key: string) => Promise<string>;
+};
+
 /**
- * Encrypts the group behind `base` (its address) under a new key, replacing `currentKeyId` if it has
- * one. Returns the key, and the group's address token if that changed.
+ * Encrypts a group under a new key, replacing `currentKeyId` if it has one. Returns the key, and the
+ * group's address token if that changed. `batch` is how many rows go at a time.
  */
-export async function encryptGroup(
-	base: string,
+export async function encryptWith(
+	{ fetchText, send, fetchPhoto, keyFor, rememberKey }: EncryptIo,
 	currentKeyId: string | null,
 	guessCategory: (title: string) => string,
-	progress: (done: number, total: number) => void
+	progress: (done: number, total: number) => void,
+	batch = BATCH
 ) {
-	const dataUrl = `${base}/encrypt/data`;
-	const fetchText = async () => {
-		const response = await fetch(dataUrl);
-		if (!response.ok) throw new Error(String(response.status));
-		return (await response.json()) as Text;
-	};
-	const send = async (body: unknown) => {
-		const answer = await fetch(dataUrl, {
-			method: 'POST',
-			headers: { 'content-type': 'application/json' },
-			body: JSON.stringify(body)
-		});
-		if (!answer.ok) throw new Error(String(answer.status));
-		return (await answer.json()) as { token?: string; key?: string };
+	/** Text as it was typed, whichever key it's under now */
+	const readable = async (value: string) => {
+		if (!isSealed(value)) return value;
+		const old = await keyFor(keyIdIn(value));
+		if (!old) throw new Error('a key is missing on this device');
+		return openText(old, value);
 	};
 
 	const first = await fetchText();
@@ -174,7 +173,12 @@ export async function encryptGroup(
 			: sealJson({
 					budgetCents: group.budgetCents,
 					endsOn: group.endsOn,
-					defaultSplit: group.defaultSplit
+					defaultSplit: group.defaultSplit,
+					currency: group.currency,
+					kind: group.kind,
+					tint: group.tint,
+					simplifyDebts: group.simplifyDebts,
+					insightSections: group.insightSections
 				});
 
 	/** A repeating expense: what stays is only what's needed to add the next one */
@@ -206,8 +210,8 @@ export async function encryptGroup(
 		total: number,
 		sealRow: (row: Row) => Promise<unknown>
 	) {
-		for (let i = 0; i < rows.length; i += BATCH) {
-			const piece = rows.slice(i, i + BATCH);
+		for (let i = 0; i < rows.length; i += batch) {
+			const piece = rows.slice(i, i + batch);
 			await send({ batch: { [name]: await Promise.all(piece.map(sealRow)) } });
 			done += piece.length;
 			progress(done, total);
@@ -258,12 +262,8 @@ export async function encryptGroup(
 			template: JSON.stringify(await sealRule(row))
 		}));
 		for (const receipt of receipts) {
-			// Not from the browser's cache: an earlier run may have sealed it since
-			const photo = await fetch(`${base}/expenses/${receipt.expenseId}/receipts/${receipt.id}`, {
-				cache: 'no-cache'
-			});
 			const context = textContext('photo', receipt.expenseId);
-			const bytes = await readablePhoto(new Uint8Array(await photo.arrayBuffer()), oldKey, context);
+			const bytes = await readablePhoto(await fetchPhoto(receipt), oldKey, context);
 			if (bytes) {
 				const image = toBase64(await sealBytes(key, bytes, context));
 				await send({ receipt: { id: receipt.id, image } });
@@ -273,6 +273,47 @@ export async function encryptGroup(
 		}
 	}
 	const { token } = await send({ finish: keyId });
-	await syncKeys().catch(() => {});
 	return { key, token };
+}
+
+/** In a browser: the group behind `base` (its address) */
+export async function encryptGroup(
+	base: string,
+	currentKeyId: string | null,
+	guessCategory: (title: string) => string,
+	progress: (done: number, total: number) => void
+) {
+	const dataUrl = `${base}/encrypt/data`;
+	const result = await encryptWith(
+		{
+			fetchText: async () => {
+				const response = await fetch(dataUrl);
+				if (!response.ok) throw new Error(String(response.status));
+				return response.json();
+			},
+			send: async (body) => {
+				const answer = await fetch(dataUrl, {
+					method: 'POST',
+					headers: { 'content-type': 'application/json' },
+					body: JSON.stringify(body)
+				});
+				if (!answer.ok) throw new Error(String(answer.status));
+				return answer.json();
+			},
+			fetchPhoto: async (receipt) => {
+				// Not from the browser's cache: an earlier run may have sealed it since
+				const photo = await fetch(`${base}/expenses/${receipt.expenseId}/receipts/${receipt.id}`, {
+					cache: 'no-cache'
+				});
+				return new Uint8Array(await photo.arrayBuffer());
+			},
+			keyFor,
+			rememberKey
+		},
+		currentKeyId,
+		guessCategory,
+		progress
+	);
+	await syncKeys().catch(() => {});
+	return result;
 }

@@ -17,6 +17,8 @@ declare global {
 			db: Db;
 			/** This browser's secret identity key (A-12) */
 			deviceKey: string;
+			/** An encrypted group's history: who this request's changes were by, sealed (#110) */
+			sealActivity?: { groupId: string; memberId: string; sealed: string };
 		}
 		// interface PageData {}
 		// interface PageState {}

@@ -4,7 +4,10 @@
 import { and, eq, inArray, isNull } from 'drizzle-orm';
 import { log } from './activity';
 import type { Db } from './db';
-import { handoverEnds } from './encryption-handover';
+import { isKey, isSealed } from '#lib/crypto/seal.ts';
+import { MAX_RECEIPT_BYTES } from '#lib/expense/receipt-image.ts';
+import { handoverEnds, keyReceived, placeholderMember } from './encryption-handover';
+import { regenerateShareToken } from './groups';
 import {
 	expensePayers,
 	expenseSplits,
@@ -143,7 +146,8 @@ export async function storeSealed(db: Db, groupId: string, actorId: string, batc
 			d1
 				.prepare(
 					`update groups set name = ?1, description = ?2, sealed_details = ?3,
-					budget_cents = null, ends_on = null, default_split = null where id = ?4`
+					budget_cents = null, ends_on = null, default_split = null, currency = 'EUR',
+					kind = 'other', tint = null, simplify_debts = 1, insight_sections = null where id = ?4`
 				)
 				.bind(batch.group.name, batch.group.description, batch.group.details, groupId)
 		);
@@ -189,10 +193,10 @@ export async function storeSealed(db: Db, groupId: string, actorId: string, batc
 		statements.push(
 			d1
 				.prepare(
-					`update recurring_expenses set template = ${column('template')}recurring_expenses.id)
+					`update recurring_expenses set template = ${column('template')}recurring_expenses.id), member_id = ?3
 					where group_id = ?2 and id in ${ids}`
 				)
-				.bind(JSON.stringify(batch.rules), groupId)
+				.bind(JSON.stringify(batch.rules), groupId, actorId)
 		);
 	}
 	if (statements.length) await d1.batch(statements);
@@ -240,7 +244,7 @@ export async function finishEncrypting(
 	await d1.batch([
 		d1
 			.prepare(
-				`update activity_log set payload = json_object(
+				`update activity_log set member_id = null, payload = json_object(
 					'expenseId', json_extract(payload, '$.expenseId'),
 					'memberId', json_extract(payload, '$.memberId')
 				) where group_id = ?1`
@@ -254,4 +258,60 @@ export async function finishEncrypting(
 			.bind(keyId, until, groupId)
 	]);
 	await log(db, groupId, actorId, 'group.encrypt', {});
+}
+
+export type EncryptStep = {
+	begin?: string;
+	batch?: SealedBatch;
+	receipt?: { id: string; image: string };
+	finish?: string;
+	received?: boolean;
+};
+
+const KEY_ID = /^[\w-]{8}$/;
+
+const allSealed = (batch: SealedBatch) =>
+	[
+		batch.group?.name,
+		batch.group?.details,
+		...(batch.members ?? []).map((row) => row.name),
+		...(batch.expenses ?? []).flatMap((row) => [row.details, row.title || undefined]),
+		...(batch.comments ?? []).map((row) => row.body)
+	].every((text) => text === undefined || isSealed(text));
+
+/** One step of encrypting a group, from a browser or from the server itself; null if it makes no sense */
+export async function encryptStep(
+	db: Db,
+	group: { id: string; keyId: string | null },
+	actorId: string,
+	step: EncryptStep,
+	/** The server itself, on schedule: `actorId` is only who it says it was, and has no key yet */
+	onSchedule = false
+): Promise<{ key?: string | null; token?: string } | null> {
+	if (step.received) {
+		await keyReceived(db, group.id, actorId);
+		return {};
+	}
+	if (step.begin !== undefined) {
+		if (!isKey(step.begin) || group.keyId) return null;
+		return { key: await beginEncrypting(db, group.id, step.begin) };
+	}
+	const placeholder = (await placeholderMember(db, group.id)) ?? actorId;
+	if (step.batch) {
+		if (!allSealed(step.batch)) return null;
+		await storeSealed(db, group.id, placeholder, step.batch);
+	}
+	if (step.receipt) {
+		// Base64 of a photo at most the usual size, plus what sealing adds
+		if (step.receipt.image.length > ((MAX_RECEIPT_BYTES + 64) * 4) / 3 + 4) return null;
+		await storeSealedReceipt(db, group.id, step.receipt.id, step.receipt.image);
+	}
+	if (step.finish !== undefined) {
+		if (!KEY_ID.test(step.finish)) return null;
+		await finishEncrypting(db, group.id, actorId, step.finish, Boolean(group.keyId));
+		if (!onSchedule) await keyReceived(db, group.id, actorId);
+		// A new key is for keeping someone out: so the old address goes too
+		if (group.keyId) return { token: await regenerateShareToken(db, group.id, actorId) };
+	}
+	return {};
 }

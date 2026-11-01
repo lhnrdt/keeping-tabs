@@ -56,6 +56,8 @@ export async function lastChangeOf(db: Db, groupId: string) {
 export const ACTIVITY_SHOWN = 100;
 
 export type ActivityItem = {
+	/** Encrypted groups: who it was, sealed (#110) */
+	sealedActor: string | null;
 	id: string;
 	action: Action;
 	at: Date;
@@ -81,6 +83,7 @@ export async function listActivity(db: Db, groupId: string): Promise<ActivityIte
 			.select({
 				id: activityLog.id,
 				memberId: activityLog.memberId,
+				sealedActor: activityLog.sealedActor,
 				action: activityLog.action,
 				payload: activityLog.payload,
 				at: activityLog.createdAt
@@ -133,6 +136,8 @@ export async function listActivity(db: Db, groupId: string): Promise<ActivityIte
 			action: row.action as Action,
 			at: row.at,
 			who: row.memberId ? (names.get(row.memberId) ?? null) : null,
+			// Encrypted: the browser finds who that is
+			sealedActor: row.sealedActor,
 			entry: entry
 				? {
 						id: entry.id,

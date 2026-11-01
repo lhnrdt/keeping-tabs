@@ -77,7 +77,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 			onInsights && expenses && !sealedMoney
 				? groupInsights(expenses, memberIds, mine, transfers, plan, today, period)
 				: null,
-		sealed: sealedMoney ? { expenses: expenses ?? [], me: mine, onInsights, today, period } : null
+		sealed: sealedMoney ? { expenses: expenses ?? [], me: mine, onInsights, today } : null
 	};
 };
 

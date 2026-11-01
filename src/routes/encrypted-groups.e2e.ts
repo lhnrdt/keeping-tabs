@@ -461,3 +461,82 @@ test('amounts and who pays stay sealed, and everything still adds up (#110)', as
 
 	expect(link).toContain('#key=');
 });
+
+test('a group nobody opens gets encrypted on the server’s schedule (#110)', async ({ page }) => {
+	// Nobody's browser gets to do it: this group is opened by nobody
+	await page.route('**/encrypt/data', (route) => route.abort());
+	const groupUrl = await createGroup(page, '[auto] Quiet', 'Anna', ['Ben']);
+	const bare = await page.context().browser()!.newContext();
+	const friend = await bare.newPage();
+	await expect
+		.poll(
+			async () => {
+				await page.request.get('/cdn-cgi/handler/scheduled?cron=*/5+*+*+*+*');
+				const raw = await (await page.request.get(`${groupUrl}/__data.json`)).text();
+				return raw.includes('Quiet') || !raw.includes('enc1.');
+			},
+			{ timeout: 40_000 }
+		)
+		.toBe(false);
+	await open(friend, groupUrl);
+	await friend.getByRole('button', { name: "I'm Ben" }).click();
+	await expect(friend.getByRole('heading', { name: '[auto] Quiet' })).toBeVisible();
+});
+
+test('settings are sealed, the history still says who, and the key leaves the server (#110)', async ({
+	page,
+	browser
+}) => {
+	await open(page, '/new');
+	await page.getByLabel('Group name').fill('Yen trip');
+	await page.getByLabel('Currency').selectOption('JPY');
+	await page.getByLabel('Your name').fill('Anna');
+	await page.getByRole('button', { name: 'Create group' }).click();
+	await expect(page.getByTestId('identity')).toHaveText('Anna');
+	const groupUrl = page.url().split('#')[0];
+	const raw = await (await page.request.get(`${groupUrl}/__data.json`)).text();
+	expect(raw).not.toContain('JPY');
+
+	// The browser knows it's yen
+	await page.getByRole('link', { name: 'Add expense' }).click();
+	await expect(page.getByLabel('Amount (¥)')).toBeVisible();
+	await page.getByLabel('What was it for?').fill('Ramen');
+	await page.getByLabel('Amount (¥)').fill('1200');
+	await page.getByRole('button', { name: 'Add expense' }).click();
+	await expect(page.getByRole('link', { name: /Ramen/ })).toContainText('¥1,200');
+
+	// The history says who, though the server can't
+	await open(page, `${groupUrl}/activity`);
+	await expect(page.locator('body')).toContainText('Anna added “Ramen”');
+	const history = await (await page.request.get(`${groupUrl}/activity/__data.json`)).text();
+	expect(history).toContain('enc1.');
+
+	// An old group: once all who've joined have the key, the old link alone no longer brings it
+	const oldUrl = await createGroup(page, 'Old', 'Anna', ['Ben']);
+	const ben = await (await browser.newContext()).newPage();
+	await open(ben, oldUrl);
+	await ben.getByRole('button', { name: "I'm Ben" }).click();
+	await open(page, `${oldUrl}/edit`);
+	await page.getByLabel('Group name').fill('[auto] Old');
+	await page.getByRole('button', { name: 'Save' }).click();
+	await expect
+		.poll(
+			async () => (await (await page.request.get(`${oldUrl}/__data.json`)).text()).includes('Old'),
+			{
+				timeout: 20_000
+			}
+		)
+		.toBe(false);
+	await open(ben, oldUrl);
+	await expect(ben.getByRole('heading', { name: '[auto] Old' })).toBeVisible();
+	const stranger = await (await browser.newContext()).newPage();
+	await expect
+		.poll(
+			async () => {
+				await open(stranger, oldUrl);
+				return stranger.getByText('Open this group with its link').count();
+			},
+			{ timeout: 20_000 }
+		)
+		.toBe(1);
+});

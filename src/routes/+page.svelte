@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { invalidateAll } from '$app/navigation';
+	import { encryptGroup } from '#lib/crypto/encrypt-group.ts';
+	import { categorize } from '#lib/expense/categorize.ts';
 	import { resolve } from '$app/paths';
 	import { Block } from 'konsta/svelte';
 	import AppPage from '#lib/components/AppPage.svelte';
@@ -13,6 +16,22 @@
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();
+
+	// Your groups from before encryption: encrypted from here too, one after the other (#110)
+	let upgrading = false;
+	$effect(() => {
+		const waiting = data.yourGroups.filter((group) => group.encryptNow);
+		if (upgrading || waiting.length === 0) return;
+		upgrading = true;
+		void (async () => {
+			for (const { token } of waiting) {
+				await encryptGroup(resolve('/g/[token]', { token }), null, categorize, () => {});
+			}
+			await invalidateAll();
+		})()
+			.catch(() => {})
+			.finally(() => (upgrading = false));
+	});
 
 	// Your menu (#156), opened from the navbar; rendered here, outside the bar
 	const named = $derived(

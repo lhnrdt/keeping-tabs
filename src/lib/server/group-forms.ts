@@ -13,6 +13,7 @@ import {
 	type Result
 } from '#lib/validation.ts';
 import type { Db } from './db';
+import { placeholderMember } from './encryption-handover';
 import { listMembers, setDefaultSplit, setGroupDetails } from './groups';
 import { rateFor } from './rates';
 
@@ -73,7 +74,7 @@ export async function readExpenseForm(db: Db, group: Group, form: FormData, acto
 				title,
 				notes: notes || null,
 				date: parts.date,
-				paidBy: actorId,
+				paidBy: (await placeholderMember(db, group.id)) ?? actorId,
 				sealedDetails: parts.details
 			})
 		};
@@ -81,15 +82,16 @@ export async function readExpenseForm(db: Db, group: Group, form: FormData, acto
 	return validate(db, group, expenseValues(form, await rateOf(group, form)), parseExpense);
 }
 
-export function readPaymentForm(db: Db, group: Group, form: FormData, actorId: string) {
+export async function readPaymentForm(db: Db, group: Group, form: FormData, actorId: string) {
 	if (group.keyId) {
 		const parts = sealedParts(form);
 		if (!parts.ok) return parts;
+		const placeholder = (await placeholderMember(db, group.id)) ?? actorId;
 		return {
 			ok: true as const,
 			input: {
-				from: actorId,
-				to: actorId,
+				from: placeholder,
+				to: placeholder,
 				amountCents: SEALED_AMOUNT,
 				date: parts.date,
 				sealedDetails: parts.details
