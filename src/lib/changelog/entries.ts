@@ -15,6 +15,10 @@ export const CHANGELOG: ChangelogEntry[] = [
 		date: '',
 		items: [
 			{
+				en: 'Split by item: list what’s on the receipt and tick who had what. Tip and tax are shared in proportion.',
+				de: 'Nach Posten aufteilen: Trag ein, was auf der Rechnung steht, und wähle, wer was hatte. Trinkgeld und Steuern werden anteilig verteilt.'
+			},
+			{
 				en: 'Protect a group with a password on top of its link, under Group.',
 				de: 'Schütze eine Gruppe zusätzlich zum Link mit einem Passwort, unter „Gruppe“.'
 			},

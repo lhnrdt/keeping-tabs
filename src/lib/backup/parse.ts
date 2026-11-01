@@ -5,6 +5,7 @@ import { parseRate } from '#lib/expense/exchange.ts';
 import { isFrequency } from '#lib/expense/recurrence.ts';
 import { parseSections } from '#lib/insights/sections.ts';
 import { parseDefaultSplit } from '#lib/split/default-split.ts';
+import type { ExpenseItem } from '#lib/split/items.ts';
 import { isSplitMode, type SplitMode } from '#lib/split/modes.ts';
 import {
 	LIMITS,
@@ -153,6 +154,22 @@ function readOriginal(currency: unknown, amountCents: unknown, rate: unknown) {
 	};
 }
 
+/** Receipt items (#53): known members, sensible prices; they only explain the shares */
+const readItems = (value: unknown, known: ReadonlySet<string>): ExpenseItem[] | null =>
+	orNull(value, (items) =>
+		list(items).map((entry) => {
+			const raw = object(entry);
+			need(typeof raw.name === 'string' && raw.name.length <= LIMITS.expenseTitle);
+			const memberIds = list(raw.memberIds);
+			need(memberIds.length > 0 && memberIds.every((id) => known.has(id as string)));
+			return {
+				name: raw.name as string,
+				cents: integer(raw.cents, 1),
+				memberIds: memberIds as string[]
+			};
+		})
+	);
+
 const readTitle = (value: unknown, required: boolean) => {
 	need(typeof value === 'string' && value.length <= LIMITS.expenseTitle);
 	if (required) need((value as string).trim());
@@ -172,6 +189,7 @@ function readEntry(raw: Raw, known: ReadonlySet<string>): BackupEntry {
 		paidBy: raw.paidBy as string,
 		date: unwrap(parseDate(raw.date)),
 		splitMode: splitMode(raw.splitMode),
+		items: readItems(raw.items, known),
 		category: category(raw.category),
 		originalCurrency: original?.currency ?? null,
 		originalAmountCents: original?.amountCents ?? null,
@@ -213,6 +231,7 @@ function readTemplate(raw: Raw, known: ReadonlySet<string>): ExpenseInput {
 		payers: payers.length ? payers : null,
 		category: category(raw.category),
 		splitMode: splitMode(raw.splitMode),
+		items: readItems(raw.items, known),
 		shares: readShares(list(raw.shares), amountCents, known)
 	};
 }

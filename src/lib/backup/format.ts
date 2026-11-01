@@ -6,6 +6,7 @@ import type { Frequency } from '#lib/expense/recurrence.ts';
 import type { GroupKind } from '#lib/group/kinds.ts';
 import type { DefaultSplit } from '#lib/split/default-split.ts';
 import type { Share } from '#lib/split/compute.ts';
+import type { ExpenseItem } from '#lib/split/items.ts';
 import type { SplitMode } from '#lib/split/modes.ts';
 import type { Tint } from '#lib/tints.ts';
 import type { ExpenseInput } from '#lib/validation.ts';
@@ -36,6 +37,7 @@ export type BackupEntry = {
 	paidBy: string;
 	date: string;
 	splitMode: SplitMode;
+	items: ExpenseItem[] | null;
 	category: ExpenseCategory | null;
 	originalCurrency: string | null;
 	originalAmountCents: number | null;
