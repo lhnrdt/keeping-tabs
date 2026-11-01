@@ -23,8 +23,8 @@ export const CHANGELOG: ChangelogEntry[] = [
 				de: 'Schütze eine Gruppe zusätzlich zum Link mit einem Passwort, unter „Gruppe“.'
 			},
 			{
-				en: 'Choose your units in your profile: km and litres, or miles and gallons. You can also see your balance in another currency.',
-				de: 'Wähle in deinem Profil deine Einheiten: Km und Liter oder Meilen und Gallonen. Deinen Saldo kannst du dir auch in einer anderen Währung anzeigen lassen.'
+				en: 'Choose your units and currency in your profile: km and litres or miles and gallons, and amounts shown in the currency you prefer.',
+				de: 'Wähle in deinem Profil Einheiten und Währung: Km und Liter oder Meilen und Gallonen, und Beträge in der Währung, die du bevorzugst.'
 			}
 		]
 	},

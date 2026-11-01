@@ -6,6 +6,7 @@
 	import ThemePattern from '#lib/components/illustrations/ThemePattern.svelte';
 	import YourBalance from '#lib/components/YourBalance.svelte';
 	import { m } from '#lib/paraglide/messages.js';
+	import { shownTotals } from '#lib/shown-money.ts';
 
 	let { totals }: { totals: { currency: string; amount: number }[] } = $props();
 </script>
@@ -23,7 +24,7 @@
 					{m.home_overall()}
 					<Icon name="next" size={16} />
 				</span>
-				{#each totals as total (total.currency)}
+				{#each shownTotals(totals) as total (total.currency)}
 					<span
 						class="block font-display text-3xl leading-tight font-semibold"
 						data-testid="overall-balance"

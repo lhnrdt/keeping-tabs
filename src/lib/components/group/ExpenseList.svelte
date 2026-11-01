@@ -19,6 +19,7 @@
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import { formatAmount } from '#lib/money.ts';
+	import { shownAmount } from '#lib/shown-money.ts';
 
 	type Entry = ListEntry;
 
@@ -91,7 +92,7 @@
 	// "Anna paid €90", or "Anna and Ben paid €90" when several did (#39)
 	const listFormat = new Intl.ListFormat(getLocale(), { type: 'conjunction' });
 	function paidLine(entry: Entry) {
-		const amount = formatAmount(entry.amountCents, currency, getLocale());
+		const amount = shownAmount(entry.amountCents, currency);
 		return entry.payers?.length
 			? m.expense_paid_by_several({
 					names: listFormat.format(entry.payers.map((payer) => nameOf(payer.memberId))),

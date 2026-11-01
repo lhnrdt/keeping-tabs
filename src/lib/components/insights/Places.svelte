@@ -3,9 +3,8 @@
 	// how often and what it came to.
 	import Icon from '#lib/components/Icon.svelte';
 	import type { Place } from '#lib/insights/places.ts';
-	import { formatAmount } from '#lib/money.ts';
+	import { shownAmount } from '#lib/shown-money.ts';
 	import { m } from '#lib/paraglide/messages.js';
-	import { getLocale } from '#lib/paraglide/runtime.js';
 
 	let { places, currency }: { places: Place[]; currency: string } = $props();
 </script>
@@ -26,7 +25,7 @@
 				<span class="block truncate font-medium">{place.title}</span>
 				<span class="block text-xs text-muted">{m.places_times({ count: place.times })}</span>
 			</span>
-			<span class="tabular-nums">{formatAmount(place.amount, currency, getLocale())}</span>
+			<span class="tabular-nums">{shownAmount(place.amount, currency)}</span>
 		</li>
 	{/each}
 </ul>

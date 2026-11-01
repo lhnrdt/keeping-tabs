@@ -9,6 +9,7 @@
 	import YourBalance from '#lib/components/YourBalance.svelte';
 	import { totalsByCurrency } from '#lib/money.ts';
 	import { m } from '#lib/paraglide/messages.js';
+	import { shownTotals } from '#lib/shown-money.ts';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -22,7 +23,7 @@
 	{#if data.people.length}
 		<!-- As on the start screen: overall, then by person -->
 		<div class="px-4 pt-4 pb-1 text-lg font-semibold">
-			{#each totalsByCurrency(data.people.map( ({ currency, net }) => ({ currency, balance: net }) )) as total (total.currency)}
+			{#each shownTotals(totalsByCurrency(data.people.map( ({ currency, net }) => ({ currency, balance: net }) ))) as total (total.currency)}
 				<p><YourBalance amount={total.amount} currency={total.currency} /></p>
 			{/each}
 		</div>

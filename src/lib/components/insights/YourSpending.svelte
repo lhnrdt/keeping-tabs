@@ -7,16 +7,15 @@
 	import { BlockTitle } from 'konsta/svelte';
 	import Avatar from '#lib/components/Avatar.svelte';
 	import { groupTabUrl } from '#lib/group/tabs.ts';
-	import { formatAmount } from '#lib/money.ts';
+	import { shownAmount } from '#lib/shown-money.ts';
 	import { m } from '#lib/paraglide/messages.js';
-	import { getLocale } from '#lib/paraglide/runtime.js';
 	import type { Spending } from '#lib/insights/across.ts';
 	import CategoryDonut from './CategoryDonut.svelte';
 	import OverTimeChart from './OverTimeChart.svelte';
 
 	let { spending }: { spending: Spending } = $props();
 
-	const money = (amount: number) => formatAmount(amount, spending.currency, getLocale());
+	const money = (amount: number) => shownAmount(amount, spending.currency);
 	/** Names fit the axis; the list for screen readers has them in full */
 	const short = (name: string) => (name.length > 16 ? `${name.slice(0, 15)}…` : name);
 	const openGroup = (token: string) =>

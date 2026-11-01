@@ -3,7 +3,7 @@
 	// price per litre on a fuel pump's display and what a km costs.
 	import { page } from '$app/state';
 	import { formatDistance, perDistance, perFuel, type Driving } from '#lib/expense/driving.ts';
-	import { formatAmount } from '#lib/money.ts';
+	import { shownAmount } from '#lib/shown-money.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import ConsumptionGauge from './ConsumptionGauge.svelte';
@@ -13,7 +13,7 @@
 
 	const units = $derived(page.data.units);
 	const imperial = $derived(units === 'imperial');
-	const money = (cents: number) => formatAmount(cents, currency, getLocale());
+	const money = (cents: number) => shownAmount(cents, currency);
 </script>
 
 <div
