@@ -13,6 +13,7 @@
 	import PushToggle from '#lib/components/device/PushToggle.svelte';
 	import Fold from '#lib/components/Fold.svelte';
 	import FormError from '#lib/components/FormError.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 	import PlainField from '#lib/components/fields/PlainField.svelte';
 	import AccentPicker, { accentLabels } from '#lib/components/pickers/AccentPicker.svelte';
 	import SegmentedPicker from '#lib/components/pickers/SegmentedPicker.svelte';
@@ -23,6 +24,7 @@
 	import { RATE_CURRENCIES } from '#lib/expense/exchange.ts';
 	import { SavedSetting } from '#lib/forms/saved-setting.svelte.ts';
 	import { currencyLabel } from '#lib/money.ts';
+	import { reportUrl } from '#lib/project.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale, locales } from '#lib/paraglide/runtime.js';
 	import {
@@ -210,6 +212,18 @@
 		<section class="page-section">
 			<h2 class="section-label">{m.settings_about()}</h2>
 			<SettingsRow href={resolve('/how-it-works')} title={m.how_title()} icon="help" />
+			<!-- eslint-disable svelte/no-navigation-without-resolve -- another site -->
+			<a
+				href={reportUrl(version)}
+				target="_blank"
+				rel="noopener"
+				class="field-well min-h-14 gap-3 px-3.5 active:opacity-70"
+			>
+				<span class="flex-none opacity-65"><Icon name="report" size={20} /></span>
+				<span class="min-w-0 flex-1 font-medium">{m.report_problem()}</span>
+				<span class="flex-none text-sm text-muted">{m.report_problem_where()}</span>
+			</a>
+			<!-- eslint-enable svelte/no-navigation-without-resolve -->
 			<SettingsRow href={resolve('/you/whats-new')} title={m.whats_new_title()} icon="sparkles">
 				{#snippet after()}
 					{#if unread}

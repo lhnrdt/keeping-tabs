@@ -547,6 +547,8 @@
 	"welcome_enter": "Weiter",
 	"welcome_wrong": "Das ist es nicht. Frag die Person, die dir von der App erzählt hat.",
 	"welcome_link_hint": "Du hast einen Link zu einer Gruppe? Öffne ihn einfach, ganz ohne Passwort.",
+	"report_problem": "Problem oder Idee melden",
+	"report_problem_where": "GitHub",
 	"how_title": "So funktioniert’s",
 	"how_no_account_title": "Kein Konto",
 	"how_no_account_text": "Du musst dich nicht anmelden. Dein Gerät bekommt beim ersten Öffnen eine eigene Identität, mehr braucht es nicht.",
