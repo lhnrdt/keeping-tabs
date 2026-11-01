@@ -32,6 +32,7 @@
 			weekday: 'short',
 			day: 'numeric',
 			month: 'short',
+			year: 'numeric',
 			timeZone: 'UTC'
 		}).format(utc(iso));
 

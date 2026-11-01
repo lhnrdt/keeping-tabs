@@ -18,6 +18,7 @@
 		new Intl.DateTimeFormat(getLocale(), {
 			day: 'numeric',
 			month: 'short',
+			year: 'numeric',
 			timeZone: 'UTC'
 		}).format(new Date(`${iso}T00:00:00Z`));
 	const total = $derived(settling.paidBack + settling.open);

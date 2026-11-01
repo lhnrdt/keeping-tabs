@@ -2,6 +2,7 @@
 	// Month by month (#169): each month's spending stacked by kind of cost (LayerChart), fixed
 	// at the bottom, then everyday, occasional and big one-offs; a legend names them and the
 	// tooltip gives each part.
+	import { barLabel, barTicks } from '#lib/insights/time-axis.ts';
 	import { BarChart, Tooltip } from 'layerchart';
 	import { KINDS } from '#lib/insights/expense-kinds.ts';
 	import type { KindMonth } from '#lib/insights/kind-months.ts';
@@ -18,14 +19,11 @@
 	const monthName = (iso: string) =>
 		new Intl.DateTimeFormat(getLocale(), {
 			month: 'short',
-			year: '2-digit',
+			year: 'numeric',
 			timeZone: 'UTC'
 		}).format(new Date(`${iso}T00:00:00Z`));
-	const ticks = $derived(
-		[...new Set([0, Math.floor((months.length - 1) / 2), months.length - 1])].map(
-			(i) => months[i].month
-		)
-	);
+	const starts = $derived(months.map((month) => month.month));
+	const ticks = $derived(barTicks(starts));
 </script>
 
 <figure class="mx-4 rounded-2xl bg-surface px-4 pt-3 pb-2 dark:bg-surface-night">
@@ -50,7 +48,7 @@
 			bandPadding={0.3}
 			grid={{ x: false }}
 			props={{
-				xAxis: { ticks, format: monthName },
+				xAxis: { ticks, format: barLabel(starts, getLocale()) },
 				yAxis: { ticks: 3, format: (value: number) => shownCompact(value, currency) },
 				bars: { strokeWidth: 0 }
 			}}
