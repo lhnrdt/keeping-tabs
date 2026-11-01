@@ -18,8 +18,8 @@ export const CHANGELOG: ChangelogEntry[] = [
 		items: [
 			{
 				icon: 'sparkles',
-				en: 'New artwork for each theme, in the headers and on empty screens.',
-				de: 'Neue Bilder für jedes Theme, in den Kopfzeilen und auf leeren Seiten.'
+				en: 'New artwork: each group shows its type, in the colors of your theme. Mountains now look snowy, and Autumn takes the red.',
+				de: 'Neue Bilder: Jede Gruppe zeigt ihren Typ in den Farben deines Themes. Die Berge sehen jetzt verschneit aus, und Herbst bekommt das Rot.'
 			},
 			{
 				icon: 'locked',

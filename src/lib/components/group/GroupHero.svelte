@@ -43,7 +43,7 @@
 		group.tint
 	)} relative mx-4 mt-2 overflow-hidden rounded-3xl bg-(--tint-bg) px-5 pt-5 pb-6 text-(--tint-fg)"
 >
-	<ThemePattern />
+	<ThemePattern kind={group.kind} />
 	<div class="relative">
 		<Icon name={kindIcons[group.kind]} size={28} />
 		<h1 class="font-display text-4xl leading-tight font-semibold">{group.name}</h1>

@@ -44,24 +44,24 @@
 }
 
 [data-accent='mountains'] {
-	--canvas: #f1e9eb;
-	--surface: #faf7f8;
-	--surface-muted: #e6dbdd;
-	--ink: #271c1d;
-	--ink-muted: #645457;
-	--accent: #88303e;
-	--accent-soft: #ceabb1;
-	--hero-bg: #e6d6d9;
-	--hero-fg: #4c242b;
-	--canvas-night: #1b1314;
-	--surface-night: #241b1d;
-	--surface-muted-night: #312628;
-	--ink-night: #ede8e9;
-	--ink-muted-night: #b3a8a9;
-	--accent-night: #d39ca5;
-	--accent-soft-night: #57383d;
-	--hero-bg-night: #3b2629;
-	--hero-fg-night: #dfc3c8;
+	--canvas: #edf0f3;
+	--surface: #f9fafb;
+	--surface-muted: #dfe4e8;
+	--ink: #1c2329;
+	--ink-muted: #57616a;
+	--accent: #43586a;
+	--accent-soft: #bcc8d2;
+	--hero-bg: #dde4ea;
+	--hero-fg: #2a3a47;
+	--canvas-night: #15191d;
+	--surface-night: #1d2227;
+	--surface-muted-night: #282e34;
+	--ink-night: #e9edf0;
+	--ink-muted-night: #aab2b9;
+	--accent-night: #b8cad8;
+	--accent-soft-night: #3c4a56;
+	--hero-bg-night: #2a343d;
+	--hero-fg-night: #d5e0e8;
 }
 
 [data-accent='heather'] {
@@ -170,24 +170,24 @@
 }
 
 [data-accent='autumn'] {
-	--canvas: #f2ebe8;
-	--surface: #faf8f7;
-	--surface-muted: #e7deda;
-	--ink: #281f1a;
-	--ink-muted: #665852;
-	--accent: #84411f;
-	--accent-soft: #d3b5a6;
-	--hero-bg: #e8dad4;
-	--hero-fg: #522f1e;
-	--canvas-night: #1c1512;
-	--surface-night: #261e1a;
-	--surface-muted-night: #322925;
-	--ink-night: #eeeae7;
-	--ink-muted-night: #b5aba6;
-	--accent-night: #d39a7d;
-	--accent-soft-night: #5b4133;
-	--hero-bg-night: #3e2c23;
-	--hero-fg-night: #e4cbbf;
+	--canvas: #f1e9eb;
+	--surface: #faf7f8;
+	--surface-muted: #e6dbdd;
+	--ink: #271c1d;
+	--ink-muted: #645457;
+	--accent: #88303e;
+	--accent-soft: #ceabb1;
+	--hero-bg: #e6d6d9;
+	--hero-fg: #4c242b;
+	--canvas-night: #1b1314;
+	--surface-night: #241b1d;
+	--surface-muted-night: #312628;
+	--ink-night: #ede8e9;
+	--ink-muted-night: #b3a8a9;
+	--accent-night: #d39ca5;
+	--accent-soft-night: #57383d;
+	--hero-bg-night: #3b2629;
+	--hero-fg-night: #dfc3c8;
 }
 
 :root {
