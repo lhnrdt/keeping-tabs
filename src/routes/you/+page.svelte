@@ -212,7 +212,7 @@
 		<section class="page-section">
 			<h2 class="section-label">{m.settings_about()}</h2>
 			<SettingsRow href={resolve('/how-it-works')} title={m.how_title()} icon="help" />
-			<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- another site -->
+			<!-- eslint-disable svelte/no-navigation-without-resolve -- another site -->
 			<a
 				href={reportUrl(version)}
 				target="_blank"
@@ -223,6 +223,7 @@
 				<span class="min-w-0 flex-1 font-medium">{m.report_problem()}</span>
 				<span class="flex-none text-sm text-muted">{m.report_problem_where()}</span>
 			</a>
+			<!-- eslint-enable svelte/no-navigation-without-resolve -->
 			<SettingsRow href={resolve('/you/whats-new')} title={m.whats_new_title()} icon="sparkles">
 				{#snippet after()}
 					{#if unread}
