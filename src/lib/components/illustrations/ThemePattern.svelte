@@ -50,8 +50,8 @@
 				{/if}
 				<path
 					d={shape.d}
-					fill={shape.cut ? 'var(--tint-bg)' : 'var(--tint-line)'}
-					fill-opacity={shape.cut ? 1 : shape.strength * strength}
+					fill={shape.snow ? '#fff' : shape.cut ? 'var(--tint-bg)' : 'var(--tint-line)'}
+					fill-opacity={shape.cut || shape.snow ? 1 : shape.strength * strength}
 					class={shape.motion ? `scene-${shape.motion}` : undefined}
 				/>
 			{/each}

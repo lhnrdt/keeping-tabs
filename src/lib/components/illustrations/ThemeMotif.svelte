@@ -27,7 +27,7 @@
 	<g clip-path={`url(#${clip})`} fill="currentColor">
 		<circle {cx} {cy} r={radius} opacity="0.12" />
 		{#each art.shapes as shape, i (i)}
-			{#if 'snow' in shape && shape.snow}
+			{#if shape.snow}
 				<path d={shape.d} fill="#fff" />
 			{:else if shape.cut}
 				<path d={shape.d} class="text-canvas dark:text-canvas-night" />
@@ -35,14 +35,12 @@
 				<!-- Solid: whatever's behind a shape shouldn't show through it -->
 				<path
 					d={shape.d}
-					class="text-canvas dark:text-canvas-night {'motion' in shape && shape.motion
-						? `scene-${shape.motion}`
-						: ''}"
+					class="text-canvas dark:text-canvas-night {shape.motion ? `scene-${shape.motion}` : ''}"
 				/>
 				<path
 					d={shape.d}
 					opacity={shape.strength}
-					class={'motion' in shape && shape.motion ? `scene-${shape.motion}` : undefined}
+					class={shape.motion ? `scene-${shape.motion}` : undefined}
 				/>
 			{/if}
 		{/each}

@@ -8,7 +8,14 @@ import type { ThemeId } from './palettes';
 export type SceneMotion =
 	'rise' | 'bob' | 'bob-slow' | 'flutter' | 'pulse' | 'idle' | 'drift' | 'breathe' | 'flicker';
 
-export type Shape = { d: string; strength: number; cut?: boolean; motion?: SceneMotion };
+export type Shape = {
+	d: string;
+	strength: number;
+	cut?: boolean;
+	/** White, in light and dark */
+	snow?: boolean;
+	motion?: SceneMotion;
+};
 export type Line = { d: string; strength: number; motion?: SceneMotion };
 export type Dot = [x: number, y: number, r: number, strength: number];
 export type Scene = { shapes: Shape[]; lines?: Line[]; dots?: Dot[] };
@@ -67,7 +74,8 @@ export const SCENES: Record<ThemeId, Scene> = {
 		shapes: [
 			{ d: 'M200 200L262 92L300 142L348 70L400 138V200Z', strength: 0.35 },
 			{ d: 'M250 200L324 86L400 184V200Z', strength: 0.7 },
-			{ d: 'M324 86L346 115L334 110L324 122L314 110L303 118Z', strength: 1, cut: true },
+			{ d: 'M262 92L275 109L266 105L259 114L252 106L247 110Z', strength: 1, snow: true },
+			{ d: 'M324 86L346 115L334 110L324 122L314 110L303 118Z', strength: 1, snow: true },
 			{ d: 'M300 200C330 182 370 176 400 182V200Z', strength: 0.9 }
 		]
 	},
