@@ -202,11 +202,10 @@ test('choose a type and color for a group, then change them', async ({ page }) =
 	const details = page.getByRole('region', { name: 'Details' });
 	await expect(details).toContainText('Trip');
 
-	await page.getByRole('button', { name: 'Edit group' }).click();
-	const dialog = page.getByRole('dialog', { name: 'Edit group' });
-	await choose(dialog, 'Type', 'Shared home');
-	await choose(dialog, 'Color', 'Moss');
-	await dialog.getByRole('button', { name: 'Save' }).click();
+	await page.getByRole('link', { name: 'Edit group' }).click();
+	await choose(page, 'Type', 'Shared home');
+	await choose(page, 'Color', 'Moss');
+	await page.getByRole('button', { name: 'Save' }).click();
 	await expect(details).toContainText('Shared home');
 	await expect(hero).toHaveClass(/tint-moss/);
 

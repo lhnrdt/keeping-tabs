@@ -14,11 +14,6 @@ import { formContext as context, groupOf, membersOf, requireGroup } from '#lib/s
 import { entryPage } from '#lib/server/expense-entries.ts';
 import { findDeletedEntry, listExpenses, listLedger, restoreEntry } from '#lib/server/expenses.ts';
 import { deleteGroup } from '#lib/server/group-deletion.ts';
-import {
-	hashGroupPassword,
-	rememberUnlocked,
-	setGroupPassword
-} from '#lib/server/group-password.ts';
 import { joinGroup, letJoinAgain, removeMember, stepBack } from '#lib/server/membership.ts';
 import {
 	addMember,
@@ -28,20 +23,11 @@ import {
 	setBudget,
 	setDefaultSplit,
 	setInsightSections,
-	renameMember,
-	updateGroup
+	renameMember
 } from '#lib/server/groups.ts';
 import { ensurePerson, personOf, setProfileName } from '#lib/server/people.ts';
 import { addDueRecurring, listRecurring, stopRecurring } from '#lib/server/recurring.ts';
-import {
-	parseDescription,
-	parseGroupName,
-	parseGroupPassword,
-	parseKind,
-	parseDate,
-	parseMemberName,
-	parseTint
-} from '#lib/validation.ts';
+import { parseDate, parseMemberName } from '#lib/validation.ts';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, params, url }) => {
@@ -94,29 +80,6 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 };
 
 export const actions: Actions = {
-	updateGroup: async ({ locals, params, request }) => {
-		const { form, group, actorId } = await context(locals, params.token, request);
-		const invalid = (error: ErrorCode) => fail(400, { action: 'updateGroup' as const, error });
-
-		const name = parseGroupName(form.get('name'));
-		if (!name.ok) return invalid(name.error);
-		const description = parseDescription(form.get('description'));
-		if (!description.ok) return invalid(description.error);
-		const kind = parseKind(form.get('kind'));
-		if (!kind.ok) return invalid(kind.error);
-		const tint = parseTint(form.get('tint'));
-		if (!tint.ok) return invalid(tint.error);
-
-		await updateGroup(locals.db, group.id, actorId, {
-			name: name.value,
-			description: description.value,
-			kind: kind.value,
-			tint: tint.value,
-			// A checkbox: present when on
-			simplifyDebts: form.get('simplifyDebts') === 'on'
-		});
-	},
-
 	addMember: async ({ locals, params, request }) => {
 		const { form, group, actorId } = await context(locals, params.token, request);
 		const invalid = (error: ErrorCode) => fail(400, { action: 'addMember' as const, error });
@@ -158,21 +121,6 @@ export const actions: Actions = {
 			if (isUniqueViolation(e)) return invalid('member_name_taken');
 			throw e;
 		}
-	},
-
-	setPassword: async ({ locals, params, request, cookies }) => {
-		const { form, group, actorId } = await context(locals, params.token, request);
-		const password = parseGroupPassword(form.get('password'));
-		if (!password.ok) return fail(400, { action: 'setPassword' as const, error: password.error });
-		const hash = await hashGroupPassword(password.value);
-		await setGroupPassword(locals.db, group.id, actorId, hash);
-		// Whoever sets it isn't asked for it
-		await rememberUnlocked(cookies, group.id, hash);
-	},
-
-	removePassword: async ({ locals, params, request }) => {
-		const { group, actorId } = await context(locals, params.token, request);
-		await setGroupPassword(locals.db, group.id, actorId, null);
 	},
 
 	regenerateLink: async ({ locals, params, request }) => {
