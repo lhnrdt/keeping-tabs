@@ -71,11 +71,15 @@ export const actions: Actions = {
 			error(404, m.error_expense_not_found());
 		}
 		const photo = form.get('photo');
-		if (!(photo instanceof File) || photo.size === 0 || photo.size > MAX_RECEIPT_BYTES) {
+		// Sealing adds a little, and hides what it is: only the browser could tell it's a JPEG (#110)
+		const limit = MAX_RECEIPT_BYTES + (group.keyId ? 64 : 0);
+		if (!(photo instanceof File) || photo.size === 0 || photo.size > limit) {
 			return fail(400, { receiptError: 'receipt_invalid' as const });
 		}
 		const bytes = new Uint8Array(await photo.arrayBuffer());
-		if (!isJpeg(bytes)) return fail(400, { receiptError: 'receipt_invalid' as const });
+		// In an encrypted group a readable JPEG is one that wasn't sealed
+		if (Boolean(group.keyId) === isJpeg(bytes))
+			return fail(400, { receiptError: 'receipt_invalid' as const });
 		const refused = await addReceipt(locals.db, group.id, actorId, params.id, bytes);
 		if (refused) return fail(400, { receiptError: refused });
 	},

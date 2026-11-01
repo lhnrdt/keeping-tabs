@@ -22,6 +22,7 @@
 	import ShareLink from '#lib/components/group/ShareLink.svelte';
 	import UndoToast from '#lib/components/group/UndoToast.svelte';
 	import PeoplePills from '#lib/components/people/PeoplePills.svelte';
+	import { openedDownload } from '#lib/crypto/open-download.ts';
 	import { followChanges } from '#lib/follow-changes.ts';
 	import { currentTab } from '#lib/group/tabs.ts';
 	import { m } from '#lib/paraglide/messages.js';
@@ -71,6 +72,7 @@
 						entries={data.entries}
 						hasMore={data.hasMore}
 						query={data.query}
+						searchHere={Boolean(data.group.keyId)}
 					/>
 				{/key}
 				<FloatingLink
@@ -136,21 +138,28 @@
 							<Icon name="activity" />
 						{/snippet}
 					</ListItem>
-					<ListItem
-						link
-						title={m.import_link()}
-						href={resolve('/g/[token]/import', { token: data.group.shareToken })}
-					>
-						{#snippet media()}
-							<Icon name="import" />
-						{/snippet}
-					</ListItem>
+					<!-- Not for an encrypted group yet: the server reads an import's names and titles (#110) -->
+					{#if !data.group.keyId}
+						<ListItem
+							link
+							title={m.import_link()}
+							href={resolve('/g/[token]/import', { token: data.group.shareToken })}
+						>
+							{#snippet media()}
+								<Icon name="import" />
+							{/snippet}
+						</ListItem>
+					{/if}
 					<!-- A download: a plain link, not a client-side navigation -->
 					<ListItem
 						link
 						title={m.export_link()}
 						href={resolve('/g/[token]/export', { token: data.group.shareToken })}
-						linkProps={{ download: '', 'data-sveltekit-reload': '' }}
+						linkProps={{
+							download: '',
+							'data-sveltekit-reload': '',
+							onclick: openedDownload(data.group, 'csv')
+						}}
 					>
 						{#snippet media()}
 							<Icon name="export" />
@@ -160,7 +169,11 @@
 						link
 						title={m.backup_link()}
 						href={resolve('/g/[token]/backup', { token: data.group.shareToken })}
-						linkProps={{ download: '', 'data-sveltekit-reload': '' }}
+						linkProps={{
+							download: '',
+							'data-sveltekit-reload': '',
+							onclick: openedDownload(data.group, 'json')
+						}}
 					>
 						{#snippet media()}
 							<Icon name="export" />

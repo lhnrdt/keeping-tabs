@@ -11,6 +11,7 @@
 	import SubmitButton from '#lib/components/SubmitButton.svelte';
 	import type { ErrorCode } from '#lib/errors.ts';
 	import { Submission } from '#lib/forms/submission.svelte.ts';
+	import { sealing } from '#lib/crypto/seal-form.ts';
 	import { keep } from '#lib/offline/outbox.ts';
 
 	type Props = {
@@ -18,12 +19,14 @@
 		submitLabel: string;
 		/** The group's token, when this form can wait for the connection */
 		offlineToken?: string;
+		/** Fields holding text, sealed in an encrypted group (#110) */
+		sealed?: readonly string[];
 		/** Runs once it's saved, before moving on; can name a different page to go to */
 		onSaved?: () => Promise<string | void>;
 		children: Snippet;
 	};
 
-	let { error, submitLabel, offlineToken, onSaved, children }: Props = $props();
+	let { error, submitLabel, offlineToken, sealed = [], onSaved, children }: Props = $props();
 
 	const submission = new Submission();
 
@@ -73,7 +76,7 @@
 	};
 </script>
 
-<form method="POST" action="?/save" use:enhance={submit}>
+<form method="POST" action="?/save" use:enhance={sealing(sealed, submit)}>
 	{@render children()}
 	<FormError {error} />
 	<StickySubmit

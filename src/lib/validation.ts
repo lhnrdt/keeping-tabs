@@ -1,6 +1,7 @@
 import type { ErrorCode } from './errors';
 import { isExpenseCategory, type ExpenseCategory } from './expense/categories';
 import { DEFAULT_GROUP_KIND, isGroupKind, type GroupKind } from './group/kinds';
+import { isSealed } from './crypto/seal';
 import { parseFuel, parseOdometer } from './expense/driving';
 import { convert, parseRate, type Original } from './expense/exchange';
 import type { Payer } from './expense/payers';
@@ -23,6 +24,11 @@ export const LIMITS = {
 	paymentDetails: 200
 } as const;
 
+/** Sealed text (#110) is longer than what was typed; the browser that sealed it kept to the limit */
+const SEALED_ROOM = 8;
+const tooLong = (text: string, limit: number) =>
+	text.length > (isSealed(text) ? limit * SEALED_ROOM + 64 : limit);
+
 export type Result<T> = { ok: true; value: T } | { ok: false; error: ErrorCode };
 
 /** Trims and collapses inner whitespace. */
@@ -32,14 +38,14 @@ export const normalizeText = (value: unknown): string =>
 export function parseGroupName(value: unknown): Result<string> {
 	const name = normalizeText(value);
 	if (!name) return { ok: false, error: 'group_name_required' };
-	if (name.length > LIMITS.groupName) return { ok: false, error: 'group_name_too_long' };
+	if (tooLong(name, LIMITS.groupName)) return { ok: false, error: 'group_name_too_long' };
 	return { ok: true, value: name };
 }
 
 export function parseDescription(value: unknown): Result<string | null> {
 	// Keep line breaks, only trim the ends
 	const description = typeof value === 'string' ? value.trim() : '';
-	if (description.length > LIMITS.description) return { ok: false, error: 'description_too_long' };
+	if (tooLong(description, LIMITS.description)) return { ok: false, error: 'description_too_long' };
 	return { ok: true, value: description || null };
 }
 
@@ -58,7 +64,7 @@ export function parseCurrency(value: unknown): Result<string> {
 export function parseMemberName(value: unknown, existing: readonly string[]): Result<string> {
 	const name = normalizeText(value);
 	if (!name) return { ok: false, error: 'member_name_required' };
-	if (name.length > LIMITS.memberName) return { ok: false, error: 'member_name_too_long' };
+	if (tooLong(name, LIMITS.memberName)) return { ok: false, error: 'member_name_too_long' };
 	const lower = name.toLocaleLowerCase();
 	if (existing.some((other) => other.toLocaleLowerCase() === lower)) {
 		return { ok: false, error: 'member_name_taken' };
@@ -123,6 +129,8 @@ export type ExpenseInput = {
 	payers: Payer[] | null;
 	/** Chosen by hand; null follows the title */
 	category: ExpenseCategory | null;
+	/** What the browser guessed from a sealed title, which the server can't read (#110) */
+	autoCategory: ExpenseCategory | null;
 	splitMode: SplitMode;
 	/** Each member's share, in member order; they add up to the amount */
 	shares: Share[];
@@ -133,7 +141,7 @@ export type ExpenseInput = {
 /** An optional note (#123): line breaks kept, trimmed, empty = none */
 export function parseNote(value: unknown): Result<string | null> {
 	const note = typeof value === 'string' ? value.replace(/\r\n?/g, '\n').trim() : '';
-	if (note.length > LIMITS.expenseNote) return { ok: false, error: 'expense_note_too_long' };
+	if (tooLong(note, LIMITS.expenseNote)) return { ok: false, error: 'expense_note_too_long' };
 	return { ok: true, value: note || null };
 }
 
@@ -149,7 +157,7 @@ export function parseGroupPassword(value: unknown): Result<string> {
 export function parseComment(value: unknown): Result<string> {
 	const comment = typeof value === 'string' ? value.replace(/\r\n?/g, '\n').trim() : '';
 	if (!comment) return { ok: false, error: 'comment_required' };
-	if (comment.length > LIMITS.comment) return { ok: false, error: 'comment_too_long' };
+	if (tooLong(comment, LIMITS.comment)) return { ok: false, error: 'comment_too_long' };
 	return { ok: true, value: comment };
 }
 
@@ -181,6 +189,7 @@ export function parseExpense(
 		/** With paidBy "several" (#39): what each member paid, by member id */
 		payers?: Record<string, unknown>;
 		category: unknown;
+		autoCategory?: unknown;
 		splitMode: unknown;
 		/** For an equal split: who takes part */
 		participants: unknown[];
@@ -193,7 +202,7 @@ export function parseExpense(
 ): Result<ExpenseInput> {
 	const title = normalizeText(values.title);
 	if (!title) return { ok: false, error: 'expense_title_required' };
-	if (title.length > LIMITS.expenseTitle) return { ok: false, error: 'expense_title_too_long' };
+	if (tooLong(title, LIMITS.expenseTitle)) return { ok: false, error: 'expense_title_too_long' };
 
 	const notes = parseNote(values.notes);
 	if (!notes.ok) return notes;
@@ -232,6 +241,8 @@ export function parseExpense(
 			date: date.value,
 			...payers.value,
 			category: category.value,
+			autoCategory:
+				isSealed(title) && isExpenseCategory(values.autoCategory) ? values.autoCategory : null,
 			...split.value
 		}
 	};

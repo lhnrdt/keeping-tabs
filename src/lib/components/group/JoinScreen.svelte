@@ -19,6 +19,7 @@
 	import type { GroupKind } from '#lib/group/kinds.ts';
 	import { matchMember } from '#lib/group/match-member.ts';
 	import type { GroupMember } from '#lib/group/members.ts';
+	import { sealing } from '#lib/crypto/seal-form.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { groupTintClass, type Tint } from '#lib/tints.ts';
 	import { LIMITS, normalizeText } from '#lib/validation.ts';
@@ -77,7 +78,7 @@
 	<form
 		method="POST"
 		action={`${resolve('/g/[token]', { token: group.shareToken })}?/join`}
-		use:enhance={submission.enhance}
+		use:enhance={sealing(['name'], submission.enhance)}
 	>
 		{#if open.length}
 			<BlockTitle>{m.join_which()}</BlockTitle>

@@ -218,6 +218,13 @@
       "when": 1793538892559,
       "tag": "0030_expense_notified",
       "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "6",
+      "when": 1793541722844,
+      "tag": "0031_group_encryption",
+      "breakpoints": true
     }
   ]
 }

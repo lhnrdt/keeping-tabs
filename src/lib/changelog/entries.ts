@@ -15,6 +15,10 @@ export const CHANGELOG: ChangelogEntry[] = [
 		date: '',
 		items: [
 			{
+				en: 'Encrypted groups: names, titles, notes, comments and photos can only be read with the key in the group’s link. Choose it for a new group, or turn it on for an existing one.',
+				de: 'Verschlüsselte Gruppen: Namen, Titel, Notizen, Kommentare und Fotos lassen sich nur mit dem Schlüssel im Link der Gruppe lesen. Wähle das bei einer neuen Gruppe oder schalte es für eine bestehende ein.'
+			},
+			{
 				en: 'Add another device by scanning a QR code.',
 				de: 'Füge ein weiteres Gerät hinzu, indem du einen QR-Code scannst.'
 			},

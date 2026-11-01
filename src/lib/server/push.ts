@@ -115,7 +115,7 @@ export async function sendTest(db: Db, personId: string, locale: string) {
  */
 export async function notifyNewExpense(
 	db: Db,
-	group: { id: string; name: string; shareToken: string; currency: string },
+	group: { id: string; name: string; shareToken: string; currency: string; keyId: string | null },
 	actorId: string | null,
 	expense: { title: string; amountCents: number }
 ) {
@@ -151,16 +151,20 @@ export async function notifyNewExpense(
 				const chosen = others.find((other) => other.personId === sub.personId)?.locale;
 				return isLocale(chosen) ? chosen : 'en';
 			})();
+			const amount = formatAmount(expense.amountCents, group.currency, locale);
 			return send(db, sub, {
-				title: group.name,
-				body: m.push_new_expense(
-					{
-						name: actor?.name ?? m.activity_someone({}, { locale }),
-						title: expense.title,
-						amount: formatAmount(expense.amountCents, group.currency, locale)
-					},
-					{ locale }
-				),
+				// An encrypted group's names and titles aren't readable here (#110)
+				title: group.keyId ? m.app_name({}, { locale }) : group.name,
+				body: group.keyId
+					? m.push_new_expense_sealed({ amount }, { locale })
+					: m.push_new_expense(
+							{
+								name: actor?.name ?? m.activity_someone({}, { locale }),
+								title: expense.title,
+								amount
+							},
+							{ locale }
+						),
 				url: `/g/${group.shareToken}`,
 				tag: `group-${group.id}`
 			});

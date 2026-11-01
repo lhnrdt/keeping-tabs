@@ -5,9 +5,12 @@
 	import { Dialog, DialogButton } from 'konsta/svelte';
 	import type { Snippet } from 'svelte';
 	import { Submission } from '#lib/forms/submission.svelte.ts';
+	import { sealing } from '#lib/crypto/seal-form.ts';
 	import { m } from '#lib/paraglide/messages.js';
 
 	type Props = {
+		/** Fields holding text, sealed in an encrypted group (#110) */
+		sealed?: readonly string[];
 		opened: boolean;
 		title: string;
 		/** Form action URL, see tabAction() */
@@ -21,6 +24,7 @@
 	};
 
 	let {
+		sealed = [],
 		opened,
 		title: heading,
 		action,
@@ -54,10 +58,10 @@
 		method="POST"
 		{action}
 		class="max-h-[60dvh] overflow-y-auto overscroll-contain"
-		use:enhance={(input) => {
+		use:enhance={sealing(sealed, (input) => {
 			onSubmit?.();
 			return submission.enhance(input);
-		}}
+		})}
 	>
 		{@render children?.()}
 	</form>

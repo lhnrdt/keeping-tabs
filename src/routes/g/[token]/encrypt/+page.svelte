@@ -1,0 +1,84 @@
+<script lang="ts">
+	// Encrypting an existing group (#110): what it means, then the doing, then the new link.
+	import { invalidateAll } from '$app/navigation';
+	import { resolve } from '$app/paths';
+	import { page } from '$app/state';
+	import AppPage from '#lib/components/AppPage.svelte';
+	import LinkField from '#lib/components/LinkField.svelte';
+	import StickySubmit from '#lib/components/StickySubmit.svelte';
+	import SubmitButton from '#lib/components/SubmitButton.svelte';
+	import { linkWithKey } from '#lib/crypto/keyring.ts';
+	import { encryptGroup } from '#lib/crypto/encrypt-group.ts';
+	import { categorize } from '#lib/expense/categorize.ts';
+	import { groupTabUrl } from '#lib/group/tabs.ts';
+	import { m } from '#lib/paraglide/messages.js';
+	import type { PageProps } from './$types';
+
+	let { data }: PageProps = $props();
+
+	const base = $derived(resolve('/g/[token]', { token: data.group.shareToken }));
+	let progress = $state<{ done: number; total: number }>();
+	let failed = $state(false);
+	let link = $state<string>();
+
+	async function start() {
+		failed = false;
+		progress = { done: 0, total: 1 };
+		try {
+			const key = await encryptGroup(
+				base,
+				categorize,
+				(done, total) => (progress = { done, total })
+			);
+			link = linkWithKey(new URL(base, page.url.origin).href, key);
+			await invalidateAll();
+		} catch {
+			failed = true;
+		} finally {
+			progress = undefined;
+		}
+	}
+</script>
+
+<svelte:head>
+	<title>{m.encrypt_page_title()}</title>
+</svelte:head>
+
+<AppPage
+	title={m.encrypt_page_title()}
+	back={{ href: groupTabUrl(base, 'group'), label: data.group.name }}
+>
+	<div class="page-sections">
+		{#if link}
+			<div class="page-section" role="status">
+				<p class="font-medium">{m.encrypt_done()}</p>
+				<LinkField {link} label={m.share_title()} />
+			</div>
+		{:else}
+			<div class="page-section">
+				<p>{m.encrypt_intro()}</p>
+				<p class="text-sm text-muted">{m.encrypt_warning_key()}</p>
+				<p class="text-sm text-muted">{m.encrypt_warning_limits()}</p>
+				<p class="text-sm font-medium tone-destructive">{m.encrypt_warning_lost()}</p>
+				{#if failed}<p class="text-sm tone-destructive" role="alert">{m.encrypt_failed()}</p>{/if}
+				{#if progress}
+					<p class="text-sm text-muted" role="status">
+						{m.encrypt_working({ done: progress.done, total: progress.total })}
+					</p>
+				{/if}
+			</div>
+		{/if}
+	</div>
+	{#if !link}
+		<form
+			onsubmit={(event) => {
+				event.preventDefault();
+				void start();
+			}}
+		>
+			<StickySubmit>
+				<SubmitButton pending={progress !== undefined}>{m.encrypt_button()}</SubmitButton>
+			</StickySubmit>
+		</form>
+	{/if}
+</AppPage>

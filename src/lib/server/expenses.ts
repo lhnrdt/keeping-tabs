@@ -21,7 +21,8 @@ const expenseColumns = {
 	amountCents: expenses.amountCents,
 	paidBy: expenses.paidBy,
 	date: expenses.date,
-	category: expenses.category
+	category: expenses.category,
+	autoCategory: expenses.autoCategory
 };
 
 export const active = (groupId: string) =>
@@ -313,7 +314,8 @@ export async function createExpense(
 			amountCents: input.amountCents,
 			paidBy: input.paidBy,
 			date: input.date,
-			category: input.category
+			category: input.category,
+			autoCategory: input.autoCategory
 		}),
 		db.insert(expenseSplits).values(splitRows(id, input)),
 		...payerRows(db, id, input),
@@ -344,6 +346,7 @@ export async function updateExpense(
 				paidBy: input.paidBy,
 				date: input.date,
 				category: input.category,
+				autoCategory: input.autoCategory,
 				splitMode: input.splitMode
 			})
 			.where(and(eq(expenses.id, id), active(groupId))),

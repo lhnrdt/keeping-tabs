@@ -1,5 +1,10 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
+	import { enhance, type SubmitFunction } from '$app/forms';
+	import { rememberKey } from '#lib/crypto/keyring.ts';
+	import { openDeep } from '#lib/crypto/open-data.ts';
+	import { newKey } from '#lib/crypto/seal.ts';
+	import { sealFields } from '#lib/crypto/seal-form.ts';
+	import { syncKeys } from '#lib/crypto/vault.ts';
 	import PlainField from '#lib/components/fields/PlainField.svelte';
 	import StickySubmit from '#lib/components/StickySubmit.svelte';
 	import KindPicker from '#lib/components/pickers/KindPicker.svelte';
@@ -12,6 +17,8 @@
 	import { m } from '#lib/paraglide/messages.js';
 	import { LIMITS } from '#lib/validation.ts';
 	import MemberChips from './MemberChips.svelte';
+
+	const SEALED_FIELDS = ['name', 'description', 'you', 'member'];
 
 	type Values = {
 		name: string;
@@ -35,11 +42,35 @@
 	let { currencies, defaultCurrency, values, error, profileName }: Props = $props();
 
 	const submission = new Submission();
+
+	/** An encrypted group (#110): a new key, which stays here, and everything typed sealed with it */
+	const create: SubmitFunction = async (input) => {
+		const form = input.formData;
+		const plain: Record<string, FormDataEntryValue[]> = {};
+		if (form.get('encrypted') === 'on') {
+			const key = newKey();
+			const keyId = await rememberKey(key);
+			for (const name of SEALED_FIELDS) plain[name] = form.getAll(name);
+			await sealFields(form, key, SEALED_FIELDS);
+			form.set('keyId', keyId);
+		}
+		const after = submission.enhance(input) as Exclude<
+			ReturnType<SubmitFunction>,
+			Promise<unknown>
+		>;
+		return async (options) => {
+			if (options.result.type === 'failure') {
+				options.result.data = await openDeep(options.result.data);
+			}
+			await after?.(options);
+			if (options.result.type === 'redirect') void syncKeys().catch(() => {});
+		};
+	};
 	const currency = $derived(values?.currency || defaultCurrency);
 </script>
 
 <section>
-	<form method="POST" use:enhance={submission.enhance}>
+	<form method="POST" use:enhance={create}>
 		<div class="page-sections">
 			<div class="page-section">
 				<PlainField label={m.field_group_name()}>
@@ -98,6 +129,17 @@
 				<h2 class="section-label mx-4">{m.field_other_members()}</h2>
 				<MemberChips names={values?.members} />
 			</section>
+			<label class="flex cursor-pointer items-start gap-3">
+				<input
+					type="checkbox"
+					name="encrypted"
+					class="mt-0.5 size-[18px] shrink-0 accent-accent dark:accent-accent-night"
+				/>
+				<span class="flex flex-col">
+					<span class="text-sm font-medium">{m.encrypt_new_group()}</span>
+					<span class="text-sm text-muted">{m.encrypt_new_group_hint()}</span>
+				</span>
+			</label>
 			<FormError {error} />
 		</div>
 		<StickySubmit>

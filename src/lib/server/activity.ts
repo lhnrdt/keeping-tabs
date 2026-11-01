@@ -6,6 +6,7 @@ export type Action =
 	| 'group.create'
 	| 'group.update'
 	| 'group.regenerate_link'
+	| 'group.encrypt'
 	| 'group.password_set'
 	| 'group.password_remove'
 	| 'group.import'

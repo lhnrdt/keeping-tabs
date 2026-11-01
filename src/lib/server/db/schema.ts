@@ -48,6 +48,8 @@ export const groups = sqliteTable('groups', {
 	insightSections: text('insight_sections'),
 	// New expenses start split this way, e.g. {"mode":"percent","inputs":{…}} (#41); null = equal
 	defaultSplit: text('default_split', { mode: 'json' }),
+	// Which key seals this group's text (#110); null = stored as plain text. Never the key itself
+	keyId: text('key_id'),
 	// Optional password on top of the link (A-8), salted and slow (group-password.ts); null = none
 	passwordHash: text('password_hash'),
 	// Budget (minor units) and end date for trips and events, both optional (#168)
@@ -75,6 +77,8 @@ export const people = sqliteTable('people', {
 	notedAt: integer('noted_at', { mode: 'timestamp_ms' }),
 	// How to pay them, e.g. a PayPal.me link or IBAN (#47); shown to people in their groups
 	paymentDetails: text('payment_details'),
+	// Their vault key, sealed with their recovery key, so a new device can get their groups' keys (#110)
+	recoveryVault: text('recovery_vault'),
 	// Hash of the person's recovery key, if they created one (A-16)
 	recoveryHash: text('recovery_hash').unique(),
 	createdAt: createdAt()
@@ -202,6 +206,8 @@ export const expenses = sqliteTable(
 		odometerM: integer('odometer_m'),
 		fuelMl: integer('fuel_ml'),
 		category: text('category').$type<ExpenseCategory>(),
+		// The browser's guess when the title is sealed and the server can't guess (#110)
+		autoCategory: text('auto_category').$type<ExpenseCategory>(),
 		// When the group was told about it (#56); each expense only once
 		notifiedAt: integer('notified_at', { mode: 'timestamp_ms' }),
 		// Where an imported row came from (e.g. "sw:…" for Splitwise), so re-imports skip it (I-3)
@@ -258,6 +264,20 @@ export const expensePayers = sqliteTable(
 		amountCents: integer('amount_cents').notNull()
 	},
 	(t) => [primaryKey({ columns: [t.expenseId, t.memberId] })]
+);
+
+/** A person's groups' keys, for their other devices (#110) */
+export const personKeys = sqliteTable(
+	'person_keys',
+	{
+		personId: text('person_id')
+			.notNull()
+			.references(() => people.id, { onDelete: 'cascade' }),
+		keyId: text('key_id').notNull(),
+		// The group's key, sealed with the person's vault key, which the server never has
+		sealed: text('sealed').notNull()
+	},
+	(t) => [primaryKey({ columns: [t.personId, t.keyId] })]
 );
 
 /** A short conversation under an expense (#49), visible to the group; each removes only their own */

@@ -1,6 +1,7 @@
 <script lang="ts">
 	// Enter a recovery key to be yourself again on this device (A-16).
-	import { enhance } from '$app/forms';
+	import { enhance, type SubmitFunction } from '$app/forms';
+	import { openVaultWithRecovery } from '#lib/crypto/vault.ts';
 	import { Block } from 'konsta/svelte';
 	import Field from '#lib/components/Field.svelte';
 	import FormError from '#lib/components/FormError.svelte';
@@ -17,7 +18,22 @@
 {#if restored}
 	<Block class="tone-positive" role="status">{m.restore_done()}</Block>
 {:else}
-	<form method="POST" action="?/restore" use:enhance={submission.enhance}>
+	<form
+		method="POST"
+		action="?/restore"
+		use:enhance={(input) => {
+			const typed = String(input.formData.get('recoveryKey') ?? '');
+			const after = submission.enhance(input) as Exclude<
+				ReturnType<SubmitFunction>,
+				Promise<unknown>
+			>;
+			return async (options) => {
+				await after?.(options);
+				// Your groups' keys come back with it (#110)
+				if (options.result.type === 'success') await openVaultWithRecovery(typed).catch(() => {});
+			};
+		}}
+	>
 		<div class="page-section mx-4 my-4">
 			<Field
 				label={m.field_recovery_key()}

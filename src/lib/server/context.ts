@@ -1,4 +1,5 @@
 import { error } from '@sveltejs/kit';
+import { isSealed } from '#lib/crypto/seal.ts';
 import { DELETED_GROUP_DAYS } from '#lib/group/retention.ts';
 import { m } from '#lib/paraglide/messages.js';
 import type { Db } from './db';
@@ -24,6 +25,20 @@ export const membersOf = (locals: App.Locals, groupId: string) =>
 	once(locals, `members:${groupId}`, () => listMembers(locals.db, groupId));
 
 /**
+ * A page opened before the group was encrypted would send plain text into it (#110). Refused, so
+ * the server's promise holds whatever a browser sends.
+ */
+export function refuseUnsealed(group: { keyId: string | null }, form: FormData) {
+	if (!group.keyId) return;
+	for (const name of ['title', 'notes', 'comment', 'name', 'description']) {
+		const value = form.get(name);
+		if (typeof value === 'string' && value.trim() && !isSealed(value)) {
+			error(409, m.locked_reload());
+		}
+	}
+}
+
+/**
  * Form data, group, the device's person and the member they act as, for a form
  * submission by a member of the group. The actor comes from the device identity, never
  * from the form (A-5).
@@ -31,6 +46,7 @@ export const membersOf = (locals: App.Locals, groupId: string) =>
 export async function formContext(locals: App.Locals, token: string, request: Request) {
 	const form = await request.formData();
 	const group = await requireGroup(locals.db, token);
+	refuseUnsealed(group, form);
 	const person = await findPerson(locals.db, locals.deviceKey);
 	const actorId = await memberOf(locals.db, group.id, person?.id);
 	// Joining comes first: every change has a member behind it

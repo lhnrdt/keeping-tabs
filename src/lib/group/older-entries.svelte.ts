@@ -1,5 +1,6 @@
 // Older pages of the expense list, fetched while scrolling. Pages are counted by position,
 // so an entry added meanwhile could arrive twice; callers merge by id.
+import { openDeep } from '#lib/crypto/open-data.ts';
 import type { ListEntry } from '#lib/server/expense-entries.ts';
 
 export class OlderEntries {
@@ -18,7 +19,9 @@ export class OlderEntries {
 		try {
 			const response = await fetch(this.url(offset));
 			if (!response.ok) throw new Error(String(response.status));
-			const page: { entries: ListEntry[]; hasMore: boolean } = await response.json();
+			const page = await openDeep<{ entries: ListEntry[]; hasMore: boolean }>(
+				await response.json()
+			);
 			this.items = [...this.items, ...page.entries];
 			this.more = page.hasMore;
 		} catch {

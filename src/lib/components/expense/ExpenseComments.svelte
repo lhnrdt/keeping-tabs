@@ -8,6 +8,7 @@
 	import SubmitButton from '#lib/components/SubmitButton.svelte';
 	import type { ErrorCode } from '#lib/errors.ts';
 	import { calmMove, calmSlide } from '#lib/motion/calm.ts';
+	import { sealing } from '#lib/crypto/seal-form.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import { LIMITS } from '#lib/validation.ts';
@@ -74,13 +75,13 @@
 			method="POST"
 			action="?/comment"
 			class="flex flex-col gap-2"
-			use:enhance={() => {
+			use:enhance={sealing(['comment'], () => {
 				sending = true;
 				return async ({ update }) => {
 					await update();
 					sending = false;
 				};
-			}}
+			})}
 		>
 			<PlainField label={m.comment_field()}>
 				{#snippet children(id)}

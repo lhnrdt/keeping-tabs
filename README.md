@@ -42,6 +42,8 @@ Planned work and ideas are [GitHub issues](https://github.com/lhnrdt/keeping-tab
 
 No tracking, no analytics, and fonts, icons and category keywords are bundled. Two outside services are involved, and only for these features: exchange rates come from [Frankfurter](https://frankfurter.dev) (the server sends currency codes and a date, nothing about you), and notifications, if you turn them on, go encrypted through your browser's push service (Google, Apple or Mozilla). The only personal data is the names you type in. Device keys, link tokens and recovery keys are stored only as hashes.
 
+A group can be encrypted, when it's created or later. Its names, titles, notes, comments and photos are then sealed in the browser with AES-GCM, using a key in the link's fragment, which browsers don't send to the server. Amounts, dates and who owes whom stay readable to the server, because it works out the balances. It's optional: a group is plain unless someone turns this on.
+
 ## Tech stack
 
 | Layer     | Choice                                                                                                                         |

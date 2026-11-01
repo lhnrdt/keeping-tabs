@@ -154,6 +154,7 @@ describe('parseExpense', () => {
 				odometerM: null,
 				fuelMl: null,
 				items: null,
+				autoCategory: null,
 				amountCents: 3000,
 				date: '2026-10-21',
 				paidBy: 'b',

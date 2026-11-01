@@ -13,6 +13,7 @@
 
 	type Group = {
 		shareToken: string;
+		keyId: string | null;
 		name: string;
 		description: string | null;
 		currency: string;
@@ -73,6 +74,24 @@
 			<Icon name="password" />
 		{/snippet}
 	</ListItem>
+	{#if group.keyId}
+		<ListItem title={m.encryption_title()} after={m.on()}>
+			{#snippet media()}
+				<Icon name="locked" />
+			{/snippet}
+		</ListItem>
+	{:else}
+		<ListItem
+			link
+			title={m.encryption_title()}
+			after={m.off()}
+			href={resolve('/g/[token]/encrypt', { token: group.shareToken })}
+		>
+			{#snippet media()}
+				<Icon name="locked" />
+			{/snippet}
+		</ListItem>
+	{/if}
 	<ListButton href={resolve('/g/[token]/edit', { token: group.shareToken })}>
 		<Icon name="edit" />
 		{m.edit_group()}

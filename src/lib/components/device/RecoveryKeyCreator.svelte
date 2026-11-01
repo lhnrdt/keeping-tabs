@@ -5,11 +5,17 @@
 	import CopyButton from '#lib/components/CopyButton.svelte';
 	import SubmitButton from '#lib/components/SubmitButton.svelte';
 	import { Submission } from '#lib/forms/submission.svelte.ts';
+	import { sealVaultForRecovery } from '#lib/crypto/vault.ts';
 	import { m } from '#lib/paraglide/messages.js';
 
 	let { recoveryKey }: { recoveryKey?: string } = $props();
 
 	const submission = new Submission();
+
+	// It can bring your groups' keys back too (#110)
+	$effect(() => {
+		if (recoveryKey) void sealVaultForRecovery(recoveryKey).catch(() => {});
+	});
 </script>
 
 {#if recoveryKey}

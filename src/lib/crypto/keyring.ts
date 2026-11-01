@@ -1,0 +1,95 @@
+// The keys this device holds (#110), in IndexedDB: they never go to the server as they are. Each
+// group's key arrives in its link's fragment (the part after #, which browsers don't send), is
+// kept here, and taken out of the address. A person's other devices get them through the vault
+// (vault.ts).
+import { isKey, keyIdOf } from './seal';
+
+const DATABASE = 'keeping-tabs-keys';
+const STORE = 'keys';
+const VAULT = 'vault';
+
+const memory = new Map<string, string>();
+let loaded: Promise<void> | undefined;
+
+function database() {
+	return new Promise<IDBDatabase>((resolve, reject) => {
+		const request = indexedDB.open(DATABASE, 1);
+		request.onupgradeneeded = () => request.result.createObjectStore(STORE);
+		request.onsuccess = () => resolve(request.result);
+		request.onerror = () => reject(request.error);
+	});
+}
+
+async function withStore<T>(
+	mode: IDBTransactionMode,
+	use: (store: IDBObjectStore) => IDBRequest<T>
+) {
+	const db = await database();
+	return new Promise<T>((resolve, reject) => {
+		const request = use(db.transaction(STORE, mode).objectStore(STORE));
+		request.onsuccess = () => resolve(request.result);
+		request.onerror = () => reject(request.error);
+	});
+}
+
+function load() {
+	loaded ??= (async () => {
+		const ids = await withStore('readonly', (store) => store.getAllKeys());
+		const keys = await withStore('readonly', (store) => store.getAll());
+		ids.forEach((id, i) => memory.set(String(id), keys[i]));
+	})().catch(() => {
+		// Private browsing and the like: keys last for this page only
+	});
+	return loaded;
+}
+
+/** The key with this id, if this device has it */
+export async function keyFor(keyId: string) {
+	await load();
+	return memory.get(keyId);
+}
+
+/** Keeps a key on this device; returns its id */
+export async function rememberKey(key: string) {
+	await load();
+	const id = await keyIdOf(key);
+	memory.set(id, key);
+	await withStore('readwrite', (store) => store.put(key, id)).catch(() => {});
+	return id;
+}
+
+export const allKeys = async () => {
+	await load();
+	return [...memory].filter(([id]) => id !== VAULT).map(([, key]) => key);
+};
+
+export async function vaultKey() {
+	await load();
+	return memory.get(VAULT);
+}
+
+export async function rememberVault(key: string) {
+	await load();
+	memory.set(VAULT, key);
+	await withStore('readwrite', (store) => store.put(key, VAULT)).catch(() => {});
+}
+
+/** Forgets everything on this device, when someone deletes their identity */
+export async function forgetKeys() {
+	memory.clear();
+	await withStore('readwrite', (store) => store.clear()).catch(() => {});
+}
+
+const HASH_KEY = /(?:^#|&)key=([\w-]{43})(?:&|$)/;
+
+/** A group link's key, if the address has one: kept, and taken out of the address */
+export async function takeKeyFromAddress() {
+	const key = HASH_KEY.exec(location.hash)?.[1];
+	if (!isKey(key)) return undefined;
+	const id = await rememberKey(key);
+	history.replaceState(history.state, '', `${location.pathname}${location.search}`);
+	return { key, id };
+}
+
+/** A group's link with its key, to pass on */
+export const linkWithKey = (link: string, key: string) => `${link}#key=${key}`;

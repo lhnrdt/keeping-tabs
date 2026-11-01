@@ -17,6 +17,8 @@ const MAX_ROWS = 5_000;
 export const actions: Actions = {
 	default: async ({ locals, params, request }) => {
 		const { form, group, actorId } = await formContext(locals, params.token, request);
+		// The server would read names and titles (#110)
+		if (group.keyId) return fail(400, { error: 'import_encrypted' as ErrorCode });
 		const invalid = (error: ErrorCode) => fail(400, { error });
 
 		const file = form.get('file');

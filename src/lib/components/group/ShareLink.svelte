@@ -5,13 +5,21 @@
 	import LinkField from '#lib/components/LinkField.svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import FormDialog from './FormDialog.svelte';
+	import { keyFor, linkWithKey } from '#lib/crypto/keyring.ts';
 	import { tabAction } from '#lib/group/tabs.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { shareOrCopy } from '#lib/share.ts';
 
 	let { token, groupName }: { token: string; groupName: string } = $props();
 
-	const shareUrl = $derived(new URL(resolve('/g/[token]', { token }), page.url.origin).href);
+	const plainUrl = $derived(new URL(resolve('/g/[token]', { token }), page.url.origin).href);
+	// An encrypted group's link carries its key (#110), in the part browsers don't send
+	let key = $state<string>();
+	$effect(() => {
+		const keyId = page.data.group?.keyId;
+		if (keyId) void keyFor(keyId).then((found) => (key = found));
+	});
+	const shareUrl = $derived(key ? linkWithKey(plainUrl, key) : plainUrl);
 	let copied = $state(false);
 	let confirmingRegenerate = $state(false);
 

@@ -9,7 +9,13 @@ import { groupInsights } from '#lib/insights/group.ts';
 import { defaultPeriod, parsePeriod } from '#lib/insights/period.ts';
 import { balances } from '#lib/money.ts';
 import { settleTransfers } from '#lib/settle.ts';
-import { formContext as context, groupOf, membersOf, requireGroup } from '#lib/server/context.ts';
+import {
+	formContext as context,
+	groupOf,
+	membersOf,
+	requireGroup,
+	refuseUnsealed
+} from '#lib/server/context.ts';
 import { entryPage } from '#lib/server/expense-entries.ts';
 import { findDeletedEntry, listExpenses, listLedger, restoreEntry } from '#lib/server/expenses.ts';
 import { deleteGroup } from '#lib/server/group-deletion.ts';
@@ -24,6 +30,7 @@ import {
 } from '#lib/server/groups.ts';
 import { ensurePerson, personOf, setProfileName } from '#lib/server/people.ts';
 import { addDueRecurring, listRecurring, stopRecurring } from '#lib/server/recurring.ts';
+import { isSealed } from '#lib/crypto/seal.ts';
 import { parseMemberName } from '#lib/validation.ts';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -43,7 +50,8 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 	const [ledger, expenses, page, justDeleted, recurring] = await Promise.all([
 		listLedger(locals.db, group.id),
 		onInsights ? listExpenses(locals.db, group.id) : undefined,
-		entryPage(locals.db, group.id, mine, 0, shown, query),
+		// An encrypted group is searched in the browser: the server can't read it (#110)
+		entryPage(locals.db, group.id, mine, 0, shown, group.keyId ? '' : query),
 		// Right after deleting: offer "Undo" (#78); gone once it's restored
 		deletedId ? findDeletedEntry(locals.db, group.id, deletedId) : undefined,
 		currentTab(url) === 'group' ? listRecurring(locals.db, group.id) : []
@@ -130,6 +138,7 @@ export const actions: Actions = {
 	join: async ({ locals, params, request }) => {
 		const form = await request.formData();
 		const group = await requireGroup(locals.db, params.token);
+		refuseUnsealed(group, form);
 		const person = await ensurePerson(locals.db, locals.deviceKey);
 		const memberId = form.get('memberId')?.toString();
 		const joined = await joinGroup(
@@ -140,7 +149,10 @@ export const actions: Actions = {
 		);
 		if (!joined.ok) return fail(400, { action: 'join' as const, error: joined.error });
 		// The first name you use becomes your profile name (A-13)
-		if (!person.name) await setProfileName(locals.db, person.id, joined.value.name);
+		// (not a sealed one: it's for all your groups, and has no key)
+		if (!person.name && !isSealed(joined.value.name)) {
+			await setProfileName(locals.db, person.id, joined.value.name);
+		}
 	},
 
 	/** Soft delete: the group disappears for everyone and can be restored for a while (G-3) */

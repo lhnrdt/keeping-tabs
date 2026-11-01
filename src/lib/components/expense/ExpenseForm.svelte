@@ -145,7 +145,13 @@
 	};
 </script>
 
-<GroupForm {error} {submitLabel} {offlineToken} onSaved={offlineToken ? afterSaving : undefined}>
+<GroupForm
+	{error}
+	{submitLabel}
+	{offlineToken}
+	sealed={['title', 'notes', 'items']}
+	onSaved={offlineToken ? afterSaving : undefined}
+>
 	{#if offlineToken}<input type="hidden" name="clientId" value={clientId} />{/if}
 	<div class="flex flex-col gap-4 px-4 pt-2 pb-4">
 		<TitleNoteField bind:title notes={values.notes} />

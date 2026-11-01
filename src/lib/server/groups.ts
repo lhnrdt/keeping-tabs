@@ -22,7 +22,8 @@ export async function findGroupByToken(db: Db, token: string) {
 			insightSections: true,
 			budgetCents: true,
 			endsOn: true,
-			defaultSplit: true
+			defaultSplit: true,
+			keyId: true
 		},
 		where: and(eq(groups.shareToken, token), isNull(groups.deletedAt))
 	});
@@ -98,6 +99,8 @@ export async function createGroup(
 		tint: Tint | null;
 		memberNames: string[];
 		creatorPersonId: string;
+		/** Its text is sealed in the browser with this key (#110) */
+		keyId?: string | null;
 	}
 ) {
 	const groupId = crypto.randomUUID();
@@ -119,7 +122,8 @@ export async function createGroup(
 			description: input.description,
 			currency: input.currency,
 			kind: input.kind,
-			tint: input.tint
+			tint: input.tint,
+			keyId: input.keyId ?? null
 		}),
 		db.insert(members).values(memberRows),
 		log(db, groupId, creatorId, 'group.create', {
