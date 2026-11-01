@@ -111,8 +111,8 @@ export type ExpenseInput = {
 	/** Typed in another currency (#54): what and at which rate; amountCents is converted */
 	original: Original | null;
 	amountCents: number;
-	/** In car groups: distance driven and fuel bought, if noted */
-	distanceM: number | null;
+	/** In car groups: the odometer reading and fuel bought, if noted */
+	odometerM: number | null;
 	fuelMl: number | null;
 	date: string;
 	paidBy: string;
@@ -158,8 +158,8 @@ export function parseExpense(
 		currency?: unknown;
 		/** 1 of that currency in the group's, as typed */
 		rate?: unknown;
-		/** In car groups: km driven and litres of fuel, as typed */
-		km?: unknown;
+		/** In car groups: the odometer reading and litres of fuel, as typed */
+		odometer?: unknown;
 		litres?: unknown;
 		date: unknown;
 		paidBy: unknown;
@@ -185,8 +185,8 @@ export function parseExpense(
 	if (!money.ok) return money;
 	const { amountCents, original } = money.value;
 
-	const km = parseKm(values.km);
-	if (!km.ok) return km;
+	const odometer = parseKm(values.odometer);
+	if (!odometer.ok) return odometer;
 	const litres = parseLitres(values.litres);
 	if (!litres.ok) return litres;
 
@@ -209,7 +209,7 @@ export function parseExpense(
 			notes: notes.value,
 			original,
 			amountCents,
-			distanceM: km.value,
+			odometerM: odometer.value,
 			fuelMl: litres.value,
 			date: date.value,
 			...payers.value,

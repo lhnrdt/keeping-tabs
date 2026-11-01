@@ -1,0 +1,1 @@
+ALTER TABLE `expenses` ADD `odometer_m` integer;
