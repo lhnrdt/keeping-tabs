@@ -29,6 +29,13 @@ export const KEYWORDS: [Exclude<ExpenseCategory, 'other'>, string[]][] = [
 	[
 		'fuel',
 		[
+			'omv',
+			'totalenergies',
+			'jet',
+			'getankt',
+			'e10',
+			'ladestrom',
+			'ionity',
 			'bp',
 			'fuel',
 			'petrol',
@@ -42,13 +49,43 @@ export const KEYWORDS: [Exclude<ExpenseCategory, 'other'>, string[]][] = [
 			'esso'
 		]
 	],
-	['parking', ['parking', 'parken', 'parkhaus', 'parkplatz']],
-	['tolls', ['toll', 'maut', 'vignette']],
+	[
+		'parking',
+		[
+			'parkticket',
+			'parkgebuhr',
+			'parkuhr',
+			'parkschein',
+			'apcoa',
+			'parking',
+			'parken',
+			'parkhaus',
+			'parkplatz'
+		]
+	],
+	['tolls', ['asfinag', 'autobahn', 'toll', 'maut', 'vignette']],
 	[
 		'repairs',
-		['werkstatt', 'reparatur', 'repair', 'inspektion', 'olwechsel', 'oil change', 'reifen', 'tires']
+		[
+			'atu',
+			'tuv',
+			'hauptuntersuchung',
+			'waschanlage',
+			'autowasche',
+			'car wash',
+			'bremsen',
+			'scheibenwischer',
+			'werkstatt',
+			'reparatur',
+			'repair',
+			'inspektion',
+			'olwechsel',
+			'oil change',
+			'reifen',
+			'tires'
+		]
 	],
-	['insurance', ['versicherung', 'insurance', 'haftpflicht']],
+	['insurance', ['huk', 'allianz', 'kfz steuer', 'versicherung', 'insurance', 'haftpflicht']],
 	[
 		'transport',
 		[
@@ -151,6 +188,15 @@ export const KEYWORDS: [Exclude<ExpenseCategory, 'other'>, string[]][] = [
 	[
 		'utilities',
 		[
+			'stadtwerke',
+			'stromrechnung',
+			'gasrechnung',
+			'wasserrechnung',
+			'rundfunk',
+			'gez',
+			'mullgebuhr',
+			'abfall',
+			'abschlag',
 			'electricity',
 			'strom',
 			'utilities',
@@ -161,10 +207,26 @@ export const KEYWORDS: [Exclude<ExpenseCategory, 'other'>, string[]][] = [
 			'gas bill'
 		]
 	],
-	['internet', ['internet', 'wifi', 'wlan']],
+	[
+		'internet',
+		[
+			'telekom',
+			'vodafone',
+			'o2',
+			'dsl',
+			'glasfaser',
+			'mobilfunk',
+			'handyvertrag',
+			'congstar',
+			'internet',
+			'wifi',
+			'wlan'
+		]
+	],
 	[
 		'home',
 		[
+			'parkett',
 			'obi',
 			'cleaning',
 			'putzmittel',
