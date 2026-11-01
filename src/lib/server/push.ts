@@ -7,6 +7,7 @@ import { formatAmount } from '#lib/money.ts';
 import { m } from '#lib/paraglide/messages.js';
 import { isLocale, type Locale } from '#lib/paraglide/runtime.js';
 import type { Db } from './db';
+import { logError } from './error-log';
 import { members, people, pushSubscriptions } from './db/schema';
 
 type Keys = { VAPID_PUBLIC_KEY?: string; VAPID_PRIVATE_KEY?: string };
@@ -52,26 +53,60 @@ export async function isSubscribed(db: Db, personId: string, endpoint: string) {
 	return Boolean(row);
 }
 
-/** Sends one notification; a subscription the push service no longer knows is removed */
 /** What the service worker shows (src/service-worker/push.ts) */
 export type PushPayload = { title: string; body: string; url: string; tag: string };
 
+/**
+ * Sends one notification and returns what the push service answered; one it no longer knows is
+ * removed, and any refusal is logged by its host (the full address is a secret).
+ */
 async function send(db: Db, sub: typeof pushSubscriptions.$inferSelect, payload: PushPayload) {
 	const privateJWK = keys().VAPID_PRIVATE_KEY;
-	if (!privateJWK) return;
+	if (!privateJWK) return 0;
 	const { endpoint, headers, body } = await buildPushHTTPRequest({
 		privateJWK: JSON.parse(privateJWK),
 		subscription: { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
 		message: {
 			payload,
 			adminContact: 'mailto:noreply@keeping-tabs.workers.dev',
-			options: { ttl: 24 * 60 * 60, urgency: 'normal' }
+			// High: Android holds back anything less while the phone sleeps
+			options: { ttl: 24 * 60 * 60, urgency: 'high' }
 		}
 	});
 	const response = await fetch(endpoint, { method: 'POST', headers, body });
 	if (response.status === 404 || response.status === 410) {
 		await db.delete(pushSubscriptions).where(eq(pushSubscriptions.endpoint, sub.endpoint));
 	}
+	if (!response.ok) {
+		logError({
+			error: new Error(`Push refused: ${response.status} from ${new URL(endpoint).host}`),
+			route: 'push',
+			method: 'POST'
+		});
+	}
+	return response.status;
+}
+
+/** A test to all of a person's devices; each device's answer from its push service (#256) */
+export async function sendTest(db: Db, personId: string, locale: string) {
+	const subs = await db
+		.select()
+		.from(pushSubscriptions)
+		.where(eq(pushSubscriptions.personId, personId));
+	const chosen: Locale = isLocale(locale) ? locale : 'en';
+	return Promise.all(
+		subs.map((sub) =>
+			send(db, sub, {
+				title: m.app_name({}, { locale: chosen }),
+				body: m.push_test_body({}, { locale: chosen }),
+				url: '/you',
+				tag: 'test'
+			}).catch((failure: unknown) => {
+				logError({ error: failure, route: 'push', method: 'POST' });
+				return 0;
+			})
+		)
+	);
 }
 
 /**
@@ -110,7 +145,7 @@ export async function notifyNewExpense(
 	const [actor] = actorId
 		? await db.select({ name: members.name }).from(members).where(eq(members.id, actorId))
 		: [];
-	await Promise.allSettled(
+	const sent = await Promise.allSettled(
 		subs.map((sub) => {
 			const locale: Locale = (() => {
 				const chosen = others.find((other) => other.personId === sub.personId)?.locale;
@@ -131,4 +166,9 @@ export async function notifyNewExpense(
 			});
 		})
 	);
+	for (const result of sent) {
+		if (result.status === 'rejected') {
+			logError({ error: result.reason, route: 'push', method: 'POST' });
+		}
+	}
 }
