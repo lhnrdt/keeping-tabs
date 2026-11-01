@@ -44,6 +44,14 @@ import IconUserCircle from '@tabler/icons-svelte-runes/icons/user-circle';
 import IconUserPlus from '@tabler/icons-svelte-runes/icons/user-plus';
 import IconUsersGroup from '@tabler/icons-svelte-runes/icons/users-group';
 import IconX from '@tabler/icons-svelte-runes/icons/x';
+import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
+import IconGasStation from '@tabler/icons-svelte-runes/icons/gas-station';
+import IconKey from '@tabler/icons-svelte-runes/icons/key';
+import IconParking from '@tabler/icons-svelte-runes/icons/parking';
+import IconRoad from '@tabler/icons-svelte-runes/icons/road';
+import IconShieldCheck from '@tabler/icons-svelte-runes/icons/shield-check';
+import IconTool from '@tabler/icons-svelte-runes/icons/tool';
+import IconWifi from '@tabler/icons-svelte-runes/icons/wifi';
 import IconCalendar from '@tabler/icons-svelte-runes/icons/calendar';
 import IconNote from '@tabler/icons-svelte-runes/icons/note';
 import IconRepeat from '@tabler/icons-svelte-runes/icons/repeat';
@@ -103,6 +111,14 @@ export const icons = {
 	categoryShopping: IconShoppingBag,
 	categoryGifts: IconGift,
 	categoryHealth: IconFirstAidKit,
+	categoryFuel: IconGasStation,
+	categoryParking: IconParking,
+	categoryTolls: IconRoad,
+	categoryRepairs: IconTool,
+	categoryInsurance: IconShieldCheck,
+	categoryRent: IconKey,
+	categoryUtilities: IconBolt,
+	categoryInternet: IconWifi,
 	// Highlights (src/lib/insights/highlights.ts)
 	day: IconCalendarEvent,
 	place: IconMapPin,

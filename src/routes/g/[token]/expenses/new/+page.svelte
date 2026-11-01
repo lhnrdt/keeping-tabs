@@ -46,7 +46,7 @@
 		error={form?.error}
 		submitLabel={m.add_expense()}
 		canRepeat
-		driving={data.group.kind === 'car'}
+		kind={data.group.kind}
 		offlineToken={data.group.shareToken}
 	/>
 </AppPage>

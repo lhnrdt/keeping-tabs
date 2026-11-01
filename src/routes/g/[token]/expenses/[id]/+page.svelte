@@ -57,7 +57,7 @@
 		{values}
 		error={form && 'error' in form ? form.error : undefined}
 		submitLabel={m.save()}
-		driving={data.group.kind === 'car'}
+		kind={data.group.kind}
 	/>
 	<ExpenseComments
 		comments={data.comments}
