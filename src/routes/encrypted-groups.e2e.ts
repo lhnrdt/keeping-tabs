@@ -94,6 +94,11 @@ test('the server only sees sealed text; the full link reads it, the bare one is 
 	// With the full link: readable straight away, and the key leaves the address
 	const friend = await newVisitor(page);
 	await open(friend, link);
+	// Only visited so far: on the start screen, as a recent group, it's readable too
+	await open(friend, '/');
+	await expect(friend.getByRole('link', { name: /Secret trip/ })).toBeVisible();
+	await expect(friend.locator('body')).not.toContainText('enc1.');
+	await open(friend, link);
 	await friend.getByRole('button', { name: "I'm Benedikt" }).click();
 	await expect(friend.getByRole('link', { name: /Whiskey tasting/ })).toBeVisible();
 	expect(new URL(friend.url()).hash).toBe('');

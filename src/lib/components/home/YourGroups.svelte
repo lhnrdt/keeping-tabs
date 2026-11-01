@@ -7,6 +7,7 @@
 	import YourBalance from '#lib/components/YourBalance.svelte';
 	import { onMount } from 'svelte';
 	import { todayInputValue } from '#lib/dates.ts';
+	import { openDeep } from '#lib/crypto/open-data.ts';
 	import { getRecentGroups } from '#lib/device.ts';
 	import { isSettledAndQuiet } from '#lib/group/settled.ts';
 	import { currentRecentGroups } from '#lib/group/recent-groups.ts';
@@ -42,7 +43,8 @@
 	const settled = $derived(groups.filter(isSettled));
 
 	onMount(() => {
-		local = getRecentGroups();
+		// What's remembered may have been kept sealed by an earlier version (#110)
+		void openDeep(getRecentGroups()).then((groups) => (local = groups));
 		mounted = true;
 	});
 
