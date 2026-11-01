@@ -18,6 +18,7 @@
 	import { calmSlide } from '#lib/motion/calm.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { canBeDefault } from '#lib/split/default-split.ts';
+	import type { Frequency } from '#lib/expense/recurrence.ts';
 	import { ITEMS_MODE } from '#lib/split/items.ts';
 	import { isSplitMode, SPLIT_MODES, type SplitMode } from '#lib/split/modes.ts';
 	import { SEVERAL_PAYERS } from '#lib/validation.ts';
@@ -64,10 +65,14 @@
 		submitLabel: string;
 		/** A new expense can repeat (#45) */
 		canRepeat?: boolean;
+		/** Editing a repeating expense itself: how often, and it can't be "never" */
+		repeats?: Frequency;
 		/** The group's type: what categories it offers; a car group notes km and fuel */
 		kind: GroupKind;
 		/** A new expense waits on the device when the connection is gone (#55) */
 		offlineToken?: string;
+		/** The expense being edited; a new one gets its id here */
+		expenseId?: string;
 	};
 
 	let {
@@ -78,8 +83,10 @@
 		error,
 		submitLabel,
 		canRepeat = false,
+		repeats,
 		kind,
-		offlineToken
+		offlineToken,
+		expenseId
 	}: Props = $props();
 	// Its id, made here: sending it again after a lost connection can't add it twice (#55)
 	const clientId = crypto.randomUUID();
@@ -126,7 +133,9 @@
 		resolve('/g/[token]/expenses/[id]', { token: offlineToken ?? '', id: clientId });
 	async function afterSaving() {
 		// Before anything else: the photos may take a while
-		const announced = offlineToken ? announceExpense(offlineToken, clientId) : undefined;
+		const announced = offlineToken
+			? announceExpense(offlineToken, clientId, `${amount} ${amountCurrency}`)
+			: undefined;
 		let missing = false;
 		for (const photo of photos) {
 			const refused = await sendReceipt(photo, expensePage()).catch(() => 'receipt_invalid');
@@ -145,7 +154,14 @@
 	};
 </script>
 
-<GroupForm {error} {submitLabel} {offlineToken} onSaved={offlineToken ? afterSaving : undefined}>
+<GroupForm
+	{error}
+	{submitLabel}
+	{offlineToken}
+	sealed={['title', 'notes', 'items']}
+	sealRow={expenseId ?? clientId}
+	onSaved={offlineToken ? afterSaving : undefined}
+>
 	{#if offlineToken}<input type="hidden" name="clientId" value={clientId} />{/if}
 	<div class="flex flex-col gap-4 px-4 pt-2 pb-4">
 		<TitleNoteField bind:title notes={values.notes} />
@@ -234,11 +250,11 @@
 		<CategoryPicker value={values.category} {title} learned={learnCategories(chosen)} {kind} />
 		<DateChips bind:date />
 		{#if offlineToken}<NewExpensePhotos onchange={(chosen) => (photos = chosen)} />{/if}
-		{#if canRepeat}
+		{#if canRepeat || repeats}
 			<PlainField label={m.field_repeats()} icon="repeats" arrow>
 				{#snippet children(id)}
-					<select {id} name="repeats">
-						<option value="">{m.repeats_never()}</option>
+					<select {id} name="repeats" value={repeats ?? ''}>
+						{#if !repeats}<option value="">{m.repeats_never()}</option>{/if}
 						<option value="weekly">{m.repeats_weekly()}</option>
 						<option value="monthly">{m.repeats_monthly()}</option>
 						<option value="yearly">{m.repeats_yearly()}</option>

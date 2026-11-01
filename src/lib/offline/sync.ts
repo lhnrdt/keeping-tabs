@@ -41,6 +41,9 @@ export async function flushOutbox() {
 			} else if (result.type === 'failure') {
 				const error = (result.data as { error?: ErrorCode } | undefined)?.error;
 				markFailed(item.id, error ?? 'amount_invalid');
+			} else if (result.type === 'error' && result.status === 409) {
+				// Kept from before its group was encrypted: it can't go as it is, and must not wait forever
+				markFailed(item.id, 'offline_group_encrypted');
 			}
 		}
 	} finally {

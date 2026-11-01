@@ -5,50 +5,15 @@
 	import ExpenseComments from '#lib/components/expense/ExpenseComments.svelte';
 	import ExpenseReceipts from '#lib/components/expense/ExpenseReceipts.svelte';
 	import ExpenseForm from '#lib/components/expense/ExpenseForm.svelte';
-	import { fuelInputValue, odometerInputValue } from '#lib/expense/driving.ts';
-	import { amountInputValue } from '#lib/money.ts';
-	import { ITEMS_MODE } from '#lib/split/items.ts';
-	import { splitInputValues } from '#lib/split/inputs.ts';
+	import { expenseFormValues } from '#lib/expense/form-initial.ts';
 	import { m } from '#lib/paraglide/messages.js';
-	import { SEVERAL_PAYERS } from '#lib/validation.ts';
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();
 
 	const values = $derived(
-		(form && 'values' in form ? form.values : undefined) ?? {
-			title: data.expense.title,
-			notes: data.expense.notes ?? '',
-			// Typed in another currency (#54): as typed, with its rate
-			amount: data.expense.originalCurrency
-				? amountInputValue(data.expense.originalAmountCents ?? 0, data.expense.originalCurrency)
-				: amountInputValue(data.expense.amountCents, data.group.currency),
-			currency: data.expense.originalCurrency ?? '',
-			rate: data.expense.exchangeRate ?? '',
-			odometer: odometerInputValue(data.expense.odometerM, data.units),
-			litres: fuelInputValue(data.expense.fuelMl, data.units),
-			date: data.expense.date,
-			// Several payers (#39): each with what they paid
-			paidBy: data.expense.payers ? SEVERAL_PAYERS : data.expense.paidBy,
-			payers: Object.fromEntries(
-				(data.expense.payers ?? []).map((payer) => [
-					payer.memberId,
-					amountInputValue(payer.amountCents, data.group.currency)
-				])
-			),
-			participants: data.expense.splits.map((split) => split.memberId),
-			category: data.expense.category ?? '',
-			// Split by receipt items (#53): as typed, in the amount's currency
-			splitMode: data.expense.items ? ITEMS_MODE : data.expense.splitMode,
-			items: JSON.stringify(
-				(data.expense.items ?? []).map(({ name, cents, memberIds }) => ({
-					name,
-					price: amountInputValue(cents, data.expense.originalCurrency ?? data.group.currency),
-					memberIds
-				}))
-			),
-			inputs: splitInputValues(data.expense, data.group.currency)
-		}
+		(form && 'values' in form ? form.values : undefined) ??
+			expenseFormValues(data.expense, data.group.currency, data.units)
 	);
 </script>
 
@@ -68,6 +33,7 @@
 		error={form && 'error' in form ? form.error : undefined}
 		submitLabel={m.save()}
 		kind={data.group.kind}
+		expenseId={data.expense.id}
 	/>
 	<ExpenseReceipts
 		receipts={data.receipts}

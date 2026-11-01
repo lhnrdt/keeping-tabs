@@ -31,10 +31,13 @@
 			title={m.recovery_title()}
 			status={data.hasRecoveryKey ? `✓ ${m.backup_saved()}` : m.backup_not_set_up()}
 			done={data.hasRecoveryKey}
-			open={Boolean(form?.recoveryKey)}
+			open={Boolean(form?.recoveryCreated) || data.recoveryKeyOutdated}
 		>
 			<p class="px-4 pb-2 text-sm text-muted">{m.recovery_intro()}</p>
-			<RecoveryKeyCreator recoveryKey={form?.recoveryKey} />
+			{#if data.recoveryKeyOutdated}
+				<p class="px-4 pb-2 text-sm font-medium" role="status">{m.recovery_outdated()}</p>
+			{/if}
+			<RecoveryKeyCreator />
 		</Fold>
 	</div>
 </AppPage>

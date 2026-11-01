@@ -1,4 +1,8 @@
 // The app's icons by meaning: one family (Tabler, outline), one place to swap them.
+import IconAccessible from '@tabler/icons-svelte-runes/icons/accessible';
+import IconBell from '@tabler/icons-svelte-runes/icons/bell';
+import IconLanguage from '@tabler/icons-svelte-runes/icons/language';
+import IconPalette from '@tabler/icons-svelte-runes/icons/palette';
 import IconBed from '@tabler/icons-svelte-runes/icons/bed';
 import IconBeer from '@tabler/icons-svelte-runes/icons/beer';
 import IconBus from '@tabler/icons-svelte-runes/icons/bus';
@@ -44,6 +48,10 @@ import IconUserCircle from '@tabler/icons-svelte-runes/icons/user-circle';
 import IconUserPlus from '@tabler/icons-svelte-runes/icons/user-plus';
 import IconUsersGroup from '@tabler/icons-svelte-runes/icons/users-group';
 import IconX from '@tabler/icons-svelte-runes/icons/x';
+import IconLock from '@tabler/icons-svelte-runes/icons/lock';
+import IconMessageReport from '@tabler/icons-svelte-runes/icons/message-report';
+import IconHelp from '@tabler/icons-svelte-runes/icons/help';
+import IconArrowUp from '@tabler/icons-svelte-runes/icons/arrow-up';
 import IconCamera from '@tabler/icons-svelte-runes/icons/camera';
 import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
 import IconPhoto from '@tabler/icons-svelte-runes/icons/photo';
@@ -79,6 +87,7 @@ export const icons = {
 	phone: IconDeviceMobile,
 	computer: IconDeviceLaptop,
 	next: IconChevronRight,
+	toTop: IconArrowUp,
 	previous: IconChevronLeft,
 	search: IconSearch,
 	sparkles: IconSparkles,
@@ -90,7 +99,15 @@ export const icons = {
 	remove: IconX,
 	share: IconShare,
 	settings: IconSettings,
+	help: IconHelp,
+	report: IconMessageReport,
 	password: IconKey,
+	notifications: IconBell,
+	fast: IconBolt,
+	palette: IconPalette,
+	accessible: IconAccessible,
+	language: IconLanguage,
+	locked: IconLock,
 	// Expense form fields
 	title: IconTag,
 	note: IconNote,

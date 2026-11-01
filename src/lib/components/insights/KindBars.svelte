@@ -53,12 +53,15 @@
 			<dd class="text-muted">{kindHints[row.kind]()}</dd>
 		{/each}
 	</dl>
-	<table class="sr-only">
-		<caption>{m.insights_kinds()}</caption>
-		<tbody>
-			{#each rows as row (row.kind)}
-				<tr><th scope="row">{kindLabels[row.kind]()}</th><td>{valueText(row)}</td></tr>
-			{/each}
-		</tbody>
-	</table>
+	<!-- Around the table: a table's caption stays visible when the table itself is hidden this way -->
+	<div class="sr-only">
+		<table>
+			<caption>{m.insights_kinds()}</caption>
+			<tbody>
+				{#each rows as row (row.kind)}
+					<tr><th scope="row">{kindLabels[row.kind]()}</th><td>{valueText(row)}</td></tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
 </div>

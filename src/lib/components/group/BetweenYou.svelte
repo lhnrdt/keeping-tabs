@@ -9,6 +9,7 @@
 	import PersonAmount from '#lib/components/PersonAmount.svelte';
 	import type { GroupMember } from '#lib/group/members.ts';
 	import { formatAmount } from '#lib/money.ts';
+	import { keyFor, linkWithKey } from '#lib/crypto/keyring.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import { shareText } from '#lib/share.ts';
@@ -29,7 +30,9 @@
 
 	/** A friendly "you owe me" through the share sheet (#48); copied where there's none */
 	async function remind(name: string, memberId: string, amount: number) {
-		const link = new URL(resolve('/g/[token]', { token: group.shareToken }), page.url.origin).href;
+		const plain = new URL(resolve('/g/[token]', { token: group.shareToken }), page.url.origin).href;
+		const key = page.data.group?.keyId ? await keyFor(page.data.group.keyId) : undefined;
+		const link = key ? linkWithKey(plain, key) : plain;
 		const text = m.reminder_text({
 			name,
 			amount: formatAmount(amount, currency, getLocale()),

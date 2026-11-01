@@ -1,5 +1,5 @@
 // Nature themes (#60): the single source of every theme's colors, light and dark. Each has
-// one clear primary hue (forest green, golden meadow, autumn rust, alpenglow rose, heather
+// one clear primary hue (forest green, golden meadow, autumn red, snow and granite, heather
 // violet, aurora indigo, fjord blue, coast turquoise, birch black-and-white) that also tints
 // its backgrounds and header. The CSS
 // (src/lib/styles/themes.css) is generated from this by `pnpm themes`; palettes.spec.ts
@@ -51,8 +51,8 @@ export const PALETTES: Record<ThemeId, { light: Palette; dark: Palette }> = {
 		dark: palette('#12171c #1a2025 #252b32 #e8eaee #a6adb4 #88abd3 #35465a #24303d #c0d0e2')
 	},
 	mountains: {
-		light: palette('#f1e9eb #faf7f8 #e6dbdd #271c1d #645457 #88303e #ceabb1 #e6d6d9 #4c242b'),
-		dark: palette('#1b1314 #241b1d #312628 #ede8e9 #b3a8a9 #d39ca5 #57383d #3b2629 #dfc3c8')
+		light: palette('#edf0f3 #f9fafb #dfe4e8 #1c2329 #57616a #43586a #bcc8d2 #dde4ea #2a3a47'),
+		dark: palette('#15191d #1d2227 #282e34 #e9edf0 #aab2b9 #b8cad8 #3c4a56 #2a343d #d5e0e8')
 	},
 	heather: {
 		light: palette('#f0eaf0 #f9f8f9 #e4dde4 #251d25 #615661 #7b3d7b #c9b0c9 #e3d8e3 #462a46'),
@@ -75,8 +75,8 @@ export const PALETTES: Record<ThemeId, { light: Palette; dark: Palette }> = {
 		dark: palette('#16141a #1e1c24 #2a2730 #eae9ed #aba9b2 #baaed5 #423b54 #2d2839 #ccc5dd')
 	},
 	autumn: {
-		light: palette('#f2ebe8 #faf8f7 #e7deda #281f1a #665852 #84411f #d3b5a6 #e8dad4 #522f1e'),
-		dark: palette('#1c1512 #261e1a #322925 #eeeae7 #b5aba6 #d39a7d #5b4133 #3e2c23 #e4cbbf')
+		light: palette('#f1e9eb #faf7f8 #e6dbdd #271c1d #645457 #88303e #ceabb1 #e6d6d9 #4c242b'),
+		dark: palette('#1b1314 #241b1d #312628 #ede8e9 #b3a8a9 #d39ca5 #57383d #3b2629 #dfc3c8')
 	}
 };
 

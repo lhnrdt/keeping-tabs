@@ -22,6 +22,7 @@
 	import ShareLink from '#lib/components/group/ShareLink.svelte';
 	import UndoToast from '#lib/components/group/UndoToast.svelte';
 	import PeoplePills from '#lib/components/people/PeoplePills.svelte';
+	import { openedDownload } from '#lib/crypto/open-download.ts';
 	import { followChanges } from '#lib/follow-changes.ts';
 	import { currentTab } from '#lib/group/tabs.ts';
 	import { m } from '#lib/paraglide/messages.js';
@@ -71,6 +72,7 @@
 						entries={data.entries}
 						hasMore={data.hasMore}
 						query={data.query}
+						searchHere={Boolean(data.group.keyId || data.group.transitionKey)}
 					/>
 				{/key}
 				<FloatingLink
@@ -122,7 +124,11 @@
 				/>
 				<BlockTitle>{m.group_details()}</BlockTitle>
 				<GroupDetails group={data.group} members={data.members} hasPassword={data.hasPassword} />
-				<RecurringList rules={data.recurring} currency={data.group.currency} />
+				<RecurringList
+					rules={data.recurring}
+					currency={data.group.currency}
+					token={data.group.shareToken}
+				/>
 				<BlockTitle>{m.share_title()}</BlockTitle>
 				<ShareLink token={data.group.shareToken} groupName={data.group.name} />
 				<DeleteGroup groupId={data.group.id} name={data.group.name} />
@@ -150,7 +156,11 @@
 						link
 						title={m.export_link()}
 						href={resolve('/g/[token]/export', { token: data.group.shareToken })}
-						linkProps={{ download: '', 'data-sveltekit-reload': '' }}
+						linkProps={{
+							download: '',
+							'data-sveltekit-reload': '',
+							onclick: openedDownload(data.group, 'csv')
+						}}
 					>
 						{#snippet media()}
 							<Icon name="export" />
@@ -160,7 +170,11 @@
 						link
 						title={m.backup_link()}
 						href={resolve('/g/[token]/backup', { token: data.group.shareToken })}
-						linkProps={{ download: '', 'data-sveltekit-reload': '' }}
+						linkProps={{
+							download: '',
+							'data-sveltekit-reload': '',
+							onclick: openedDownload(data.group, 'json')
+						}}
 					>
 						{#snippet media()}
 							<Icon name="export" />

@@ -1,15 +1,28 @@
 <script lang="ts">
 	// Creates a one-time link for another device and offers to share or copy it (A-14).
 	import { enhance } from '$app/forms';
-	import { Block, Button, List, ListItem, Toast } from 'konsta/svelte';
-	import CopyButton from '#lib/components/CopyButton.svelte';
+	import { Block, Button, Toast } from 'konsta/svelte';
+	import LinkField from '#lib/components/LinkField.svelte';
+	import QrCode from '#lib/components/QrCode.svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import SubmitButton from '#lib/components/SubmitButton.svelte';
 	import { Submission } from '#lib/forms/submission.svelte.ts';
+	import { onMount } from 'svelte';
+	import { ensureVault, syncKeys } from '#lib/crypto/vault.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { shareOrCopy } from '#lib/share.ts';
 
-	let { link }: { link?: string } = $props();
+	let { link: created }: { link?: string } = $props();
+
+	// It also brings your groups' keys along (#110): the vault key, in the part browsers don't send
+	let vault = $state<string>();
+	onMount(() => {
+		void ensureVault().then((key) => {
+			vault = key;
+			void syncKeys().catch(() => {});
+		});
+	});
+	const link = $derived(created && vault ? `${created}.${vault}` : created);
 
 	const submission = new Submission();
 	let copied = $state(false);
@@ -22,20 +35,15 @@
 </script>
 
 {#if link}
-	<List strong inset>
-		<ListItem
-			title={link}
-			titleWrapClass="truncate select-all"
-			aria-label={m.device_link_label()}
-		/>
-	</List>
-	<Block class="grid grid-cols-2 gap-3">
+	<div class="flex flex-col gap-3 px-4 pb-1">
+		<QrCode text={link} label={m.device_qr_label()} />
+		<p class="text-center text-sm text-muted">{m.device_qr_hint()}</p>
+		<LinkField {link} label={m.device_link_label()} />
 		<Button large rounded type="button" class="gap-2" onclick={() => share(link)}>
 			<Icon name="share" />
 			{m.share_button()}
 		</Button>
-		<CopyButton text={link} label={m.copy_link()} />
-	</Block>
+	</div>
 	<Toast position="center" opened={copied}>{m.share_copied()}</Toast>
 {:else}
 	<form method="POST" action="?/createLink" use:enhance={submission.enhance}>

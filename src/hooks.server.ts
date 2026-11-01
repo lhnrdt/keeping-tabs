@@ -1,7 +1,9 @@
 import { env } from 'cloudflare:workers';
 import { version } from '$app/env';
 import type { Handle, HandleServerError } from '@sveltejs/kit/hooks';
+import { and, eq } from 'drizzle-orm';
 import { sequence } from '@sveltejs/kit/hooks';
+import { activityLog } from '#lib/server/db/schema.ts';
 import { redirect } from '@sveltejs/kit';
 import { resolve as resolveRoute } from '$app/paths';
 import { cookieName, getTextDirection } from '#lib/paraglide/runtime.js';
@@ -150,10 +152,24 @@ const handleVersion: Handle = async ({ event, resolve }) => {
 	return response;
 };
 
+/** An encrypted group's history keeps who did something sealed: only its people can read that */
+const handleSealedHistory: Handle = async ({ event, resolve }) => {
+	const response = await resolve(event);
+	const { sealActivity: seal, db } = event.locals;
+	if (seal) {
+		await db
+			.update(activityLog)
+			.set({ memberId: null, sealedActor: seal.sealed })
+			.where(and(eq(activityLog.groupId, seal.groupId), eq(activityLog.memberId, seal.memberId)));
+	}
+	return response;
+};
+
 export const handle: Handle = sequence(
 	handleVersion,
 	handleCaching,
 	handleDb,
+	handleSealedHistory,
 	handleDevice,
 	handleAccess,
 	handleGroupPassword,

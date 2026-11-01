@@ -6,6 +6,7 @@
 	import Icon from '#lib/components/Icon.svelte';
 	import { Submission } from '#lib/forms/submission.svelte.ts';
 	import { tabAction } from '#lib/group/tabs.ts';
+	import { nameIsFree, sealing } from '#lib/crypto/seal-form.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { LIMITS } from '#lib/validation.ts';
 
@@ -28,7 +29,7 @@
 	<form
 		method="POST"
 		action={tabAction('addMember', 'group')}
-		use:enhance={submission.enhance}
+		use:enhance={nameIsFree('addMember', sealing(['name'], submission.enhance))}
 		class="inline-flex min-h-11 items-center gap-1 rounded-full bg-surface ps-4 pe-1 shadow-[0_0_0_2px_var(--color-accent)] dark:bg-surface-night"
 	>
 		<input

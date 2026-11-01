@@ -1,4 +1,4 @@
-import { fail, redirect } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
 import { todayInputValue } from '#lib/dates.ts';
 import type { ErrorCode } from '#lib/errors.ts';
@@ -9,7 +9,13 @@ import { groupInsights } from '#lib/insights/group.ts';
 import { defaultPeriod, parsePeriod } from '#lib/insights/period.ts';
 import { balances } from '#lib/money.ts';
 import { settleTransfers } from '#lib/settle.ts';
-import { formContext as context, groupOf, membersOf, requireGroup } from '#lib/server/context.ts';
+import {
+	formContext as context,
+	groupOf,
+	membersOf,
+	requireGroup,
+	refuseUnsealed
+} from '#lib/server/context.ts';
 import { entryPage } from '#lib/server/expense-entries.ts';
 import { findDeletedEntry, listExpenses, listLedger, restoreEntry } from '#lib/server/expenses.ts';
 import { deleteGroup } from '#lib/server/group-deletion.ts';
@@ -20,10 +26,13 @@ import {
 	listMembers,
 	regenerateShareToken,
 	setDefaultSplit,
+	setGroupDetails,
 	renameMember
 } from '#lib/server/groups.ts';
 import { ensurePerson, personOf, setProfileName } from '#lib/server/people.ts';
 import { addDueRecurring, listRecurring, stopRecurring } from '#lib/server/recurring.ts';
+import { isSealed } from '#lib/crypto/seal.ts';
+import { m } from '#lib/paraglide/messages.js';
 import { parseMemberName } from '#lib/validation.ts';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -40,17 +49,22 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 	// only for the insights
 	const deletedId = url.searchParams.get(UNDO_PARAM);
 	const onInsights = currentTab(url) === 'insights';
+	// Encrypted, or on its way: the browser works out the money from all entries (#110)
+	const sealedMoney = Boolean(group.keyId || group.transitionKey);
 	const [ledger, expenses, page, justDeleted, recurring] = await Promise.all([
 		listLedger(locals.db, group.id),
-		onInsights ? listExpenses(locals.db, group.id) : undefined,
-		entryPage(locals.db, group.id, mine, 0, shown, query),
+		onInsights && !sealedMoney ? listExpenses(locals.db, group.id) : undefined,
+		// An encrypted group is searched in the browser: the server can't read it (#110)
+		entryPage(locals.db, group.id, mine, 0, shown, sealedMoney ? '' : query),
 		// Right after deleting: offer "Undo" (#78); gone once it's restored
 		deletedId ? findDeletedEntry(locals.db, group.id, deletedId) : undefined,
 		currentTab(url) === 'group' ? listRecurring(locals.db, group.id) : []
 	]);
 	const memberIds = members.map((member) => member.id);
 	const today = todayInputValue();
-	const transfers = settleTransfers(group.simplifyDebts, memberIds, ledger);
+	const transfers = sealedMoney ? [] : settleTransfers(group.simplifyDebts, memberIds, ledger);
+	const plan = { budget: group.budgetCents, endsOn: group.endsOn };
+	const period = parsePeriod(url.searchParams, defaultPeriod(group.kind, today));
 	return {
 		balances: Object.fromEntries(balances(memberIds, ledger)),
 		transfers,
@@ -62,17 +76,10 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 		today,
 		// Only on its tab: everything else doesn't need it (#161)
 		insights:
-			onInsights && expenses
-				? groupInsights(
-						expenses,
-						memberIds,
-						mine,
-						transfers,
-						{ budget: group.budgetCents, endsOn: group.endsOn },
-						today,
-						parsePeriod(url.searchParams, defaultPeriod(group.kind, today))
-					)
-				: null
+			onInsights && expenses && !sealedMoney
+				? groupInsights(expenses, memberIds, mine, transfers, plan, today, period)
+				: null,
+		sealed: sealedMoney ? { me: mine, onInsights, today } : null
 	};
 };
 
@@ -130,6 +137,7 @@ export const actions: Actions = {
 	join: async ({ locals, params, request }) => {
 		const form = await request.formData();
 		const group = await requireGroup(locals.db, params.token);
+		refuseUnsealed(group, form);
 		const person = await ensurePerson(locals.db, locals.deviceKey);
 		const memberId = form.get('memberId')?.toString();
 		const joined = await joinGroup(
@@ -140,7 +148,10 @@ export const actions: Actions = {
 		);
 		if (!joined.ok) return fail(400, { action: 'join' as const, error: joined.error });
 		// The first name you use becomes your profile name (A-13)
-		if (!person.name) await setProfileName(locals.db, person.id, joined.value.name);
+		// (not a sealed one: it's for all your groups, and has no key)
+		if (!person.name && !isSealed(joined.value.name)) {
+			await setProfileName(locals.db, person.id, joined.value.name);
+		}
 	},
 
 	/** Soft delete: the group disappears for everyone and can be restored for a while (G-3) */
@@ -178,7 +189,14 @@ export const actions: Actions = {
 
 	/** New expenses go back to an equal split (#41) */
 	clearDefaultSplit: async ({ locals, params, request }) => {
-		const { group, actorId } = await context(locals, params.token, request);
+		const { form, group, actorId } = await context(locals, params.token, request);
+		// Encrypted: sealed in the browser, with the group's other settings (#110)
+		const sealed = form.get('details');
+		if (group.keyId) {
+			if (!isSealed(sealed)) error(409, m.locked_reload());
+			await setGroupDetails(locals.db, group.id, sealed);
+			return;
+		}
 		await setDefaultSplit(locals.db, group.id, actorId, null);
 	},
 

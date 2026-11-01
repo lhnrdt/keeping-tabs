@@ -13,7 +13,9 @@ test('see your devices and remove one you no longer use (#126, #151)', async ({ 
 	await open(phone, '/you/devices');
 	await openFold(phone, 'Add another device');
 	await phone.getByRole('button', { name: 'Create link' }).click();
-	const link = (await phone.getByRole('listitem', { name: 'One-time link' }).innerText()).trim();
+	const link = (await phone.getByLabel('One-time link').inputValue()).trim();
+	// Or scan it with the other phone (#70)
+	await expect(phone.getByRole('img', { name: 'QR code for this link' })).toBeVisible();
 	const laptop = await (await browser.newContext({ userAgent: LAPTOP })).newPage();
 	await open(laptop, link);
 	await laptop.getByRole('button', { name: 'Use this device' }).click();

@@ -1,10 +1,10 @@
-import { categoryOf, learnCategories } from '#lib/expense/learned.ts';
-import { spendingAcross } from '#lib/insights/across.ts';
+import { spendingWithCategories } from '#lib/insights/across.ts';
 import { balances } from '#lib/money.ts';
 import { betweenYou, summarizePeople } from '#lib/people-summary.ts';
 import { settleTransfers } from '#lib/settle.ts';
 import type { Db } from './db';
 import { lastEntryDate, listExpenses, listLedger } from './expenses';
+import { shouldEncrypt } from './encryption-handover';
 import { listGroupsOf, listMembers } from './groups';
 
 type YourGroup = Awaited<ReturnType<typeof listGroupsOf>>[number];
@@ -36,8 +36,14 @@ export async function yourGroupsWithBalances(db: Db, personId: string) {
 				lastEntryDate(db, group.id)
 			]);
 			const names = new Map(members.map((member) => [member.id, member.name]));
-			const { id, name, token, currency, kind, tint, memberId } = group;
+			const { id, name, token, currency, kind, tint, memberId, simplifyDebts } = group;
+			// Encrypted, or on its way: worked out in the browser from all entries (#110)
+			const sealed =
+				group.keyId || group.transitionKey ? { members, memberId, simplifyDebts } : null;
 			return {
+				sealed,
+				sealedDetails: group.sealedDetails,
+				encryptNow: shouldEncrypt(group, true),
 				id,
 				name,
 				token,
@@ -64,24 +70,22 @@ export async function peopleOverview(db: Db, personId: string) {
 	// Every entry too: the spending needs each expense's category and date
 	const settled = await Promise.all(
 		groups.map(async (group) => {
-			const [sums, expenses] = await Promise.all([settle(db, group), listExpenses(db, group.id)]);
-			return { ...group, ...sums, expenses };
+			// Encrypted, or on its way: the browser fetches and works out its own (#110, #277)
+			const sealedMoney = Boolean(group.keyId || group.transitionKey);
+			const [sums, expenses] = await Promise.all([
+				settle(db, group),
+				sealedMoney ? [] : listExpenses(db, group.id)
+			]);
+			return { ...group, ...sums, expenses, sealedMoney };
 		})
 	);
+	const spendingGroups = settled.map((group) => ({ ...group, entries: group.expenses }));
+	// With an encrypted group among them the browser works it out, since it takes categories only
+	// it can read (#110)
+	const anySealed = groups.some((group) => group.keyId || group.transitionKey);
 	return {
-		people: summarizePeople(settled),
-		spending: spendingAcross(
-			settled.map((group) => {
-				// Each expense in its category as the group shows it
-				const learned = learnCategories(group.expenses);
-				return {
-					...group,
-					entries: group.expenses.map((entry) => ({
-						...entry,
-						category: categoryOf(entry, learned)
-					}))
-				};
-			})
-		)
+		people: anySealed ? [] : summarizePeople(settled),
+		spending: anySealed ? null : spendingWithCategories(spendingGroups),
+		sealedSpending: anySealed ? spendingGroups : null
 	};
 }

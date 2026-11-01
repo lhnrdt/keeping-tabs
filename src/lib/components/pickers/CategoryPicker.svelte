@@ -37,6 +37,8 @@
 	const headingId = $props.id();
 </script>
 
+<!-- For a sealed title, which the server can't guess from (#110) -->
+<input type="hidden" name="autoCategory" value={guess} />
 <fieldset class="flex flex-col gap-2" aria-labelledby={headingId}>
 	<div class="flex min-h-8 items-center justify-between gap-2">
 		<span id={headingId} class="field-label">{m.field_category()}</span>

@@ -6,6 +6,7 @@
 	import { BlockTitle, List, ListItem } from 'konsta/svelte';
 	import { onMount } from 'svelte';
 	import AppPage from '#lib/components/AppPage.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 	import { CHANGELOG } from '#lib/changelog/entries.ts';
 	import { visibleEntries } from '#lib/changelog/visible.ts';
 	import { setSeenChangelog } from '#lib/device.ts';
@@ -41,7 +42,11 @@
 			</BlockTitle>
 			<List strong inset class="!mt-0">
 				{#each entry.items as item, i (i)}
-					<ListItem title={german ? item.de : item.en} titleWrapClass="whitespace-normal" />
+					<ListItem title={german ? item.de : item.en} titleWrapClass="whitespace-normal">
+						{#snippet media()}
+							<Icon name={item.icon} />
+						{/snippet}
+					</ListItem>
 				{/each}
 			</List>
 		</section>

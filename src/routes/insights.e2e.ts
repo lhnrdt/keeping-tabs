@@ -78,6 +78,20 @@ test('a group shows where the money went (#161)', async ({ page }) => {
 	expect(groupUrl).toBeTruthy();
 });
 
+test('the charts’ tables for screen readers stay out of sight', async ({ page }) => {
+	const groupUrl = await tripWithExpenses(page);
+	await open(page, `${groupUrl}?tab=insights`);
+	await expect(page.locator('caption').first()).toBeAttached();
+	const showing = await page.locator('caption').evaluateAll((captions) =>
+		captions.filter((caption) => {
+			caption.scrollIntoView({ block: 'center' });
+			const { x, y, width, height } = caption.getBoundingClientRect();
+			return document.elementFromPoint(x + width / 2, y + height / 2) === caption;
+		})
+	);
+	expect(showing).toHaveLength(0);
+});
+
 test('a finished trip gets a recap to look back on and share (#163)', async ({ page }) => {
 	// Its last expense was more than two weeks ago (August 2026)
 	const groupUrl = await tripWithExpenses(page);

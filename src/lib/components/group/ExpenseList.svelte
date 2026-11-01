@@ -33,18 +33,39 @@
 		hasMore: boolean;
 		/** Only the expenses matching this, when searching (#68) */
 		query?: string;
+		/** The server can't search an encrypted group: everything loads, and it's searched here (#110) */
+		searchHere?: boolean;
 	};
 
-	let { token, currency, members, entries, hasMore, query = '' }: Props = $props();
+	let {
+		token,
+		currency,
+		members,
+		entries,
+		hasMore,
+		query = '',
+		searchHere = false
+	}: Props = $props();
 
 	// Older pages load while scrolling (seamless); the link is the fallback without JS
 	const older = new OlderEntries(
 		(offset) =>
 			`${resolve('/g/[token]/entries', { token })}?${new URLSearchParams({ offset: String(offset), q: query })}`
 	);
-	const expenses = $derived(uniqueById([...entries, ...older.items]));
+	const loaded = $derived(uniqueById([...entries, ...older.items]));
+	const wanted = $derived(query.trim().toLocaleLowerCase());
+	const expenses = $derived(
+		searchHere && wanted
+			? loaded.filter((entry) =>
+					`${entry.title} ${entry.notes ?? ''}`.toLocaleLowerCase().includes(wanted)
+				)
+			: loaded
+	);
 	const more = $derived(older.more ?? hasMore);
-	const loadOlder = () => older.load(expenses.length);
+	const loadOlder = () => older.load(loaded.length);
+	$effect(() => {
+		if (searchHere && wanted && more && !older.loading && !older.failed) void loadOlder();
+	});
 
 	const names = $derived(namesById(members));
 

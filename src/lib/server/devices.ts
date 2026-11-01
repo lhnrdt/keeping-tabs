@@ -67,3 +67,8 @@ export async function removeDevice(db: Db, personId: string, deviceKey: string, 
 	await db.delete(devices).where(eq(devices.keyHash, target.keyHash));
 	return true;
 }
+
+/** This device stops being anyone's (#282); the person and their other devices stay */
+export async function logOutDevice(db: Db, deviceKey: string) {
+	await db.delete(devices).where(eq(devices.keyHash, await hashSecret(deviceKey)));
+}

@@ -14,6 +14,14 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	const me = await memberOf(locals.db, group.id, person?.id);
 	const offset = Math.max(0, Math.floor(Number(url.searchParams.get('offset')) || 0));
 	return json(
-		await entryPage(locals.db, group.id, me, offset, EXPENSES_PER_PAGE, readQuery(url.searchParams))
+		await entryPage(
+			locals.db,
+			group.id,
+			me,
+			offset,
+			EXPENSES_PER_PAGE,
+			// An encrypted group is searched in the browser (#110)
+			group.keyId || group.transitionKey ? '' : readQuery(url.searchParams)
+		)
 	);
 };

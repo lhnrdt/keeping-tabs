@@ -1,6 +1,7 @@
 // Splitting by receipt items (#53): each item is shared equally by whoever had it. What the items
 // don't cover (tip, tax) is shared in proportion to what each had. Saved as exact shares; the
 // items stay with the expense so it can be edited the same way.
+import { isSealed } from '#lib/crypto/seal.ts';
 import { parseAmount, splitEqual } from '#lib/money.ts';
 import type { Result } from '#lib/validation.ts';
 import { splitByWeight, type Share } from './compute';
@@ -39,7 +40,10 @@ export function parseItems(
 		const cents =
 			typeof entry?.price === 'string' ? parseAmount(entry.price.trim(), currency) : null;
 		const chosen = Array.isArray(entry?.memberIds) ? entry.memberIds : [];
-		if (name.length > MAX_NAME_LENGTH || cents === null) {
+		if (
+			name.length > (isSealed(name) ? MAX_NAME_LENGTH * 8 + 64 : MAX_NAME_LENGTH) ||
+			cents === null
+		) {
 			return { ok: false, error: 'split_input_invalid' };
 		}
 		if (chosen.length === 0 || !chosen.every((id) => known.has(id))) {

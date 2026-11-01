@@ -3,11 +3,13 @@
 	import { page, updated } from '$app/state';
 	import { App } from 'konsta/svelte';
 	import { onMount, untrack } from 'svelte';
+	import { syncKeys } from '#lib/crypto/vault.ts';
 	import { startSync } from '#lib/offline/sync.ts';
 	import { prefersReducedMotion } from 'svelte/motion';
 	import FriendlyNote from '#lib/components/FriendlyNote.svelte';
 	import NavigationProgress from '#lib/components/NavigationProgress.svelte';
 	import OfflineBanner from '#lib/components/OfflineBanner.svelte';
+	import SlowNavigation from '#lib/components/skeleton/SlowNavigation.svelte';
 	import { locales, localizeHref } from '#lib/paraglide/runtime.js';
 	import { refreshOnReturn } from '#lib/refresh-on-return.ts';
 	import { provideTheme, ThemeChoice } from '#lib/themes/current.svelte.ts';
@@ -35,6 +37,8 @@
 	onMount(refreshOnReturn);
 	// Expenses kept while offline go out when the connection is back (#55)
 	onMount(startSync);
+	// Keys this device holds go to your others, whichever page it's opened on (#110)
+	onMount(() => void syncKeys().catch(() => {}));
 
 	// Page transitions (N-12)
 	onNavigate((navigation) => {
@@ -58,6 +62,7 @@
 <App theme="ios" dark safeAreas>
 	<NavigationProgress />
 	{@render children()}
+	<SlowNavigation />
 	<OfflineBanner />
 	{#if data.showNote}
 		<FriendlyNote />

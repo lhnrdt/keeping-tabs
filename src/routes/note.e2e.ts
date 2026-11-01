@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { createGroup, open, openFold } from './e2e-helpers';
+import { createGroup, open, openFold, keepPlain } from './e2e-helpers';
 
 test('a new person reads the friendly note once, also from a group link', async ({
 	page,
@@ -11,7 +11,7 @@ test('a new person reads the friendly note once, also from a group link', async 
 	const ben = await (await browser.newContext()).newPage();
 	await ben.goto(groupUrl);
 	const note = ben.getByRole('dialog', { name: 'Good to know' });
-	await expect(note).toContainText('visible to admins');
+	await expect(note).toContainText('Your groups are end-to-end encrypted');
 	await note.getByRole('button', { name: 'Got it' }).click();
 	await expect(note).toHaveCount(0);
 	await expect(ben).toHaveURL(groupUrl);
@@ -29,13 +29,14 @@ test('people who read it on one device are not asked on their others', async ({ 
 	await open(phone, '/new');
 	await phone.getByLabel('Group name').fill('Cabin');
 	await phone.getByLabel('Your name').fill('Anna');
+	await keepPlain(phone);
 	await phone.getByRole('button', { name: 'Create group' }).click();
 	await expect(phone.getByTestId('identity')).toHaveText('Anna');
 
 	await open(phone, '/you/devices');
 	await openFold(phone, 'Add another device');
 	await phone.getByRole('button', { name: 'Create link' }).click();
-	const link = (await phone.getByRole('listitem', { name: 'One-time link' }).innerText()).trim();
+	const link = (await phone.getByLabel('One-time link').inputValue()).trim();
 	const laptop = await (await browser.newContext()).newPage();
 	await laptop.goto(link);
 	// No note on a device link: sent before the page is ready, it would lose the #token.

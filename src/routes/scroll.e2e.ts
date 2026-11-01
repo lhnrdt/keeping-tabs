@@ -25,12 +25,19 @@ test('the expense list keeps loading older entries while scrolling', async ({ pa
 	const entries = page.getByRole('region', { name: 'Expenses' }).getByRole('listitem');
 	await expect(entries).toHaveCount(50);
 	await expect(entries.first()).toContainText('Coffee 120');
+	const toTop = page.getByRole('button', { name: 'Back to top' });
+	await expect(toTop).toHaveCount(0);
 	for (const count of [100, 120]) {
 		await entries.last().scrollIntoViewIfNeeded();
 		await expect(entries).toHaveCount(count);
 	}
 	await expect(entries.last()).toContainText('Coffee 1');
 	await expect(page.getByRole('link', { name: 'Show older' })).toHaveCount(0);
+
+	// Far down: a way back up, gone again once there
+	await toTop.click();
+	await expect(entries.first()).toBeInViewport();
+	await expect(toTop).toHaveCount(0);
 });
 
 test('without JavaScript, older entries are a link away', async ({ browser }) => {

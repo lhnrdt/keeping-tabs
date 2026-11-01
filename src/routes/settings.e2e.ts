@@ -27,7 +27,7 @@ test('settings are saved and follow you to another device', async ({ browser }) 
 	await open(phone, '/you/devices');
 	await openFold(phone, 'Weiteres Gerät hinzufügen');
 	await phone.getByRole('button', { name: 'Link erstellen' }).click();
-	const link = (await phone.getByRole('listitem', { name: 'One-Time-Link' }).innerText()).trim();
+	const link = (await phone.getByLabel('One-Time-Link').inputValue()).trim();
 	const laptop = await (await browser.newContext({ locale: 'en-US' })).newPage();
 	await open(laptop, link);
 	// Not linked yet, so still in its own (English) language
@@ -81,6 +81,13 @@ test('settings are one tap from the start screen, and lead to profile, devices a
 	await expect(
 		page.getByRole('button', { name: /Recovery key/ }).or(page.getByText('Recovery key').first())
 	).toBeVisible();
+
+	// Problems and ideas go to the project, with the version filled in (#83)
+	await open(page, '/you');
+	await expect(page.getByRole('link', { name: /Report a problem or idea/ })).toHaveAttribute(
+		'href',
+		/github\.com.*issues\/new.*App\+version/
+	);
 
 	// Old addresses still arrive
 	await open(page, '/device');

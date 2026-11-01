@@ -30,7 +30,8 @@ export const actions: Actions = {
 
 	/** Makes this device the person behind a recovery key (A-16) */
 	restore: async ({ locals, request, cookies }) => {
-		const key = String((await request.formData()).get('recoveryKey') ?? '');
+		const form = await request.formData();
+		const key = String(form.get('recoveryProof') ?? form.get('recoveryKey') ?? '');
 		if (!(await restoreWithRecoveryKey(locals.db, key, locals.deviceKey))) {
 			return fail(400, { error: 'recovery_key_invalid' as ErrorCode });
 		}

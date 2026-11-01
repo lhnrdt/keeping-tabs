@@ -83,12 +83,15 @@
 			{/snippet}
 		</BarChart>
 	</div>
-	<table class="sr-only">
-		<caption>{m.insights_over_time()}</caption>
-		<tbody>
-			{#each buckets as row (row.start)}
-				<tr><th scope="row">{dateLabel(row.start)}</th><td>{money(row.amount)}</td></tr>
-			{/each}
-		</tbody>
-	</table>
+	<!-- Around the table: a table's caption stays visible when the table itself is hidden this way -->
+	<div class="sr-only">
+		<table>
+			<caption>{m.insights_over_time()}</caption>
+			<tbody>
+				{#each buckets as row (row.start)}
+					<tr><th scope="row">{dateLabel(row.start)}</th><td>{money(row.amount)}</td></tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
 </figure>

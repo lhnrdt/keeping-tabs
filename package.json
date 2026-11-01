@@ -9,7 +9,7 @@
 		"themes": "node scripts/themes.ts",
 		"seed": "node scripts/seed/seed.ts",
 		"build": "wrangler types && vite build",
-		"preview": "wrangler dev --port 4173 --test-scheduled --var ACCESS_PASSWORD:letmein --var RATE_LIMITS:off --var TEST_EURO_RATES:USD=2,GBP=0.8",
+		"preview": "wrangler dev --port 4173 --test-scheduled --var ACCESS_PASSWORD:letmein --var TEST_PLAIN_GROUPS:1 --var RATE_LIMITS:off --var TEST_EURO_RATES:USD=2,GBP=0.8",
 		"prepare": "wrangler types && paraglide-js compile --project ./project.inlang --outdir ./src/lib/paraglide && svelte-kit sync || echo ''",
 		"check": "wrangler types && paraglide-js compile --project ./project.inlang --outdir ./src/lib/paraglide && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p src/service-worker",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
@@ -70,5 +70,8 @@
 	"imports": {
 		"#lib": "./src/lib/index.js",
 		"#lib/*": "./src/lib/*"
+	},
+	"dependencies": {
+		"qrcode-generator": "^2.0.4"
 	}
 }

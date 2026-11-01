@@ -1,3 +1,4 @@
+import { isSealed } from '#lib/crypto/seal.ts';
 import {
 	generateAuthenticationOptions,
 	generateRegistrationOptions,
@@ -7,7 +8,7 @@ import {
 	type RegistrationResponseJSON
 } from '@simplewebauthn/server';
 import { isoBase64URL } from '@simplewebauthn/server/helpers';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import type { Db } from './db';
 import { passkeys } from './db/schema';
 import type { Person } from './people';
@@ -32,7 +33,8 @@ export async function registrationOptions(db: Db, rp: RelyingParty, person: Pers
 		rpName: 'Keeping Tabs',
 		rpID: rp.id,
 		userID: new TextEncoder().encode(person.id),
-		userName: person.name ?? 'Keeping Tabs',
+		// Sealed, it means nothing to the password manager that shows it (#110)
+		userName: person.name && !isSealed(person.name) ? person.name : 'Keeping Tabs',
 		attestationType: 'none',
 		excludeCredentials: existing,
 		// Discoverable, so it can be used on a device that doesn't know who you are yet
@@ -96,6 +98,21 @@ export async function verifyPasskey(
 		.set({ counter: authenticationInfo.newCounter })
 		.where(eq(passkeys.id, passkey.id));
 	return passkey.personId;
+}
+
+/** The vault, sealed with what only this passkey can produce (#110) */
+export const saveSealedVault = (db: Db, personId: string, id: string, sealedVault: string) =>
+	db
+		.update(passkeys)
+		.set({ sealedVault })
+		.where(and(eq(passkeys.id, id), eq(passkeys.personId, personId)));
+
+export async function sealedVaultOf(db: Db, id: string) {
+	const passkey = await db.query.passkeys.findFirst({
+		columns: { sealedVault: true },
+		where: eq(passkeys.id, id)
+	});
+	return passkey?.sealedVault ?? null;
 }
 
 export async function countPasskeys(db: Db, personId: string) {

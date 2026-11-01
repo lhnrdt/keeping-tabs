@@ -1,4 +1,5 @@
-// The friendly note about what the app's creator can see (#112): shown once per person.
+// The friendly note about what the app's creator can see (#112): shown once per person, and once
+// more when what it says changes.
 // Read on this device → a cookie; read by the person → their record, so their other devices
 // skip it too.
 import type { Cookies } from '@sveltejs/kit';
@@ -8,6 +9,8 @@ import { people } from './db/schema';
 import type { Person } from './people';
 
 const NOTE_COOKIE = 'kt-note';
+/** 2: groups are encrypted now (#110); people had read that things are visible to admins */
+const NOTE_VERSION = 2;
 const COOKIE_OPTIONS = {
 	path: '/',
 	httpOnly: true,
@@ -16,13 +19,16 @@ const COOKIE_OPTIONS = {
 } as const;
 
 const markPersonNoted = (db: Db, personId: string) =>
-	db.update(people).set({ notedAt: new Date() }).where(eq(people.id, personId));
+	db
+		.update(people)
+		.set({ notedAt: new Date(), notedVersion: NOTE_VERSION })
+		.where(eq(people.id, personId));
 
 /** Whether this visitor still needs to see the note; keeps device and person in step. */
 export async function needsNote(db: Db, cookies: Cookies, person: Person | undefined) {
-	const notedHere = cookies.get(NOTE_COOKIE) !== undefined;
-	if (person?.notedAt) {
-		if (!notedHere) cookies.set(NOTE_COOKIE, '1', COOKIE_OPTIONS);
+	const notedHere = cookies.get(NOTE_COOKIE) === String(NOTE_VERSION);
+	if (person?.notedAt && person.notedVersion >= NOTE_VERSION) {
+		if (!notedHere) cookies.set(NOTE_COOKIE, String(NOTE_VERSION), COOKIE_OPTIONS);
 		return false;
 	}
 	// Read here before this device belonged to anyone: remember it for the person now
@@ -31,6 +37,6 @@ export async function needsNote(db: Db, cookies: Cookies, person: Person | undef
 }
 
 export async function acceptNote(db: Db, cookies: Cookies, person: Person | undefined) {
-	cookies.set(NOTE_COOKIE, '1', COOKIE_OPTIONS);
+	cookies.set(NOTE_COOKIE, String(NOTE_VERSION), COOKIE_OPTIONS);
 	if (person) await markPersonNoted(db, person.id);
 }

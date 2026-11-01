@@ -41,7 +41,15 @@ for (const colorScheme of ['light', 'dark'] as const) {
 		});
 
 		test('home, new group, settings and devices', async ({ page }) => {
-			for (const path of ['/', '/new', '/you', '/you/profile', '/you/devices', '/you/backup'])
+			for (const path of [
+				'/',
+				'/new',
+				'/how-it-works',
+				'/you',
+				'/you/profile',
+				'/you/devices',
+				'/you/backup'
+			])
 				await expectAccessible(page, path);
 		});
 
@@ -62,6 +70,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
 				expenseUrl,
 				`${groupUrl}/payments/new`,
 				`${groupUrl}/edit`,
+				`${groupUrl}/encrypt`,
 				`${groupUrl}/password`,
 				`${groupUrl}/budget`,
 				`${groupUrl}/customize-insights`,

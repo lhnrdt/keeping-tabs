@@ -1,23 +1,62 @@
-<!-- The nature theme's motif (#60) for empty states, errors and the welcome page -->
+<!-- The nature theme's motif (#60, #274) for empty states, errors and the welcome page -->
 <script lang="ts">
+	import { page } from '$app/state';
+	import type { GroupKind } from '#lib/group/kinds.ts';
 	import { MOTIFS } from '#lib/themes/art.ts';
+	import { GROUP_SUBJECTS } from '#lib/themes/group-subjects.ts';
 	import { useTheme } from '#lib/themes/current.svelte.ts';
 
 	const theme = useTheme();
-	const art = $derived(MOTIFS[theme.id]);
+	// In a group: what it's about, in the same round window
+	const kind: GroupKind | undefined = $derived(page.data.group?.kind);
+	const art = $derived(kind ? GROUP_SUBJECTS[kind] : MOTIFS[theme.id]);
+	const cx = $derived(kind ? 310 : 60);
+	const cy = $derived(kind ? 136 : 60);
+	const radius = $derived(kind ? 77 : 58);
+	const clip = $props.id();
 </script>
 
 <svg
-	viewBox="0 0 120 120"
-	class="h-24 w-24 text-accent-soft dark:text-accent-night"
+	viewBox={kind ? '230 56 160 160' : '0 0 120 120'}
+	data-testid={kind ? 'empty-scene' : undefined}
+	data-kind={kind}
+	class="h-28 w-28 text-accent dark:text-accent-night"
 	aria-hidden="true"
-	fill="none"
-	stroke="currentColor"
-	stroke-width="2"
-	stroke-linecap="round"
-	stroke-linejoin="round"
 >
-	{#each art.paths as d, i (i)}<path {d} />{/each}
-	{#each art.faint ?? [] as d, i (i)}<path {d} opacity="0.6" />{/each}
-	{#each art.dots ?? [] as [cx, cy, r], i (i)}<circle {cx} {cy} {r} fill="currentColor" />{/each}
+	<clipPath id={clip}><circle {cx} {cy} r={radius} /></clipPath>
+	<g clip-path={`url(#${clip})`} fill="currentColor">
+		<circle {cx} {cy} r={radius} opacity="0.12" />
+		{#each art.shapes as shape, i (i)}
+			{#if shape.snow}
+				<path d={shape.d} fill="#fff" />
+			{:else if shape.cut}
+				<path d={shape.d} class="text-canvas dark:text-canvas-night" />
+			{:else}
+				<!-- Solid: whatever's behind a shape shouldn't show through it -->
+				<path
+					d={shape.d}
+					class="text-canvas dark:text-canvas-night {shape.motion ? `scene-${shape.motion}` : ''}"
+				/>
+				<path
+					d={shape.d}
+					opacity={shape.strength}
+					class={shape.motion ? `scene-${shape.motion}` : undefined}
+				/>
+			{/if}
+		{/each}
+		{#each art.lines ?? [] as line, i (i)}
+			<path
+				d={line.d}
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2.2"
+				stroke-linecap="round"
+				opacity={line.strength}
+				class={line.motion ? `scene-${line.motion}` : undefined}
+			/>
+		{/each}
+		{#each art.dots ?? [] as [cx, cy, r, strength], i (i)}
+			<circle {cx} {cy} {r} opacity={strength} />
+		{/each}
+	</g>
 </svg>

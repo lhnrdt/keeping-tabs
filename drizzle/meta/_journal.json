@@ -218,6 +218,69 @@
       "when": 1793538892559,
       "tag": "0030_expense_notified",
       "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "6",
+      "when": 1793541722844,
+      "tag": "0031_group_encryption",
+      "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "6",
+      "when": 1793544236478,
+      "tag": "0032_person_keys_by_vault",
+      "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "6",
+      "when": 1793545233432,
+      "tag": "0033_drop_auto_category",
+      "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "6",
+      "when": 1793545234022,
+      "tag": "0034_sealed_details",
+      "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "6",
+      "when": 1793547904881,
+      "tag": "0035_encryption_handover",
+      "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "6",
+      "when": 1793549451736,
+      "tag": "0036_group_sealed_details",
+      "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "6",
+      "when": 1793550381966,
+      "tag": "0037_extras",
+      "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "6",
+      "when": 1793552250556,
+      "tag": "0038_rekey_rows",
+      "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "6",
+      "when": 1793552874200,
+      "tag": "0039_note_version",
+      "breakpoints": true
     }
   ]
 }

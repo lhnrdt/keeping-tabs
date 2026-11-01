@@ -1,15 +1,23 @@
 import { fail } from '@sveltejs/kit';
 import { deleteGroupNow, listDeletedGroupsOf, restoreGroup } from '#lib/server/group-deletion.ts';
 import { yourGroupsWithBalances } from '#lib/server/overview.ts';
-import { findPerson, personOf } from '#lib/server/people.ts';
+import { countPasskeys } from '#lib/server/passkeys.ts';
+import { findPerson, hasRecoveryKey, personOf } from '#lib/server/people.ts';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const person = await personOf(locals);
+	const yourGroups = person ? await yourGroupsWithBalances(locals.db, person.id) : [];
 	// On every device of this person (A-17)
 	return {
 		me: person ? { id: person.id, name: person.name, avatar: person.avatar } : null,
-		yourGroups: person ? await yourGroupsWithBalances(locals.db, person.id) : [],
+		yourGroups,
+		// With groups and no way back to them if this browser forgets its keys (#110)
+		needsBackup:
+			person && yourGroups.length > 0
+				? !(await hasRecoveryKey(locals.db, person.id)) &&
+					(await countPasskeys(locals.db, person.id)) === 0
+				: false,
 		recentlyDeleted: person ? await listDeletedGroupsOf(locals.db, person.id) : []
 	};
 };

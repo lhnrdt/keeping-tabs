@@ -1,0 +1,125 @@
+/*
+ * The scenes breathe a little: smoke rises, balloons bob, water drifts. Slow, small, only transform
+ * and opacity, and not at all for anyone who asks for less motion.
+ */
+.scene-rise,
+.scene-bob,
+.scene-bob-slow,
+.scene-flutter,
+.scene-pulse,
+.scene-idle,
+.scene-drift,
+.scene-breathe,
+.scene-flicker {
+	transform-box: fill-box;
+	transform-origin: center bottom;
+}
+.scene-rise {
+	animation: scene-rise 5s ease-in-out infinite;
+}
+.scene-bob {
+	animation: scene-bob 5s ease-in-out infinite;
+}
+.scene-bob-slow {
+	animation: scene-bob 7s ease-in-out -2s infinite;
+}
+.scene-flutter {
+	transform-origin: left center;
+	animation: scene-flutter 3.5s ease-in-out infinite;
+}
+.scene-pulse {
+	transform-origin: center;
+	animation: scene-pulse 3.2s ease-in-out infinite;
+}
+.scene-idle {
+	animation: scene-idle 2.4s ease-in-out infinite;
+}
+.scene-drift {
+	animation: scene-drift 8s ease-in-out infinite;
+}
+.scene-breathe {
+	animation: scene-breathe 9s ease-in-out infinite;
+}
+.scene-flicker {
+	animation: scene-flicker 1.4s ease-in-out infinite;
+}
+@keyframes scene-rise {
+	0% {
+		opacity: 0;
+		transform: translateY(5px);
+	}
+	35% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+		transform: translateY(-9px);
+	}
+}
+@keyframes scene-bob {
+	50% {
+		transform: translateY(-5px);
+	}
+}
+@keyframes scene-flutter {
+	50% {
+		transform: skewY(-9deg) scaleX(0.92);
+	}
+}
+@keyframes scene-pulse {
+	50% {
+		transform: scale(1.14);
+	}
+}
+@keyframes scene-idle {
+	50% {
+		transform: translateY(-0.8px);
+	}
+}
+@keyframes scene-drift {
+	50% {
+		transform: translateX(7px);
+	}
+}
+@keyframes scene-breathe {
+	50% {
+		opacity: 0.55;
+	}
+}
+@keyframes scene-flicker {
+	50% {
+		transform: scale(0.88, 1.1);
+	}
+}
+
+/* Just settled up: what's new in the scene comes in with a little bounce, once */
+.scene-celebrate {
+	transform-box: fill-box;
+	transform-origin: center bottom;
+	animation: scene-celebrate 900ms var(--ease-calm) backwards;
+}
+@keyframes scene-celebrate {
+	0% {
+		opacity: 0;
+		transform: scale(0.4) translateY(10px);
+	}
+	70% {
+		opacity: 1;
+		transform: scale(1.12);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.scene-rise,
+	.scene-bob,
+	.scene-bob-slow,
+	.scene-flutter,
+	.scene-pulse,
+	.scene-idle,
+	.scene-drift,
+	.scene-breathe,
+	.scene-flicker,
+	.scene-celebrate {
+		animation: none;
+	}
+}

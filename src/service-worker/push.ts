@@ -1,19 +1,23 @@
 // Notifications (#56): shows what the server sent (src/lib/server/push.ts) and opens the
 // group when one is tapped, in an open window of the app if there is one.
 import { self } from '$app/service-worker';
+import { storedKey } from '#lib/crypto/keyring.ts';
+import { openPush, type PushText } from '#lib/crypto/open-push.ts';
 
-type Payload = { title?: string; body?: string; url?: string; tag?: string };
+type Payload = PushText & { url?: string; tag?: string };
 
 self.addEventListener('push', (event) => {
 	const payload: Payload = event.data?.json() ?? {};
 	event.waitUntil(
-		self.registration.showNotification(payload.title ?? 'Keeping Tabs', {
-			body: payload.body,
-			tag: payload.tag,
-			icon: '/icons/icon-192.png',
-			badge: '/icons/icon-192.png',
-			data: { url: payload.url ?? '/' }
-		})
+		openPush(payload, storedKey).then((shown) =>
+			self.registration.showNotification(shown.title ?? 'Keeping Tabs', {
+				body: shown.body,
+				tag: payload.tag,
+				icon: '/icons/icon-192.png',
+				badge: '/icons/icon-192.png',
+				data: { url: payload.url ?? '/' }
+			})
+		)
 	);
 });
 
