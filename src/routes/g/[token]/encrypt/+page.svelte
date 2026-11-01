@@ -3,6 +3,7 @@
 	import { goto, invalidateAll } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
+	import { onMount } from 'svelte';
 	import AppPage from '#lib/components/AppPage.svelte';
 	import LinkField from '#lib/components/LinkField.svelte';
 	import StickySubmit from '#lib/components/StickySubmit.svelte';
@@ -20,6 +21,9 @@
 	let progress = $state<{ done: number; total: number }>();
 	let failed = $state(false);
 	let link = $state<string>();
+	// This takes the browser: before the page is ready, pressing the button would only reload it
+	let ready = $state(false);
+	onMount(() => (ready = true));
 	// Encrypted already: this page changes its key, for keeping out someone who has left
 	const rekeying = $derived(Boolean(data.group.keyId) && !link);
 	const heading = $derived(rekeying ? m.rekey_page_title() : m.encrypt_page_title());
@@ -86,7 +90,7 @@
 			}}
 		>
 			<StickySubmit>
-				<SubmitButton pending={progress !== undefined}
+				<SubmitButton pending={progress !== undefined} disabled={!ready}
 					>{rekeying ? m.rekey_button() : m.encrypt_button()}</SubmitButton
 				>
 			</StickySubmit>
