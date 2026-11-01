@@ -3,6 +3,7 @@
 	import AppPage from '#lib/components/AppPage.svelte';
 	import DeleteEntry from '#lib/components/group/DeleteEntry.svelte';
 	import ExpenseForm from '#lib/components/expense/ExpenseForm.svelte';
+	import { quantityInputValue } from '#lib/expense/driving.ts';
 	import { amountInputValue } from '#lib/money.ts';
 	import { splitInputValues } from '#lib/split/inputs.ts';
 	import { m } from '#lib/paraglide/messages.js';
@@ -21,6 +22,8 @@
 				: amountInputValue(data.expense.amountCents, data.group.currency),
 			currency: data.expense.originalCurrency ?? '',
 			rate: data.expense.exchangeRate ?? '',
+			km: quantityInputValue(data.expense.distanceM),
+			litres: quantityInputValue(data.expense.fuelMl),
 			date: data.expense.date,
 			// Several payers (#39): each with what they paid
 			paidBy: data.expense.payers ? SEVERAL_PAYERS : data.expense.paidBy,
@@ -53,6 +56,7 @@
 		{values}
 		error={form?.error}
 		submitLabel={m.save()}
+		driving={data.group.kind === 'car'}
 	/>
 	<DeleteEntry label={m.delete_expense()} question={m.delete_expense_confirm()} />
 </AppPage>

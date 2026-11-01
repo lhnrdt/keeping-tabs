@@ -16,6 +16,8 @@ export const errorMessages = {
 	payment_details_too_long: m.error_payment_details_too_long,
 	amount_invalid: m.error_amount_invalid,
 	rate_invalid: m.error_rate_invalid,
+	km_invalid: m.error_km_invalid,
+	litres_invalid: m.error_litres_invalid,
 	date_invalid: m.error_date_invalid,
 	payer_invalid: m.error_payer_invalid,
 	payers_too_few: m.error_payers_too_few,

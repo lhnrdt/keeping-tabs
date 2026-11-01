@@ -1,14 +1,15 @@
 // Insights for a group's entries (#161): each expense in its category as the app shows it,
 // chosen by hand or guessed from its title the way the group taught it.
+import { drivingOf, type DrivingEntry } from '#lib/expense/driving.ts';
 import { learnCategories, categoryOf } from '#lib/expense/learned.ts';
 import type { ExpenseCategory } from '#lib/expense/categories.ts';
 import type { Transfer } from '#lib/settle.ts';
 import { budgetOf } from './budget';
 import { insightsOf, type InsightEntry } from './insights';
-import { periodRange, stepPeriod, unitFor, type DateRange, type Period } from './period';
+import { inRange, periodRange, stepPeriod, unitFor, type DateRange, type Period } from './period';
 import { recapOf } from './recap';
 
-type Entry = Omit<InsightEntry, 'category'> & { category: ExpenseCategory | null };
+type Entry = Omit<InsightEntry, 'category'> & { category: ExpenseCategory | null } & DrivingEntry;
 
 /** `entries` newest first, as listExpenses returns them; `you` is your member, if any */
 export function groupInsights(
@@ -35,6 +36,11 @@ export function groupInsights(
 	return {
 		...insights,
 		period,
+		driving: drivingOf(
+			entries.filter(
+				(entry) => entry.type === 'expense' && inRange(entry.date, periodRange(period))
+			)
+		),
 		/** From the first expense to the last, for stepping between periods */
 		span: (whole.first && whole.last
 			? { from: whole.first, to: whole.last }

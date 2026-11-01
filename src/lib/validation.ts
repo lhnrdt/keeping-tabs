@@ -1,6 +1,7 @@
 import type { ErrorCode } from './errors';
 import { isExpenseCategory, type ExpenseCategory } from './expense/categories';
 import { DEFAULT_GROUP_KIND, isGroupKind, type GroupKind } from './group/kinds';
+import { parseKm, parseLitres } from './expense/driving';
 import { convert, parseRate, type Original } from './expense/exchange';
 import type { Payer } from './expense/payers';
 import { parseAmount } from './money';
@@ -109,6 +110,9 @@ export type ExpenseInput = {
 	/** Typed in another currency (#54): what and at which rate; amountCents is converted */
 	original: Original | null;
 	amountCents: number;
+	/** In car groups: distance driven and fuel bought, if noted */
+	distanceM: number | null;
+	fuelMl: number | null;
 	date: string;
 	paidBy: string;
 	/** When several people paid (#39), each with their part, most first; else null */
@@ -145,6 +149,9 @@ export function parseExpense(
 		currency?: unknown;
 		/** 1 of that currency in the group's, as typed */
 		rate?: unknown;
+		/** In car groups: km driven and litres of fuel, as typed */
+		km?: unknown;
+		litres?: unknown;
 		date: unknown;
 		paidBy: unknown;
 		/** With paidBy "several" (#39): what each member paid, by member id */
@@ -169,6 +176,11 @@ export function parseExpense(
 	if (!money.ok) return money;
 	const { amountCents, original } = money.value;
 
+	const km = parseKm(values.km);
+	if (!km.ok) return km;
+	const litres = parseLitres(values.litres);
+	if (!litres.ok) return litres;
+
 	const date = parseDate(values.date);
 	if (!date.ok) return date;
 
@@ -188,6 +200,8 @@ export function parseExpense(
 			notes: notes.value,
 			original,
 			amountCents,
+			distanceM: km.value,
+			fuelMl: litres.value,
 			date: date.value,
 			...payers.value,
 			category: category.value,

@@ -151,6 +151,8 @@ describe('parseExpense', () => {
 				title: 'Dinner',
 				notes: null,
 				original: null,
+				distanceM: null,
+				fuelMl: null,
 				amountCents: 3000,
 				date: '2026-10-21',
 				paidBy: 'b',
