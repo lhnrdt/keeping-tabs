@@ -59,13 +59,15 @@ export const readExpenseForm = async (db: Db, group: Group, form: FormData) =>
 			rate: await rateOf(group, form),
 			odometer: text(form, 'odometer'),
 			litres: text(form, 'litres'),
+			units: text(form, 'units'),
 			date: text(form, 'date'),
 			paidBy: text(form, 'paidBy'),
 			payers: readPayers(form),
 			participants: form.getAll('participants').map(String),
 			category: text(form, 'category'),
 			splitMode: text(form, 'splitMode'),
-			inputs: readSplitInputs(form)
+			inputs: readSplitInputs(form),
+			items: text(form, 'items')
 		},
 		parseExpense
 	);

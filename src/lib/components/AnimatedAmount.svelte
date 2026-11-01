@@ -3,8 +3,7 @@
 	import { prefersReducedMotion, Tween } from 'svelte/motion';
 	// Same curve as --ease-calm in theme.css
 	import { quintOut } from 'svelte/easing';
-	import { formatAmount } from '#lib/money.ts';
-	import { getLocale } from '#lib/paraglide/runtime.js';
+	import { shownAmount } from '#lib/shown-money.ts';
 
 	type Props = {
 		amount: number;
@@ -21,4 +20,4 @@
 	});
 </script>
 
-{label(formatAmount(Math.round(tween.current), currency, getLocale()))}
+{label(shownAmount(Math.round(tween.current), currency))}

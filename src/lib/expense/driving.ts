@@ -1,49 +1,79 @@
 // What car groups note with an expense: the odometer reading and litres of fuel. Kept as whole
 // metres and millilitres, typed as km and litres. Km driven follow from the readings.
 import type { DateRange } from '#lib/insights/period.ts';
+import type { Units } from '#lib/settings.ts';
 import type { Result } from '#lib/validation.ts';
 
-const MAX_KM = 1_000_000;
-const MAX_LITRES = 10_000;
+const METRES_PER_MILE = 1609.344;
+const MILLILITRES_PER_GALLON = 3785.411784;
+const LITRES_PER_100KM_AT_ONE_MPG = 235.214583;
+const MAX_DISTANCE = 1_000_000;
+const MAX_VOLUME = 10_000;
 
-/** A positive number with up to `decimals` decimals, in thousandths; null if it's anything else */
-function parseThousandths(text: string, decimals: number, max: number): number | null {
+const metresPer = (units: Units) => (units === 'imperial' ? METRES_PER_MILE : 1000);
+const millilitresPer = (units: Units) => (units === 'imperial' ? MILLILITRES_PER_GALLON : 1000);
+
+/** A positive number with up to `decimals` decimals, or null if it's anything else */
+function parseQuantity(text: string, decimals: number, max: number): number | null {
 	const pattern = new RegExp(`^\\d+(?:[.,]\\d{1,${decimals}})?$`);
 	if (!pattern.test(text)) return null;
 	const value = Number(text.replace(',', '.'));
-	return value > 0 && value <= max ? Math.round(value * 1000) : null;
+	return value > 0 && value <= max ? value : null;
 }
 
-/** Optional km as typed, to metres; empty is none */
-export function parseKm(value: unknown): Result<number | null> {
+/** An optional odometer reading as typed, in km or miles, to metres; empty is none */
+export function parseOdometer(value: unknown, units: Units = 'metric'): Result<number | null> {
 	const text = typeof value === 'string' ? value.trim() : '';
 	if (!text) return { ok: true, value: null };
-	const metres = parseThousandths(text, 1, MAX_KM);
-	return metres === null ? { ok: false, error: 'odometer_invalid' } : { ok: true, value: metres };
+	const reading = parseQuantity(text, 1, MAX_DISTANCE);
+	return reading === null
+		? { ok: false, error: 'odometer_invalid' }
+		: { ok: true, value: Math.round(reading * metresPer(units)) };
 }
 
-/** Optional litres as typed, to millilitres; empty is none */
-export function parseLitres(value: unknown): Result<number | null> {
+/** Optional fuel as typed, in litres or gallons, to millilitres; empty is none */
+export function parseFuel(value: unknown, units: Units = 'metric'): Result<number | null> {
 	const text = typeof value === 'string' ? value.trim() : '';
 	if (!text) return { ok: true, value: null };
-	const millilitres = parseThousandths(text, 2, MAX_LITRES);
-	return millilitres === null
+	const amount = parseQuantity(text, 2, MAX_VOLUME);
+	return amount === null
 		? { ok: false, error: 'litres_invalid' }
-		: { ok: true, value: millilitres };
+		: { ok: true, value: Math.round(amount * millilitresPer(units)) };
 }
 
-/** Metres or millilitres as an input's value: "120.5" */
-export const quantityInputValue = (thousandths: number | null | undefined) =>
-	thousandths ? String(thousandths / 1000) : '';
+const rounded = (value: number, digits: number) => Number(value.toFixed(digits));
+
+/** Metres as an input's value: "120.5" */
+export const odometerInputValue = (metres: number | null | undefined, units: Units = 'metric') =>
+	metres ? String(rounded(metres / metresPer(units), 1)) : '';
+
+/** Millilitres as an input's value: "41.27" */
+export const fuelInputValue = (millilitres: number | null | undefined, units: Units = 'metric') =>
+	millilitres ? String(rounded(millilitres / millilitresPer(units), 2)) : '';
 
 const number = (value: number, locale: string, digits: number) =>
 	new Intl.NumberFormat(locale, { maximumFractionDigits: digits }).format(value);
 
-export const formatKm = (metres: number, locale: string) =>
-	`${number(metres / 1000, locale, 1)} km`;
+export const distanceUnit = (units: Units) => (units === 'imperial' ? 'mi' : 'km');
+export const fuelUnit = (units: Units) => (units === 'imperial' ? 'gal' : 'l');
 
-export const formatLitres = (millilitres: number, locale: string) =>
-	`${number(millilitres / 1000, locale, 2)} l`;
+export const formatDistance = (metres: number, locale: string, units: Units = 'metric') =>
+	`${number(metres / metresPer(units), locale, 1)} ${distanceUnit(units)}`;
+
+export const formatFuel = (millilitres: number, locale: string, units: Units = 'metric') =>
+	`${number(millilitres / millilitresPer(units), locale, 2)} ${fuelUnit(units)}`;
+
+/** Per km or mile, from cents per km */
+export const perDistance = (centsPerKm: number, units: Units) =>
+	Math.round((centsPerKm * metresPer(units)) / 1000);
+
+/** Per litre or gallon, from cents per litre */
+export const perFuel = (centsPerLitre: number, units: Units) =>
+	Math.round((centsPerLitre * millilitresPer(units)) / 1000);
+
+/** l/100 km, or miles per gallon */
+export const consumptionIn = (litresPer100Km: number, units: Units) =>
+	units === 'imperial' ? LITRES_PER_100KM_AT_ONE_MPG / litresPer100Km : litresPer100Km;
 
 export type DrivingEntry = {
 	date: string;
@@ -106,18 +136,19 @@ export function drivingOf(
 	};
 }
 
-/** What an odometer shows: at least six whole km digits, then the tenth */
-export function odometerDigits(metres: number) {
-	const tenths = Math.floor(metres / 100);
+/** What an odometer shows: at least six whole digits, then the tenth */
+export function odometerDigits(metres: number, units: Units = 'metric') {
+	// A hair up: 100 miles kept in whole metres must not read 99.9
+	const tenths = Math.floor((metres / metresPer(units)) * 10 + 0.004);
 	return {
 		whole: [...String(Math.floor(tenths / 10)).padStart(6, '0')],
 		tenth: String(tenths % 10)
 	};
 }
 
-/** A gauge's scale, in l/100 km; a thirstier car rests at its end */
-export const CONSUMPTION_SCALE = 15;
+/** A dial's scale: up to 15 l per 100 km, or up to 60 miles per gallon */
+export const consumptionScale = (units: Units) => (units === 'imperial' ? 60 : 15);
 
-/** The needle's angle for a consumption: -90° at empty, 90° at the end of the scale */
-export const needleAngle = (litresPer100Km: number) =>
-	(Math.min(litresPer100Km, CONSUMPTION_SCALE) / CONSUMPTION_SCALE) * 180 - 90;
+/** The needle's angle for a value on the dial: -90° at its start, 90° at the end of the scale */
+export const needleAngle = (value: number, scale: number) =>
+	(Math.min(value, scale) / scale) * 180 - 90;

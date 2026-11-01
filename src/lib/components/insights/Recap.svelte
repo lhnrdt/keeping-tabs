@@ -5,7 +5,7 @@
 	import Icon from '#lib/components/Icon.svelte';
 	import ThemeMotif from '#lib/components/illustrations/ThemeMotif.svelte';
 	import { categoryLabels } from '#lib/expense/category-style.ts';
-	import { formatAmount } from '#lib/money.ts';
+	import { shownAmount } from '#lib/shown-money.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { shareText } from '#lib/share.ts';
 	import { getLocale } from '#lib/paraglide/runtime.js';
@@ -13,7 +13,7 @@
 
 	let { recap, name, currency }: { recap: Recap; name: string; currency: string } = $props();
 
-	const money = (amount: number) => formatAmount(amount, currency, getLocale());
+	const money = (amount: number) => shownAmount(amount, currency);
 	const percent = (share: number) =>
 		new Intl.NumberFormat(getLocale(), { style: 'percent', maximumFractionDigits: 0 }).format(
 			share

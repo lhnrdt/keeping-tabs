@@ -2,24 +2,30 @@
 	// Adding or editing an expense, in the order it's thought of: what it was, how much, who
 	// paid and how it's split, then category and when. One flat form without cards; the save
 	// button stays at the bottom of the screen (GroupForm).
+	import { resolve } from '$app/paths';
 	import PlainField from '#lib/components/fields/PlainField.svelte';
 	import CategoryPicker from '#lib/components/pickers/CategoryPicker.svelte';
 	import GroupForm from '#lib/components/group/GroupForm.svelte';
 	import type { ErrorCode } from '#lib/errors.ts';
 	import type { ExpenseCategory } from '#lib/expense/categories.ts';
 	import { RATE_CURRENCIES } from '#lib/expense/exchange.ts';
+	import { sendReceipt } from '#lib/expense/send-receipt.ts';
 	import { learnCategories } from '#lib/expense/learned.ts';
 	import { useIdentity } from '#lib/group/identity.svelte.ts';
 	import type { GroupKind } from '#lib/group/kinds.ts';
 	import type { GroupMember } from '#lib/group/members.ts';
+	import { calmSlide } from '#lib/motion/calm.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { canBeDefault } from '#lib/split/default-split.ts';
+	import { ITEMS_MODE } from '#lib/split/items.ts';
 	import { isSplitMode, SPLIT_MODES, type SplitMode } from '#lib/split/modes.ts';
 	import { SEVERAL_PAYERS } from '#lib/validation.ts';
 	import AmountCurrencyField from './AmountCurrencyField.svelte';
 	import DateChips from './DateChips.svelte';
 	import DrivingFields from './DrivingFields.svelte';
 	import ParticipantChecklist from './ParticipantChecklist.svelte';
+	import ItemSplit from './ItemSplit.svelte';
+	import NewExpensePhotos from './NewExpensePhotos.svelte';
 	import PayerAmounts from './PayerAmounts.svelte';
 	import SplitInputs from './SplitInputs.svelte';
 	import TitleNoteField from './TitleNoteField.svelte';
@@ -48,6 +54,8 @@
 			splitMode: string;
 			/** Split inputs by member id, for the unequal modes */
 			inputs: Record<string, string>;
+			/** With splitMode "items": the receipt's items as JSON (#53) */
+			items?: string;
 		};
 		/** The group's hand-chosen categories, newest first */
 		chosen: { title: string; category: ExpenseCategory | null }[];
@@ -94,8 +102,12 @@
 	let date = $state(initial().date);
 	let converted = $state('');
 	let payer = $state(initial().paidBy || identity.memberId || initial().firstMember);
-	let mode = $state<SplitMode>(
-		isSplitMode(initial().splitMode) ? (initial().splitMode as SplitMode) : 'equal'
+	let mode = $state<SplitMode | typeof ITEMS_MODE>(
+		initial().splitMode === ITEMS_MODE
+			? ITEMS_MODE
+			: isSplitMode(initial().splitMode)
+				? (initial().splitMode as SplitMode)
+				: 'equal'
 	);
 
 	const saved = $derived(
@@ -106,6 +118,20 @@
 	const currencies = $derived([
 		...new Set([currency, ...(values.currency ? [values.currency] : []), ...RATE_CURRENCIES])
 	]);
+	// Photos of the receipt on a new expense go out once it's saved, under the id it was given
+	// (the same page handles them as when editing). If one doesn't arrive, on to that page.
+	let photos = $state<Blob[]>([]);
+	const expensePage = () =>
+		resolve('/g/[token]/expenses/[id]', { token: offlineToken ?? '', id: clientId });
+	async function sendPhotos() {
+		let missing = false;
+		for (const photo of photos) {
+			const refused = await sendReceipt(photo, expensePage()).catch(() => 'receipt_invalid');
+			if (refused) missing = true;
+		}
+		return missing ? expensePage() : undefined;
+	}
+
 	const modeLabels: Record<SplitMode, () => string> = {
 		equal: m.split_equal,
 		exact: m.split_exact,
@@ -115,7 +141,7 @@
 	};
 </script>
 
-<GroupForm {error} {submitLabel} {offlineToken}>
+<GroupForm {error} {submitLabel} {offlineToken} onSaved={photos.length ? sendPhotos : undefined}>
 	{#if offlineToken}<input type="hidden" name="clientId" value={clientId} />{/if}
 	<div class="flex flex-col gap-4 px-4 pt-2 pb-4">
 		<TitleNoteField bind:title notes={values.notes} />
@@ -150,15 +176,27 @@
 						{#each SPLIT_MODES as option (option)}
 							<option value={option}>{modeLabels[option]()}</option>
 						{/each}
+						<option value={ITEMS_MODE}>{m.split_items()}</option>
 					</select>
 				{/snippet}
 			</PlainField>
 		</div>
 
 		{#if payer === SEVERAL_PAYERS}
-			<PayerAmounts {members} {currency} amount={converted} initial={values.payers ?? {}} />
+			<div transition:calmSlide>
+				<PayerAmounts {members} {currency} amount={converted} initial={values.payers ?? {}} />
+			</div>
 		{/if}
-		{#if mode === 'equal'}
+		{#if mode === ITEMS_MODE}
+			<ItemSplit
+				{members}
+				{currency}
+				{amount}
+				{amountCurrency}
+				{converted}
+				initial={values.items ?? ''}
+			/>
+		{:else if mode === 'equal'}
 			<ParticipantChecklist
 				{members}
 				selected={values.participants}
@@ -191,6 +229,7 @@
 
 		<CategoryPicker value={values.category} {title} learned={learnCategories(chosen)} {kind} />
 		<DateChips bind:date />
+		{#if offlineToken}<NewExpensePhotos onchange={(chosen) => (photos = chosen)} />{/if}
 		{#if canRepeat}
 			<PlainField label={m.field_repeats()} icon="repeats" arrow>
 				{#snippet children(id)}

@@ -1,4 +1,35 @@
 /*
+ * The app's spacing for forms and settings, the same everywhere: the 16px gutter, 1.5rem between
+ * sections, 1rem between what's in them. Controls bring no margins of their own.
+ */
+.page-sections {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	padding: 0.5rem 1rem 1rem;
+}
+.page-section {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+/* Lists and blocks follow the page's spacing here instead of bringing their own */
+.page-sections :is(.k-list, .k-block) {
+	margin: 0;
+}
+.page-sections .k-block {
+	padding-inline: 0;
+}
+.section-label {
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: var(--color-ink-muted);
+}
+.dark .section-label {
+	color: var(--color-ink-muted-night);
+}
+
+/*
  * Plain form fields (the expense form): a small label above a soft, rounded well, and round
  * choice pills. No cards around them; the wells set the fields apart.
  */
@@ -98,4 +129,132 @@
 	border-color: var(--color-accent-night);
 	background-color: var(--color-accent-soft-night);
 	color: var(--color-ink-night);
+}
+
+/* Pills, fields and tiles answer calmly */
+.choice-pill {
+	transition:
+		background-color 150ms,
+		border-color 150ms,
+		color 150ms,
+		transform 150ms var(--ease-calm);
+}
+.choice-pill:active {
+	transform: scale(0.97);
+}
+
+/* Opens and closes its height while what's inside stays in the form (and is sent) */
+.reveal {
+	display: grid;
+	grid-template-rows: 0fr;
+	visibility: hidden;
+	transition:
+		grid-template-rows 220ms var(--ease-calm),
+		visibility 0s 220ms;
+}
+.reveal.is-open {
+	grid-template-rows: 1fr;
+	visibility: visible;
+	transition:
+		grid-template-rows 220ms var(--ease-calm),
+		visibility 0s;
+}
+.reveal > * {
+	min-height: 0;
+	overflow: clip;
+	overflow-clip-margin: 4px;
+}
+
+/* Folds open smoothly where the browser can animate to their natural height */
+:root {
+	interpolate-size: allow-keywords;
+}
+details::details-content {
+	block-size: 0;
+	overflow: clip;
+	transition:
+		block-size 220ms var(--ease-calm),
+		content-visibility 220ms allow-discrete;
+}
+details[open]::details-content {
+	block-size: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.choice-pill,
+	.reveal,
+	.reveal.is-open,
+	details::details-content {
+		transition: none;
+	}
+	.choice-pill:active {
+		transform: none;
+	}
+}
+
+/* What's on a page rises in, one after the other, short enough never to wait for */
+@keyframes rise-in {
+	from {
+		opacity: 0;
+		transform: translateY(0.5rem);
+	}
+}
+@keyframes pop-in {
+	from {
+		opacity: 0;
+		transform: scale(0.85);
+	}
+}
+.page-sections > *,
+.rise-in > *,
+.rows-rise li:nth-child(-n + 10) {
+	animation: rise-in 280ms var(--ease-calm) backwards;
+}
+.page-sections > :nth-child(2),
+.rise-in > :nth-child(2),
+.rows-rise li:nth-child(2) {
+	animation-delay: 40ms;
+}
+.page-sections > :nth-child(3),
+.rise-in > :nth-child(3),
+.rows-rise li:nth-child(3) {
+	animation-delay: 80ms;
+}
+.page-sections > :nth-child(4),
+.rise-in > :nth-child(4),
+.rows-rise li:nth-child(4) {
+	animation-delay: 120ms;
+}
+.page-sections > :nth-child(n + 5),
+.rise-in > :nth-child(n + 5),
+.rows-rise li:nth-child(n + 5) {
+	animation-delay: 160ms;
+}
+
+/* Everything you press answers */
+.k-button,
+.k-link {
+	transition: transform 150ms var(--ease-calm);
+}
+.k-button:active,
+.k-link:active {
+	transform: scale(0.97);
+}
+
+/* The tab you're on gets a small nudge */
+.k-tabbar-link-active svg {
+	animation: pop-in 240ms var(--ease-calm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.page-sections > *,
+	.rise-in > *,
+	.rows-rise li,
+	.k-tabbar-link-active svg {
+		animation: none;
+	}
+	.k-button:active,
+	.k-link:active {
+		transform: none;
+	}
 }

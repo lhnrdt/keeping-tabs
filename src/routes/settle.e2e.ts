@@ -30,10 +30,9 @@ test('simplify debts is on by default and can be turned off per group', async ({
 
 	await open(page, `${groupUrl}?tab=group`);
 	await expect(page.getByRole('region', { name: 'Details' })).toContainText(/Simplify debts\s*On/);
-	await page.getByRole('button', { name: 'Edit group' }).click();
-	const dialog = page.getByRole('dialog', { name: 'Edit group' });
-	await dialog.getByText('Simplify debts').click();
-	await dialog.getByRole('button', { name: 'Save' }).click();
+	await page.getByRole('link', { name: 'Edit group' }).click();
+	await page.getByText('Simplify debts').click();
+	await page.getByRole('button', { name: 'Save' }).click();
 	await expect(page.getByRole('region', { name: 'Details' })).toContainText(/Simplify debts\s*Off/);
 
 	await open(page, `${groupUrl}?tab=balances`);

@@ -44,6 +44,9 @@ import IconUserCircle from '@tabler/icons-svelte-runes/icons/user-circle';
 import IconUserPlus from '@tabler/icons-svelte-runes/icons/user-plus';
 import IconUsersGroup from '@tabler/icons-svelte-runes/icons/users-group';
 import IconX from '@tabler/icons-svelte-runes/icons/x';
+import IconCamera from '@tabler/icons-svelte-runes/icons/camera';
+import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
+import IconPhoto from '@tabler/icons-svelte-runes/icons/photo';
 import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
 import IconGasStation from '@tabler/icons-svelte-runes/icons/gas-station';
 import IconKey from '@tabler/icons-svelte-runes/icons/key';
@@ -86,9 +89,13 @@ export const icons = {
 	passkey: IconFingerprint,
 	remove: IconX,
 	share: IconShare,
+	settings: IconSettings,
+	password: IconKey,
 	// Expense form fields
 	title: IconTag,
 	note: IconNote,
+	photo: IconPhoto,
+	camera: IconCamera,
 	paidBy: IconWallet,
 	date: IconCalendar,
 	repeats: IconRepeat,

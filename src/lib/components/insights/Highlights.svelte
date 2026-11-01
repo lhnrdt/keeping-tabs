@@ -6,7 +6,7 @@
 	import { categoryIcons, categoryLabels } from '#lib/expense/category-style.ts';
 	import type { GroupMember } from '#lib/group/members.ts';
 	import type { IconName } from '#lib/icons.ts';
-	import { formatAmount } from '#lib/money.ts';
+	import { shownAmount } from '#lib/shown-money.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import type { Highlight } from '#lib/insights/highlights.ts';
@@ -23,7 +23,7 @@
 	let { highlights, members, names, currency }: Props = $props();
 
 	const byId = $derived(new Map(members.map((member) => [member.id, member])));
-	const money = (amount: number) => formatAmount(amount, currency, getLocale());
+	const money = (amount: number) => shownAmount(amount, currency);
 	const percent = (share: number) =>
 		new Intl.NumberFormat(getLocale(), { style: 'percent', maximumFractionDigits: 0 }).format(
 			share

@@ -11,6 +11,32 @@ export type ChangelogEntry = {
 /** Newest first */
 export const CHANGELOG: ChangelogEntry[] = [
 	{
+		version: '0.16.0',
+		date: '2026-11-01',
+		items: [
+			{
+				en: 'Simpler settings: everything in one place, with your profile, devices and backup a tap away.',
+				de: 'Einfachere Einstellungen: alles an einem Ort, und dein Profil, deine Geräte und dein Backup nur einen Tipp entfernt.'
+			},
+			{
+				en: 'Keep a photo of the receipt with an expense.',
+				de: 'Bewahre ein Foto der Rechnung bei einer Ausgabe auf.'
+			},
+			{
+				en: 'Split by item: list what’s on the receipt and tick who had what. Tip and tax are shared in proportion.',
+				de: 'Nach Posten aufteilen: Trag ein, was auf der Rechnung steht, und wähle, wer was hatte. Trinkgeld und Steuern werden anteilig verteilt.'
+			},
+			{
+				en: 'Protect a group with a password on top of its link, under Group.',
+				de: 'Schütze eine Gruppe zusätzlich zum Link mit einem Passwort, unter „Gruppe“.'
+			},
+			{
+				en: 'Choose your units and currency in your profile: km and litres or miles and gallons, and amounts shown in the currency you prefer.',
+				de: 'Wähle in deinem Profil Einheiten und Währung: Km und Liter oder Meilen und Gallonen, und Beträge in der Währung, die du bevorzugst.'
+			}
+		]
+	},
+	{
 		version: '0.15.0',
 		date: '2026-11-01',
 		items: [

@@ -183,7 +183,9 @@ export async function listEntryPage(
 			...expenseColumns,
 			// How many comments it has (#49), shown in the list
 			// Spelled out: in a select's fields, drizzle leaves the table off columns
-			comments: sql<number>`(select count(*) from expense_comments where expense_comments.expense_id = expenses.id)`
+			comments: sql<number>`(select count(*) from expense_comments where expense_comments.expense_id = expenses.id)`,
+			// And whether it has a photo of the receipt (#52)
+			receipts: sql<number>`(select count(*) from expense_receipts where expense_receipts.expense_id = expenses.id)`
 		})
 		.from(expenses)
 		.where(
@@ -242,7 +244,7 @@ export function listChosenCategories(db: Db, groupId: string) {
 export async function findExpense(db: Db, groupId: string, id: string) {
 	const [rows, splits] = await db.batch([
 		db
-			.select({ ...expenseColumns, splitMode: expenses.splitMode })
+			.select({ ...expenseColumns, splitMode: expenses.splitMode, items: expenses.items })
 			.from(expenses)
 			.where(and(eq(expenses.id, id), active(groupId))),
 		db
@@ -307,6 +309,7 @@ export async function createExpense(
 			...originalColumns(input),
 			odometerM: input.odometerM,
 			fuelMl: input.fuelMl,
+			items: input.items,
 			amountCents: input.amountCents,
 			paidBy: input.paidBy,
 			date: input.date,
@@ -336,6 +339,7 @@ export async function updateExpense(
 				...originalColumns(input),
 				odometerM: input.odometerM,
 				fuelMl: input.fuelMl,
+				items: input.items,
 				amountCents: input.amountCents,
 				paidBy: input.paidBy,
 				date: input.date,

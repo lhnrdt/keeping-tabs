@@ -3,9 +3,11 @@
 	import AppPage from '#lib/components/AppPage.svelte';
 	import DeleteEntry from '#lib/components/group/DeleteEntry.svelte';
 	import ExpenseComments from '#lib/components/expense/ExpenseComments.svelte';
+	import ExpenseReceipts from '#lib/components/expense/ExpenseReceipts.svelte';
 	import ExpenseForm from '#lib/components/expense/ExpenseForm.svelte';
-	import { quantityInputValue } from '#lib/expense/driving.ts';
+	import { fuelInputValue, odometerInputValue } from '#lib/expense/driving.ts';
 	import { amountInputValue } from '#lib/money.ts';
+	import { ITEMS_MODE } from '#lib/split/items.ts';
 	import { splitInputValues } from '#lib/split/inputs.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { SEVERAL_PAYERS } from '#lib/validation.ts';
@@ -23,8 +25,8 @@
 				: amountInputValue(data.expense.amountCents, data.group.currency),
 			currency: data.expense.originalCurrency ?? '',
 			rate: data.expense.exchangeRate ?? '',
-			odometer: quantityInputValue(data.expense.odometerM),
-			litres: quantityInputValue(data.expense.fuelMl),
+			odometer: odometerInputValue(data.expense.odometerM, data.units),
+			litres: fuelInputValue(data.expense.fuelMl, data.units),
 			date: data.expense.date,
 			// Several payers (#39): each with what they paid
 			paidBy: data.expense.payers ? SEVERAL_PAYERS : data.expense.paidBy,
@@ -36,7 +38,15 @@
 			),
 			participants: data.expense.splits.map((split) => split.memberId),
 			category: data.expense.category ?? '',
-			splitMode: data.expense.splitMode,
+			// Split by receipt items (#53): as typed, in the amount's currency
+			splitMode: data.expense.items ? ITEMS_MODE : data.expense.splitMode,
+			items: JSON.stringify(
+				(data.expense.items ?? []).map(({ name, cents, memberIds }) => ({
+					name,
+					price: amountInputValue(cents, data.expense.originalCurrency ?? data.group.currency),
+					memberIds
+				}))
+			),
 			inputs: splitInputValues(data.expense, data.group.currency)
 		}
 	);
@@ -58,6 +68,12 @@
 		error={form && 'error' in form ? form.error : undefined}
 		submitLabel={m.save()}
 		kind={data.group.kind}
+	/>
+	<ExpenseReceipts
+		receipts={data.receipts}
+		token={data.group.shareToken}
+		expenseId={data.expense.id}
+		canChange={data.members.some((member) => member.mine)}
 	/>
 	<ExpenseComments
 		comments={data.comments}

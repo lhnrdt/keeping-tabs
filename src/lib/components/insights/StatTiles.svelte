@@ -1,7 +1,7 @@
 <script lang="ts">
 	// The headline numbers (#161), chosen per group type (sections.ts): single numbers as
 	// tiles, not charts. A change is a signed number with an arrow and words, not color alone.
-	import { formatAmount } from '#lib/money.ts';
+	import { shownAmount } from '#lib/shown-money.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import type { Insights } from '#lib/insights/insights.ts';
@@ -11,7 +11,7 @@
 
 	let { insights, currency, tiles }: Props = $props();
 
-	const money = (amount: number) => formatAmount(amount, currency, getLocale());
+	const money = (amount: number) => shownAmount(amount, currency);
 	const percent = new Intl.NumberFormat(getLocale(), {
 		style: 'percent',
 		maximumFractionDigits: 0,

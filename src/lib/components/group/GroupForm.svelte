@@ -7,6 +7,7 @@
 	import { resolve } from '$app/paths';
 	import type { Snippet } from 'svelte';
 	import FormError from '#lib/components/FormError.svelte';
+	import StickySubmit from '#lib/components/StickySubmit.svelte';
 	import SubmitButton from '#lib/components/SubmitButton.svelte';
 	import type { ErrorCode } from '#lib/errors.ts';
 	import { Submission } from '#lib/forms/submission.svelte.ts';
@@ -17,10 +18,12 @@
 		submitLabel: string;
 		/** The group's token, when this form can wait for the connection */
 		offlineToken?: string;
+		/** Runs once it's saved, before moving on; can name a different page to go to */
+		onSaved?: () => Promise<string | void>;
 		children: Snippet;
 	};
 
-	let { error, submitLabel, offlineToken, children }: Props = $props();
+	let { error, submitLabel, offlineToken, onSaved, children }: Props = $props();
 
 	const submission = new Submission();
 
@@ -56,6 +59,15 @@
 					return;
 				}
 			}
+			if (result.type === 'redirect' && onSaved) {
+				const elsewhere = await onSaved();
+				if (elsewhere) {
+					submission.pending = false;
+					// eslint-disable-next-line svelte/no-navigation-without-resolve -- resolved by the caller
+					await goto(elsewhere);
+					return;
+				}
+			}
 			await after?.(options);
 		};
 	};
@@ -64,10 +76,7 @@
 <form method="POST" action="?/save" use:enhance={submit}>
 	{@render children()}
 	<FormError {error} />
-	<!-- Always in reach: the button stays at the bottom of the screen while the form scrolls -->
-	<div
-		class="sticky bottom-0 z-10 bg-canvas/95 px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur-sm dark:bg-canvas-night/95"
+	<StickySubmit
+		><SubmitButton pending={submission.pending}>{submitLabel}</SubmitButton></StickySubmit
 	>
-		<SubmitButton pending={submission.pending}>{submitLabel}</SubmitButton>
-	</div>
 </form>

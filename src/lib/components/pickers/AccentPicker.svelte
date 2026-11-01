@@ -1,12 +1,9 @@
-<script lang="ts">
-	// Choose the app's nature theme (#60): each swatch is a small preview in the theme's own
-	// colors (background, a card, the accent), light or dark like the app.
+<script lang="ts" module>
 	import { m } from '#lib/paraglide/messages.js';
-	import { ACCENTS, type Accent } from '#lib/settings.ts';
+	import type { Accent } from '#lib/settings.ts';
 
-	let { value }: { value: Accent } = $props();
-
-	const labels: Record<Accent, () => string> = {
+	/** Each theme's name */
+	export const accentLabels: Record<Accent, () => string> = {
 		forest: m.theme_forest,
 		fjord: m.theme_fjord,
 		mountains: m.theme_mountains,
@@ -17,6 +14,14 @@
 		aurora: m.theme_aurora,
 		autumn: m.theme_autumn
 	};
+</script>
+
+<script lang="ts">
+	// Choose the app's nature theme (#60): each swatch is a small preview in the theme's own
+	// colors (background, a card, the accent), light or dark like the app.
+	import { ACCENTS } from '#lib/settings.ts';
+
+	let { value }: { value: Accent } = $props();
 </script>
 
 <fieldset class="px-4">
@@ -40,7 +45,7 @@
 						<span class="h-4 w-4 rounded-full bg-(--accent) dark:bg-(--accent-night)"></span>
 					</span>
 					<span class="text-center text-xs text-(--ink) dark:text-(--ink-night)">
-						{labels[accent]()}
+						{accentLabels[accent]()}
 					</span>
 				</span>
 			</label>

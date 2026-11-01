@@ -1,6 +1,6 @@
 <script lang="ts">
 	// Who is who: a member (or "new member") for each person in the export.
-	import { BlockFooter, BlockTitle, List } from 'konsta/svelte';
+	import { BlockFooter, BlockTitle } from 'konsta/svelte';
 	import Field from '#lib/components/Field.svelte';
 	import type { Member } from '#lib/group/members.ts';
 	import { NEW_MEMBER, personField, suggestMember } from '#lib/import/people.ts';
@@ -10,7 +10,7 @@
 </script>
 
 <BlockTitle>{m.import_people()}</BlockTitle>
-<List strong inset>
+<div class="page-section mx-4 my-4">
 	{#each people as name, i (name)}
 		{@const suggested = suggestMember(name, members)}
 		<Field label={name} name={personField(i)} type="select" dropdown value={suggested}>
@@ -21,5 +21,5 @@
 			>
 		</Field>
 	{/each}
-</List>
+</div>
 <BlockFooter>{m.import_people_hint()}</BlockFooter>

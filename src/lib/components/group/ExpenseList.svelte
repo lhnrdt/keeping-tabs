@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import { page } from '$app/state';
 	import { List, ListItem } from 'konsta/svelte';
 	import EmptyState from '#lib/components/EmptyState.svelte';
 	import IconBadge from '#lib/components/IconBadge.svelte';
@@ -7,7 +8,7 @@
 	import { whenVisible } from '#lib/actions/when-visible.ts';
 
 	import { categoryIcons } from '#lib/expense/category-style.ts';
-	import { formatKm, formatLitres } from '#lib/expense/driving.ts';
+	import { formatDistance, formatFuel } from '#lib/expense/driving.ts';
 	import { EXPENSES_PER_PAGE } from '#lib/group/expense-pages.ts';
 	import { namesById, type Member } from '#lib/group/members.ts';
 	import { groupByMonth } from '#lib/group/months.ts';
@@ -18,6 +19,7 @@
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import { formatAmount } from '#lib/money.ts';
+	import { shownAmount } from '#lib/shown-money.ts';
 
 	type Entry = ListEntry;
 
@@ -79,9 +81,10 @@
 			: [
 					formatDate(entry.date),
 					paidLine(entry),
-					entry.odometerM && formatKm(entry.odometerM, getLocale()),
-					entry.fuelMl && formatLitres(entry.fuelMl, getLocale()),
+					entry.odometerM && formatDistance(entry.odometerM, getLocale(), page.data.units),
+					entry.fuelMl && formatFuel(entry.fuelMl, getLocale(), page.data.units),
 					entry.notes && m.has_note(),
+					entry.receipts > 0 && m.has_receipt(),
 					entry.comments === 1 && m.has_comment(),
 					entry.comments > 1 && m.has_comments({ count: entry.comments })
 				]
@@ -90,7 +93,7 @@
 	// "Anna paid €90", or "Anna and Ben paid €90" when several did (#39)
 	const listFormat = new Intl.ListFormat(getLocale(), { type: 'conjunction' });
 	function paidLine(entry: Entry) {
-		const amount = formatAmount(entry.amountCents, currency, getLocale());
+		const amount = shownAmount(entry.amountCents, currency);
 		return entry.payers?.length
 			? m.expense_paid_by_several({
 					names: listFormat.format(entry.payers.map((payer) => nameOf(payer.memberId))),
@@ -111,7 +114,7 @@
 </script>
 
 {#if expenses.length}
-	<section aria-label={m.expenses_title()}>
+	<section class="rows-rise" aria-label={m.expenses_title()}>
 		{#each months as group (group.month)}
 			<h3 class="mx-8 mt-6 mb-2 text-sm font-medium text-muted first:mt-2">
 				{formatMonth(group.month)}

@@ -23,19 +23,11 @@ import {
 	setBudget,
 	setDefaultSplit,
 	setInsightSections,
-	renameMember,
-	updateGroup
+	renameMember
 } from '#lib/server/groups.ts';
 import { ensurePerson, personOf, setProfileName } from '#lib/server/people.ts';
 import { addDueRecurring, listRecurring, stopRecurring } from '#lib/server/recurring.ts';
-import {
-	parseDescription,
-	parseGroupName,
-	parseKind,
-	parseDate,
-	parseMemberName,
-	parseTint
-} from '#lib/validation.ts';
+import { parseDate, parseMemberName } from '#lib/validation.ts';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, params, url }) => {
@@ -88,29 +80,6 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 };
 
 export const actions: Actions = {
-	updateGroup: async ({ locals, params, request }) => {
-		const { form, group, actorId } = await context(locals, params.token, request);
-		const invalid = (error: ErrorCode) => fail(400, { action: 'updateGroup' as const, error });
-
-		const name = parseGroupName(form.get('name'));
-		if (!name.ok) return invalid(name.error);
-		const description = parseDescription(form.get('description'));
-		if (!description.ok) return invalid(description.error);
-		const kind = parseKind(form.get('kind'));
-		if (!kind.ok) return invalid(kind.error);
-		const tint = parseTint(form.get('tint'));
-		if (!tint.ok) return invalid(tint.error);
-
-		await updateGroup(locals.db, group.id, actorId, {
-			name: name.value,
-			description: description.value,
-			kind: kind.value,
-			tint: tint.value,
-			// A checkbox: present when on
-			simplifyDebts: form.get('simplifyDebts') === 'on'
-		});
-	},
-
 	addMember: async ({ locals, params, request }) => {
 		const { form, group, actorId } = await context(locals, params.token, request);
 		const invalid = (error: ErrorCode) => fail(400, { action: 'addMember' as const, error });

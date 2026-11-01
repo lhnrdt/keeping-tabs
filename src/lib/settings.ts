@@ -15,6 +15,12 @@ export {
 	type ThemeId as Accent
 } from './themes/palettes';
 
+/** How distances and fuel show and are typed (#238): km and litres, or miles and US gallons */
+export const UNITS = ['metric', 'imperial'] as const;
+export type Units = (typeof UNITS)[number];
+export const DEFAULT_UNITS: Units = 'metric';
+export const isUnits = (value: unknown): value is Units => UNITS.includes(value as Units);
+
 export type Locale = (typeof locales)[number];
 
 /** Each language in its own name */
@@ -33,3 +39,9 @@ export const THEME_COOKIE = 'kt-theme';
 
 /** Cookie with the chosen color theme; the page script in app.html reads it before first paint */
 export const ACCENT_COOKIE = 'kt-accent';
+
+/** Cookie with the chosen units */
+export const UNITS_COOKIE = 'kt-units';
+
+/** Cookie with the currency amounts are also shown in (#238); none = only the group's */
+export const DISPLAY_CURRENCY_COOKIE = 'kt-display-currency';

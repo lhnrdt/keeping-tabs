@@ -1,10 +1,11 @@
 import type { ErrorCode } from './errors';
 import { isExpenseCategory, type ExpenseCategory } from './expense/categories';
 import { DEFAULT_GROUP_KIND, isGroupKind, type GroupKind } from './group/kinds';
-import { parseKm, parseLitres } from './expense/driving';
+import { parseFuel, parseOdometer } from './expense/driving';
 import { convert, parseRate, type Original } from './expense/exchange';
 import type { Payer } from './expense/payers';
 import { parseAmount } from './money';
+import { ITEMS_MODE, itemShares, parseItems, type ExpenseItem } from './split/items';
 import { computeShares, type Share, type SplitEntry } from './split/compute';
 import { parseSplitInput } from './split/inputs';
 import { isSplitMode, type SplitMode } from './split/modes';
@@ -17,6 +18,8 @@ export const LIMITS = {
 	expenseTitle: 80,
 	expenseNote: 500,
 	comment: 500,
+	groupPassword: 100,
+	groupPasswordMin: 4,
 	paymentDetails: 200
 } as const;
 
@@ -123,6 +126,8 @@ export type ExpenseInput = {
 	splitMode: SplitMode;
 	/** Each member's share, in member order; they add up to the amount */
 	shares: Share[];
+	/** Split by receipt items (#53); the shares come from them */
+	items: ExpenseItem[] | null;
 };
 
 /** An optional note (#123): line breaks kept, trimmed, empty = none */
@@ -130,6 +135,14 @@ export function parseNote(value: unknown): Result<string | null> {
 	const note = typeof value === 'string' ? value.replace(/\r\n?/g, '\n').trim() : '';
 	if (note.length > LIMITS.expenseNote) return { ok: false, error: 'expense_note_too_long' };
 	return { ok: true, value: note || null };
+}
+
+/** A group's password (A-8): not trimmed, it's the person's to choose */
+export function parseGroupPassword(value: unknown): Result<string> {
+	const password = typeof value === 'string' ? value : '';
+	return password.length >= LIMITS.groupPasswordMin && password.length <= LIMITS.groupPassword
+		? { ok: true, value: password }
+		: { ok: false, error: 'group_password_invalid' };
 }
 
 /** A comment on an expense (#49): line breaks kept, trimmed, not empty */
@@ -161,6 +174,8 @@ export function parseExpense(
 		/** In car groups: the odometer reading and litres of fuel, as typed */
 		odometer?: unknown;
 		litres?: unknown;
+		/** What those are in (#238): metric unless it's the other */
+		units?: unknown;
 		date: unknown;
 		paidBy: unknown;
 		/** With paidBy "several" (#39): what each member paid, by member id */
@@ -171,6 +186,8 @@ export function parseExpense(
 		participants: unknown[];
 		/** For the other modes: each member's input, by member id */
 		inputs: Record<string, unknown>;
+		/** With splitMode "items": the receipt's items as JSON (#53) */
+		items?: unknown;
 	},
 	group: { memberIds: readonly string[]; currency: string }
 ): Result<ExpenseInput> {
@@ -185,9 +202,10 @@ export function parseExpense(
 	if (!money.ok) return money;
 	const { amountCents, original } = money.value;
 
-	const odometer = parseKm(values.odometer);
+	const units = values.units === 'imperial' ? 'imperial' : 'metric';
+	const odometer = parseOdometer(values.odometer, units);
 	if (!odometer.ok) return odometer;
-	const litres = parseLitres(values.litres);
+	const litres = parseFuel(values.litres, units);
 	if (!litres.ok) return litres;
 
 	const date = parseDate(values.date);
@@ -196,7 +214,7 @@ export function parseExpense(
 	const payers = parsePayers(values, amountCents, group);
 	if (!payers.ok) return payers;
 
-	const split = parseSplit(values, amountCents, group);
+	const split = parseExpenseSplit(values, amountCents, original, group);
 	if (!split.ok) return split;
 
 	const category = parseCategory(values.category);
@@ -217,6 +235,25 @@ export function parseExpense(
 			...split.value
 		}
 	};
+}
+
+/** The split as entered: by receipt items, in the amount's typed currency, or any other way */
+function parseExpenseSplit(
+	values: Parameters<typeof parseSplit>[0] & { items?: unknown },
+	amountCents: number,
+	original: Original | null,
+	group: { memberIds: readonly string[]; currency: string }
+): Result<{ splitMode: SplitMode; shares: Share[]; items: ExpenseItem[] | null }> {
+	if (normalizeText(values.splitMode) !== ITEMS_MODE) {
+		const split = parseSplit(values, amountCents, group);
+		return split.ok ? { ok: true, value: { ...split.value, items: null } } : split;
+	}
+	const items = parseItems(values.items, original?.currency ?? group.currency, group.memberIds);
+	if (!items.ok) return items;
+	const shares = itemShares(items.value, original?.amountCents ?? amountCents, amountCents);
+	return shares.ok
+		? { ok: true, value: { splitMode: 'exact', shares: shares.value, items: items.value } }
+		: shares;
 }
 
 /** The amount, converted from another currency at the given rate when there is one (#54) */

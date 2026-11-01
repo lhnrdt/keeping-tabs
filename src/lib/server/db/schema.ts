@@ -1,8 +1,9 @@
 import { sql } from 'drizzle-orm';
+import type { ExpenseItem } from '#lib/split/items.ts';
 import { SPLIT_MODES } from '#lib/split/modes.ts';
 import type { ExpenseCategory } from '#lib/expense/categories.ts';
 import type { GroupKind } from '#lib/group/kinds.ts';
-import type { Accent, Locale, Theme } from '#lib/settings.ts';
+import type { Accent, Locale, Theme, Units } from '#lib/settings.ts';
 import type { Tint } from '#lib/tints.ts';
 import {
 	check,
@@ -47,6 +48,8 @@ export const groups = sqliteTable('groups', {
 	insightSections: text('insight_sections'),
 	// New expenses start split this way, e.g. {"mode":"percent","inputs":{…}} (#41); null = equal
 	defaultSplit: text('default_split', { mode: 'json' }),
+	// Optional password on top of the link (A-8), salted and slow (group-password.ts); null = none
+	passwordHash: text('password_hash'),
 	// Budget (minor units) and end date for trips and events, both optional (#168)
 	budgetCents: integer('budget_cents'),
 	endsOn: text('ends_on'),
@@ -63,6 +66,9 @@ export const people = sqliteTable('people', {
 	locale: text('locale').$type<Locale>(),
 	theme: text('theme').$type<Theme>(),
 	accent: text('accent').$type<Accent>(),
+	// How distances and fuel show, and the currency amounts are also shown in (#238)
+	units: text('units').$type<Units>(),
+	displayCurrency: text('display_currency'),
 	// Chosen avatar, e.g. "deer:moss" (#61, src/lib/avatars.ts); null = initials, derived tint
 	avatar: text('avatar'),
 	// When they read the friendly note about what the app's creator can see (#112)
@@ -184,6 +190,8 @@ export const expenses = sqliteTable(
 		// ISO date (YYYY-MM-DD), no time zone
 		date: text('date').notNull(),
 		splitMode: text('split_mode', { enum: SPLIT_MODES }).notNull().default('equal'),
+		// Split by receipt items (#53): what each had, in the typed currency; the shares are exact
+		items: text('items', { mode: 'json' }).$type<ExpenseItem[]>(),
 		notes: text('notes'),
 		// Typed in another currency (#54): that currency, the amount in it and the rate used;
 		// amount_cents is the group's currency all the same
@@ -265,6 +273,23 @@ export const expenseComments = sqliteTable(
 		createdAt: createdAt()
 	},
 	(t) => [index('expense_comments_expense_idx').on(t.expenseId, t.createdAt)]
+);
+
+/** Photos of an expense's receipt (#52): a small JPEG as base64; see receipt-image.ts */
+export const expenseReceipts = sqliteTable(
+	'expense_receipts',
+	{
+		id: id(),
+		expenseId: text('expense_id')
+			.notNull()
+			.references(() => expenses.id, { onDelete: 'cascade' }),
+		memberId: text('member_id')
+			.notNull()
+			.references(() => members.id),
+		image: text('image').notNull(),
+		createdAt: createdAt()
+	},
+	(t) => [index('expense_receipts_expense_idx').on(t.expenseId, t.createdAt)]
 );
 
 /**

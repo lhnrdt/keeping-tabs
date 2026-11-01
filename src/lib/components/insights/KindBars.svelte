@@ -2,7 +2,7 @@
 	// What kind of costs (#167, #188): fixed, everyday, occasional, big one-offs, one bar each
 	// (LayerChart) with the amount and share written beside it; what each kind means below.
 	import { BarChart } from 'layerchart';
-	import { formatAmount } from '#lib/money.ts';
+	import { shownAmount } from '#lib/shown-money.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import type { KindShare } from '#lib/insights/insights.ts';
@@ -15,7 +15,7 @@
 		maximumFractionDigits: 0
 	});
 	const valueText = (row: KindShare) =>
-		`${formatAmount(row.amount, currency, getLocale())} · ${percent.format(row.share)}`;
+		`${shownAmount(row.amount, currency)} · ${percent.format(row.share)}`;
 	const data = $derived(
 		rows.map((row) => ({ ...row, label: kindLabels[row.kind](), text: valueText(row) }))
 	);

@@ -9,7 +9,7 @@ const SECRET_PATHS = ['/welcome', '/device/link', '/device/passkey/login'];
 export function limitKindOf(method: string, url: URL): LimitKind | null {
 	if (method === 'GET' || method === 'HEAD' || method === 'OPTIONS') return null;
 	const { pathname, search } = url;
-	if (SECRET_PATHS.includes(pathname)) return 'secret';
+	if (SECRET_PATHS.includes(pathname) || pathname.startsWith('/unlock/')) return 'secret';
 	// Restoring with a recovery key is an action of the devices page
 	if (pathname === '/you/devices' && search.startsWith('?/restore')) return 'secret';
 	if (pathname === '/new' || pathname === '/new/backup') return 'newGroup';

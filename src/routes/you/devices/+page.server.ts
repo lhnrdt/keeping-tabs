@@ -3,26 +3,21 @@ import { resolve } from '$app/paths';
 import type { ErrorCode } from '#lib/errors.ts';
 import { listDevices, removeDevice } from '#lib/server/devices.ts';
 import { checkSettingsAgain } from '#lib/server/settings.ts';
-import { countPasskeys } from '#lib/server/passkeys.ts';
 import {
 	createDeviceLink,
-	createRecoveryKey,
 	ensurePerson,
 	findPerson,
-	hasRecoveryKey,
 	restoreWithRecoveryKey
 } from '#lib/server/people.ts';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const person = await findPerson(locals.db, locals.deviceKey);
-	if (!person) return { hasIdentity: false, passkeyCount: 0, hasRecoveryKey: false, devices: [] };
-	const [passkeyCount, recoveryKey, devices] = await Promise.all([
-		countPasskeys(locals.db, person.id),
-		hasRecoveryKey(locals.db, person.id),
-		listDevices(locals.db, person.id, locals.deviceKey)
-	]);
-	return { hasIdentity: true, passkeyCount, hasRecoveryKey: recoveryKey, devices };
+	if (!person) return { hasIdentity: false, devices: [] };
+	return {
+		hasIdentity: true,
+		devices: await listDevices(locals.db, person.id, locals.deviceKey)
+	};
 };
 
 export const actions: Actions = {
@@ -31,12 +26,6 @@ export const actions: Actions = {
 		const person = await ensurePerson(locals.db, locals.deviceKey);
 		const token = await createDeviceLink(locals.db, person.id);
 		return { link: `${new URL(resolve('/device/link'), url.origin).href}#${token}` };
-	},
-
-	/** A new recovery key, shown once (A-16) */
-	createRecoveryKey: async ({ locals }) => {
-		const person = await ensurePerson(locals.db, locals.deviceKey);
-		return { recoveryKey: await createRecoveryKey(locals.db, person.id) };
 	},
 
 	/** Makes this device the person behind a recovery key (A-16) */
