@@ -47,14 +47,17 @@
 			padding={{ left: 64, right: 64 }}
 		/>
 	</div>
-	<table class="sr-only">
-		<caption>{m.insights_how_often()}</caption>
-		<tbody>
-			{#each data as row (row.memberId)}
-				<tr><th scope="row">{row.name}</th><td>{row.text}</td></tr>
-			{/each}
-		</tbody>
-	</table>
+	<!-- Around the table: a table's caption stays visible when the table itself is hidden this way -->
+	<div class="sr-only">
+		<table>
+			<caption>{m.insights_how_often()}</caption>
+			<tbody>
+				{#each data as row (row.memberId)}
+					<tr><th scope="row">{row.name}</th><td>{row.text}</td></tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
 	{#if nextName}
 		<p class="mt-2 text-sm">{m.insights_next_round({ name: nextName })}</p>
 	{/if}

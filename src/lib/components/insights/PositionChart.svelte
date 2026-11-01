@@ -99,12 +99,15 @@
 			{/snippet}
 		</AreaChart>
 	</div>
-	<table class="sr-only">
-		<caption>{m.insights_position()}</caption>
-		<tbody>
-			{#each data as point (point.date)}
-				<tr><th scope="row">{date(point.day)}</th><td>{describe(point.balance)}</td></tr>
-			{/each}
-		</tbody>
-	</table>
+	<!-- Around the table: a table's caption stays visible when the table itself is hidden this way -->
+	<div class="sr-only">
+		<table>
+			<caption>{m.insights_position()}</caption>
+			<tbody>
+				{#each data as point (point.date)}
+					<tr><th scope="row">{date(point.day)}</th><td>{describe(point.balance)}</td></tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
 </figure>

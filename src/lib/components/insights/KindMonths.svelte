@@ -74,21 +74,24 @@
 			{/snippet}
 		</BarChart>
 	</div>
-	<table class="sr-only">
-		<caption>{m.insights_kind_months()}</caption>
-		<thead>
-			<tr>
-				<td></td>
-				{#each used as kind (kind)}<th scope="col">{kindLabels[kind]()}</th>{/each}
-			</tr>
-		</thead>
-		<tbody>
-			{#each months as month (month.month)}
+	<!-- Around the table: a table's caption stays visible when the table itself is hidden this way -->
+	<div class="sr-only">
+		<table>
+			<caption>{m.insights_kind_months()}</caption>
+			<thead>
 				<tr>
-					<th scope="row">{monthName(month.month)}</th>
-					{#each used as kind (kind)}<td>{money(month[kind])}</td>{/each}
+					<td></td>
+					{#each used as kind (kind)}<th scope="col">{kindLabels[kind]()}</th>{/each}
 				</tr>
-			{/each}
-		</tbody>
-	</table>
+			</thead>
+			<tbody>
+				{#each months as month (month.month)}
+					<tr>
+						<th scope="row">{monthName(month.month)}</th>
+						{#each used as kind (kind)}<td>{money(month[kind])}</td>{/each}
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
 </figure>
