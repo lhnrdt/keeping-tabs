@@ -11,6 +11,16 @@ export type ChangelogEntry = {
 /** Newest first */
 export const CHANGELOG: ChangelogEntry[] = [
 	{
+		version: '0.15.0',
+		date: '',
+		items: [
+			{
+				en: 'Car groups: note the km driven and the fuel with an expense, and see cost per km, consumption and the price per litre in Insights.',
+				de: 'Autogruppen: gefahrene km und Tankmenge bei einer Ausgabe eintragen und Kosten pro km, Verbrauch und Literpreis in den Insights sehen.'
+			}
+		]
+	},
+	{
 		version: '0.14.0',
 		date: '2026-10-27',
 		items: [

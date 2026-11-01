@@ -14,6 +14,7 @@ export const SECTIONS = [
 	'kinds',
 	'kindMonths',
 	'fixedCosts',
+	'driving',
 	'biggest',
 	'places',
 	'whoPays',
@@ -91,7 +92,7 @@ export const LAYOUTS: Record<GroupKind, Layout> = {
 	},
 	car: {
 		tiles: ['spent', 'fixedPerMonth', 'change', 'myShare'],
-		sections: ['kindMonths', 'fixedCosts', 'kinds', 'whoPays', 'biggest', 'highlights']
+		sections: ['driving', 'kindMonths', 'fixedCosts', 'kinds', 'whoPays', 'biggest', 'highlights']
 	},
 	other: {
 		tiles: ['spent', 'myShare', 'perPerson', 'perDay'],

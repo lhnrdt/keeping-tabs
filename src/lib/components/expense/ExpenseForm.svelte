@@ -17,6 +17,7 @@
 	import { SEVERAL_PAYERS } from '#lib/validation.ts';
 	import AmountCurrencyField from './AmountCurrencyField.svelte';
 	import DateChips from './DateChips.svelte';
+	import DrivingFields from './DrivingFields.svelte';
 	import ParticipantChecklist from './ParticipantChecklist.svelte';
 	import PayerAmounts from './PayerAmounts.svelte';
 	import SplitInputs from './SplitInputs.svelte';
@@ -33,6 +34,9 @@
 			/** The amount's currency when not the group's (#54), and the rate it was saved with */
 			currency?: string;
 			rate?: string;
+			/** In car groups: km driven and litres of fuel, as typed */
+			km?: string;
+			litres?: string;
 			/** With paidBy "several" (#39): what each paid as typed, by member id */
 			payers?: Record<string, string>;
 			amount: string;
@@ -50,6 +54,8 @@
 		submitLabel: string;
 		/** A new expense can repeat (#45) */
 		canRepeat?: boolean;
+		/** A car group notes km and fuel with its expenses */
+		driving?: boolean;
 		/** A new expense waits on the device when the connection is gone (#55) */
 		offlineToken?: string;
 	};
@@ -62,6 +68,7 @@
 		error,
 		submitLabel,
 		canRepeat = false,
+		driving = false,
 		offlineToken
 	}: Props = $props();
 	// Its id, made here: sending it again after a lost connection can't add it twice (#55)
@@ -120,6 +127,10 @@
 			{date}
 			{saved}
 		/>
+		<!-- Also when the group is no car group anymore: saving must not lose what's noted -->
+		{#if driving || values.km || values.litres}
+			<DrivingFields km={values.km ?? ''} litres={values.litres ?? ''} />
+		{/if}
 
 		<div class="grid grid-cols-2 gap-2.5">
 			<PlainField label={m.field_paid_by()} icon="paidBy" arrow>
