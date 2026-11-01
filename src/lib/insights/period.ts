@@ -54,6 +54,20 @@ export function periodRange(period: Period): DateRange | null {
 export const inRange = (date: string, range: DateRange | null) =>
 	!range || (date >= range.from && date <= range.to);
 
+/**
+ * For a period still running on `today`: the same part of the one before, so a month that has
+ * just begun isn't compared with a whole one. Null when the period isn't running.
+ */
+export function soFarRange(range: DateRange, previous: DateRange, today: string): DateRange | null {
+	if (today < range.from || today >= range.to) return null;
+	const end = utc(previous.from);
+	end.setUTCDate(
+		end.getUTCDate() + Math.round((utc(today).getTime() - utc(range.from).getTime()) / 86_400_000)
+	);
+	const to = toIso(end);
+	return { from: previous.from, to: to < previous.to ? to : previous.to };
+}
+
 /** The year, month or day before (-1) or after (1) */
 export function stepPeriod(period: Period, by: -1 | 1): Period {
 	if (period.kind === 'all') return period;

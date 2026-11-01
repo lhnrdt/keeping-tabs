@@ -28,11 +28,14 @@ export function groupInsights(
 	const insights = insightsOf(categorized, memberIds, you, transfers, {
 		range: periodRange(period),
 		previous: period.kind === 'all' ? null : periodRange(stepPeriod(period, -1)),
-		unit: unitFor(period)
+		unit: unitFor(period),
+		today
 	});
 	// The recap is about the whole group, whatever period is shown
 	const whole =
-		period.kind === 'all' ? insights : insightsOf(categorized, memberIds, you, transfers);
+		period.kind === 'all'
+			? insights
+			: insightsOf(categorized, memberIds, you, transfers, { today });
 	return {
 		...insights,
 		period,
