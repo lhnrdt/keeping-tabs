@@ -3,7 +3,7 @@
 	// (LayerChart), first, middle and last dates on the axis, the amount on hover or tap. Big
 	// one-offs can be left out (#167). The table below is for screen readers.
 	import { BarChart, Tooltip } from 'layerchart';
-	import { formatAmount, formatCompact } from '#lib/money.ts';
+	import { shownAmount, shownCompact } from '#lib/shown-money.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import type { Bucket, Unit } from '#lib/insights/insights.ts';
@@ -30,8 +30,8 @@
 		new Intl.DateTimeFormat(getLocale(), { ...formats[unit], timeZone: 'UTC' }).format(
 			new Date(`${iso}T00:00:00Z`)
 		);
-	const money = (amount: number) => formatAmount(amount, currency, getLocale());
-	const compact = (amount: number) => formatCompact(amount, currency, getLocale());
+	const money = (amount: number) => shownAmount(amount, currency);
+	const compact = (amount: number) => shownCompact(amount, currency);
 
 	/** First, middle and last labels: enough to read the span without crowding */
 	const ticks = $derived(

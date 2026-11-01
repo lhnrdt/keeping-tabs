@@ -8,7 +8,8 @@
 	import Icon from '#lib/components/Icon.svelte';
 	import type { ErrorCode } from '#lib/errors.ts';
 	import { tabAction } from '#lib/group/tabs.ts';
-	import { amountInputValue, currencySymbol, formatAmount } from '#lib/money.ts';
+	import { amountInputValue, currencySymbol } from '#lib/money.ts';
+	import { shownAmount } from '#lib/shown-money.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import type { BudgetView } from '#lib/insights/budget.ts';
@@ -23,7 +24,7 @@
 	let { view, currency, error }: Props = $props();
 
 	let editing = $state(false);
-	const money = (amount: number) => formatAmount(amount, currency, getLocale());
+	const money = (amount: number) => shownAmount(amount, currency);
 	const action = tabAction('budget', 'insights');
 	const overBy = $derived(view?.budget != null ? view.spent - view.budget : 0);
 	const projectedOver = $derived(

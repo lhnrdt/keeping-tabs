@@ -4,7 +4,7 @@
 	// it goes over). A hidden table for screen readers.
 	import { Area, AreaChart, Spline, Tooltip } from 'layerchart';
 	import { curveStepAfter } from 'd3-shape';
-	import { formatAmount, formatCompact } from '#lib/money.ts';
+	import { shownAmount, shownCompact } from '#lib/shown-money.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import type { BudgetView } from '#lib/insights/budget.ts';
@@ -32,7 +32,7 @@
 		view.budget !== null && Math.max(view.spent, view.projected ?? 0) > view.budget
 	);
 
-	const money = (amount: number) => formatAmount(amount, currency, getLocale());
+	const money = (amount: number) => shownAmount(amount, currency);
 	const date = (value: Date) =>
 		new Intl.DateTimeFormat(getLocale(), {
 			day: 'numeric',
@@ -52,7 +52,7 @@
 		grid={{ x: false }}
 		props={{
 			xAxis: { ticks: 3, format: date },
-			yAxis: { ticks: 3, format: (value: number) => formatCompact(value, currency, getLocale()) },
+			yAxis: { ticks: 3, format: (value: number) => shownCompact(value, currency) },
 			highlight: { area: false, lines: true, points: false },
 			tooltip: { context: { mode: 'bisect-x', findTooltipData: 'left' } }
 		}}

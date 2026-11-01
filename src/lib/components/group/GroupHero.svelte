@@ -2,7 +2,6 @@
 	// Group header: tinted band with a topographic pattern, the name in the display serif,
 	// and where you stand ("You get back €300.00", "Ben owes you €300.00").
 	import AnimatedAmount from '#lib/components/AnimatedAmount.svelte';
-	import ApproxAmount from '#lib/components/ApproxAmount.svelte';
 	import ThemePattern from '#lib/components/illustrations/ThemePattern.svelte';
 	import { useIdentity } from '#lib/group/identity.svelte.ts';
 	import { namesById, type Member } from '#lib/group/members.ts';
@@ -56,7 +55,6 @@
 				<p class="font-display text-3xl font-semibold tabular-nums">
 					<AnimatedAmount amount={Math.abs(myBalance)} currency={group.currency} />
 				</p>
-				<p class="text-sm"><ApproxAmount amount={myBalance} currency={group.currency} /></p>
 			{/if}
 			{#each myTransfers as line (line)}
 				<p class="mt-1 text-sm opacity-80">{line}</p>

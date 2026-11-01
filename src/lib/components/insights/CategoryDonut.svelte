@@ -6,7 +6,7 @@
 	import Icon from '#lib/components/Icon.svelte';
 	import { categoryIcons, categoryLabels } from '#lib/expense/category-style.ts';
 	import type { ExpenseCategory } from '#lib/expense/categories.ts';
-	import { formatAmount } from '#lib/money.ts';
+	import { shownAmount } from '#lib/shown-money.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import type { Slice } from '#lib/insights/category-slices.ts';
@@ -20,7 +20,7 @@
 	const colors = $derived([...series.map((_, i) => `var(--chart-${i + 1})`), 'var(--chart-rest)']);
 	const colorOf = (category: Slice['category']) => colors[domain.indexOf(category)];
 
-	const money = (amount: number) => formatAmount(amount, currency, getLocale());
+	const money = (amount: number) => shownAmount(amount, currency);
 	const percent = (share: number) =>
 		new Intl.NumberFormat(getLocale(), { style: 'percent', maximumFractionDigits: 0 }).format(
 			share

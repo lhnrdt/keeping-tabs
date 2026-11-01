@@ -5,7 +5,7 @@
 	import { BarChart, Tooltip } from 'layerchart';
 	import { KINDS } from '#lib/insights/expense-kinds.ts';
 	import type { KindMonth } from '#lib/insights/kind-months.ts';
-	import { formatAmount, formatCompact } from '#lib/money.ts';
+	import { shownAmount, shownCompact } from '#lib/shown-money.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import { kindLabels } from './kind-texts';
@@ -14,7 +14,7 @@
 
 	const used = $derived(KINDS.filter((kind) => months.some((month) => month[kind] > 0)));
 	const colorOf = (i: number) => `var(--chart-${i + 1})`;
-	const money = (amount: number) => formatAmount(amount, currency, getLocale());
+	const money = (amount: number) => shownAmount(amount, currency);
 	const monthName = (iso: string) =>
 		new Intl.DateTimeFormat(getLocale(), {
 			month: 'short',
@@ -51,7 +51,7 @@
 			grid={{ x: false }}
 			props={{
 				xAxis: { ticks, format: monthName },
-				yAxis: { ticks: 3, format: (value: number) => formatCompact(value, currency, getLocale()) },
+				yAxis: { ticks: 3, format: (value: number) => shownCompact(value, currency) },
 				bars: { strokeWidth: 0 }
 			}}
 			padding={{ left: 40, bottom: 20, top: 8 }}

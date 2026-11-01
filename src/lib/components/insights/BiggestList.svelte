@@ -2,7 +2,7 @@
 	// The biggest expenses (#161): a ranked list, each with a thin bar for its size next to
 	// the biggest. Opens the expense.
 	import { resolve } from '$app/paths';
-	import { formatAmount } from '#lib/money.ts';
+	import { shownAmount } from '#lib/shown-money.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import type { BigExpense } from '#lib/insights/insights.ts';
@@ -35,9 +35,7 @@
 				class="grid grid-cols-[1fr_auto] gap-x-3"
 			>
 				<span class="truncate font-medium">{row.title}</span>
-				<span class="font-medium tabular-nums"
-					>{formatAmount(row.amount, currency, getLocale())}</span
-				>
+				<span class="font-medium tabular-nums">{shownAmount(row.amount, currency)}</span>
 				<span class="text-sm text-muted">
 					{date.format(new Date(`${row.date}T00:00:00Z`))} · {m.insights_paid_by({
 						name: names.get(row.paidBy) ?? '?'

@@ -4,7 +4,7 @@
 	// negative one. Tap or hover for a day; a hidden table for screen readers.
 	import { Area, AreaChart, Spline, Threshold, Tooltip } from 'layerchart';
 	import { curveStepAfter } from 'd3-shape';
-	import { formatAmount, formatCompact } from '#lib/money.ts';
+	import { shownAmount, shownCompact } from '#lib/shown-money.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import type { Point } from '#lib/insights/standing.ts';
@@ -19,7 +19,7 @@
 	const low = $derived(Math.min(0, ...points.map((point) => point.balance)));
 	const high = $derived(Math.max(0, ...points.map((point) => point.balance)));
 
-	const money = (amount: number) => formatAmount(Math.abs(amount), currency, getLocale());
+	const money = (amount: number) => shownAmount(Math.abs(amount), currency);
 	const date = (day: Date) =>
 		new Intl.DateTimeFormat(getLocale(), {
 			day: 'numeric',
@@ -57,7 +57,7 @@
 			grid={{ x: false }}
 			props={{
 				xAxis: { ticks: 3, format: date },
-				yAxis: { ticks: 3, format: (value: number) => formatCompact(value, currency, getLocale()) },
+				yAxis: { ticks: 3, format: (value: number) => shownCompact(value, currency) },
 				highlight: { area: false, lines: true, points: false },
 				tooltip: { context: { mode: 'bisect-x', findTooltipData: 'left' } }
 			}}

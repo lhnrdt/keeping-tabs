@@ -7,7 +7,7 @@
 	import AppPage from '#lib/components/AppPage.svelte';
 	import EmptyState from '#lib/components/EmptyState.svelte';
 	import { activityText } from '#lib/group/activity-text.ts';
-	import { formatAmount } from '#lib/money.ts';
+	import { shownAmount } from '#lib/shown-money.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import type { PageProps } from './$types';
@@ -46,7 +46,7 @@
 				<ListItem
 					title={activityText(item)}
 					subtitle={item.entry
-						? `${when(item.at)} · ${formatAmount(item.entry.amountCents, data.group.currency, getLocale())}`
+						? `${when(item.at)} · ${shownAmount(item.entry.amountCents, data.group.currency)}`
 						: when(item.at)}
 				>
 					{#snippet after()}

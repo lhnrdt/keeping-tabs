@@ -5,7 +5,7 @@
 	import { BlockTitle, List, ListItem } from 'konsta/svelte';
 	import type { Frequency } from '#lib/expense/recurrence.ts';
 	import { tabAction } from '#lib/group/tabs.ts';
-	import { formatAmount } from '#lib/money.ts';
+	import { shownAmount } from '#lib/shown-money.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 
@@ -38,7 +38,7 @@
 		{#each rules as rule (rule.id)}
 			<ListItem
 				title={rule.title}
-				subtitle={`${formatAmount(rule.amountCents, currency, getLocale())} · ${every[rule.frequency]()} · ${m.recurring_next({ date: date(rule.nextOn) })}`}
+				subtitle={`${shownAmount(rule.amountCents, currency)} · ${every[rule.frequency]()} · ${m.recurring_next({ date: date(rule.nextOn) })}`}
 			>
 				{#snippet after()}
 					<form method="POST" action={tabAction('stopRecurring', 'group')} use:enhance>

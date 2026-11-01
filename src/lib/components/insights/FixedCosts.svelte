@@ -3,14 +3,14 @@
 	// months on its own scale (LayerChart), and how the latest compares to the one before
 	// (arrow, percent and words).
 	import { LineChart } from 'layerchart';
-	import { formatAmount } from '#lib/money.ts';
+	import { shownAmount } from '#lib/shown-money.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import type { FixedCost } from '#lib/insights/expense-kinds.ts';
 
 	let { rows, currency }: { rows: FixedCost[]; currency: string } = $props();
 
-	const money = (amount: number) => formatAmount(amount, currency, getLocale());
+	const money = (amount: number) => shownAmount(amount, currency);
 	const percent = new Intl.NumberFormat(getLocale(), {
 		style: 'percent',
 		maximumFractionDigits: 0,

@@ -3,7 +3,7 @@
 	// then who still pays whom, with how long they've owed.
 	import Avatar from '#lib/components/Avatar.svelte';
 	import type { GroupMember } from '#lib/group/members.ts';
-	import { formatAmount } from '#lib/money.ts';
+	import { shownAmount } from '#lib/shown-money.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import type { Settling } from '#lib/insights/insights.ts';
@@ -13,7 +13,7 @@
 	let { settling, members, currency }: Props = $props();
 
 	const byId = $derived(new Map(members.map((member) => [member.id, member])));
-	const money = (amount: number) => formatAmount(amount, currency, getLocale());
+	const money = (amount: number) => shownAmount(amount, currency);
 	const date = (iso: string) =>
 		new Intl.DateTimeFormat(getLocale(), {
 			day: 'numeric',

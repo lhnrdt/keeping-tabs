@@ -4,9 +4,8 @@
 	// the negative one, the difference written beside each. Tap for paid and share.
 	import { BarChart, Tooltip } from 'layerchart';
 	import type { GroupMember } from '#lib/group/members.ts';
-	import { formatAmount } from '#lib/money.ts';
+	import { shownAmount } from '#lib/shown-money.ts';
 	import { m } from '#lib/paraglide/messages.js';
-	import { getLocale } from '#lib/paraglide/runtime.js';
 	import type { MemberSpend } from '#lib/insights/insights.ts';
 
 	type Props = { rows: MemberSpend[]; members: GroupMember[]; currency: string };
@@ -28,7 +27,7 @@
 			})
 	);
 	const reach = $derived(Math.max(1, ...data.map((row) => Math.abs(row.gap))));
-	const money = (amount: number) => formatAmount(amount, currency, getLocale());
+	const money = (amount: number) => shownAmount(amount, currency);
 	const describe = (gap: number) =>
 		gap > 0
 			? m.insights_paid_more({ amount: money(gap) })
