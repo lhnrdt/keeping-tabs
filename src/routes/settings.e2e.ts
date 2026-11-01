@@ -107,7 +107,6 @@ test('a group offers your settings from your avatar, and whether you can step ba
 
 test('a nature theme switches at once and is remembered (#60)', async ({ page }) => {
 	await open(page, '/you');
-	await openFold(page, 'Forest');
 	await page.getByRole('group', { name: 'Theme' }).getByText('Fjord', { exact: true }).click();
 	await expect(page.locator('html')).toHaveAttribute('data-accent', 'fjord');
 	await expect(page.getByText('Saved').first()).toBeVisible();
@@ -122,7 +121,6 @@ test('a nature theme switches at once and is remembered (#60)', async ({ page })
 
 	// Back to the default: no attribute at all
 	await open(page, '/you');
-	await openFold(page, 'Fjord');
 	await page.getByRole('group', { name: 'Theme' }).getByText('Forest', { exact: true }).click();
 	await expect(page.locator('html')).not.toHaveAttribute('data-accent');
 });
