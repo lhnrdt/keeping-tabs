@@ -3,6 +3,7 @@
 // query, so rows go in as JSON values and SQLite unpacks them (json_each), as imports do.
 import { and, eq, isNull } from 'drizzle-orm';
 import { BACKUP_FORMAT, BACKUP_VERSION, type Backup } from '#lib/backup/format.ts';
+import type { ExpenseItem } from '#lib/split/items.ts';
 import type { ExpenseInput } from '#lib/validation.ts';
 import { log } from './activity';
 import type { Db } from './db';
@@ -98,6 +99,7 @@ export async function backupOf(db: Db, group: Group): Promise<Backup> {
 			paidBy: entry.paidBy,
 			date: entry.date,
 			splitMode: entry.splitMode,
+			items: entry.items,
 			category: entry.category,
 			originalCurrency: entry.originalCurrency,
 			originalAmountCents: entry.originalAmountCents,
@@ -166,6 +168,7 @@ const INSERT_EXPENSES = insertAll('expenses', {
 	paid_by: 'paidBy',
 	date: 'date',
 	split_mode: 'splitMode',
+	items: 'items',
 	category: 'category',
 	original_currency: 'originalCurrency',
 	original_amount_cents: 'originalAmountCents',
@@ -206,6 +209,9 @@ export async function restoreBackup(db: Db, backup: Backup) {
 		memberId: newId(row.memberId)
 	});
 
+	const withNewMembers = (items: ExpenseItem[]) =>
+		items.map((item) => ({ ...item, memberIds: item.memberIds.map(newId) }));
+
 	const entries = backup.entries.map((entry) => ({ ...entry, id: crypto.randomUUID() }));
 	const defaultSplit = backup.group.defaultSplit && {
 		mode: backup.group.defaultSplit.mode,
@@ -242,7 +248,12 @@ export async function restoreBackup(db: Db, backup: Backup) {
 		),
 		...all(
 			INSERT_EXPENSES,
-			entries.map((entry) => ({ ...entry, groupId, paidBy: newId(entry.paidBy) }))
+			entries.map((entry) => ({
+				...entry,
+				groupId,
+				paidBy: newId(entry.paidBy),
+				items: entry.items && JSON.stringify(withNewMembers(entry.items))
+			}))
 		),
 		...all(
 			INSERT_SPLITS,
@@ -280,7 +291,8 @@ export async function restoreBackup(db: Db, backup: Backup) {
 							...rule.template,
 							paidBy: newId(rule.template.paidBy),
 							payers: rule.template.payers?.map(withNewMember) ?? null,
-							shares: rule.template.shares.map(withNewMember)
+							shares: rule.template.shares.map(withNewMember),
+							items: rule.template.items && withNewMembers(rule.template.items)
 						}
 					})
 					.toSQL()

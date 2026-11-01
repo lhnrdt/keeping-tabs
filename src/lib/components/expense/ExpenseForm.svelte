@@ -14,12 +14,14 @@
 	import type { GroupMember } from '#lib/group/members.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { canBeDefault } from '#lib/split/default-split.ts';
+	import { ITEMS_MODE } from '#lib/split/items.ts';
 	import { isSplitMode, SPLIT_MODES, type SplitMode } from '#lib/split/modes.ts';
 	import { SEVERAL_PAYERS } from '#lib/validation.ts';
 	import AmountCurrencyField from './AmountCurrencyField.svelte';
 	import DateChips from './DateChips.svelte';
 	import DrivingFields from './DrivingFields.svelte';
 	import ParticipantChecklist from './ParticipantChecklist.svelte';
+	import ItemSplit from './ItemSplit.svelte';
 	import PayerAmounts from './PayerAmounts.svelte';
 	import SplitInputs from './SplitInputs.svelte';
 	import TitleNoteField from './TitleNoteField.svelte';
@@ -48,6 +50,8 @@
 			splitMode: string;
 			/** Split inputs by member id, for the unequal modes */
 			inputs: Record<string, string>;
+			/** With splitMode "items": the receipt's items as JSON (#53) */
+			items?: string;
 		};
 		/** The group's hand-chosen categories, newest first */
 		chosen: { title: string; category: ExpenseCategory | null }[];
@@ -94,8 +98,12 @@
 	let date = $state(initial().date);
 	let converted = $state('');
 	let payer = $state(initial().paidBy || identity.memberId || initial().firstMember);
-	let mode = $state<SplitMode>(
-		isSplitMode(initial().splitMode) ? (initial().splitMode as SplitMode) : 'equal'
+	let mode = $state<SplitMode | typeof ITEMS_MODE>(
+		initial().splitMode === ITEMS_MODE
+			? ITEMS_MODE
+			: isSplitMode(initial().splitMode)
+				? (initial().splitMode as SplitMode)
+				: 'equal'
 	);
 
 	const saved = $derived(
@@ -150,6 +158,7 @@
 						{#each SPLIT_MODES as option (option)}
 							<option value={option}>{modeLabels[option]()}</option>
 						{/each}
+						<option value={ITEMS_MODE}>{m.split_items()}</option>
 					</select>
 				{/snippet}
 			</PlainField>
@@ -158,7 +167,16 @@
 		{#if payer === SEVERAL_PAYERS}
 			<PayerAmounts {members} {currency} amount={converted} initial={values.payers ?? {}} />
 		{/if}
-		{#if mode === 'equal'}
+		{#if mode === ITEMS_MODE}
+			<ItemSplit
+				{members}
+				{currency}
+				{amount}
+				{amountCurrency}
+				{converted}
+				initial={values.items ?? ''}
+			/>
+		{:else if mode === 'equal'}
 			<ParticipantChecklist
 				{members}
 				selected={values.participants}

@@ -6,6 +6,7 @@
 	import ExpenseForm from '#lib/components/expense/ExpenseForm.svelte';
 	import { fuelInputValue, odometerInputValue } from '#lib/expense/driving.ts';
 	import { amountInputValue } from '#lib/money.ts';
+	import { ITEMS_MODE } from '#lib/split/items.ts';
 	import { splitInputValues } from '#lib/split/inputs.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { SEVERAL_PAYERS } from '#lib/validation.ts';
@@ -36,7 +37,15 @@
 			),
 			participants: data.expense.splits.map((split) => split.memberId),
 			category: data.expense.category ?? '',
-			splitMode: data.expense.splitMode,
+			// Split by receipt items (#53): as typed, in the amount's currency
+			splitMode: data.expense.items ? ITEMS_MODE : data.expense.splitMode,
+			items: JSON.stringify(
+				(data.expense.items ?? []).map(({ name, cents, memberIds }) => ({
+					name,
+					price: amountInputValue(cents, data.expense.originalCurrency ?? data.group.currency),
+					memberIds
+				}))
+			),
 			inputs: splitInputValues(data.expense, data.group.currency)
 		}
 	);

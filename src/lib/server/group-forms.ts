@@ -66,7 +66,8 @@ export const readExpenseForm = async (db: Db, group: Group, form: FormData) =>
 			participants: form.getAll('participants').map(String),
 			category: text(form, 'category'),
 			splitMode: text(form, 'splitMode'),
-			inputs: readSplitInputs(form)
+			inputs: readSplitInputs(form),
+			items: text(form, 'items')
 		},
 		parseExpense
 	);

@@ -1,4 +1,5 @@
 import { sql } from 'drizzle-orm';
+import type { ExpenseItem } from '#lib/split/items.ts';
 import { SPLIT_MODES } from '#lib/split/modes.ts';
 import type { ExpenseCategory } from '#lib/expense/categories.ts';
 import type { GroupKind } from '#lib/group/kinds.ts';
@@ -189,6 +190,8 @@ export const expenses = sqliteTable(
 		// ISO date (YYYY-MM-DD), no time zone
 		date: text('date').notNull(),
 		splitMode: text('split_mode', { enum: SPLIT_MODES }).notNull().default('equal'),
+		// Split by receipt items (#53): what each had, in the typed currency; the shares are exact
+		items: text('items', { mode: 'json' }).$type<ExpenseItem[]>(),
 		notes: text('notes'),
 		// Typed in another currency (#54): that currency, the amount in it and the rate used;
 		// amount_cents is the group's currency all the same

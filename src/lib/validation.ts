@@ -5,6 +5,7 @@ import { parseFuel, parseOdometer } from './expense/driving';
 import { convert, parseRate, type Original } from './expense/exchange';
 import type { Payer } from './expense/payers';
 import { parseAmount } from './money';
+import { ITEMS_MODE, itemShares, parseItems, type ExpenseItem } from './split/items';
 import { computeShares, type Share, type SplitEntry } from './split/compute';
 import { parseSplitInput } from './split/inputs';
 import { isSplitMode, type SplitMode } from './split/modes';
@@ -125,6 +126,8 @@ export type ExpenseInput = {
 	splitMode: SplitMode;
 	/** Each member's share, in member order; they add up to the amount */
 	shares: Share[];
+	/** Split by receipt items (#53); the shares come from them */
+	items: ExpenseItem[] | null;
 };
 
 /** An optional note (#123): line breaks kept, trimmed, empty = none */
@@ -183,6 +186,8 @@ export function parseExpense(
 		participants: unknown[];
 		/** For the other modes: each member's input, by member id */
 		inputs: Record<string, unknown>;
+		/** With splitMode "items": the receipt's items as JSON (#53) */
+		items?: unknown;
 	},
 	group: { memberIds: readonly string[]; currency: string }
 ): Result<ExpenseInput> {
@@ -209,7 +214,7 @@ export function parseExpense(
 	const payers = parsePayers(values, amountCents, group);
 	if (!payers.ok) return payers;
 
-	const split = parseSplit(values, amountCents, group);
+	const split = parseExpenseSplit(values, amountCents, original, group);
 	if (!split.ok) return split;
 
 	const category = parseCategory(values.category);
@@ -230,6 +235,25 @@ export function parseExpense(
 			...split.value
 		}
 	};
+}
+
+/** The split as entered: by receipt items, in the amount's typed currency, or any other way */
+function parseExpenseSplit(
+	values: Parameters<typeof parseSplit>[0] & { items?: unknown },
+	amountCents: number,
+	original: Original | null,
+	group: { memberIds: readonly string[]; currency: string }
+): Result<{ splitMode: SplitMode; shares: Share[]; items: ExpenseItem[] | null }> {
+	if (normalizeText(values.splitMode) !== ITEMS_MODE) {
+		const split = parseSplit(values, amountCents, group);
+		return split.ok ? { ok: true, value: { ...split.value, items: null } } : split;
+	}
+	const items = parseItems(values.items, original?.currency ?? group.currency, group.memberIds);
+	if (!items.ok) return items;
+	const shares = itemShares(items.value, original?.amountCents ?? amountCents, amountCents);
+	return shares.ok
+		? { ok: true, value: { splitMode: 'exact', shares: shares.value, items: items.value } }
+		: shares;
 }
 
 /** The amount, converted from another currency at the given rate when there is one (#54) */
