@@ -82,6 +82,13 @@ test('settings are one tap from the start screen, and lead to profile, devices a
 		page.getByRole('button', { name: /Recovery key/ }).or(page.getByText('Recovery key').first())
 	).toBeVisible();
 
+	// Problems and ideas go to the project, with the version filled in (#83)
+	await open(page, '/you');
+	await expect(page.getByRole('link', { name: /Report a problem or idea/ })).toHaveAttribute(
+		'href',
+		/github\.com.*issues\/new.*App\+version/
+	);
+
 	// Old addresses still arrive
 	await open(page, '/device');
 	await expect(page).toHaveURL(/\/you\/devices$/);

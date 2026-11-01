@@ -44,6 +44,7 @@ import IconUserCircle from '@tabler/icons-svelte-runes/icons/user-circle';
 import IconUserPlus from '@tabler/icons-svelte-runes/icons/user-plus';
 import IconUsersGroup from '@tabler/icons-svelte-runes/icons/users-group';
 import IconX from '@tabler/icons-svelte-runes/icons/x';
+import IconMessageReport from '@tabler/icons-svelte-runes/icons/message-report';
 import IconHelp from '@tabler/icons-svelte-runes/icons/help';
 import IconArrowUp from '@tabler/icons-svelte-runes/icons/arrow-up';
 import IconCamera from '@tabler/icons-svelte-runes/icons/camera';
@@ -94,6 +95,7 @@ export const icons = {
 	share: IconShare,
 	settings: IconSettings,
 	help: IconHelp,
+	report: IconMessageReport,
 	password: IconKey,
 	// Expense form fields
 	title: IconTag,
