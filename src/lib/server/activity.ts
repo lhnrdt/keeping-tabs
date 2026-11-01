@@ -36,6 +36,17 @@ export const log = (
 	payload: Record<string, unknown>
 ) => db.insert(activityLog).values({ groupId, memberId, action, payload });
 
+/** When the group last changed, in ms since 1970; null before anything happened */
+export async function lastChangeOf(db: Db, groupId: string) {
+	const [row] = await db
+		.select({ at: activityLog.createdAt })
+		.from(activityLog)
+		.where(eq(activityLog.groupId, groupId))
+		.orderBy(desc(activityLog.createdAt))
+		.limit(1);
+	return row?.at.getTime() ?? null;
+}
+
 /** How many changes the activity screen shows */
 export const ACTIVITY_SHOWN = 100;
 
