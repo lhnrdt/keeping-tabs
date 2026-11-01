@@ -14,6 +14,11 @@ import { formContext as context, groupOf, membersOf, requireGroup } from '#lib/s
 import { entryPage } from '#lib/server/expense-entries.ts';
 import { findDeletedEntry, listExpenses, listLedger, restoreEntry } from '#lib/server/expenses.ts';
 import { deleteGroup } from '#lib/server/group-deletion.ts';
+import {
+	hashGroupPassword,
+	rememberUnlocked,
+	setGroupPassword
+} from '#lib/server/group-password.ts';
 import { joinGroup, letJoinAgain, removeMember, stepBack } from '#lib/server/membership.ts';
 import {
 	addMember,
@@ -31,6 +36,7 @@ import { addDueRecurring, listRecurring, stopRecurring } from '#lib/server/recur
 import {
 	parseDescription,
 	parseGroupName,
+	parseGroupPassword,
 	parseKind,
 	parseDate,
 	parseMemberName,
@@ -152,6 +158,21 @@ export const actions: Actions = {
 			if (isUniqueViolation(e)) return invalid('member_name_taken');
 			throw e;
 		}
+	},
+
+	setPassword: async ({ locals, params, request, cookies }) => {
+		const { form, group, actorId } = await context(locals, params.token, request);
+		const password = parseGroupPassword(form.get('password'));
+		if (!password.ok) return fail(400, { action: 'setPassword' as const, error: password.error });
+		const hash = await hashGroupPassword(password.value);
+		await setGroupPassword(locals.db, group.id, actorId, hash);
+		// Whoever sets it isn't asked for it
+		await rememberUnlocked(cookies, group.id, hash);
+	},
+
+	removePassword: async ({ locals, params, request }) => {
+		const { group, actorId } = await context(locals, params.token, request);
+		await setGroupPassword(locals.db, group.id, actorId, null);
 	},
 
 	regenerateLink: async ({ locals, params, request }) => {

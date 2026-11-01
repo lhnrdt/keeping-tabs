@@ -14,6 +14,7 @@
 	import PendingExpenses from '#lib/components/group/PendingExpenses.svelte';
 	import DeleteGroup from '#lib/components/group/DeleteGroup.svelte';
 	import GroupDetails from '#lib/components/group/GroupDetails.svelte';
+	import GroupPassword from '#lib/components/group/GroupPassword.svelte';
 	import GroupHero from '#lib/components/group/GroupHero.svelte';
 	import GroupTabs from '#lib/components/group/GroupTabs.svelte';
 	import IdentityButton from '#lib/components/group/IdentityButton.svelte';
@@ -117,6 +118,7 @@
 		<BlockTitle>{m.group_details()}</BlockTitle>
 		<GroupDetails group={data.group} members={data.members} error={errorFor('updateGroup')} />
 		<RecurringList rules={data.recurring} currency={data.group.currency} />
+		<GroupPassword hasPassword={data.hasPassword} error={errorFor('setPassword')} />
 		<BlockTitle>{m.share_title()}</BlockTitle>
 		<ShareLink token={data.group.shareToken} groupName={data.group.name} />
 		<DeleteGroup groupId={data.group.id} name={data.group.name} />

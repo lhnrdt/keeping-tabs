@@ -1,4 +1,5 @@
 import { groupOf, membersOf } from '#lib/server/context.ts';
+import { findGroupLock } from '#lib/server/group-password.ts';
 import { listFormerMembers } from '#lib/server/groups.ts';
 import { hasTakenPart } from '#lib/server/membership.ts';
 import { personOf } from '#lib/server/people.ts';
@@ -11,14 +12,16 @@ import type { LayoutServerLoad } from './$types';
  */
 export const load: LayoutServerLoad = async ({ locals, params }) => {
 	const group = await groupOf(locals, params.token);
-	const [members, formerMembers, person] = await Promise.all([
+	const [members, formerMembers, person, lock] = await Promise.all([
 		membersOf(locals, group.id),
 		listFormerMembers(locals.db, group.id),
-		personOf(locals)
+		personOf(locals),
+		findGroupLock(locals.db, params.token)
 	]);
 	const mine = members.find((member) => person && member.personId === person.id);
 	return {
 		group,
+		hasPassword: Boolean(lock?.passwordHash),
 		members: members.map(({ id, name, personId, avatar, paymentDetails }) => ({
 			id,
 			name,

@@ -15,6 +15,10 @@ export const CHANGELOG: ChangelogEntry[] = [
 		date: '',
 		items: [
 			{
+				en: 'Protect a group with a password on top of its link, under Group.',
+				de: 'Schütze eine Gruppe zusätzlich zum Link mit einem Passwort, unter „Gruppe“.'
+			},
+			{
 				en: 'Choose your units in your profile: km and litres, or miles and gallons. You can also see your balance in another currency.',
 				de: 'Wähle in deinem Profil deine Einheiten: Km und Liter oder Meilen und Gallonen. Deinen Saldo kannst du dir auch in einer anderen Währung anzeigen lassen.'
 			}

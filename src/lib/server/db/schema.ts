@@ -47,6 +47,8 @@ export const groups = sqliteTable('groups', {
 	insightSections: text('insight_sections'),
 	// New expenses start split this way, e.g. {"mode":"percent","inputs":{…}} (#41); null = equal
 	defaultSplit: text('default_split', { mode: 'json' }),
+	// Optional password on top of the link (A-8), salted and slow (group-password.ts); null = none
+	passwordHash: text('password_hash'),
 	// Budget (minor units) and end date for trips and events, both optional (#168)
 	budgetCents: integer('budget_cents'),
 	endsOn: text('ends_on'),

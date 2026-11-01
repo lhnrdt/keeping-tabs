@@ -19,6 +19,7 @@ describe('limitKindOf', () => {
 	});
 
 	it('counts creating a group on its own', () => {
+		expect(limitKindOf('POST', at('/unlock/abc'))).toBe('secret');
 		expect(limitKindOf('POST', at('/new'))).toBe('newGroup');
 		expect(limitKindOf('POST', at('/new/backup'))).toBe('newGroup');
 	});

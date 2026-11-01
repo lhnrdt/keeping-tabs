@@ -4,6 +4,7 @@ import { m } from '#lib/paraglide/messages.js';
 export const errorMessages = {
 	group_name_required: m.error_group_name_required,
 	group_name_too_long: m.error_group_name_too_long,
+	group_password_invalid: m.error_group_password_invalid,
 	description_too_long: m.error_description_too_long,
 	currency_invalid: m.error_currency_invalid,
 	member_name_required: m.error_member_name_required,

@@ -6,6 +6,8 @@ export type Action =
 	| 'group.create'
 	| 'group.update'
 	| 'group.regenerate_link'
+	| 'group.password_set'
+	| 'group.password_remove'
 	| 'group.import'
 	| 'group.delete'
 	| 'group.restore'

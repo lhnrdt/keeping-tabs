@@ -1,0 +1,1 @@
+ALTER TABLE `groups` ADD `password_hash` text;
