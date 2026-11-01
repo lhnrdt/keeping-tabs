@@ -40,6 +40,14 @@
 	{#each layers as { scene, strength, moment }, l (l)}
 		<g class={moment && celebrate ? 'scene-celebrate' : undefined}>
 			{#each scene.shapes as shape, i (i)}
+				<!-- The subject is solid: the header's line color is see-through, so the landscape would show -->
+				{#if strength === 1 && kind && !shape.cut}
+					<path
+						d={shape.d}
+						fill="var(--tint-bg)"
+						class={shape.motion ? `scene-${shape.motion}` : undefined}
+					/>
+				{/if}
 				<path
 					d={shape.d}
 					fill={shape.cut ? 'var(--tint-bg)' : 'var(--tint-line)'}
