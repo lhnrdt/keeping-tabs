@@ -23,7 +23,7 @@
 				: amountInputValue(data.expense.amountCents, data.group.currency),
 			currency: data.expense.originalCurrency ?? '',
 			rate: data.expense.exchangeRate ?? '',
-			km: quantityInputValue(data.expense.distanceM),
+			odometer: quantityInputValue(data.expense.odometerM),
 			litres: quantityInputValue(data.expense.fuelMl),
 			date: data.expense.date,
 			// Several payers (#39): each with what they paid

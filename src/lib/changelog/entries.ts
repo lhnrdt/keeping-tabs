@@ -23,8 +23,8 @@ export const CHANGELOG: ChangelogEntry[] = [
 				de: 'Kommentare zu Ausgaben: Frag oder erklär etwas direkt unter einer Ausgabe.'
 			},
 			{
-				en: 'Car groups: note the km driven and the fuel with an expense, and see cost per km, consumption and the price per litre in Insights.',
-				de: 'Autogruppen: gefahrene km und Tankmenge bei einer Ausgabe eintragen und Kosten pro km, Verbrauch und Literpreis in den Insights sehen.'
+				en: 'Car groups: note the odometer reading and the fuel with an expense, and see km driven, cost per km, consumption and the price per litre in Insights.',
+				de: 'Autogruppen: Kilometerstand und Tankmenge bei einer Ausgabe eintragen und gefahrene km, Kosten pro km, Verbrauch und Literpreis in den Insights sehen.'
 			}
 		]
 	},

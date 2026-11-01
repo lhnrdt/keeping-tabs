@@ -190,8 +190,8 @@ export const expenses = sqliteTable(
 		originalCurrency: text('original_currency'),
 		originalAmountCents: integer('original_amount_cents'),
 		exchangeRate: text('exchange_rate'),
-		// What car groups note with an expense: distance driven and fuel bought
-		distanceM: integer('distance_m'),
+		// What car groups note with an expense: the odometer reading and fuel bought
+		odometerM: integer('odometer_m'),
 		fuelMl: integer('fuel_ml'),
 		category: text('category').$type<ExpenseCategory>(),
 		// Where an imported row came from (e.g. "sw:…" for Splitwise), so re-imports skip it (I-3)

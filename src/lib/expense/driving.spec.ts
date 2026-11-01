@@ -18,7 +18,7 @@ describe('parsing', () => {
 
 	it('refuses what is not a sensible quantity', () => {
 		for (const text of ['0', '-5', 'abc', '1.25', '2000000']) {
-			expect(parseKm(text)).toEqual({ ok: false, error: 'km_invalid' });
+			expect(parseKm(text)).toEqual({ ok: false, error: 'odometer_invalid' });
 		}
 		expect(parseLitres('1.234')).toEqual({ ok: false, error: 'litres_invalid' });
 	});
@@ -31,31 +31,62 @@ describe('parsing', () => {
 });
 
 describe('drivingOf', () => {
-	it('is nothing without km or litres', () => {
-		expect(drivingOf([{ amountCents: 500 }])).toBeNull();
+	const reading = (date: string, km: number, amountCents = 0, litres?: number) => ({
+		date,
+		amountCents,
+		odometerM: km * 1000,
+		fuelMl: litres ? litres * 1000 : null
 	});
 
-	it('sums up cost per km, consumption and price per litre', () => {
-		const driving = drivingOf([
-			{ amountCents: 8_000, fuelMl: 50_000 },
-			{ amountCents: 2_000, distanceM: 500_000 },
-			{ amountCents: 10_000, distanceM: 500_000 }
-		]);
-		expect(driving).toEqual({
-			metres: 1_000_000,
-			centsPerKm: 20,
-			litresPer100Km: 5,
-			centsPerLitre: 160
-		});
+	it('is nothing without readings or litres', () => {
+		expect(drivingOf([{ date: '2026-10-01', amountCents: 500 }])).toBeNull();
 	});
 
-	it('leaves out what it cannot tell', () => {
-		expect(drivingOf([{ amountCents: 1_000, distanceM: 10_000 }])).toEqual({
-			metres: 10_000,
-			centsPerKm: 100,
+	it('shows a single reading, with nothing driven yet', () => {
+		expect(drivingOf([reading('2026-10-01', 12_000)])).toEqual({
+			odometerM: 12_000_000,
+			drivenM: 0,
+			centsPerKm: null,
 			litresPer100Km: null,
 			centsPerLitre: null
 		});
+	});
+
+	it('works out the km from the readings, and consumption from the fuel after the first', () => {
+		const driving = drivingOf([
+			reading('2026-10-20', 13_000, 8_000, 50),
+			{ date: '2026-10-10', amountCents: 2_000 },
+			reading('2026-10-01', 12_000, 7_000, 40)
+		]);
+		expect(driving).toEqual({
+			odometerM: 13_000_000,
+			drivenM: 1_000_000,
+			centsPerKm: 10,
+			litresPer100Km: 5,
+			centsPerLitre: 167
+		});
+	});
+
+	it('counts a period from the reading before it', () => {
+		const driving = drivingOf(
+			[
+				reading('2026-09-20', 12_000, 7_000, 40),
+				reading('2026-10-15', 12_500, 4_000, 25),
+				reading('2026-11-05', 13_000, 4_000, 25)
+			],
+			{ from: '2026-10-01', to: '2026-10-31' }
+		);
+		expect(driving?.odometerM).toBe(12_500_000);
+		expect(driving?.drivenM).toBe(500_000);
+		expect(driving?.litresPer100Km).toBe(5);
+	});
+
+	it('does not go negative on a mistyped reading', () => {
+		const driving = drivingOf([reading('2026-09-20', 12_000), reading('2026-10-15', 1_200)], {
+			from: '2026-10-01',
+			to: '2026-10-31'
+		});
+		expect(driving?.drivenM).toBe(0);
 	});
 });
 
