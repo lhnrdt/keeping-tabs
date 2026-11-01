@@ -3,13 +3,11 @@
 	import type { IconName } from '#lib/icons.ts';
 	import Icon from './Icon.svelte';
 
-	let { name, solid = false }: { name: IconName; solid?: boolean } = $props();
+	let { name }: { name: IconName } = $props();
 </script>
 
 <span
-	class="grid h-9 w-9 shrink-0 place-items-center rounded-full {solid
-		? 'bg-accent text-white dark:bg-accent-night dark:text-canvas-night'
-		: 'bg-surface-muted text-accent dark:bg-surface-muted-night dark:text-accent-night'}"
+	class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-surface-muted text-accent dark:bg-surface-muted-night dark:text-accent-night"
 >
 	<Icon {name} size={20} />
 </span>

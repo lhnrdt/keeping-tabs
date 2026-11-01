@@ -12,6 +12,8 @@
 	import { EXPENSES_PER_PAGE } from '#lib/group/expense-pages.ts';
 	import { namesById, type Member } from '#lib/group/members.ts';
 	import { groupByMonth } from '#lib/group/months.ts';
+	import Icon from '#lib/components/Icon.svelte';
+	import { entryRuns } from '#lib/group/entry-runs.ts';
 	import { OlderEntries } from '#lib/group/older-entries.svelte.ts';
 	import { uniqueById } from '#lib/unique.ts';
 	import type { ListEntry } from '#lib/server/expense-entries.ts';
@@ -140,57 +142,67 @@
 			<h3 class="mx-8 mt-6 mb-2 text-sm font-medium text-muted first:mt-2">
 				{formatMonth(group.month)}
 			</h3>
-			<List strong inset class="!my-0">
-				{#each group.entries as expense (expense.id)}
-					<ListItem
-						link
-						href={hrefOf(expense)}
-						title={titleOf(expense)}
-						subtitle={subtitleOf(expense)}
-						style={transitionName('expense', expense.id)}
-						class={expense.type === 'payment'
-							? 'bg-accent-soft/35 dark:bg-accent-soft-night/35'
-							: ''}
-					>
-						{#snippet media()}
-							<IconBadge
-								solid={expense.type === 'payment'}
-								name={expense.type === 'payment'
-									? 'payment'
-									: categoryIcons[expense.category ?? 'other']}
-							/>
-						{/snippet}
-						{#snippet after()}
-							{#if expense.type === 'payment'}
-								<!-- Money that changed hands, not something bought: set apart -->
-								<span
-									class="rounded-full bg-accent-soft px-2.5 py-1 text-sm font-medium text-ink tabular-nums dark:bg-accent-soft-night dark:text-ink-night"
+			<div class="flex flex-col gap-2">
+				{#each entryRuns(group.entries) as run (run[0].id)}
+					{#if run[0].type === 'payment'}
+						{@const payment = run[0]}
+						<!-- Money that changed hands, not something bought: not in a card with the expenses -->
+						<ul class="mx-4">
+							<li style={transitionName('expense', payment.id)}>
+								<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- resolved in hrefOf -->
+								<a
+									href={hrefOf(payment)}
+									class="flex min-h-11 items-center gap-2 px-4 text-sm text-muted active:opacity-70"
 								>
-									<AnimatedAmount amount={expense.amountCents} {currency} />
-								</span>
-							{:else if expense.yourSide === null}
-								<span class="text-sm text-muted">{m.side_not_involved()}</span>
-							{:else if expense.yourSide >= 0}
-								<span class="text-sm font-medium tone-positive tabular-nums">
-									<AnimatedAmount
-										amount={expense.yourSide}
-										{currency}
-										label={(amount) => m.side_lent({ amount })}
-									/>
-								</span>
-							{:else}
-								<span class="text-sm font-medium tone-negative tabular-nums">
-									<AnimatedAmount
-										amount={-expense.yourSide}
-										{currency}
-										label={(amount) => m.side_borrowed({ amount })}
-									/>
-								</span>
-							{/if}
-						{/snippet}
-					</ListItem>
+									<span class="flex-none opacity-70"><Icon name="payment" size={16} /></span>
+									<span class="min-w-0 flex-1 truncate">{titleOf(payment)}</span>
+									<span class="flex-none text-xs">{subtitleOf(payment)}</span>
+									<span class="flex-none tabular-nums">
+										<AnimatedAmount amount={payment.amountCents} {currency} />
+									</span>
+								</a>
+							</li>
+						</ul>
+					{:else}
+						<List strong inset class="!my-0">
+							{#each run as expense (expense.id)}
+								<ListItem
+									link
+									href={hrefOf(expense)}
+									title={titleOf(expense)}
+									subtitle={subtitleOf(expense)}
+									style={transitionName('expense', expense.id)}
+								>
+									{#snippet media()}
+										<IconBadge name={categoryIcons[expense.category ?? 'other']} />
+									{/snippet}
+									{#snippet after()}
+										{#if expense.yourSide === null}
+											<span class="text-sm text-muted">{m.side_not_involved()}</span>
+										{:else if expense.yourSide >= 0}
+											<span class="text-sm font-medium tone-positive tabular-nums">
+												<AnimatedAmount
+													amount={expense.yourSide}
+													{currency}
+													label={(amount) => m.side_lent({ amount })}
+												/>
+											</span>
+										{:else}
+											<span class="text-sm font-medium tone-negative tabular-nums">
+												<AnimatedAmount
+													amount={-expense.yourSide}
+													{currency}
+													label={(amount) => m.side_borrowed({ amount })}
+												/>
+											</span>
+										{/if}
+									{/snippet}
+								</ListItem>
+							{/each}
+						</List>
+					{/if}
 				{/each}
-			</List>
+			</div>
 		{/each}
 	</section>
 	{#if more}
