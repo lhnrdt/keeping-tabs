@@ -148,6 +148,16 @@
 					<Icon name="export" />
 				{/snippet}
 			</ListItem>
+			<ListItem
+				link
+				title={m.backup_link()}
+				href={resolve('/g/[token]/backup', { token: data.group.shareToken })}
+				linkProps={{ download: '', 'data-sveltekit-reload': '' }}
+			>
+				{#snippet media()}
+					<Icon name="export" />
+				{/snippet}
+			</ListItem>
 		</List>
 	{/if}
 

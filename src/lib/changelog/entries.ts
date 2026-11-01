@@ -15,6 +15,10 @@ export const CHANGELOG: ChangelogEntry[] = [
 		date: '',
 		items: [
 			{
+				en: 'Back up a group as a file, and restore it as a new group whenever you need it.',
+				de: 'Sichere eine Gruppe als Datei und stelle sie bei Bedarf als neue Gruppe wieder her.'
+			},
+			{
 				en: 'Comments on expenses: ask or explain something right under an expense.',
 				de: 'Kommentare zu Ausgaben: Frag oder erklär etwas direkt unter einer Ausgabe.'
 			},
