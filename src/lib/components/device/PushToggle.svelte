@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Icon from '#lib/components/Icon.svelte';
 	// Notifications on this device (#56): a switch that asks the browser for permission and
 	// subscribes it with the push service, or unsubscribes. Where that isn't possible, it says
 	// why (no support, blocked, an iPhone outside the home screen).
@@ -6,13 +7,16 @@
 	import { onMount } from 'svelte';
 	import { m } from '#lib/paraglide/messages.js';
 
-	let { publicKey }: { publicKey: string } = $props();
+	let { publicKey }: { publicKey: string | null } = $props();
+
+	const WORKER_WAIT_MS = 4000;
 
 	let status = $state<'loading' | 'on' | 'off' | 'blocked' | 'unsupported'>('loading');
 	let busy = $state(false);
 	let ios = $state(false);
 	let problem = $state('');
 	let tested = $state('');
+	const available = $derived(status === 'on' || status === 'off');
 
 	/** Sends a test and says plainly how far it got (#256) */
 	async function test() {
@@ -40,6 +44,7 @@
 	onMount(async () => {
 		ios = /iPhone|iPad/.test(navigator.userAgent);
 		if (
+			!publicKey ||
 			!('serviceWorker' in navigator) ||
 			!('PushManager' in window) ||
 			!('Notification' in window)
@@ -51,7 +56,16 @@
 			status = 'blocked';
 			return;
 		}
-		const sub = await (await registration()).pushManager.getSubscription();
+		// A service worker that doesn't start means no notifications, not waiting forever
+		const worker = await Promise.race([
+			registration(),
+			new Promise<null>((resolve) => setTimeout(() => resolve(null), WORKER_WAIT_MS))
+		]);
+		if (!worker) {
+			status = 'unsupported';
+			return;
+		}
+		const sub = await worker.pushManager.getSubscription();
 		status = sub ? 'on' : 'off';
 		// The server may not know this browser (anymore), or know it as someone else
 		if (sub) await saveOnServer(sub).catch(() => {});
@@ -73,7 +87,7 @@
 			await registration()
 		).pushManager.subscribe({
 			userVisibleOnly: true,
-			applicationServerKey: publicKey
+			applicationServerKey: publicKey!
 		});
 		const response = await saveOnServer(sub);
 		status = response.ok ? 'on' : 'off';
@@ -111,10 +125,14 @@
 
 <div class="flex flex-col gap-1.5" role="region" aria-label={m.push_title()}>
 	<div class="field-well min-h-14 justify-between gap-3 px-3.5">
-		<span class="font-medium">{m.push_toggle()}</span>
+		<!-- Unavailable: quieter, but still readable, so muted text instead of a faded row -->
+		<span class="flex min-w-0 items-center gap-3 {available ? '' : 'text-muted'}">
+			<span class="flex-none opacity-65"><Icon name="notifications" size={20} /></span>
+			<span class="font-medium">{m.push_toggle()}</span>
+		</span>
 		<Toggle
 			checked={status === 'on'}
-			disabled={busy || status === 'loading' || status === 'blocked' || status === 'unsupported'}
+			disabled={busy || !available}
 			onChange={toggle}
 			aria-label={m.push_toggle()}
 		/>
