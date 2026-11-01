@@ -261,6 +261,8 @@
 	"device_intro": "Erstelle einen Link und öffne ihn innerhalb von 15 Minuten auf deinem anderen Handy oder Computer. Er funktioniert einmal, danach bist du auch dort in all deinen Gruppen du selbst.",
 	"device_create_link": "Link erstellen",
 	"device_link_label": "One-Time-Link",
+	"device_qr_label": "QR-Code für diesen Link",
+	"device_qr_hint": "Scanne ihn mit der Kamera deines anderen Handys oder teile den Link.",
 	"device_adopt_title": "Dieses Gerät verwenden",
 	"device_adopt_intro": "Dieses Gerät wird in all deinen Gruppen du sein, genau wie das Gerät, das den Link erstellt hat.",
 	"device_adopt_button": "Dieses Gerät verwenden",

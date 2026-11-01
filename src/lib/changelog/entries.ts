@@ -15,6 +15,10 @@ export const CHANGELOG: ChangelogEntry[] = [
 		date: '',
 		items: [
 			{
+				en: 'Add another device by scanning a QR code.',
+				de: 'Füge ein weiteres Gerät hinzu, indem du einen QR-Code scannst.'
+			},
+			{
 				en: 'How it works: a short page on joining groups and keeping them when you change phones.',
 				de: 'So funktioniert’s: eine kurze Seite dazu, wie du Gruppen beitrittst und sie beim Handywechsel behältst.'
 			},
