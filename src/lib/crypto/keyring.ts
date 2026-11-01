@@ -43,6 +43,12 @@ function load() {
 	return loaded;
 }
 
+/** Browsers may clear a site's data when space runs out or it's not used for a while: not keys */
+const askToKeepStorage = () =>
+	void (navigator.storage as { persist?: () => Promise<boolean> } | undefined)
+		?.persist?.()
+		.catch(() => {});
+
 /** The key with this id, if this device has it */
 export async function keyFor(keyId: string) {
 	await load();
@@ -60,6 +66,7 @@ export async function rememberKey(key: string) {
 	const id = await keyIdOf(key);
 	memory.set(id, key);
 	await withStore('readwrite', (store) => store.put(key, id)).catch(() => {});
+	askToKeepStorage();
 	return id;
 }
 

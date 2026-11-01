@@ -52,6 +52,7 @@ export const errorMessages = {
 	import_file_missing: m.error_import_file_missing,
 	import_too_large: m.error_import_too_large,
 	import_encrypted: m.error_import_encrypted,
+	offline_group_encrypted: m.error_offline_group_encrypted,
 	backup_invalid: m.error_backup_invalid,
 	backup_missing: m.error_backup_missing,
 	import_people_invalid: m.error_import_people_invalid,

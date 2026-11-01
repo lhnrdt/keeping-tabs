@@ -8,6 +8,7 @@ import {
 import { m } from '#lib/paraglide/messages.js';
 import { takeKeyFromAddress } from './key-from-address';
 import { keyFor, rememberKey } from './keyring';
+import { syncKeys } from './vault';
 import { contextIn, isKey, isSealed, keyIdIn, openText, textContext } from './seal';
 
 export const browser = typeof window !== 'undefined';
@@ -16,11 +17,27 @@ export const browser = typeof window !== 'undefined';
 const opened = new Map<string, string>();
 const OPENED_KEPT = 20_000;
 
+/** How soon to ask the server again about keys this device doesn't have */
+const ASK_AGAIN_MS = 30_000;
+let asking: Promise<void> | undefined;
+
+/**
+ * A key this device doesn't have yet may be among what's stored for this person, as on a device just
+ * added. So that's asked first, once for everything on the page, before anything shows as unreadable.
+ */
+async function fetchedKey(keyId: string) {
+	asking ??= syncKeys()
+		.catch(() => {})
+		.finally(() => setTimeout(() => (asking = undefined), ASK_AGAIN_MS));
+	await asking;
+	return keyFor(keyId);
+}
+
 /** The text if this device can open it, kept for next time; otherwise null */
 async function openKept(sealed: string) {
 	const known = opened.get(sealed);
 	if (known !== undefined) return known;
-	const key = await keyFor(keyIdIn(sealed));
+	const key = (await keyFor(keyIdIn(sealed))) ?? (await fetchedKey(keyIdIn(sealed)));
 	if (!key) return null;
 	const text = await openText(key, sealed).catch(() => null);
 	if (text === null) return null;
@@ -51,7 +68,8 @@ const parsed = (text: string | null) => {
 async function detailsOf(row: Record<string, unknown>) {
 	const sealed = row.sealedDetails;
 	if (!browser || !isSealed(sealed)) return {};
-	const isEntry = 'amountCents' in row;
+	// A group's settings are sealed the same way; an entry has a title or an amount
+	const isEntry = 'amountCents' in row || 'title' in row;
 	if (typeof row.id === 'string' && !belongsTo(sealed, 'details', row.id)) {
 		return isEntry ? UNREADABLE_ENTRY : {};
 	}

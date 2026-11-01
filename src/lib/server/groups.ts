@@ -89,7 +89,8 @@ export function listMembers(db: Db, groupId: string) {
 			avatar: people.avatar,
 			paymentDetails: members.paymentDetails,
 			personPaymentDetails: people.paymentDetails,
-			keyReceived: members.keyReceived
+			keyReceived: members.keyReceived,
+			createdAt: members.createdAt
 		})
 		.from(members)
 		.leftJoin(people, eq(members.personId, people.id))

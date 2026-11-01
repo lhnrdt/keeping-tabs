@@ -30,7 +30,10 @@ export const endHandovers = (db: Db, now: Date) =>
 		.set({ transitionKey: null, transitionUntil: null })
 		.where(and(isNotNull(groups.transitionUntil), lt(groups.transitionUntil, now)));
 
-/** Someone has the key now. Once everyone who's joined does, the server has no more use for it */
+/**
+ * Someone has the key now. Once everyone does, the server has no more use for it. A spot nobody has
+ * claimed yet counts as missing: whoever it's for only has the old link.
+ */
 export async function keyReceived(db: Db, groupId: string, memberId: string) {
 	const d1 = db.$client;
 	await d1.batch([
@@ -39,8 +42,8 @@ export async function keyReceived(db: Db, groupId: string, memberId: string) {
 			.prepare(
 				`update groups set transition_key = null, transition_until = null
 				where id = ?1 and key_id is not null and not exists (
-					select 1 from members where group_id = ?1 and person_id is not null
-					and deleted_at is null and key_received = 0
+					select 1 from members where group_id = ?1 and deleted_at is null
+					and (person_id is null or key_received = 0)
 				)`
 			)
 			.bind(groupId)

@@ -181,6 +181,10 @@ test('a device link carries the keys along (#110)', async ({ page, browser }) =>
 	await open(laptop, link);
 	await laptop.getByRole('button', { name: 'Use this device' }).click();
 	await expect(laptop.getByRole('button', { name: 'Use this device' })).toHaveCount(0);
+	// Its groups are readable from the start, not only once one of them has been opened
+	await open(laptop, '/');
+	await expect(laptop.getByRole('link', { name: /Secret trip/ })).toBeVisible();
+	await expect(laptop.locator('body')).not.toContainText('••••••');
 	await open(laptop, groupUrl);
 	await expect(laptop.getByRole('link', { name: /Whiskey tasting/ })).toBeVisible();
 });
@@ -409,19 +413,19 @@ test('a passkey brings the keys along where it can (#110)', async ({ page }) => 
 test('amounts and who pays stay sealed, and everything still adds up (#110)', async ({ page }) => {
 	const { groupUrl, link } = await encryptedGroup(page);
 	await open(page, groupUrl);
-	await addExpense(page, 'Secret boat', '37.13');
+	await addExpense(page, 'Secret boat', '37.14');
 
 	// What the server sends and keeps holds none of it
 	for (const path of ['/__data.json', '/__data.json?tab=balances', '/activity/__data.json']) {
 		const raw = await (await page.request.get(`${groupUrl}${path}`)).text();
-		expect(raw).not.toContain('3713');
-		expect(raw).not.toContain('37.13');
+		expect(raw).not.toContain('3714');
+		expect(raw).not.toContain('37.14');
 	}
 	const home = await (await page.request.get('/__data.json')).text();
-	expect(home).not.toContain('3713');
+	expect(home).not.toContain('3714');
 
-	// Yet the browser adds it all up: half of 30 and half of 37.13, on every screen
-	await expect(page.getByRole('link', { name: /Secret boat/ })).toContainText('€37.13');
+	// Yet the browser adds it all up: half of 30 and half of 37.14, on every screen
+	await expect(page.getByRole('link', { name: /Secret boat/ })).toContainText('€37.14');
 	await expect(page.locator('body')).toContainText('€33.57');
 	await open(page, '/');
 	await expect(page.locator('body')).toContainText('€33.57');
@@ -443,7 +447,7 @@ test('amounts and who pays stay sealed, and everything still adds up (#110)', as
 	// Editing starts from the real amount
 	await open(page, groupUrl);
 	await page.getByRole('link', { name: /Secret boat/ }).click();
-	await expect(page.getByLabel('Amount (€)')).toHaveValue('37.13');
+	await expect(page.getByLabel('Amount (€)')).toHaveValue('37.14');
 	await page.getByLabel('Amount (€)').fill('40');
 	await page.getByRole('button', { name: 'Save' }).click();
 	await expect(page.getByRole('link', { name: /Secret boat/ })).toContainText('€40.00');

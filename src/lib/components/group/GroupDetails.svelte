@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
+	import { sealing } from '#lib/crypto/seal-form.ts';
 	import { resolve } from '$app/paths';
 	import { List, ListButton, ListItem } from 'konsta/svelte';
 	import Icon from '#lib/components/Icon.svelte';
@@ -55,7 +57,11 @@
 		{#snippet after()}
 			{#if group.defaultSplit}
 				<!-- Back to an equal split for new expenses (red, like every reset) -->
-				<form method="POST" action={tabAction('clearDefaultSplit', 'group')}>
+				<form
+					method="POST"
+					action={tabAction('clearDefaultSplit', 'group')}
+					use:enhance={sealing(['clearDefaultSplit'])}
+				>
 					<button type="submit" class="text-sm font-medium tone-destructive"
 						>{m.default_split_reset()}</button
 					>

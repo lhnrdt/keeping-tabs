@@ -16,6 +16,8 @@
 
 	/** Groups you're a member of, from the server */
 	type MemberGroup = GroupLink & {
+		/** This device has no key for it: its money can't be known (#110) */
+		unreadable?: boolean;
 		currency: string;
 		balance: number;
 		/** What's open with each person there; positive: they owe you */
@@ -35,7 +37,7 @@
 	// Settled and quiet for a while: folded away below the others (#46)
 	const today = todayInputValue();
 	const isSettled = (group: (typeof groups)[number]) =>
-		'balance' in group && isSettledAndQuiet(group, today);
+		'balance' in group && !group.unreadable && isSettledAndQuiet(group, today);
 	const active = $derived(groups.filter((group) => !isSettled(group)));
 	const settled = $derived(groups.filter(isSettled));
 
@@ -59,7 +61,11 @@
 		{/snippet}
 		{#snippet subtitle()}
 			{#if 'balance' in group}
-				<YourBalance amount={group.balance} currency={group.currency} />
+				{#if group.unreadable}
+					<span class="text-muted">{m.locked_group_hint()}</span>
+				{:else}
+					<YourBalance amount={group.balance} currency={group.currency} />
+				{/if}
 				<!-- Per person, as in the group's header (#117) -->
 				{#each group.open.slice(0, MAX_OPEN_LINES) as line (line.name)}
 					<span class="block text-sm text-muted">

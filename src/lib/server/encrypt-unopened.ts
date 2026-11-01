@@ -34,6 +34,8 @@ export async function encryptNextUnopened(db: Db, now: Date) {
 		.orderBy(sql`${groups.encryptTriedAt} is not null`, asc(groups.encryptTriedAt))
 		.limit(20);
 	const group = candidates.find((candidate) => shouldEncrypt(candidate, true));
+	// For the logs: how many are left, or whether it's stuck
+	console.log(JSON.stringify({ event: 'encrypt_unopened', waiting: candidates.length }));
 	if (!group) return;
 	await db.update(groups).set({ encryptTriedAt: now }).where(eq(groups.id, group.id));
 	const actorId = await placeholderMember(db, group.id);
@@ -66,6 +68,10 @@ export async function encryptNextUnopened(db: Db, now: Date) {
 			ROWS_PER_RUN
 		);
 	} catch (failure) {
-		if (!(failure instanceof OutOfTime)) throw failure;
+		if (!(failure instanceof OutOfTime)) {
+			// Not error-log.ts: this runs in the worker's own build, without the app's
+			const { name, message, stack } = failure as Error;
+			console.error(JSON.stringify({ event: 'encrypt_unopened_error', name, message, stack }));
+		}
 	}
 }
