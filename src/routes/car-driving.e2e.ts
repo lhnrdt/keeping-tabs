@@ -6,11 +6,10 @@ test('a car group notes the odometer and fuel with its expenses and sums them up
 }) => {
 	const groupUrl = await createGroup(page, 'Our car', 'Anna', ['Ben']);
 	await open(page, `${groupUrl}?tab=group`);
-	await page.getByRole('button', { name: 'Edit group' }).click();
-	const dialog = page.getByRole('dialog', { name: 'Edit group' });
-	await choose(dialog, 'Type', 'Car');
-	await dialog.getByRole('button', { name: 'Save' }).click();
-	await expect(dialog).toHaveCount(0);
+	await page.getByRole('link', { name: 'Edit group' }).click();
+	await choose(page, 'Type', 'Car');
+	await page.getByRole('button', { name: 'Save' }).click();
+	await expect(page).toHaveURL(/tab=group/);
 
 	await open(page, `${groupUrl}/expenses/new`);
 	await page.getByLabel('What was it for?').fill('Fuel');

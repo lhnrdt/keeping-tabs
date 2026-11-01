@@ -4,11 +4,10 @@ import { choose, createGroup, open } from './e2e-helpers';
 test('everyone chooses their units and the currency amounts show in (#238)', async ({ page }) => {
 	const groupUrl = await createGroup(page, 'Our car', 'Anna', ['Ben']);
 	await open(page, `${groupUrl}?tab=group`);
-	await page.getByRole('button', { name: 'Edit group' }).click();
-	const dialog = page.getByRole('dialog', { name: 'Edit group' });
-	await choose(dialog, 'Type', 'Car');
-	await dialog.getByRole('button', { name: 'Save' }).click();
-	await expect(dialog).toHaveCount(0);
+	await page.getByRole('link', { name: 'Edit group' }).click();
+	await choose(page, 'Type', 'Car');
+	await page.getByRole('button', { name: 'Save' }).click();
+	await expect(page).toHaveURL(/tab=group/);
 
 	await open(page, '/you');
 	await page.getByRole('group', { name: 'Units' }).getByText('Miles and gallons').click();

@@ -1,38 +1,30 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import { List, ListButton, ListItem } from 'konsta/svelte';
 	import Icon from '#lib/components/Icon.svelte';
-	import Field from '#lib/components/Field.svelte';
-	import KindPicker from '#lib/components/pickers/KindPicker.svelte';
-	import TintPicker from '#lib/components/pickers/TintPicker.svelte';
-	import FormDialog from './FormDialog.svelte';
-	import SimplifyDebtsField from './SimplifyDebtsField.svelte';
-	import FormError from '#lib/components/FormError.svelte';
-	import type { ErrorCode } from '#lib/errors.ts';
 	import { kindIcons, kindLabels } from '#lib/group/kind-style.ts';
 	import type { GroupKind } from '#lib/group/kinds.ts';
 	import { tabAction } from '#lib/group/tabs.ts';
 	import { m } from '#lib/paraglide/messages.js';
-	import { LIMITS } from '#lib/validation.ts';
 
-	import type { Tint } from '#lib/tints.ts';
 	import type { Member } from '#lib/group/members.ts';
 	import type { DefaultSplit } from '#lib/split/default-split.ts';
 	import { formatSplitInput } from '#lib/split/inputs.ts';
 
 	type Group = {
+		shareToken: string;
 		name: string;
 		description: string | null;
 		currency: string;
 		kind: GroupKind;
-		tint: Tint | null;
 		simplifyDebts: boolean;
 		/** New expenses' split (#41), null = equal */
 		defaultSplit: DefaultSplit | null;
 	};
 
-	type Props = { group: Group; members: Member[]; error?: ErrorCode };
+	type Props = { group: Group; members: Member[]; hasPassword: boolean };
 
-	let { group, members, error }: Props = $props();
+	let { group, members, hasPassword }: Props = $props();
 
 	/** "Anna 60 % · Ben 40 %" or "Anna 2 · Ben 1" */
 	const splitText = $derived.by(() => {
@@ -45,8 +37,6 @@
 			})
 			.join(' · ');
 	});
-
-	let editing = $state(false);
 </script>
 
 <List strong inset role="region" aria-label={m.group_details()}>
@@ -73,41 +63,18 @@
 			{/if}
 		{/snippet}
 	</ListItem>
-	<ListButton type="button" onclick={() => (editing = true)}>
+	<ListItem
+		link
+		title={m.field_group_password()}
+		after={hasPassword ? m.on() : m.off()}
+		href={resolve('/g/[token]/password', { token: group.shareToken })}
+	>
+		{#snippet media()}
+			<Icon name="password" />
+		{/snippet}
+	</ListItem>
+	<ListButton href={resolve('/g/[token]/edit', { token: group.shareToken })}>
 		<Icon name="edit" />
 		{m.edit_group()}
 	</ListButton>
 </List>
-
-<FormDialog
-	opened={editing}
-	title={m.edit_group()}
-	action={tabAction('updateGroup', 'group')}
-	submitLabel={m.save()}
-	onClose={() => (editing = false)}
->
-	<div class="page-section">
-		<Field
-			label={m.field_group_name()}
-			placeholder={m.placeholder_group_name()}
-			name="name"
-			required
-			maxlength={LIMITS.groupName}
-			value={group.name}
-		/>
-		<Field
-			label={m.field_description()}
-			placeholder={m.placeholder_description()}
-			name="description"
-			type="textarea"
-			maxlength={LIMITS.description}
-			value={group.description ?? ''}
-		/>
-		<SimplifyDebtsField checked={group.simplifyDebts} />
-	</div>
-	<div class="-mx-4">
-		<KindPicker value={group.kind} />
-		<TintPicker value={group.tint ?? ''} />
-	</div>
-	<FormError {error} />
-</FormDialog>

@@ -7,11 +7,13 @@ test('a password in front of a group: asked once per device, changeable, removab
 }) => {
 	const groupUrl = await createGroup(page, 'Secret flat', 'Anna', ['Ben']);
 	await open(page, `${groupUrl}?tab=group`);
-	await page.getByRole('button', { name: 'Set a password' }).click();
-	const dialog = page.getByRole('dialog', { name: 'Set a password' });
-	await dialog.getByLabel('Group password').fill('tulip');
-	await dialog.getByRole('button', { name: 'Save' }).click();
-	await expect(page.getByRole('button', { name: 'Change the password' })).toBeVisible();
+	const row = page.getByRole('link', { name: /Group password/ });
+	await expect(row).toContainText('Off');
+	await row.click();
+	await expect(page.getByRole('heading', { name: 'Set a password' })).toBeVisible();
+	await page.getByLabel('Group password').fill('tulip');
+	await page.getByRole('button', { name: 'Save' }).click();
+	await expect(row).toContainText('On');
 
 	// Whoever set it isn't asked
 	await page.reload();
@@ -43,17 +45,18 @@ test('a password in front of a group: asked once per device, changeable, removab
 	await expect(ben.getByRole('heading', { name: 'Secret flat' })).toBeVisible();
 
 	// A new password asks everyone again
-	await page.getByRole('button', { name: 'Change the password' }).click();
-	const change = page.getByRole('dialog', { name: 'Change the password' });
-	await change.getByLabel('Group password').fill('crocus');
-	await change.getByRole('button', { name: 'Save' }).click();
-	await expect(change).toHaveCount(0);
+	await row.click();
+	await expect(page.getByRole('heading', { name: 'Change the password' })).toBeVisible();
+	await page.getByLabel('Group password').fill('crocus');
+	await page.getByRole('button', { name: 'Save' }).click();
+	await expect(page).toHaveURL(/tab=group/);
 	await ben.reload();
 	await expect(ben).toHaveURL(/\/unlock\//);
 
 	// Removed, it's open again; both are in the activity
+	await row.click();
 	await page.getByRole('button', { name: 'Remove the password' }).click();
-	await expect(page.getByRole('button', { name: 'Set a password' })).toBeVisible();
+	await expect(row).toContainText('Off');
 	await ben.goto(groupUrl);
 	await expect(ben.getByRole('heading', { name: 'Secret flat' })).toBeVisible();
 	await page.goto(`${groupUrl}/activity`);
