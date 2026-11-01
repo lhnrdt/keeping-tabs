@@ -61,6 +61,10 @@ for (const colorScheme of ['light', 'dark'] as const) {
 				`${groupUrl}/expenses/new`,
 				expenseUrl,
 				`${groupUrl}/payments/new`,
+				`${groupUrl}/edit`,
+				`${groupUrl}/password`,
+				`${groupUrl}/budget`,
+				`${groupUrl}/customize-insights`,
 				`${groupUrl}/import`
 			]) {
 				await expectAccessible(page, path);

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
+	import Icon from '#lib/components/Icon.svelte';
 	// A group's Insights tab (#161, #169): the sections that answer what this kind of group
 	// wants to know, in its order (LAYOUTS), each a shared building block.
 	import { BlockTitle } from 'konsta/svelte';
@@ -6,10 +8,8 @@
 	import { namesById, type GroupMember, type Member } from '#lib/group/members.ts';
 	import type { GroupKind } from '#lib/group/kinds.ts';
 	import { m } from '#lib/paraglide/messages.js';
-	import type { ErrorCode } from '#lib/errors.ts';
 	import type { GroupInsights } from '#lib/insights/group.ts';
 	import { LAYOUTS, sectionsFor, type Section } from '#lib/insights/sections.ts';
-	import CustomizeInsights from './CustomizeInsights.svelte';
 	import Budget from './Budget.svelte';
 	import BiggestList from './BiggestList.svelte';
 	import CategoryDonut from './CategoryDonut.svelte';
@@ -33,8 +33,6 @@
 		insights: GroupInsights;
 		/** Today as YYYY-MM-DD, for moving between periods */
 		today: string;
-		/** The budget form's error, if it was just sent */
-		budgetError: ErrorCode | undefined;
 		group: {
 			name: string;
 			kind: GroupKind;
@@ -48,7 +46,7 @@
 		everyone: Member[];
 	};
 
-	let { insights, today, budgetError, group, members, everyone }: Props = $props();
+	let { insights, today, group, members, everyone }: Props = $props();
 
 	const layout = $derived(LAYOUTS[group.kind]);
 	// The group's own choice, else what suits its type (#174)
@@ -90,7 +88,7 @@
 		{#if section === 'recap' && insights.recap}
 			<Recap recap={insights.recap} name={group.name} currency={group.currency} />
 		{:else if section === 'budget'}
-			<Budget view={insights.budget} currency={group.currency} error={budgetError} />
+			<Budget view={insights.budget} currency={group.currency} token={group.shareToken} />
 		{:else if section === 'highlights'}
 			<Highlights highlights={insights.highlights} {members} {names} currency={group.currency} />
 		{:else if section === 'overTime'}
@@ -136,6 +134,14 @@
 {/if}
 {#if insights.span}
 	<!-- Also on a quiet period: choosing what to see doesn't depend on it -->
-	<CustomizeInsights kind={group.kind} shown={chosen} />
+	<div class="mx-4 mt-6">
+		<a
+			href={resolve('/g/[token]/customize-insights', { token: group.shareToken })}
+			class="flex min-h-11 items-center justify-center gap-2 rounded-full bg-surface-muted px-4 text-sm font-medium text-accent active:opacity-70 dark:bg-surface-muted-night dark:text-accent-night"
+		>
+			<Icon name="edit" size={20} />
+			{m.insights_customize()}
+		</a>
+	</div>
 	<div class="h-6"></div>
 {/if}
