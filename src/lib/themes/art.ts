@@ -1,7 +1,6 @@
-// Each nature theme's line art (#60): a header pattern (400×200, drawn in the header's faint
-// line color) and a motif (120×120) for empty states, errors and the welcome page. Paths
-// only, so ThemePattern and ThemeMotif draw them with the theme's colors. `faint` paths are
-// drawn lighter.
+// Each nature theme's motif (#60): line art (120×120) for empty states, errors and the welcome
+// page. Paths only, so ThemeMotif draws them with the theme's colors. `faint` paths are drawn
+// lighter. The headers' scenes are in scenes.ts.
 import type { ThemeId } from './palettes';
 
 type Art = { paths: string[]; faint?: string[]; dots?: [number, number, number][] };
@@ -17,122 +16,6 @@ const leaf = (x: number, y: number, s: number) =>
 /** A small flower at x, y */
 const flower = (x: number, y: number, r: number) =>
 	`M${x} ${y - r}a${r} ${r} 0 1 1 0 ${r * 2}a${r} ${r} 0 1 1 0 ${-r * 2}z M${x} ${y + r}v${r * 3}`;
-
-export const PATTERNS: Record<ThemeId, Art> = {
-	forest: {
-		paths: [
-			pine(262, 112, 70),
-			pine(300, 132, 92),
-			pine(342, 108, 66),
-			pine(380, 128, 84),
-			'M-10 168c60-20 120-24 180-10s120 20 240-6',
-			'M-10 188c70-16 140-18 210-6s130 14 210-4'
-		]
-	},
-	fjord: {
-		paths: [
-			'M232 -10l22 54-14 38 26 58-12 70',
-			'M410 -10l-30 62 10 30-24 50 12 78',
-			'M-10 146q30-8 60 0t60 0t60 0t60 0',
-			'M-10 166q30-8 60 0t60 0t60 0t60 0t60 0',
-			'M-10 186q30-8 60 0t60 0t60 0t60 0t60 0t60 0',
-			'M286 120q10-4 20 0'
-		]
-	},
-	mountains: {
-		paths: [
-			'M262 -10c-30 42-8 78 30 92s70 52 58 96',
-			'M240 -10c-36 50-14 96 30 112s58 58 46 98',
-			'M218 -10c-42 58-20 114 30 132s46 64 34 100',
-			'M330 30c-22 10-30 34-14 50s44 12 52-8-16-52-38-42z',
-			'M332 44c-12 6-16 18-8 26s24 6 28-4-8-28-20-22z',
-			'M-10 150c40-22 92-16 120 6s70 34 110 12',
-			'M-10 170c46-20 96-12 124 10s74 30 116 8',
-			'M-10 190c50-18 100-8 128 14'
-		]
-	},
-	heather: {
-		paths: [
-			'M-10 150c50-34 110-34 160-8s110 26 160-6 70-30 100-20',
-			'M-10 176c60-26 120-26 170-4s120 22 250-10',
-			'M200 100c40-30 100-36 210-12'
-		],
-		dots: [
-			[250, 92, 2.2],
-			[262, 86, 1.8],
-			[276, 82, 2.2],
-			[290, 80, 1.6],
-			[304, 79, 2.2],
-			[60, 132, 2],
-			[74, 126, 1.6],
-			[88, 122, 2.2],
-			[330, 150, 2],
-			[344, 146, 1.6]
-		]
-	},
-	birch: {
-		paths: [
-			'M262 -10v220',
-			'M276 -10v220',
-			'M318 -10v220',
-			'M330 -10v220',
-			'M366 -10v220',
-			'M380 -10v220',
-			'M264 40h8M266 92h6M264 150h9M320 24h7M322 80h6M320 132h8M368 58h9M370 116h6M368 170h8',
-			'M-10 182c80-14 160-12 240 0'
-		]
-	},
-	meadow: {
-		paths: [
-			'M-10 186c80-12 160-14 240-4s120 8 180 0',
-			'M30 186c2-14 6-24 12-30M44 186c0-12-2-20-6-26M70 186c2-16 8-26 14-32',
-			'M120 184c2-12 6-20 10-24M150 184c0-14-4-22-8-28M180 182c2-14 8-22 14-26',
-			flower(250, 120, 6),
-			flower(292, 104, 5),
-			flower(334, 128, 6),
-			flower(372, 108, 5),
-			'M250 138c-6 14-4 30 2 46M334 146c4 12 4 24 0 38'
-		]
-	},
-	coast: {
-		paths: [
-			'M-10 150q25-12 50 0t50 0t50 0t50 0',
-			'M-10 168q25-12 50 0t50 0t50 0t50 0t50 0',
-			'M-10 186q25-12 50 0t50 0t50 0t50 0t50 0t50 0',
-			'M230 120c40-34 110-44 190-30',
-			'M290 92c-2-14 2-26 8-34M304 90c0-12-4-22-10-28M318 92c2-12 8-20 14-24'
-		],
-		faint: ['M330 40a14 14 0 1 0 28 0a14 14 0 1 0-28 0']
-	},
-	aurora: {
-		paths: [
-			'M-10 60c60 30 110-40 170 0s110 50 170 0 70-30 80-20',
-			'M-10 78c60 30 110-40 170 0s110 50 170 0 70-30 80-20',
-			'M-10 186c70-30 140-30 200-8s140 18 220-12'
-		],
-		faint: ['M-10 96c60 30 110-40 170 0s110 50 170 0 70-30 80-20'],
-		dots: [
-			[40, 24, 1.4],
-			[120, 18, 1.2],
-			[210, 30, 1.6],
-			[300, 16, 1.2],
-			[370, 34, 1.4],
-			[260, 120, 1.2],
-			[80, 130, 1.2]
-		]
-	},
-	autumn: {
-		paths: [
-			leaf(250, 40, 34),
-			leaf(320, 90, 28),
-			leaf(280, 140, 24),
-			leaf(360, 30, 22),
-			leaf(60, 150, 26),
-			'M-10 120c60-20 120 10 180-10s100-40 160-20',
-			'M-10 186c80-14 160-14 240-2s120 10 180-2'
-		]
-	}
-};
 
 export const MOTIFS: Record<ThemeId, Art> = {
 	forest: {
