@@ -7,8 +7,7 @@ import { readQuery } from '#lib/group/search.ts';
 import { currentTab, UNDO_PARAM } from '#lib/group/tabs.ts';
 import { groupInsights } from '#lib/insights/group.ts';
 import { defaultPeriod, parsePeriod } from '#lib/insights/period.ts';
-import { choiceToStore, isSection } from '#lib/insights/sections.ts';
-import { balances, parseAmount } from '#lib/money.ts';
+import { balances } from '#lib/money.ts';
 import { settleTransfers } from '#lib/settle.ts';
 import { formContext as context, groupOf, membersOf, requireGroup } from '#lib/server/context.ts';
 import { entryPage } from '#lib/server/expense-entries.ts';
@@ -20,14 +19,12 @@ import {
 	isUniqueViolation,
 	listMembers,
 	regenerateShareToken,
-	setBudget,
 	setDefaultSplit,
-	setInsightSections,
 	renameMember
 } from '#lib/server/groups.ts';
 import { ensurePerson, personOf, setProfileName } from '#lib/server/people.ts';
 import { addDueRecurring, listRecurring, stopRecurring } from '#lib/server/recurring.ts';
-import { parseDate, parseMemberName } from '#lib/validation.ts';
+import { parseMemberName } from '#lib/validation.ts';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, params, url }) => {
@@ -183,33 +180,6 @@ export const actions: Actions = {
 	clearDefaultSplit: async ({ locals, params, request }) => {
 		const { group, actorId } = await context(locals, params.token, request);
 		await setDefaultSplit(locals.db, group.id, actorId, null);
-	},
-
-	/** Which insights the group shows (#174); "reset" goes back to the type's suggestions */
-	insightSections: async ({ locals, params, request, url }) => {
-		const { form, group, actorId } = await context(locals, params.token, request);
-		const chosen = url.searchParams.has('reset') ? [] : form.getAll('section').filter(isSection);
-		await setInsightSections(locals.db, group.id, actorId, choiceToStore(group.kind, chosen));
-	},
-
-	/** A budget and end date for the insights (#168); "remove" clears both */
-	budget: async ({ locals, params, request, url }) => {
-		const { form, group, actorId } = await context(locals, params.token, request);
-		const invalid = (error: ErrorCode) => fail(400, { action: 'budget' as const, error });
-		if (url.searchParams.has('remove')) {
-			await setBudget(locals.db, group.id, actorId, { budgetCents: null, endsOn: null });
-			return;
-		}
-		const amount = String(form.get('amount') ?? '').trim();
-		const budgetCents = amount ? parseAmount(amount, group.currency) : null;
-		if (amount && budgetCents === null) return invalid('amount_invalid');
-		const date = String(form.get('endsOn') ?? '').trim();
-		const endsOn = date ? parseDate(date) : null;
-		if (endsOn && !endsOn.ok) return invalid(endsOn.error);
-		await setBudget(locals.db, group.id, actorId, {
-			budgetCents,
-			endsOn: endsOn?.ok ? endsOn.value : null
-		});
 	},
 
 	removeMember: async ({ locals, params, request }) => {

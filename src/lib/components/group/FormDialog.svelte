@@ -14,8 +14,6 @@
 		action: string;
 		submitLabel: string;
 		destructive?: boolean;
-		/** Another action on the same form, shown as an extra button */
-		secondary?: { label: string; action: string };
 		onClose: () => void;
 		/** Runs when the form is submitted, before the server answers */
 		onSubmit?: () => void;
@@ -28,7 +26,6 @@
 		action,
 		submitLabel,
 		destructive = false,
-		secondary,
 		onClose,
 		onSubmit,
 		children
@@ -67,18 +64,6 @@
 
 	{#snippet buttons()}
 		<DialogButton type="button" onclick={onClose}>{m.cancel()}</DialogButton>
-		{#if secondary}
-			<DialogButton
-				type="submit"
-				form={formId}
-				formaction={secondary.action}
-				formnovalidate
-				disabled={submission.pending}
-				class="tone-destructive"
-			>
-				{secondary.label}
-			</DialogButton>
-		{/if}
 		<DialogButton
 			type="submit"
 			form={formId}
