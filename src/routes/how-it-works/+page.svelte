@@ -9,6 +9,7 @@
 		{ title: m.how_no_account_title, text: m.how_no_account_text },
 		{ title: m.how_joining_title, text: m.how_joining_text },
 		{ title: m.how_splitting_title, text: m.how_splitting_text },
+		{ title: m.how_private_title, text: m.how_private_text },
 		{ title: m.how_devices_title, text: m.how_devices_text }
 	];
 </script>
