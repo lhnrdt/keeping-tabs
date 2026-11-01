@@ -81,3 +81,19 @@ export function drivingOf(entries: readonly DrivingEntry[]): Driving | null {
 		centsPerLitre: millilitres ? Math.round((fuelSpent * 1000) / millilitres) : null
 	};
 }
+
+/** What an odometer shows: at least six whole km digits, then the tenth */
+export function odometerDigits(metres: number) {
+	const tenths = Math.floor(metres / 100);
+	return {
+		whole: [...String(Math.floor(tenths / 10)).padStart(6, '0')],
+		tenth: String(tenths % 10)
+	};
+}
+
+/** A gauge's scale, in l/100 km; a thirstier car rests at its end */
+export const CONSUMPTION_SCALE = 15;
+
+/** The needle's angle for a consumption: -90° at empty, 90° at the end of the scale */
+export const needleAngle = (litresPer100Km: number) =>
+	(Math.min(litresPer100Km, CONSUMPTION_SCALE) / CONSUMPTION_SCALE) * 180 - 90;
