@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray, isNotNull, isNull, or, sql } from 'drizzle-orm';
+import { and, desc, eq, gt, inArray, isNotNull, isNull, or, sql } from 'drizzle-orm';
 import { LIKE_ESCAPE, likePattern } from '#lib/group/search.ts';
 
 import type { Payer } from '#lib/expense/payers.ts';
@@ -399,4 +399,31 @@ export async function restoreEntry(
 			.where(and(eq(expenses.id, entry.id), eq(expenses.groupId, groupId))),
 		log(db, groupId, actorId, `${entry.type}.restore`, { expenseId: entry.id })
 	]);
+}
+
+/** How long after being added an expense can still be announced */
+const ANNOUNCE_WITHIN_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * An expense to tell the group about, once (#56): undefined if it isn't the group's, null if
+ * it's been told already or is too old (an expense kept offline counts from when it arrived).
+ */
+export async function claimNotification(db: Db, groupId: string, id: string) {
+	const [entry] = await db
+		.select({ title: expenses.title, amountCents: expenses.amountCents })
+		.from(expenses)
+		.where(and(eq(expenses.id, id), eq(expenses.type, 'expense'), active(groupId)));
+	if (!entry) return undefined;
+	const [claimed] = await db
+		.update(expenses)
+		.set({ notifiedAt: new Date() })
+		.where(
+			and(
+				eq(expenses.id, id),
+				isNull(expenses.notifiedAt),
+				gt(expenses.createdAt, new Date(Date.now() - ANNOUNCE_WITHIN_MS))
+			)
+		)
+		.returning({ id: expenses.id });
+	return claimed ? entry : null;
 }

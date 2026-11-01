@@ -8,6 +8,7 @@
 	import GroupForm from '#lib/components/group/GroupForm.svelte';
 	import type { ErrorCode } from '#lib/errors.ts';
 	import type { ExpenseCategory } from '#lib/expense/categories.ts';
+	import { announceExpense } from '#lib/expense/announce.ts';
 	import { RATE_CURRENCIES } from '#lib/expense/exchange.ts';
 	import { sendReceipt } from '#lib/expense/send-receipt.ts';
 	import { learnCategories } from '#lib/expense/learned.ts';
@@ -123,12 +124,15 @@
 	let photos = $state<Blob[]>([]);
 	const expensePage = () =>
 		resolve('/g/[token]/expenses/[id]', { token: offlineToken ?? '', id: clientId });
-	async function sendPhotos() {
+	async function afterSaving() {
+		// Before anything else: the photos may take a while
+		const announced = offlineToken ? announceExpense(offlineToken, clientId) : undefined;
 		let missing = false;
 		for (const photo of photos) {
 			const refused = await sendReceipt(photo, expensePage()).catch(() => 'receipt_invalid');
 			if (refused) missing = true;
 		}
+		await announced;
 		return missing ? expensePage() : undefined;
 	}
 
@@ -141,7 +145,7 @@
 	};
 </script>
 
-<GroupForm {error} {submitLabel} {offlineToken} onSaved={photos.length ? sendPhotos : undefined}>
+<GroupForm {error} {submitLabel} {offlineToken} onSaved={offlineToken ? afterSaving : undefined}>
 	{#if offlineToken}<input type="hidden" name="clientId" value={clientId} />{/if}
 	<div class="flex flex-col gap-4 px-4 pt-2 pb-4">
 		<TitleNoteField bind:title notes={values.notes} />

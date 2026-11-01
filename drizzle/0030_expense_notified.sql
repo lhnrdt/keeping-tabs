@@ -1,0 +1,1 @@
+ALTER TABLE `expenses` ADD `notified_at` integer;
