@@ -13,6 +13,8 @@ export const errorMessages = {
 	expense_title_required: m.error_expense_title_required,
 	expense_title_too_long: m.error_expense_title_too_long,
 	expense_note_too_long: m.error_expense_note_too_long,
+	comment_required: m.error_comment_required,
+	comment_too_long: m.error_comment_too_long,
 	payment_details_too_long: m.error_payment_details_too_long,
 	amount_invalid: m.error_amount_invalid,
 	rate_invalid: m.error_rate_invalid,

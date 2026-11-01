@@ -179,7 +179,12 @@ export async function listEntryPage(
 ) {
 	const pattern = likePattern(query);
 	const rows = await db
-		.select(expenseColumns)
+		.select({
+			...expenseColumns,
+			// How many comments it has (#49), shown in the list
+			// Spelled out: in a select's fields, drizzle leaves the table off columns
+			comments: sql<number>`(select count(*) from expense_comments where expense_comments.expense_id = expenses.id)`
+		})
 		.from(expenses)
 		.where(
 			query
