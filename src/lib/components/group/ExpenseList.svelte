@@ -152,14 +152,16 @@
 								<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- resolved in hrefOf -->
 								<a
 									href={hrefOf(payment)}
-									class="flex min-h-11 items-center gap-2 px-4 text-sm text-muted active:opacity-70"
+									aria-label={`${titleOf(payment)}, ${subtitleOf(payment)}`}
+									class="flex min-h-10 items-center gap-3 px-2 text-xs text-muted active:opacity-70"
 								>
-									<span class="flex-none opacity-70"><Icon name="payment" size={16} /></span>
-									<span class="min-w-0 flex-1 truncate">{titleOf(payment)}</span>
-									<span class="flex-none text-xs">{subtitleOf(payment)}</span>
-									<span class="flex-none tabular-nums">
+									<span class="h-px flex-1 bg-current/15"></span>
+									<Icon name="payment" size={14} />
+									<span class="truncate">{titleOf(payment)}</span>
+									<span class="flex-none font-medium tabular-nums">
 										<AnimatedAmount amount={payment.amountCents} {currency} />
 									</span>
+									<span class="h-px flex-1 bg-current/15"></span>
 								</a>
 							</li>
 						</ul>
