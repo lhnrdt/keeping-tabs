@@ -15,6 +15,10 @@ export const CHANGELOG: ChangelogEntry[] = [
 		date: '',
 		items: [
 			{
+				en: 'New artwork for each theme, in the headers and on empty screens.',
+				de: 'Neue Bilder für jedes Theme, in den Kopfzeilen und auf leeren Seiten.'
+			},
+			{
 				en: 'Your groups are now encrypted, including amounts. There’s nothing to do: existing groups upgrade by themselves.',
 				de: 'Deine Gruppen sind jetzt verschlüsselt, auch die Beträge. Du musst nichts tun: Bestehende Gruppen stellen sich von selbst um.'
 			},

@@ -357,6 +357,7 @@ test('categories, car data and how to pay you stay sealed too; insights work (#1
 	const ben = await (await browser.newContext()).newPage();
 	await open(ben, link);
 	await ben.getByRole('button', { name: "I'm Benedikt" }).click();
+	await expect(ben.getByTestId('identity')).toHaveText('Benedikt');
 	await open(ben, `${groupUrl}/payments/new`);
 	await expect(ben.getByText('DE02120300000000202051')).toBeVisible();
 });
@@ -516,6 +517,7 @@ test('settings are sealed, the history still says who, and the key leaves the se
 	const ben = await (await browser.newContext()).newPage();
 	await open(ben, oldUrl);
 	await ben.getByRole('button', { name: "I'm Ben" }).click();
+	await expect(ben.getByTestId('identity')).toHaveText('Ben');
 	await open(page, `${oldUrl}/edit`);
 	await page.getByLabel('Group name').fill('[auto] Old');
 	await page.getByRole('button', { name: 'Save' }).click();
@@ -534,7 +536,11 @@ test('settings are sealed, the history still says who, and the key leaves the se
 		.poll(
 			async () => {
 				await open(stranger, oldUrl);
-				return stranger.getByText('Open this group with its link').count();
+				return stranger
+					.getByText('Open this group with its link')
+					.waitFor({ timeout: 3_000 })
+					.then(() => 1)
+					.catch(() => 0);
 			},
 			{ timeout: 20_000 }
 		)
