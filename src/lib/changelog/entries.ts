@@ -15,6 +15,10 @@ export const CHANGELOG: ChangelogEntry[] = [
 		date: '',
 		items: [
 			{
+				en: 'Expense categories fit the group: a car group offers fuel, parking and repairs, a shared home rent and utilities. All the others are one tap away.',
+				de: 'Die Kategorien passen zur Gruppe: Eine Autogruppe bietet Sprit, Parken und Werkstatt, eine WG Miete und Nebenkosten. Alle anderen sind einen Tipp entfernt.'
+			},
+			{
 				en: 'Comments on expenses: ask or explain something right under an expense.',
 				de: 'Kommentare zu Ausgaben: Frag oder erklär etwas direkt unter einer Ausgabe.'
 			},

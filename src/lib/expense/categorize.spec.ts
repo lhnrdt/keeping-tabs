@@ -11,10 +11,10 @@ describe('categorize', () => {
 		['Pizzaabend', 'dining'],
 		['Beers at the pub', 'drinks'],
 		['Taxi to the airport', 'transport'],
-		['Tanken', 'transport'],
+		['Tanken', 'fuel'],
 		['Airbnb Lisbon', 'lodging'],
-		['Rent October', 'home'],
-		['Strom', 'home'],
+		['Rent October', 'rent'],
+		['Strom', 'utilities'],
 		['Cinema tickets', 'fun'],
 		['Birthday present for Cara', 'gifts'],
 		['Apotheke', 'health'],
@@ -50,6 +50,6 @@ describe('categorize', () => {
 	it('uses the dataset after hand-written keywords', () => {
 		const dataset = buildDatasetIndex({ groceries: ['netto marken discount'], lodging: ['rent'] });
 		expect(categorize('Netto Marken-Discount', dataset)).toBe('groceries');
-		expect(categorize('Rent', dataset)).toBe('home');
+		expect(categorize('Rent', dataset)).toBe('rent');
 	});
 });

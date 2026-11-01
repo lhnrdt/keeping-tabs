@@ -27,10 +27,32 @@ export const KEYWORDS: [Exclude<ExpenseCategory, 'other'>, string[]][] = [
 		]
 	],
 	[
+		'fuel',
+		[
+			'bp',
+			'fuel',
+			'petrol',
+			'benzin',
+			'diesel',
+			'tanken',
+			'tankstelle',
+			'sprit',
+			'shell',
+			'aral',
+			'esso'
+		]
+	],
+	['parking', ['parking', 'parken', 'parkhaus', 'parkplatz']],
+	['tolls', ['toll', 'maut', 'vignette']],
+	[
+		'repairs',
+		['werkstatt', 'reparatur', 'repair', 'inspektion', 'olwechsel', 'oil change', 'reifen', 'tires']
+	],
+	['insurance', ['versicherung', 'insurance', 'haftpflicht']],
+	[
 		'transport',
 		[
 			'taxi',
-			'bp',
 			'uber',
 			'bolt',
 			'train',
@@ -45,17 +67,6 @@ export const KEYWORDS: [Exclude<ExpenseCategory, 'other'>, string[]][] = [
 			'flug',
 			'ferry',
 			'fahre',
-			'fuel',
-			'petrol',
-			'benzin',
-			'diesel',
-			'tanken',
-			'parking',
-			'parken',
-			'parkhaus',
-			'toll',
-			'maut',
-			'vignette',
 			'mietwagen',
 			'rental car',
 			'car hire',
@@ -136,22 +147,25 @@ export const KEYWORDS: [Exclude<ExpenseCategory, 'other'>, string[]][] = [
 			'ice cream'
 		]
 	],
+	['rent', ['rent', 'miete', 'mortgage']],
 	[
-		'home',
+		'utilities',
 		[
-			'rent',
-			'obi',
-			'miete',
 			'electricity',
 			'strom',
 			'utilities',
 			'nebenkosten',
-			'internet',
-			'wifi',
-			'wlan',
 			'heating',
 			'heizung',
 			'water bill',
+			'gas bill'
+		]
+	],
+	['internet', ['internet', 'wifi', 'wlan']],
+	[
+		'home',
+		[
+			'obi',
 			'cleaning',
 			'putzmittel',
 			'furniture',
