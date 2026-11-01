@@ -8,6 +8,7 @@
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import type { BudgetView } from '#lib/insights/budget.ts';
+	import BudgetRoad from './BudgetRoad.svelte';
 
 	let { view, currency }: { view: BudgetView; currency: string } = $props();
 
@@ -41,6 +42,9 @@
 		}).format(value);
 </script>
 
+{#if view.budget !== null}
+	<BudgetRoad spent={view.spent} budget={view.budget} />
+{/if}
 <div class="h-40" role="img" aria-label={m.insights_budget()}>
 	<AreaChart
 		data={spent}

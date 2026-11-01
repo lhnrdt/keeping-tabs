@@ -6,6 +6,7 @@
 	import { useIdentity } from '#lib/group/identity.svelte.ts';
 	import { namesById, type Member } from '#lib/group/members.ts';
 	import { openLine } from '#lib/group/open-line.ts';
+	import { justSettled } from '#lib/group/settled-moment.ts';
 	import { betweenYou } from '#lib/people-summary.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import type { Transfer } from '#lib/settle.ts';
@@ -15,7 +16,7 @@
 	import { groupTintClass, type Tint } from '#lib/tints.ts';
 
 	type Props = {
-		group: { name: string; currency: string; kind: GroupKind; tint: Tint | null };
+		group: { id: string; name: string; currency: string; kind: GroupKind; tint: Tint | null };
 		members: Member[];
 		balances: Record<string, number>;
 		/** The group's payments to settle up */
@@ -27,6 +28,13 @@
 	const identity = useIdentity();
 	const names = $derived(namesById(members));
 	const myBalance = $derived(identity.memberId ? (balances[identity.memberId] ?? 0) : null);
+
+	// Settled up just now: the scene says so, once
+	let celebrate = $state(false);
+	$effect(() => {
+		if (myBalance === null) return;
+		celebrate = justSettled(group.id, myBalance);
+	});
 
 	/** Suggested payments you're part of, phrased from your side */
 	const myTransfers = $derived(
@@ -43,7 +51,7 @@
 		group.tint
 	)} relative mx-4 mt-2 overflow-hidden rounded-3xl bg-(--tint-bg) px-5 pt-5 pb-6 text-(--tint-fg)"
 >
-	<ThemePattern kind={group.kind} />
+	<ThemePattern kind={group.kind} settled={myBalance === 0} {celebrate} />
 	<div class="relative">
 		<Icon name={kindIcons[group.kind]} size={28} />
 		<h1 class="font-display text-4xl leading-tight font-semibold">{group.name}</h1>

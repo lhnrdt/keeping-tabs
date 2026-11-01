@@ -14,12 +14,12 @@ export type ChangelogEntry = {
 export const CHANGELOG: ChangelogEntry[] = [
 	{
 		version: '0.18.0',
-		date: '',
+		date: '2026-11-01',
 		items: [
 			{
 				icon: 'sparkles',
-				en: 'New artwork: each group shows its type, in the colors of your theme. Mountains now look snowy, and Autumn takes the red.',
-				de: 'Neue Bilder: Jede Gruppe zeigt ihren Typ in den Farben deines Themes. Die Berge sehen jetzt verschneit aus, und Herbst bekommt das Rot.'
+				en: 'New artwork that moves a little: each group shows its type, in the colors of your theme, and something nice appears when you’re settled up. Mountains now look snowy, and Autumn takes the red.',
+				de: 'Neue Bilder, die sich ein wenig bewegen: Jede Gruppe zeigt ihren Typ in den Farben deines Themes, und wenn ihr ausgeglichen seid, kommt etwas Schönes dazu. Die Berge sehen jetzt verschneit aus, und Herbst bekommt das Rot.'
 			},
 			{
 				icon: 'locked',
