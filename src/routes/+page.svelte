@@ -39,4 +39,9 @@
 		</LinkButton>
 	</Block>
 	<RecentlyDeleted groups={data.recentlyDeleted} error={form?.error} />
+	<p class="my-2 text-center text-sm">
+		<a class="font-medium text-accent dark:text-accent-night" href={resolve('/how-it-works')}
+			>{m.how_title()}</a
+		>
+	</p>
 </AppPage>

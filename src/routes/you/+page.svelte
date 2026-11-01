@@ -209,6 +209,7 @@
 
 		<section class="page-section">
 			<h2 class="section-label">{m.settings_about()}</h2>
+			<SettingsRow href={resolve('/how-it-works')} title={m.how_title()} icon="help" />
 			<SettingsRow href={resolve('/you/whats-new')} title={m.whats_new_title()} icon="sparkles">
 				{#snippet after()}
 					{#if unread}

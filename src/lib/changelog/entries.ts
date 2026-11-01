@@ -15,6 +15,10 @@ export const CHANGELOG: ChangelogEntry[] = [
 		date: '',
 		items: [
 			{
+				en: 'How it works: a short page on joining groups and keeping them when you change phones.',
+				de: 'So funktioniert’s: eine kurze Seite dazu, wie du Gruppen beitrittst und sie beim Handywechsel behältst.'
+			},
+			{
 				en: 'A back-to-top button when you’ve scrolled far down a long list.',
 				de: 'Ein Button zurück nach oben, wenn du in einer langen Liste weit nach unten gescrollt hast.'
 			}
