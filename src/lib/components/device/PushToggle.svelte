@@ -9,6 +9,8 @@
 
 	let { publicKey }: { publicKey: string | null } = $props();
 
+	const WORKER_WAIT_MS = 4000;
+
 	let status = $state<'loading' | 'on' | 'off' | 'blocked' | 'unsupported'>('loading');
 	let busy = $state(false);
 	let ios = $state(false);
@@ -53,7 +55,16 @@
 			status = 'blocked';
 			return;
 		}
-		const sub = await (await registration()).pushManager.getSubscription();
+		// A service worker that doesn't start means no notifications, not waiting forever
+		const worker = await Promise.race([
+			registration(),
+			new Promise<null>((resolve) => setTimeout(() => resolve(null), WORKER_WAIT_MS))
+		]);
+		if (!worker) {
+			status = 'unsupported';
+			return;
+		}
+		const sub = await worker.pushManager.getSubscription();
 		status = sub ? 'on' : 'off';
 		// The server may not know this browser (anymore), or know it as someone else
 		if (sub) await saveOnServer(sub).catch(() => {});
@@ -113,10 +124,9 @@
 
 <div class="flex flex-col gap-1.5" role="region" aria-label={m.push_title()}>
 	<div
-		class="field-well min-h-14 justify-between gap-3 px-3.5 {status === 'blocked' ||
-		status === 'unsupported'
-			? 'opacity-50'
-			: ''}"
+		class="field-well min-h-14 justify-between gap-3 px-3.5 {status === 'on' || status === 'off'
+			? ''
+			: 'opacity-50'}"
 	>
 		<span class="flex min-w-0 items-center gap-3">
 			<span class="flex-none opacity-65"><Icon name="notifications" size={20} /></span>
