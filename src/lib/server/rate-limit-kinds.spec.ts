@@ -20,6 +20,7 @@ describe('limitKindOf', () => {
 
 	it('counts creating a group on its own', () => {
 		expect(limitKindOf('POST', at('/new'))).toBe('newGroup');
+		expect(limitKindOf('POST', at('/new/backup'))).toBe('newGroup');
 	});
 
 	it.each(['/g/abc?/addMember', '/g/abc/expenses/new?/save', '/you/devices?/createLink', '/note'])(

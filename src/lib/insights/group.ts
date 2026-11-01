@@ -1,5 +1,6 @@
 // Insights for a group's entries (#161): each expense in its category as the app shows it,
 // chosen by hand or guessed from its title the way the group taught it.
+import { drivingOf, type DrivingEntry } from '#lib/expense/driving.ts';
 import { learnCategories, categoryOf } from '#lib/expense/learned.ts';
 import type { ExpenseCategory } from '#lib/expense/categories.ts';
 import type { Transfer } from '#lib/settle.ts';
@@ -8,7 +9,7 @@ import { insightsOf, type InsightEntry } from './insights';
 import { periodRange, stepPeriod, unitFor, type DateRange, type Period } from './period';
 import { recapOf } from './recap';
 
-type Entry = Omit<InsightEntry, 'category'> & { category: ExpenseCategory | null };
+type Entry = Omit<InsightEntry, 'category'> & { category: ExpenseCategory | null } & DrivingEntry;
 
 /** `entries` newest first, as listExpenses returns them; `you` is your member, if any */
 export function groupInsights(
@@ -27,14 +28,21 @@ export function groupInsights(
 	const insights = insightsOf(categorized, memberIds, you, transfers, {
 		range: periodRange(period),
 		previous: period.kind === 'all' ? null : periodRange(stepPeriod(period, -1)),
-		unit: unitFor(period)
+		unit: unitFor(period),
+		today
 	});
 	// The recap is about the whole group, whatever period is shown
 	const whole =
-		period.kind === 'all' ? insights : insightsOf(categorized, memberIds, you, transfers);
+		period.kind === 'all'
+			? insights
+			: insightsOf(categorized, memberIds, you, transfers, { today });
 	return {
 		...insights,
 		period,
+		driving: drivingOf(
+			entries.filter((entry) => entry.type === 'expense'),
+			periodRange(period)
+		),
 		/** From the first expense to the last, for stepping between periods */
 		span: (whole.first && whole.last
 			? { from: whole.first, to: whole.last }

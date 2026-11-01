@@ -22,6 +22,7 @@
 	import ShareLink from '#lib/components/group/ShareLink.svelte';
 	import UndoToast from '#lib/components/group/UndoToast.svelte';
 	import PeoplePills from '#lib/components/people/PeoplePills.svelte';
+	import { followChanges } from '#lib/follow-changes.ts';
 	import { currentTab } from '#lib/group/tabs.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import type { PageProps } from './$types';
@@ -33,6 +34,7 @@
 
 	// Fetch the insights' charts while idle, so the tab opens without waiting
 	onMount(() => warmUp(loadGroupInsights));
+	onMount(() => followChanges(resolve('/g/[token]/changes', { token: data.group.shareToken })));
 </script>
 
 <svelte:head>
@@ -142,6 +144,16 @@
 				link
 				title={m.export_link()}
 				href={resolve('/g/[token]/export', { token: data.group.shareToken })}
+				linkProps={{ download: '', 'data-sveltekit-reload': '' }}
+			>
+				{#snippet media()}
+					<Icon name="export" />
+				{/snippet}
+			</ListItem>
+			<ListItem
+				link
+				title={m.backup_link()}
+				href={resolve('/g/[token]/backup', { token: data.group.shareToken })}
 				linkProps={{ download: '', 'data-sveltekit-reload': '' }}
 			>
 				{#snippet media()}

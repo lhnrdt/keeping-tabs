@@ -15,7 +15,15 @@ export const categoryIcons: Record<ExpenseCategory, IconName> = {
 	fun: 'categoryFun',
 	shopping: 'categoryShopping',
 	gifts: 'categoryGifts',
-	health: 'categoryHealth'
+	health: 'categoryHealth',
+	fuel: 'categoryFuel',
+	parking: 'categoryParking',
+	tolls: 'categoryTolls',
+	repairs: 'categoryRepairs',
+	insurance: 'categoryInsurance',
+	rent: 'categoryRent',
+	utilities: 'categoryUtilities',
+	internet: 'categoryInternet'
 };
 
 export const categoryLabels: Record<ExpenseCategory, () => string> = {
@@ -29,5 +37,13 @@ export const categoryLabels: Record<ExpenseCategory, () => string> = {
 	fun: m.category_fun,
 	shopping: m.category_shopping,
 	gifts: m.category_gifts,
-	health: m.category_health
+	health: m.category_health,
+	fuel: m.category_fuel,
+	parking: m.category_parking,
+	tolls: m.category_tolls,
+	repairs: m.category_repairs,
+	insurance: m.category_insurance,
+	rent: m.category_rent,
+	utilities: m.category_utilities,
+	internet: m.category_internet
 };

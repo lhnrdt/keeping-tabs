@@ -7,6 +7,7 @@
 	import { whenVisible } from '#lib/actions/when-visible.ts';
 
 	import { categoryIcons } from '#lib/expense/category-style.ts';
+	import { formatKm, formatLitres } from '#lib/expense/driving.ts';
 	import { EXPENSES_PER_PAGE } from '#lib/group/expense-pages.ts';
 	import { namesById, type Member } from '#lib/group/members.ts';
 	import { groupByMonth } from '#lib/group/months.ts';
@@ -75,7 +76,17 @@
 	const subtitleOf = (entry: Entry) =>
 		entry.type === 'payment'
 			? formatDate(entry.date)
-			: `${formatDate(entry.date)} · ${paidLine(entry)}${entry.notes ? ` · ${m.has_note()}` : ''}`;
+			: [
+					formatDate(entry.date),
+					paidLine(entry),
+					entry.odometerM && formatKm(entry.odometerM, getLocale()),
+					entry.fuelMl && formatLitres(entry.fuelMl, getLocale()),
+					entry.notes && m.has_note(),
+					entry.comments === 1 && m.has_comment(),
+					entry.comments > 1 && m.has_comments({ count: entry.comments })
+				]
+					.filter(Boolean)
+					.join(' · ');
 	// "Anna paid €90", or "Anna and Ben paid €90" when several did (#39)
 	const listFormat = new Intl.ListFormat(getLocale(), { type: 'conjunction' });
 	function paidLine(entry: Entry) {

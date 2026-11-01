@@ -11,6 +11,32 @@ export type ChangelogEntry = {
 /** Newest first */
 export const CHANGELOG: ChangelogEntry[] = [
 	{
+		version: '0.15.0',
+		date: '2026-11-01',
+		items: [
+			{
+				en: 'An open group now shows what others add, without reloading.',
+				de: 'Eine geöffnete Gruppe zeigt jetzt, was andere hinzufügen, ohne neu zu laden.'
+			},
+			{
+				en: 'Back up a group as a file, and restore it as a new group whenever you need it.',
+				de: 'Sichere eine Gruppe als Datei und stelle sie bei Bedarf als neue Gruppe wieder her.'
+			},
+			{
+				en: 'Expense categories fit the group: a car group offers fuel, parking and repairs, a shared home rent and utilities. All the others are one tap away.',
+				de: 'Die Kategorien passen zur Gruppe: Eine Autogruppe bietet Sprit, Parken und Werkstatt, eine WG Miete und Nebenkosten. Alle anderen sind einen Tipp entfernt.'
+			},
+			{
+				en: 'Comments on expenses: ask or explain something right under an expense.',
+				de: 'Kommentare zu Ausgaben: Frag oder erklär etwas direkt unter einer Ausgabe.'
+			},
+			{
+				en: 'Car groups: note the odometer reading and the fuel with an expense, and see km driven, cost per km, consumption and the price per litre in Insights.',
+				de: 'Autogruppen: Kilometerstand und Tankmenge bei einer Ausgabe eintragen und gefahrene km, Kosten pro km, Verbrauch und Literpreis in den Insights sehen.'
+			}
+		]
+	},
+	{
 		version: '0.14.0',
 		date: '2026-10-27',
 		items: [

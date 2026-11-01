@@ -8,11 +8,34 @@ import {
 	periodRange,
 	periodsWithin,
 	stepPeriod,
-	switchKind
+	switchKind,
+	soFarRange
 } from './period';
 
 const params = (query: string) => new URLSearchParams(query);
 const all = { kind: 'all' } as const;
+
+describe('soFarRange', () => {
+	const october = { from: '2026-10-01', to: '2026-10-31' };
+	const september = { from: '2026-09-01', to: '2026-09-30' };
+
+	it('takes the same days of the period before while it runs', () => {
+		expect(soFarRange(october, september, '2026-10-05')).toEqual({
+			from: '2026-09-01',
+			to: '2026-09-05'
+		});
+	});
+
+	it('stops at the end of a shorter period before', () => {
+		expect(soFarRange(october, september, '2026-10-30')?.to).toBe('2026-09-30');
+	});
+
+	it('is nothing for a period that is over or has not begun', () => {
+		expect(soFarRange(october, september, '2026-11-02')).toBeNull();
+		expect(soFarRange(october, september, '2026-10-31')).toBeNull();
+		expect(soFarRange(october, september, '2026-09-15')).toBeNull();
+	});
+});
 
 describe('parsePeriod', () => {
 	it('reads a year, month or day from the address', () => {

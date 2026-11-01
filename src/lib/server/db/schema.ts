@@ -190,6 +190,9 @@ export const expenses = sqliteTable(
 		originalCurrency: text('original_currency'),
 		originalAmountCents: integer('original_amount_cents'),
 		exchangeRate: text('exchange_rate'),
+		// What car groups note with an expense: the odometer reading and fuel bought
+		odometerM: integer('odometer_m'),
+		fuelMl: integer('fuel_ml'),
 		category: text('category').$type<ExpenseCategory>(),
 		// Where an imported row came from (e.g. "sw:…" for Splitwise), so re-imports skip it (I-3)
 		importKey: text('import_key'),
@@ -245,6 +248,23 @@ export const expensePayers = sqliteTable(
 		amountCents: integer('amount_cents').notNull()
 	},
 	(t) => [primaryKey({ columns: [t.expenseId, t.memberId] })]
+);
+
+/** A short conversation under an expense (#49), visible to the group; each removes only their own */
+export const expenseComments = sqliteTable(
+	'expense_comments',
+	{
+		id: id(),
+		expenseId: text('expense_id')
+			.notNull()
+			.references(() => expenses.id, { onDelete: 'cascade' }),
+		memberId: text('member_id')
+			.notNull()
+			.references(() => members.id),
+		body: text('body').notNull(),
+		createdAt: createdAt()
+	},
+	(t) => [index('expense_comments_expense_idx').on(t.expenseId, t.createdAt)]
 );
 
 /**

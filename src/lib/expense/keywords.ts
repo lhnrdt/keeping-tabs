@@ -27,10 +27,69 @@ export const KEYWORDS: [Exclude<ExpenseCategory, 'other'>, string[]][] = [
 		]
 	],
 	[
+		'fuel',
+		[
+			'omv',
+			'totalenergies',
+			'jet',
+			'getankt',
+			'e10',
+			'ladestrom',
+			'ionity',
+			'bp',
+			'fuel',
+			'petrol',
+			'benzin',
+			'diesel',
+			'tanken',
+			'tankstelle',
+			'sprit',
+			'shell',
+			'aral',
+			'esso'
+		]
+	],
+	[
+		'parking',
+		[
+			'parkticket',
+			'parkgebuhr',
+			'parkuhr',
+			'parkschein',
+			'apcoa',
+			'parking',
+			'parken',
+			'parkhaus',
+			'parkplatz'
+		]
+	],
+	['tolls', ['asfinag', 'autobahn', 'toll', 'maut', 'vignette']],
+	[
+		'repairs',
+		[
+			'atu',
+			'tuv',
+			'hauptuntersuchung',
+			'waschanlage',
+			'autowasche',
+			'car wash',
+			'bremsen',
+			'scheibenwischer',
+			'werkstatt',
+			'reparatur',
+			'repair',
+			'inspektion',
+			'olwechsel',
+			'oil change',
+			'reifen',
+			'tires'
+		]
+	],
+	['insurance', ['huk', 'allianz', 'kfz steuer', 'versicherung', 'insurance', 'haftpflicht']],
+	[
 		'transport',
 		[
 			'taxi',
-			'bp',
 			'uber',
 			'bolt',
 			'train',
@@ -45,17 +104,6 @@ export const KEYWORDS: [Exclude<ExpenseCategory, 'other'>, string[]][] = [
 			'flug',
 			'ferry',
 			'fahre',
-			'fuel',
-			'petrol',
-			'benzin',
-			'diesel',
-			'tanken',
-			'parking',
-			'parken',
-			'parkhaus',
-			'toll',
-			'maut',
-			'vignette',
 			'mietwagen',
 			'rental car',
 			'car hire',
@@ -136,22 +184,50 @@ export const KEYWORDS: [Exclude<ExpenseCategory, 'other'>, string[]][] = [
 			'ice cream'
 		]
 	],
+	['rent', ['rent', 'miete', 'mortgage']],
 	[
-		'home',
+		'utilities',
 		[
-			'rent',
-			'obi',
-			'miete',
+			'stadtwerke',
+			'stromrechnung',
+			'gasrechnung',
+			'wasserrechnung',
+			'rundfunk',
+			'gez',
+			'mullgebuhr',
+			'abfall',
+			'abschlag',
 			'electricity',
 			'strom',
 			'utilities',
 			'nebenkosten',
-			'internet',
-			'wifi',
-			'wlan',
 			'heating',
 			'heizung',
 			'water bill',
+			'gas bill'
+		]
+	],
+	[
+		'internet',
+		[
+			'telekom',
+			'vodafone',
+			'o2',
+			'dsl',
+			'glasfaser',
+			'mobilfunk',
+			'handyvertrag',
+			'congstar',
+			'internet',
+			'wifi',
+			'wlan'
+		]
+	],
+	[
+		'home',
+		[
+			'parkett',
+			'obi',
 			'cleaning',
 			'putzmittel',
 			'furniture',

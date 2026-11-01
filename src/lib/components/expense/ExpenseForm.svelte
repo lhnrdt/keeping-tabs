@@ -10,6 +10,7 @@
 	import { RATE_CURRENCIES } from '#lib/expense/exchange.ts';
 	import { learnCategories } from '#lib/expense/learned.ts';
 	import { useIdentity } from '#lib/group/identity.svelte.ts';
+	import type { GroupKind } from '#lib/group/kinds.ts';
 	import type { GroupMember } from '#lib/group/members.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { canBeDefault } from '#lib/split/default-split.ts';
@@ -17,6 +18,7 @@
 	import { SEVERAL_PAYERS } from '#lib/validation.ts';
 	import AmountCurrencyField from './AmountCurrencyField.svelte';
 	import DateChips from './DateChips.svelte';
+	import DrivingFields from './DrivingFields.svelte';
 	import ParticipantChecklist from './ParticipantChecklist.svelte';
 	import PayerAmounts from './PayerAmounts.svelte';
 	import SplitInputs from './SplitInputs.svelte';
@@ -33,6 +35,9 @@
 			/** The amount's currency when not the group's (#54), and the rate it was saved with */
 			currency?: string;
 			rate?: string;
+			/** In car groups: the odometer reading and litres of fuel, as typed */
+			odometer?: string;
+			litres?: string;
 			/** With paidBy "several" (#39): what each paid as typed, by member id */
 			payers?: Record<string, string>;
 			amount: string;
@@ -50,6 +55,8 @@
 		submitLabel: string;
 		/** A new expense can repeat (#45) */
 		canRepeat?: boolean;
+		/** The group's type: what categories it offers; a car group notes km and fuel */
+		kind: GroupKind;
 		/** A new expense waits on the device when the connection is gone (#55) */
 		offlineToken?: string;
 	};
@@ -62,6 +69,7 @@
 		error,
 		submitLabel,
 		canRepeat = false,
+		kind,
 		offlineToken
 	}: Props = $props();
 	// Its id, made here: sending it again after a lost connection can't add it twice (#55)
@@ -120,6 +128,10 @@
 			{date}
 			{saved}
 		/>
+		<!-- Also when the group is no car group anymore: saving must not lose what's noted -->
+		{#if kind === 'car' || values.odometer || values.litres}
+			<DrivingFields odometer={values.odometer ?? ''} litres={values.litres ?? ''} />
+		{/if}
 
 		<div class="grid grid-cols-2 gap-2.5">
 			<PlainField label={m.field_paid_by()} icon="paidBy" arrow>
@@ -177,7 +189,7 @@
 			{/if}
 		{/if}
 
-		<CategoryPicker value={values.category} {title} learned={learnCategories(chosen)} />
+		<CategoryPicker value={values.category} {title} learned={learnCategories(chosen)} {kind} />
 		<DateChips bind:date />
 		{#if canRepeat}
 			<PlainField label={m.field_repeats()} icon="repeats" arrow>

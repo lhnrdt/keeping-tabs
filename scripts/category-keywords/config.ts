@@ -23,6 +23,16 @@ export const SOURCES = {
  * Order matters: a name found under several types keeps the first one's category.
  */
 export const PLACE_TYPES: [string, Exclude<ExpenseCategory, 'other'>][] = [
+	// First: filling stations also count as convenience shops, phone shops as electronics
+	['amenity/fuel', 'fuel'],
+	['amenity/charging_station', 'fuel'],
+	['amenity/parking', 'parking'],
+	['shop/car_repair', 'repairs'],
+	['shop/tyres', 'repairs'],
+	['amenity/car_wash', 'repairs'],
+	['office/insurance', 'insurance'],
+	['shop/mobile_phone', 'internet'],
+	['office/telecommunication', 'internet'],
 	['shop/supermarket', 'groceries'],
 	['shop/convenience', 'groceries'],
 	['shop/greengrocer', 'groceries'],
@@ -39,10 +49,7 @@ export const PLACE_TYPES: [string, Exclude<ExpenseCategory, 'other'>][] = [
 	['amenity/biergarten', 'drinks'],
 	['shop/alcohol', 'drinks'],
 	['shop/beverages', 'drinks'],
-	['amenity/fuel', 'transport'],
-	['amenity/charging_station', 'transport'],
 	['amenity/car_rental', 'transport'],
-	['amenity/parking', 'transport'],
 	['amenity/taxi', 'transport'],
 	['amenity/ferry_terminal', 'transport'],
 	['tourism/hotel', 'lodging'],

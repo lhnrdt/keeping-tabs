@@ -12,6 +12,6 @@ export function limitKindOf(method: string, url: URL): LimitKind | null {
 	if (SECRET_PATHS.includes(pathname)) return 'secret';
 	// Restoring with a recovery key is an action of the devices page
 	if (pathname === '/you/devices' && search.startsWith('?/restore')) return 'secret';
-	if (pathname === '/new') return 'newGroup';
+	if (pathname === '/new' || pathname === '/new/backup') return 'newGroup';
 	return 'write';
 }

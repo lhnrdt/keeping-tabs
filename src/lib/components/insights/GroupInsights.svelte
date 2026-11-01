@@ -13,6 +13,7 @@
 	import Budget from './Budget.svelte';
 	import BiggestList from './BiggestList.svelte';
 	import CategoryDonut from './CategoryDonut.svelte';
+	import DrivingStats from './DrivingStats.svelte';
 	import FixedCosts from './FixedCosts.svelte';
 	import KindBars from './KindBars.svelte';
 	import KindMonths from './KindMonths.svelte';
@@ -64,6 +65,7 @@
 		kindMonths: () => insights.kindMonths.length > 1,
 		places: () => insights.places.length > 0,
 		fixedCosts: () => insights.fixed.length > 0,
+		driving: () => insights.driving !== null,
 		biggest: () => true,
 		whoPays: () => insights.byMember.length > 1,
 		howOften: () => insights.byMember.length > 1,
@@ -112,6 +114,8 @@
 			<KindBars rows={insights.byKind} currency={group.currency} />
 		{:else if section === 'fixedCosts'}
 			<FixedCosts rows={insights.fixed} currency={group.currency} />
+		{:else if section === 'driving' && insights.driving}
+			<DrivingStats driving={insights.driving} currency={group.currency} />
 		{:else if section === 'myPosition' && insights.position}
 			<PositionChart points={insights.position} currency={group.currency} />
 		{:else if section === 'settling'}

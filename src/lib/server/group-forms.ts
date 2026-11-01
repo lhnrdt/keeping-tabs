@@ -57,6 +57,8 @@ export const readExpenseForm = async (db: Db, group: Group, form: FormData) =>
 			amount: text(form, 'amount'),
 			currency: text(form, 'currency'),
 			rate: await rateOf(group, form),
+			odometer: text(form, 'odometer'),
+			litres: text(form, 'litres'),
 			date: text(form, 'date'),
 			paidBy: text(form, 'paidBy'),
 			payers: readPayers(form),

@@ -1,6 +1,7 @@
 import type { ErrorCode } from './errors';
 import { isExpenseCategory, type ExpenseCategory } from './expense/categories';
 import { DEFAULT_GROUP_KIND, isGroupKind, type GroupKind } from './group/kinds';
+import { parseKm, parseLitres } from './expense/driving';
 import { convert, parseRate, type Original } from './expense/exchange';
 import type { Payer } from './expense/payers';
 import { parseAmount } from './money';
@@ -15,6 +16,7 @@ export const LIMITS = {
 	memberName: 40,
 	expenseTitle: 80,
 	expenseNote: 500,
+	comment: 500,
 	paymentDetails: 200
 } as const;
 
@@ -109,6 +111,9 @@ export type ExpenseInput = {
 	/** Typed in another currency (#54): what and at which rate; amountCents is converted */
 	original: Original | null;
 	amountCents: number;
+	/** In car groups: the odometer reading and fuel bought, if noted */
+	odometerM: number | null;
+	fuelMl: number | null;
 	date: string;
 	paidBy: string;
 	/** When several people paid (#39), each with their part, most first; else null */
@@ -125,6 +130,14 @@ export function parseNote(value: unknown): Result<string | null> {
 	const note = typeof value === 'string' ? value.replace(/\r\n?/g, '\n').trim() : '';
 	if (note.length > LIMITS.expenseNote) return { ok: false, error: 'expense_note_too_long' };
 	return { ok: true, value: note || null };
+}
+
+/** A comment on an expense (#49): line breaks kept, trimmed, not empty */
+export function parseComment(value: unknown): Result<string> {
+	const comment = typeof value === 'string' ? value.replace(/\r\n?/g, '\n').trim() : '';
+	if (!comment) return { ok: false, error: 'comment_required' };
+	if (comment.length > LIMITS.comment) return { ok: false, error: 'comment_too_long' };
+	return { ok: true, value: comment };
 }
 
 export function parseDate(value: unknown): Result<string> {
@@ -145,6 +158,9 @@ export function parseExpense(
 		currency?: unknown;
 		/** 1 of that currency in the group's, as typed */
 		rate?: unknown;
+		/** In car groups: the odometer reading and litres of fuel, as typed */
+		odometer?: unknown;
+		litres?: unknown;
 		date: unknown;
 		paidBy: unknown;
 		/** With paidBy "several" (#39): what each member paid, by member id */
@@ -169,6 +185,11 @@ export function parseExpense(
 	if (!money.ok) return money;
 	const { amountCents, original } = money.value;
 
+	const odometer = parseKm(values.odometer);
+	if (!odometer.ok) return odometer;
+	const litres = parseLitres(values.litres);
+	if (!litres.ok) return litres;
+
 	const date = parseDate(values.date);
 	if (!date.ok) return date;
 
@@ -188,6 +209,8 @@ export function parseExpense(
 			notes: notes.value,
 			original,
 			amountCents,
+			odometerM: odometer.value,
+			fuelMl: litres.value,
 			date: date.value,
 			...payers.value,
 			category: category.value,

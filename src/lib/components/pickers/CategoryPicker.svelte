@@ -4,15 +4,21 @@
 	// by hand, "Back to automatic" lets the title decide again.
 	import { onMount } from 'svelte';
 	import Icon from '#lib/components/Icon.svelte';
-	import { EXPENSE_CATEGORIES } from '#lib/expense/categories.ts';
+	import { categoriesFor, type ExpenseCategory } from '#lib/expense/categories.ts';
 	import type { DatasetIndex } from '#lib/expense/dataset/index.ts';
 	import { loadDataset } from '#lib/expense/dataset/load.ts';
 	import { guessCategory, type Learned } from '#lib/expense/learned.ts';
 	import { categoryIcons, categoryLabels } from '#lib/expense/category-style.ts';
+	import type { GroupKind } from '#lib/group/kinds.ts';
 	import { m } from '#lib/paraglide/messages.js';
 
 	/** value: the chosen category, empty for automatic; title: the expense's current title */
-	let { value, title, learned }: { value: string; title: string; learned: Learned } = $props();
+	let {
+		value,
+		title,
+		learned,
+		kind
+	}: { value: string; title: string; learned: Learned; kind: GroupKind } = $props();
 
 	let chosen = $state((() => value)());
 
@@ -24,8 +30,9 @@
 
 	const guess = $derived(guessCategory(title, learned, dataset));
 	const shown = $derived(chosen || guess);
-	// "Other" last: it's the fallback
-	const categories = [...EXPENSE_CATEGORIES.filter((each) => each !== 'other'), 'other' as const];
+	// What fits the group, and the one in use even if it doesn't; the rest on request
+	let all = $state(false);
+	const categories = $derived(categoriesFor(kind, { all, shown: shown as ExpenseCategory }));
 	const headingId = $props.id();
 </script>
 
@@ -76,4 +83,13 @@
 			</label>
 		{/each}
 	</div>
+	{#if !all}
+		<button
+			type="button"
+			class="self-start text-sm font-medium text-accent dark:text-accent-night"
+			onclick={() => (all = true)}
+		>
+			{m.category_show_all()}
+		</button>
+	{/if}
 </fieldset>

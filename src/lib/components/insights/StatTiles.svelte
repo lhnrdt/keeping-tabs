@@ -33,6 +33,15 @@
 		year: m.insights_vs_last_year
 	};
 
+	// While the period runs, only the same days of the one before count (period.ts)
+	const againstSoFar: Record<'week' | 'month' | 'year', () => string> = {
+		week: m.insights_vs_same_days_week,
+		month: m.insights_vs_same_days_month,
+		year: m.insights_vs_same_days_year
+	};
+	const againstLabel = ({ against: unit, soFar }: NonNullable<Insights['change']>) =>
+		soFar && unit !== 'day' ? againstSoFar[unit]() : against[unit]();
+
 	function tile(id: Tile) {
 		switch (id) {
 			case 'spent':
@@ -61,7 +70,7 @@
 			case 'change': {
 				const text = changeText();
 				return text && insights.change
-					? { label: against[insights.change.against](), value: text }
+					? { label: againstLabel(insights.change), value: text }
 					: null;
 			}
 		}
