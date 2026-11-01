@@ -16,6 +16,7 @@
 	let ios = $state(false);
 	let problem = $state('');
 	let tested = $state('');
+	const available = $derived(status === 'on' || status === 'off');
 
 	/** Sends a test and says plainly how far it got (#256) */
 	async function test() {
@@ -123,18 +124,15 @@
 </script>
 
 <div class="flex flex-col gap-1.5" role="region" aria-label={m.push_title()}>
-	<div
-		class="field-well min-h-14 justify-between gap-3 px-3.5 {status === 'on' || status === 'off'
-			? ''
-			: 'opacity-50'}"
-	>
-		<span class="flex min-w-0 items-center gap-3">
+	<div class="field-well min-h-14 justify-between gap-3 px-3.5">
+		<!-- Unavailable: quieter, but still readable, so muted text instead of a faded row -->
+		<span class="flex min-w-0 items-center gap-3 {available ? '' : 'text-muted'}">
 			<span class="flex-none opacity-65"><Icon name="notifications" size={20} /></span>
 			<span class="font-medium">{m.push_toggle()}</span>
 		</span>
 		<Toggle
 			checked={status === 'on'}
-			disabled={busy || status === 'loading' || status === 'blocked' || status === 'unsupported'}
+			disabled={busy || !available}
 			onChange={toggle}
 			aria-label={m.push_toggle()}
 		/>
