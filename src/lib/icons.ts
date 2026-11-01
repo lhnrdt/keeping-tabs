@@ -44,6 +44,7 @@ import IconUserCircle from '@tabler/icons-svelte-runes/icons/user-circle';
 import IconUserPlus from '@tabler/icons-svelte-runes/icons/user-plus';
 import IconUsersGroup from '@tabler/icons-svelte-runes/icons/users-group';
 import IconX from '@tabler/icons-svelte-runes/icons/x';
+import IconArrowUp from '@tabler/icons-svelte-runes/icons/arrow-up';
 import IconCamera from '@tabler/icons-svelte-runes/icons/camera';
 import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
 import IconPhoto from '@tabler/icons-svelte-runes/icons/photo';
@@ -79,6 +80,7 @@ export const icons = {
 	phone: IconDeviceMobile,
 	computer: IconDeviceLaptop,
 	next: IconChevronRight,
+	toTop: IconArrowUp,
 	previous: IconChevronLeft,
 	search: IconSearch,
 	sparkles: IconSparkles,
