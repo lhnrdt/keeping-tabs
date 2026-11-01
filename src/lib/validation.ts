@@ -16,6 +16,7 @@ export const LIMITS = {
 	memberName: 40,
 	expenseTitle: 80,
 	expenseNote: 500,
+	comment: 500,
 	paymentDetails: 200
 } as const;
 
@@ -129,6 +130,14 @@ export function parseNote(value: unknown): Result<string | null> {
 	const note = typeof value === 'string' ? value.replace(/\r\n?/g, '\n').trim() : '';
 	if (note.length > LIMITS.expenseNote) return { ok: false, error: 'expense_note_too_long' };
 	return { ok: true, value: note || null };
+}
+
+/** A comment on an expense (#49): line breaks kept, trimmed, not empty */
+export function parseComment(value: unknown): Result<string> {
+	const comment = typeof value === 'string' ? value.replace(/\r\n?/g, '\n').trim() : '';
+	if (!comment) return { ok: false, error: 'comment_required' };
+	if (comment.length > LIMITS.comment) return { ok: false, error: 'comment_too_long' };
+	return { ok: true, value: comment };
 }
 
 export function parseDate(value: unknown): Result<string> {

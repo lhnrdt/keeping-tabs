@@ -81,7 +81,9 @@
 					paidLine(entry),
 					entry.distanceM && formatKm(entry.distanceM, getLocale()),
 					entry.fuelMl && formatLitres(entry.fuelMl, getLocale()),
-					entry.notes && m.has_note()
+					entry.notes && m.has_note(),
+					entry.comments === 1 && m.has_comment(),
+					entry.comments > 1 && m.has_comments({ count: entry.comments })
 				]
 					.filter(Boolean)
 					.join(' · ');

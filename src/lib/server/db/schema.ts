@@ -250,6 +250,23 @@ export const expensePayers = sqliteTable(
 	(t) => [primaryKey({ columns: [t.expenseId, t.memberId] })]
 );
 
+/** A short conversation under an expense (#49), visible to the group; each removes only their own */
+export const expenseComments = sqliteTable(
+	'expense_comments',
+	{
+		id: id(),
+		expenseId: text('expense_id')
+			.notNull()
+			.references(() => expenses.id, { onDelete: 'cascade' }),
+		memberId: text('member_id')
+			.notNull()
+			.references(() => members.id),
+		body: text('body').notNull(),
+		createdAt: createdAt()
+	},
+	(t) => [index('expense_comments_expense_idx').on(t.expenseId, t.createdAt)]
+);
+
 /**
  * Expenses that repeat (#45): the expense as entered (template, with its first date), how
  * often, and how many times it has been added so far. Stopped ones stay for the record.

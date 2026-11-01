@@ -2,6 +2,7 @@
 	import { resolve } from '$app/paths';
 	import AppPage from '#lib/components/AppPage.svelte';
 	import DeleteEntry from '#lib/components/group/DeleteEntry.svelte';
+	import ExpenseComments from '#lib/components/expense/ExpenseComments.svelte';
 	import ExpenseForm from '#lib/components/expense/ExpenseForm.svelte';
 	import { quantityInputValue } from '#lib/expense/driving.ts';
 	import { amountInputValue } from '#lib/money.ts';
@@ -13,7 +14,7 @@
 	let { data, form }: PageProps = $props();
 
 	const values = $derived(
-		form?.values ?? {
+		(form && 'values' in form ? form.values : undefined) ?? {
 			title: data.expense.title,
 			notes: data.expense.notes ?? '',
 			// Typed in another currency (#54): as typed, with its rate
@@ -54,9 +55,16 @@
 		chosen={data.chosen}
 		currency={data.group.currency}
 		{values}
-		error={form?.error}
+		error={form && 'error' in form ? form.error : undefined}
 		submitLabel={m.save()}
 		driving={data.group.kind === 'car'}
+	/>
+	<ExpenseComments
+		comments={data.comments}
+		authors={[...data.members, ...data.formerMembers]}
+		me={data.members.find((member) => member.mine)?.id ?? null}
+		error={form && 'commentError' in form ? form.commentError : undefined}
+		draft={form && 'comment' in form ? form.comment : undefined}
 	/>
 	<DeleteEntry label={m.delete_expense()} question={m.delete_expense_confirm()} />
 </AppPage>
