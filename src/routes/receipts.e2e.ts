@@ -24,7 +24,7 @@ test('a photo of the receipt on an expense, small and only for the group (#52)',
 		return canvas.toDataURL('image/png').split(',')[1];
 	});
 	const receipts = page.getByRole('region', { name: 'Receipt photos' });
-	await receipts.getByLabel('Add a photo').setInputFiles({
+	await receipts.getByLabel('From gallery').setInputFiles({
 		name: 'receipt.png',
 		mimeType: 'image/png',
 		buffer: Buffer.from(png, 'base64')
@@ -62,4 +62,51 @@ test('a photo of the receipt on an expense, small and only for the group (#52)',
 	await expect(page.getByRole('link', { name: 'Receipt photo 1' })).toBeVisible();
 	await receipts.getByRole('button', { name: 'Remove receipt photo 1' }).click();
 	await expect(photo).toHaveCount(0);
+});
+
+test('a photo while adding an expense, from the camera or the gallery (#52)', async ({ page }) => {
+	const groupUrl = await createGroup(page, 'Flat', 'Anna', ['Ben']);
+	await page.getByRole('link', { name: 'Add expense' }).click();
+	await page.getByLabel('What was it for?').fill('Dinner');
+	await page.getByLabel('Amount (€)').fill('30');
+
+	const png = await page.evaluate(() => {
+		const canvas = document.createElement('canvas');
+		canvas.width = 300;
+		canvas.height = 200;
+		const context = canvas.getContext('2d')!;
+		context.fillStyle = '#336699';
+		context.fillRect(0, 0, 300, 200);
+		return canvas.toDataURL('image/png').split(',')[1];
+	});
+	const file = { name: 'r.png', mimeType: 'image/png', buffer: Buffer.from(png, 'base64') };
+	const receipts = page.getByRole('region', { name: 'Receipt photos' });
+
+	// The camera opens right away on a phone
+	await expect(receipts.getByLabel('Take a photo')).toHaveAttribute('capture', 'environment');
+	await expect(receipts.getByLabel('From gallery')).not.toHaveAttribute('capture');
+
+	await receipts.getByLabel('From gallery').setInputFiles(file);
+	await expect(receipts.getByRole('img', { name: 'Receipt photo 1' })).toBeVisible();
+	await receipts.getByLabel('Take a photo').setInputFiles(file);
+	await expect(receipts.getByRole('img', { name: 'Receipt photo 2' })).toBeVisible();
+	await receipts.getByRole('button', { name: 'Remove receipt photo 2' }).click();
+	await expect(receipts.getByRole('img', { name: 'Receipt photo 2' })).toHaveCount(0);
+
+	// A mistake elsewhere in the form doesn't lose it
+	await page.getByLabel('Amount (€)').fill('abc');
+	await page.getByRole('button', { name: 'Add expense' }).click();
+	await expect(page.getByRole('alert')).toBeVisible();
+	await expect(receipts.getByRole('img', { name: 'Receipt photo 1' })).toBeVisible();
+	await page.getByLabel('Amount (€)').fill('30');
+
+	await page.getByRole('button', { name: 'Add expense' }).click();
+	await expect(page).toHaveURL(groupUrl);
+	await expect(page.getByRole('link', { name: /Dinner/ })).toContainText('with a receipt');
+	await page.getByRole('link', { name: /Dinner/ }).click();
+	await expect(
+		page
+			.getByRole('region', { name: 'Receipt photos' })
+			.getByRole('img', { name: 'Receipt photo 1' })
+	).toBeVisible();
 });

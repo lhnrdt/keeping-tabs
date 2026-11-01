@@ -2,12 +2,14 @@
 	// Adding or editing an expense, in the order it's thought of: what it was, how much, who
 	// paid and how it's split, then category and when. One flat form without cards; the save
 	// button stays at the bottom of the screen (GroupForm).
+	import { resolve } from '$app/paths';
 	import PlainField from '#lib/components/fields/PlainField.svelte';
 	import CategoryPicker from '#lib/components/pickers/CategoryPicker.svelte';
 	import GroupForm from '#lib/components/group/GroupForm.svelte';
 	import type { ErrorCode } from '#lib/errors.ts';
 	import type { ExpenseCategory } from '#lib/expense/categories.ts';
 	import { RATE_CURRENCIES } from '#lib/expense/exchange.ts';
+	import { sendReceipt } from '#lib/expense/send-receipt.ts';
 	import { learnCategories } from '#lib/expense/learned.ts';
 	import { useIdentity } from '#lib/group/identity.svelte.ts';
 	import type { GroupKind } from '#lib/group/kinds.ts';
@@ -22,6 +24,7 @@
 	import DrivingFields from './DrivingFields.svelte';
 	import ParticipantChecklist from './ParticipantChecklist.svelte';
 	import ItemSplit from './ItemSplit.svelte';
+	import NewExpensePhotos from './NewExpensePhotos.svelte';
 	import PayerAmounts from './PayerAmounts.svelte';
 	import SplitInputs from './SplitInputs.svelte';
 	import TitleNoteField from './TitleNoteField.svelte';
@@ -114,6 +117,20 @@
 	const currencies = $derived([
 		...new Set([currency, ...(values.currency ? [values.currency] : []), ...RATE_CURRENCIES])
 	]);
+	// Photos of the receipt on a new expense go out once it's saved, under the id it was given
+	// (the same page handles them as when editing). If one doesn't arrive, on to that page.
+	let photos = $state<Blob[]>([]);
+	const expensePage = () =>
+		resolve('/g/[token]/expenses/[id]', { token: offlineToken ?? '', id: clientId });
+	async function sendPhotos() {
+		let missing = false;
+		for (const photo of photos) {
+			const refused = await sendReceipt(photo, expensePage()).catch(() => 'receipt_invalid');
+			if (refused) missing = true;
+		}
+		return missing ? expensePage() : undefined;
+	}
+
 	const modeLabels: Record<SplitMode, () => string> = {
 		equal: m.split_equal,
 		exact: m.split_exact,
@@ -123,7 +140,7 @@
 	};
 </script>
 
-<GroupForm {error} {submitLabel} {offlineToken}>
+<GroupForm {error} {submitLabel} {offlineToken} onSaved={photos.length ? sendPhotos : undefined}>
 	{#if offlineToken}<input type="hidden" name="clientId" value={clientId} />{/if}
 	<div class="flex flex-col gap-4 px-4 pt-2 pb-4">
 		<TitleNoteField bind:title notes={values.notes} />
@@ -209,6 +226,7 @@
 
 		<CategoryPicker value={values.category} {title} learned={learnCategories(chosen)} {kind} />
 		<DateChips bind:date />
+		{#if offlineToken}<NewExpensePhotos onchange={(chosen) => (photos = chosen)} />{/if}
 		{#if canRepeat}
 			<PlainField label={m.field_repeats()} icon="repeats" arrow>
 				{#snippet children(id)}
