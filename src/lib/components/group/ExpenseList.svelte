@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import { page } from '$app/state';
 	import { List, ListItem } from 'konsta/svelte';
 	import EmptyState from '#lib/components/EmptyState.svelte';
 	import IconBadge from '#lib/components/IconBadge.svelte';
@@ -7,7 +8,7 @@
 	import { whenVisible } from '#lib/actions/when-visible.ts';
 
 	import { categoryIcons } from '#lib/expense/category-style.ts';
-	import { formatKm, formatLitres } from '#lib/expense/driving.ts';
+	import { formatDistance, formatFuel } from '#lib/expense/driving.ts';
 	import { EXPENSES_PER_PAGE } from '#lib/group/expense-pages.ts';
 	import { namesById, type Member } from '#lib/group/members.ts';
 	import { groupByMonth } from '#lib/group/months.ts';
@@ -79,8 +80,8 @@
 			: [
 					formatDate(entry.date),
 					paidLine(entry),
-					entry.odometerM && formatKm(entry.odometerM, getLocale()),
-					entry.fuelMl && formatLitres(entry.fuelMl, getLocale()),
+					entry.odometerM && formatDistance(entry.odometerM, getLocale(), page.data.units),
+					entry.fuelMl && formatFuel(entry.fuelMl, getLocale(), page.data.units),
 					entry.notes && m.has_note(),
 					entry.comments === 1 && m.has_comment(),
 					entry.comments > 1 && m.has_comments({ count: entry.comments })

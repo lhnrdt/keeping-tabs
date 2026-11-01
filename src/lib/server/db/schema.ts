@@ -2,7 +2,7 @@ import { sql } from 'drizzle-orm';
 import { SPLIT_MODES } from '#lib/split/modes.ts';
 import type { ExpenseCategory } from '#lib/expense/categories.ts';
 import type { GroupKind } from '#lib/group/kinds.ts';
-import type { Accent, Locale, Theme } from '#lib/settings.ts';
+import type { Accent, Locale, Theme, Units } from '#lib/settings.ts';
 import type { Tint } from '#lib/tints.ts';
 import {
 	check,
@@ -63,6 +63,9 @@ export const people = sqliteTable('people', {
 	locale: text('locale').$type<Locale>(),
 	theme: text('theme').$type<Theme>(),
 	accent: text('accent').$type<Accent>(),
+	// How distances and fuel show, and the currency amounts are also shown in (#238)
+	units: text('units').$type<Units>(),
+	displayCurrency: text('display_currency'),
 	// Chosen avatar, e.g. "deer:moss" (#61, src/lib/avatars.ts); null = initials, derived tint
 	avatar: text('avatar'),
 	// When they read the friendly note about what the app's creator can see (#112)

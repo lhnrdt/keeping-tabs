@@ -13,17 +13,21 @@ import {
 	isAccent,
 	isLocale,
 	isTheme,
+	isUnits,
 	THEME_COOKIE
 } from '#lib/settings.ts';
 import { ensurePerson, findPerson } from '#lib/server/people.ts';
 import {
 	saveSettings,
 	setAccentCookie,
+	setDisplayCurrencyCookie,
 	setLocaleCookie,
-	setThemeCookie
+	setThemeCookie,
+	setUnitsCookie
 } from '#lib/server/settings.ts';
 import { normalizeText, LIMITS } from '#lib/validation.ts';
 import { pushPublicKey } from '#lib/server/push.ts';
+import { RATE_CURRENCIES } from '#lib/expense/exchange.ts';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, cookies }) => {
@@ -98,6 +102,30 @@ export const actions: Actions = {
 		if (person) await saveSettings(locals.db, person.id, { theme });
 		setThemeCookie(cookies, theme);
 		return { setting: 'theme' };
+	},
+
+	/** Km and litres, or miles and gallons (#238) */
+	units: async ({ locals, request, cookies }) => {
+		const units = (await request.formData()).get('units');
+		if (!isUnits(units)) {
+			return fail(400, { setting: 'units', error: 'settings_invalid' as ErrorCode });
+		}
+		const person = await findPerson(locals.db, locals.deviceKey);
+		if (person) await saveSettings(locals.db, person.id, { units });
+		setUnitsCookie(cookies, units);
+		return { setting: 'units' };
+	},
+
+	/** The currency amounts are also shown in (#238); empty for only the group's */
+	displayCurrency: async ({ locals, request, cookies }) => {
+		const currency = String((await request.formData()).get('displayCurrency') ?? '');
+		if (currency && !(RATE_CURRENCIES as readonly string[]).includes(currency)) {
+			return fail(400, { setting: 'displayCurrency', error: 'settings_invalid' as ErrorCode });
+		}
+		const person = await findPerson(locals.db, locals.deviceKey);
+		if (person) await saveSettings(locals.db, person.id, { displayCurrency: currency || null });
+		setDisplayCurrencyCookie(cookies, currency);
+		return { setting: 'displayCurrency' };
 	},
 
 	/** Also the footer's language switch: the page is served again in the new language */

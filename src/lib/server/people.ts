@@ -1,5 +1,5 @@
 import { and, eq, gt, isNull } from 'drizzle-orm';
-import type { Accent, Locale, Theme } from '#lib/settings.ts';
+import type { Accent, Locale, Theme, Units } from '#lib/settings.ts';
 import type { Db } from './db';
 import { once } from './request-cache';
 import { deviceLinks, devices, people } from './db/schema';
@@ -17,6 +17,8 @@ export type Person = {
 	locale: Locale | null;
 	theme: Theme | null;
 	accent: Accent | null;
+	units: Units | null;
+	displayCurrency: string | null;
 	avatar: string | null;
 	/** How to pay them (#47) */
 	paymentDetails: string | null;
@@ -40,6 +42,8 @@ export async function findPerson(db: Db, deviceKey: string): Promise<Person | un
 			locale: people.locale,
 			theme: people.theme,
 			accent: people.accent,
+			units: people.units,
+			displayCurrency: people.displayCurrency,
 			avatar: people.avatar,
 			paymentDetails: people.paymentDetails,
 			notedAt: people.notedAt
@@ -65,6 +69,8 @@ export async function ensurePerson(db: Db, deviceKey: string): Promise<Person> {
 		locale: null,
 		theme: null,
 		accent: null,
+		units: null,
+		displayCurrency: null,
 		avatar: null,
 		paymentDetails: null,
 		notedAt: null

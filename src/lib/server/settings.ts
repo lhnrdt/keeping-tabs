@@ -4,11 +4,14 @@ import { eq } from 'drizzle-orm';
 import { cookieName, cookieMaxAge } from '#lib/paraglide/runtime.js';
 import {
 	ACCENT_COOKIE,
+	DISPLAY_CURRENCY_COOKIE,
 	LOCALE_COOKIE,
 	THEME_COOKIE,
+	UNITS_COOKIE,
 	type Accent,
 	type Locale,
-	type Theme
+	type Theme,
+	type Units
 } from '#lib/settings.ts';
 import type { Db } from './db';
 import { people } from './db/schema';
@@ -24,6 +27,8 @@ export async function saveSettings(
 		locale?: Locale;
 		theme?: Theme;
 		accent?: Accent;
+		units?: Units;
+		displayCurrency?: string | null;
 		avatar?: string;
 		paymentDetails?: string | null;
 	}
@@ -45,6 +50,13 @@ export const setThemeCookie = (cookies: Cookies, theme: Theme) =>
 /** Makes this browser use a color theme; the page script reads it before first paint */
 export const setAccentCookie = (cookies: Cookies, accent: Accent) =>
 	cookies.set(ACCENT_COOKIE, accent, { ...COOKIE_OPTIONS, httpOnly: false });
+
+export const setUnitsCookie = (cookies: Cookies, units: Units) =>
+	cookies.set(UNITS_COOKIE, units, { ...COOKIE_OPTIONS, httpOnly: true });
+
+/** Empty means only the group's currency */
+export const setDisplayCurrencyCookie = (cookies: Cookies, currency: string) =>
+	cookies.set(DISPLAY_CURRENCY_COOKIE, currency, { ...COOKIE_OPTIONS, httpOnly: true });
 
 /** Set when a device was checked for saved settings, so the check isn't repeated every page */
 const CHECKED_COOKIE = 'kt-settings-checked';
@@ -71,6 +83,10 @@ export function applySettings(cookies: Cookies, person: Person | undefined): Loc
 	if (!person) return null;
 	if (person.theme && !cookies.get(THEME_COOKIE)) setThemeCookie(cookies, person.theme);
 	if (person.accent && !cookies.get(ACCENT_COOKIE)) setAccentCookie(cookies, person.accent);
+	if (person.units && !cookies.get(UNITS_COOKIE)) setUnitsCookie(cookies, person.units);
+	if (person.displayCurrency && !cookies.get(DISPLAY_CURRENCY_COOKIE)) {
+		setDisplayCurrencyCookie(cookies, person.displayCurrency);
+	}
 	if (person.locale && !cookies.get(LOCALE_COOKIE)) {
 		setLocaleCookie(cookies, person.locale);
 		return person.locale;

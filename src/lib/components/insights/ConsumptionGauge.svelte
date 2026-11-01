@@ -1,17 +1,21 @@
 <script lang="ts">
-	// Consumption as a dashboard dial: a needle sweeping over 0 to 15 l per 100 km. The number
-	// stays below it, so nothing depends on reading the needle.
-	import { CONSUMPTION_SCALE, needleAngle } from '#lib/expense/driving.ts';
+	// Consumption as a dashboard dial: a needle sweeping over 0 to 15 l per 100 km, or 0 to 60
+	// miles per gallon. The number stays below it, so nothing depends on reading the needle.
+	import { page } from '$app/state';
+	import { consumptionIn, consumptionScale, fuelUnit, needleAngle } from '#lib/expense/driving.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 
 	let { litresPer100Km }: { litresPer100Km: number } = $props();
 
+	const units = $derived(page.data.units);
+	const reading = $derived(consumptionIn(litresPer100Km, units));
+	const end = $derived(consumptionScale(units));
 	const value = $derived(
-		new Intl.NumberFormat(getLocale(), { maximumFractionDigits: 1 }).format(litresPer100Km)
+		new Intl.NumberFormat(getLocale(), { maximumFractionDigits: 1 }).format(reading)
 	);
-	const scale = [0, 5, 10, CONSUMPTION_SCALE];
-	const tick = (mark: number) => (mark / CONSUMPTION_SCALE) * 180 - 90;
+	const scale = [0, 1 / 3, 2 / 3, 1];
+	const tick = (mark: number) => mark * 180 - 90;
 </script>
 
 <div class="flex flex-col items-center">
@@ -36,7 +40,7 @@
 				transform={`rotate(${tick(mark)} 60 60)`}
 			/>
 		{/each}
-		<g class="needle" style={`--angle: ${needleAngle(litresPer100Km)}deg`}>
+		<g class="needle" style={`--angle: ${needleAngle(reading, end)}deg`}>
 			<line
 				x1="60"
 				y1="60"
@@ -49,8 +53,12 @@
 		</g>
 		<circle cx="60" cy="60" r="4.5" class="fill-accent dark:fill-accent-night" />
 	</svg>
-	<p class="mt-1 text-xl font-semibold">{value} l</p>
-	<p class="text-sm text-muted">{m.driving_consumption()}</p>
+	<p class="mt-1 text-xl font-semibold">
+		{units === 'imperial' ? `${value} mpg` : `${value} ${fuelUnit(units)}`}
+	</p>
+	<p class="text-sm text-muted">
+		{units === 'imperial' ? m.driving_mpg() : m.driving_consumption()}
+	</p>
 </div>
 
 <style>

@@ -1,7 +1,7 @@
 import type { ErrorCode } from './errors';
 import { isExpenseCategory, type ExpenseCategory } from './expense/categories';
 import { DEFAULT_GROUP_KIND, isGroupKind, type GroupKind } from './group/kinds';
-import { parseKm, parseLitres } from './expense/driving';
+import { parseFuel, parseOdometer } from './expense/driving';
 import { convert, parseRate, type Original } from './expense/exchange';
 import type { Payer } from './expense/payers';
 import { parseAmount } from './money';
@@ -161,6 +161,8 @@ export function parseExpense(
 		/** In car groups: the odometer reading and litres of fuel, as typed */
 		odometer?: unknown;
 		litres?: unknown;
+		/** What those are in (#238): metric unless it's the other */
+		units?: unknown;
 		date: unknown;
 		paidBy: unknown;
 		/** With paidBy "several" (#39): what each member paid, by member id */
@@ -185,9 +187,10 @@ export function parseExpense(
 	if (!money.ok) return money;
 	const { amountCents, original } = money.value;
 
-	const odometer = parseKm(values.odometer);
+	const units = values.units === 'imperial' ? 'imperial' : 'metric';
+	const odometer = parseOdometer(values.odometer, units);
 	if (!odometer.ok) return odometer;
-	const litres = parseLitres(values.litres);
+	const litres = parseFuel(values.litres, units);
 	if (!litres.ok) return litres;
 
 	const date = parseDate(values.date);

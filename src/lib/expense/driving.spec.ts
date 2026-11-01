@@ -1,32 +1,36 @@
 import { describe, expect, it } from 'vitest';
 import {
+	consumptionIn,
 	drivingOf,
-	formatKm,
+	formatDistance,
+	formatFuel,
+	fuelInputValue,
 	needleAngle,
 	odometerDigits,
-	parseKm,
-	parseLitres,
-	quantityInputValue
+	odometerInputValue,
+	parseFuel,
+	parseOdometer,
+	perDistance
 } from './driving';
 
 describe('parsing', () => {
 	it('takes km and litres with a point or comma; empty is none', () => {
-		expect(parseKm('120,5')).toEqual({ ok: true, value: 120_500 });
-		expect(parseKm(' ')).toEqual({ ok: true, value: null });
-		expect(parseLitres('41.27')).toEqual({ ok: true, value: 41_270 });
+		expect(parseOdometer('120,5')).toEqual({ ok: true, value: 120_500 });
+		expect(parseOdometer(' ')).toEqual({ ok: true, value: null });
+		expect(parseFuel('41.27')).toEqual({ ok: true, value: 41_270 });
 	});
 
 	it('refuses what is not a sensible quantity', () => {
 		for (const text of ['0', '-5', 'abc', '1.25', '2000000']) {
-			expect(parseKm(text)).toEqual({ ok: false, error: 'odometer_invalid' });
+			expect(parseOdometer(text)).toEqual({ ok: false, error: 'odometer_invalid' });
 		}
-		expect(parseLitres('1.234')).toEqual({ ok: false, error: 'litres_invalid' });
+		expect(parseFuel('1.234')).toEqual({ ok: false, error: 'litres_invalid' });
 	});
 
 	it('goes back to what was typed', () => {
-		expect(quantityInputValue(120_500)).toBe('120.5');
-		expect(quantityInputValue(null)).toBe('');
-		expect(formatKm(1_234_500, 'en')).toBe('1,234.5 km');
+		expect(odometerInputValue(120_500)).toBe('120.5');
+		expect(odometerInputValue(null)).toBe('');
+		expect(formatDistance(1_234_500, 'en')).toBe('1,234.5 km');
 	});
 });
 
@@ -97,8 +101,26 @@ describe('the dashboard', () => {
 	});
 
 	it('points the needle along the scale and rests at its end', () => {
-		expect(needleAngle(0)).toBe(-90);
-		expect(needleAngle(7.5)).toBe(0);
-		expect(needleAngle(40)).toBe(90);
+		expect(needleAngle(0, 15)).toBe(-90);
+		expect(needleAngle(7.5, 15)).toBe(0);
+		expect(needleAngle(40, 15)).toBe(90);
+	});
+});
+
+describe('miles and gallons', () => {
+	it('takes and shows them, keeping metres and millilitres', () => {
+		expect(parseOdometer('100', 'imperial')).toEqual({ ok: true, value: 160_934 });
+		expect(parseFuel('10', 'imperial')).toEqual({ ok: true, value: 37_854 });
+		expect(odometerInputValue(160_934, 'imperial')).toBe('100');
+		expect(fuelInputValue(37_854, 'imperial')).toBe('10');
+		expect(formatDistance(160_934, 'en', 'imperial')).toBe('100 mi');
+		expect(formatFuel(37_854, 'en', 'imperial')).toBe('10 gal');
+		expect(odometerDigits(160_934, 'imperial')).toEqual({ whole: [...'000100'], tenth: '0' });
+	});
+
+	it('turns the sums around', () => {
+		expect(perDistance(10, 'imperial')).toBe(16);
+		expect(consumptionIn(5, 'imperial')).toBeCloseTo(47.04, 1);
+		expect(consumptionIn(5, 'metric')).toBe(5);
 	});
 });

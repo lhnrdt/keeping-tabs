@@ -24,8 +24,17 @@
 	import SegmentedPicker from '#lib/components/pickers/SegmentedPicker.svelte';
 	import SavedHint from '#lib/components/SavedHint.svelte';
 	import { m } from '#lib/paraglide/messages.js';
-	import { locales } from '#lib/paraglide/runtime.js';
-	import { isAccent, isTheme, LOCALE_NAMES, THEMES, type Theme } from '#lib/settings.ts';
+	import { getLocale, locales } from '#lib/paraglide/runtime.js';
+	import { RATE_CURRENCIES } from '#lib/expense/exchange.ts';
+	import { currencyLabel } from '#lib/money.ts';
+	import {
+		isAccent,
+		isTheme,
+		LOCALE_NAMES,
+		THEMES,
+		type Theme,
+		type Units
+	} from '#lib/settings.ts';
 	import { useTheme } from '#lib/themes/current.svelte.ts';
 	import { LIMITS } from '#lib/validation.ts';
 	import type { PageProps } from './$types';
@@ -38,6 +47,10 @@
 		dark: m.theme_dark
 	};
 	const localeOptions = locales.map((locale) => ({ value: locale, label: LOCALE_NAMES[locale] }));
+	const unitOptions: { value: Units; label: string }[] = [
+		{ value: 'metric', label: m.units_metric() },
+		{ value: 'imperial', label: m.units_imperial() }
+	];
 	const themeOptions = THEMES.map((theme) => ({ value: theme, label: themeLabels[theme]() }));
 
 	let saved = $state<string>();
@@ -51,6 +64,17 @@
 				savedTimer = setTimeout(() => (saved = undefined), 2000);
 			}
 			await update({ reset: false, invalidateAll: false });
+		};
+	};
+	/** The same, for settings that change how the rest of the app shows things */
+	const savedAndShown: SubmitFunction = () => {
+		return async ({ result, update }) => {
+			if (result.type === 'success') {
+				saved = String(result.data?.setting);
+				clearTimeout(savedTimer);
+				savedTimer = setTimeout(() => (saved = undefined), 2000);
+			}
+			await update({ reset: false });
 		};
 	};
 	const submitOnChange = (event: Event & { currentTarget: HTMLFormElement }) =>
@@ -163,6 +187,49 @@
 		/>
 		<SavedHint shown={saved === 'theme'} />
 		<FormError error={errorFor('theme')} />
+		<noscript><Block><button type="submit">{m.save()}</button></Block></noscript>
+	</form>
+
+	<form method="POST" action="?/units" use:enhance={savedAndShown} onchange={submitOnChange}>
+		<h2 class="mx-4 mt-4 mb-1 text-sm font-medium text-muted">{m.settings_units()}</h2>
+		<SegmentedPicker
+			name="units"
+			legend={m.settings_units()}
+			options={unitOptions}
+			value={data.units}
+		/>
+		<SavedHint shown={saved === 'units'} />
+		<FormError error={errorFor('units')} />
+		<noscript><Block><button type="submit">{m.save()}</button></Block></noscript>
+	</form>
+
+	<form
+		method="POST"
+		action="?/displayCurrency"
+		use:enhance={savedAndShown}
+		onchange={submitOnChange}
+	>
+		<List strong inset class="!mb-2">
+			<Field
+				label={m.settings_display_currency()}
+				name="displayCurrency"
+				type="select"
+				dropdown
+				value={data.displayCurrency ?? ''}
+			>
+				<option value="">{m.settings_display_currency_none()}</option>
+				{#each RATE_CURRENCIES as code (code)}
+					<option value={code} selected={code === data.displayCurrency}
+						>{currencyLabel(code, getLocale())}</option
+					>
+				{/each}
+			</Field>
+		</List>
+		<Block class="!my-0"
+			><p class="text-sm text-muted">{m.settings_display_currency_hint()}</p></Block
+		>
+		<SavedHint shown={saved === 'displayCurrency'} />
+		<FormError error={errorFor('displayCurrency')} />
 		<noscript><Block><button type="submit">{m.save()}</button></Block></noscript>
 	</form>
 
