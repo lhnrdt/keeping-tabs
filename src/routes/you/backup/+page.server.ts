@@ -1,24 +1,37 @@
-import { redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
+import { isKey, isSealed } from '#lib/crypto/seal.ts';
 import { countPasskeys } from '#lib/server/passkeys.ts';
-import { createRecoveryKey, ensurePerson, findPerson, hasRecoveryKey } from '#lib/server/people.ts';
+import {
+	ensurePerson,
+	findPerson,
+	hasRecoveryKey,
+	recoveryKeyIsOutdated,
+	saveRecoveryKey
+} from '#lib/server/people.ts';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const person = await findPerson(locals.db, locals.deviceKey);
 	// Nothing to back up yet; this device might be someone returning, though
 	if (!person) redirect(303, resolve('/you/devices'));
-	const [passkeyCount, recoveryKey] = await Promise.all([
+	const [passkeyCount, recoveryKey, outdated] = await Promise.all([
 		countPasskeys(locals.db, person.id),
-		hasRecoveryKey(locals.db, person.id)
+		hasRecoveryKey(locals.db, person.id),
+		recoveryKeyIsOutdated(locals.db, person.id)
 	]);
-	return { passkeyCount, hasRecoveryKey: recoveryKey };
+	return { passkeyCount, hasRecoveryKey: recoveryKey, recoveryKeyOutdated: outdated };
 };
 
 export const actions: Actions = {
-	/** A new recovery key, shown once (A-16) */
-	createRecoveryKey: async ({ locals }) => {
+	/** A new recovery key, made and shown once in the browser (A-16) */
+	createRecoveryKey: async ({ locals, request }) => {
+		const form = await request.formData();
+		const proof = form.get('recoveryProof');
+		const vault = form.get('recoveryVault');
+		if (!isKey(proof) || !isSealed(vault)) error(400);
 		const person = await ensurePerson(locals.db, locals.deviceKey);
-		return { recoveryKey: await createRecoveryKey(locals.db, person.id) };
+		await saveRecoveryKey(locals.db, person.id, proof, vault);
+		return { recoveryCreated: true };
 	}
 };

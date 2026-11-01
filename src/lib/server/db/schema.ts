@@ -48,6 +48,16 @@ export const groups = sqliteTable('groups', {
 	insightSections: text('insight_sections'),
 	// New expenses start split this way, e.g. {"mode":"percent","inputs":{…}} (#41); null = equal
 	defaultSplit: text('default_split', { mode: 'json' }),
+	// Which key seals this group's text (#110); null = stored as plain text. Never the key itself
+	keyId: text('key_id'),
+	// Handing an existing group's key to its people when it was encrypted (#110): they only have the
+	// old link, so the server holds it for a while. Set before anything's sealed; gone at the time below
+	transitionKey: text('transition_key'),
+	transitionUntil: integer('transition_until', { mode: 'timestamp_ms' }),
+	// An encrypted group's budget, end date and default split, sealed (#110)
+	sealedDetails: text('sealed_details'),
+	// When the server last tried encrypting this group by itself (#110), so a big one can't hold up the rest
+	encryptTriedAt: integer('encrypt_tried_at', { mode: 'timestamp_ms' }),
 	// Optional password on top of the link (A-8), salted and slow (group-password.ts); null = none
 	passwordHash: text('password_hash'),
 	// Budget (minor units) and end date for trips and events, both optional (#168)
@@ -75,6 +85,10 @@ export const people = sqliteTable('people', {
 	notedAt: integer('noted_at', { mode: 'timestamp_ms' }),
 	// How to pay them, e.g. a PayPal.me link or IBAN (#47); shown to people in their groups
 	paymentDetails: text('payment_details'),
+	// How to pay them, sealed with their vault key (#110): each group gets its own copy from there
+	sealedPaymentDetails: text('sealed_payment_details'),
+	// Their vault key, sealed with their recovery key, so a new device can get their groups' keys (#110)
+	recoveryVault: text('recovery_vault'),
 	// Hash of the person's recovery key, if they created one (A-16)
 	recoveryHash: text('recovery_hash').unique(),
 	createdAt: createdAt()
@@ -142,6 +156,8 @@ export const passkeys = sqliteTable(
 		publicKey: text('public_key').notNull(),
 		counter: integer('counter').notNull().default(0),
 		transports: text('transports', { mode: 'json' }).$type<string[]>(),
+		// The vault key, sealed with what only this passkey can produce (PRF), so it brings keys back
+		sealedVault: text('sealed_vault'),
 		createdAt: createdAt()
 	},
 	(t) => [index('passkeys_person_idx').on(t.personId)]
@@ -157,6 +173,10 @@ export const members = sqliteTable(
 		name: text('name').notNull(),
 		// The person who claimed this member (A-4); null until claimed or after release (A-15)
 		personId: text('person_id').references(() => people.id),
+		// How to pay them, this group's copy: sealed if the group is encrypted (#110)
+		paymentDetails: text('payment_details'),
+		// They have the group's key, so the server needn't keep it for them (#110)
+		keyReceived: integer('key_received', { mode: 'boolean' }).notNull().default(false),
 		createdAt: createdAt(),
 		// Removed members stay referenced by past expenses (M-6)
 		deletedAt: deletedAt()
@@ -202,6 +222,8 @@ export const expenses = sqliteTable(
 		odometerM: integer('odometer_m'),
 		fuelMl: integer('fuel_ml'),
 		category: text('category').$type<ExpenseCategory>(),
+		// An encrypted group's money, category and car data (#110), sealed; those columns stay empty there
+		sealedDetails: text('sealed_details'),
 		// When the group was told about it (#56); each expense only once
 		notifiedAt: integer('notified_at', { mode: 'timestamp_ms' }),
 		// Where an imported row came from (e.g. "sw:…" for Splitwise), so re-imports skip it (I-3)
@@ -258,6 +280,22 @@ export const expensePayers = sqliteTable(
 		amountCents: integer('amount_cents').notNull()
 	},
 	(t) => [primaryKey({ columns: [t.expenseId, t.memberId] })]
+);
+
+/** A person's groups' keys, for their other devices (#110) */
+export const personKeys = sqliteTable(
+	'person_keys',
+	{
+		personId: text('person_id')
+			.notNull()
+			.references(() => people.id, { onDelete: 'cascade' }),
+		keyId: text('key_id').notNull(),
+		// Which vault key it's sealed with: someone can end up with more than one
+		vaultId: text('vault_id').notNull(),
+		// The group's key, sealed with the person's vault key, which the server never has
+		sealed: text('sealed').notNull()
+	},
+	(t) => [primaryKey({ columns: [t.personId, t.keyId, t.vaultId] })]
 );
 
 /** A short conversation under an expense (#49), visible to the group; each removes only their own */
@@ -328,6 +366,8 @@ export const activityLog = sqliteTable(
 			.references(() => groups.id),
 		// Null when the visitor hasn't picked a member yet
 		memberId: text('member_id').references(() => members.id),
+		// Encrypted groups: who it was, sealed; memberId stays empty (#110)
+		sealedActor: text('sealed_actor'),
 		action: text('action').notNull(),
 		payload: text('payload', { mode: 'json' }),
 		createdAt: createdAt()

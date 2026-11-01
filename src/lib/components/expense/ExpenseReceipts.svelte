@@ -11,6 +11,7 @@
 	import { calmMove, calmPop } from '#lib/motion/calm.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import PhotoPicker from './PhotoPicker.svelte';
+	import ReceiptPhoto from './ReceiptPhoto.svelte';
 
 	type Props = {
 		receipts: { id: string }[];
@@ -59,20 +60,7 @@
 		<ul class="grid grid-cols-3 gap-2">
 			{#each receipts as receipt, i (receipt.id)}
 				<li class="flex flex-col gap-1" transition:calmPop animate:calmMove>
-					<a
-						href={url(receipt.id)}
-						target="_blank"
-						rel="noopener"
-						data-sveltekit-reload
-						class="block aspect-square overflow-hidden rounded-xl"
-					>
-						<img
-							src={url(receipt.id)}
-							alt={m.receipt_alt({ number: i + 1 })}
-							loading="lazy"
-							class="size-full object-cover"
-						/>
-					</a>
+					<ReceiptPhoto url={url(receipt.id)} alt={m.receipt_alt({ number: i + 1 })} />
 					{#if canChange}
 						<button
 							type="button"

@@ -11,6 +11,7 @@
 	import SubmitButton from '#lib/components/SubmitButton.svelte';
 	import type { ErrorCode } from '#lib/errors.ts';
 	import { Submission } from '#lib/forms/submission.svelte.ts';
+	import { sealing } from '#lib/crypto/seal-form.ts';
 	import { keep } from '#lib/offline/outbox.ts';
 
 	type Props = {
@@ -18,14 +19,27 @@
 		submitLabel: string;
 		/** The group's token, when this form can wait for the connection */
 		offlineToken?: string;
+		/** Fields holding text, sealed in an encrypted group (#110) */
+		sealed?: readonly string[];
+		/** The row they're for, when it's known */
+		sealRow?: string;
 		/** Runs once it's saved, before moving on; can name a different page to go to */
 		onSaved?: () => Promise<string | void>;
 		children: Snippet;
 	};
 
-	let { error, submitLabel, offlineToken, onSaved, children }: Props = $props();
+	let {
+		error,
+		submitLabel,
+		offlineToken,
+		sealed = [],
+		sealRow,
+		onSaved,
+		children
+	}: Props = $props();
 
 	const submission = new Submission();
+	let typed = new FormData();
 
 	/** The request never reached the server (no connection), as opposed to it saying no */
 	const unreachable = (failure: unknown) => failure instanceof TypeError || !navigator.onLine;
@@ -42,7 +56,7 @@
 					string,
 					string
 				][];
-				const field = (name: string) => String(input.formData.get(name) ?? '');
+				const field = (name: string) => String(typed.get(name) ?? '');
 				const kept = keep({
 					id: field('clientId') || crypto.randomUUID(),
 					token: offlineToken,
@@ -73,7 +87,15 @@
 	};
 </script>
 
-<form method="POST" action="?/save" use:enhance={submit}>
+<form
+	method="POST"
+	action="?/save"
+	use:enhance={(input) => {
+		// As typed, for the list of what's waiting to be sent; what's sent may be sealed
+		typed = new FormData(input.formElement);
+		return sealing(sealed, submit, () => sealRow ?? '')(input);
+	}}
+>
 	{@render children()}
 	<FormError {error} />
 	<StickySubmit

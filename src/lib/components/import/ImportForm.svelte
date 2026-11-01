@@ -1,7 +1,13 @@
 <script lang="ts">
 	// Pick a Splitwise export, see what it contains and who is who, then import (I-1 – I-3).
 	// The preview runs the same parser as the server; without JS the server's suggestions apply.
-	import { enhance } from '$app/forms';
+	import { enhance, type SubmitFunction } from '$app/forms';
+	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
+	import { page } from '$app/state';
+	import { keyFor } from '#lib/crypto/keyring.ts';
+	import { sealImport } from '#lib/crypto/seal-import.ts';
+	import { personField } from '#lib/import/people.ts';
 	import { Block, List } from 'konsta/svelte';
 	import FormError from '#lib/components/FormError.svelte';
 	import SubmitButton from '#lib/components/SubmitButton.svelte';
@@ -22,6 +28,42 @@
 	let previewError = $state<ErrorCode>();
 	const inputId = $props.id();
 
+	// An encrypted group's file is read and sealed here, and only that is sent (#110)
+	const submit: SubmitFunction = async (input) => {
+		const keyId: string | null = page.data.group?.keyId ?? null;
+		if (!keyId) return submission.enhance(input);
+		input.cancel();
+		const file = input.formData.get('file');
+		const key = await keyFor(keyId);
+		if (!(file instanceof File) || !file.size) {
+			previewError = 'import_file_missing';
+			return;
+		}
+		if (!key) {
+			previewError = 'import_encrypted';
+			return;
+		}
+		const choices = (preview?.people ?? []).map((_, i) =>
+			input.formData.get(personField(i))?.toString()
+		);
+		const sealed = await sealImport(await file.text(), currency, key, choices, members);
+		if (!sealed.ok) {
+			previewError = sealed.error;
+			return;
+		}
+		const { token } = page.params as { token: string };
+		const response = await fetch(`${resolve('/g/[token]', { token })}/import/sealed`, {
+			method: 'POST',
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify(sealed.value)
+		});
+		if (!response.ok) {
+			previewError = 'import_encrypted';
+			return;
+		}
+		await goto(resolve('/g/[token]', { token }), { invalidateAll: true });
+	};
+
 	async function read(event: Event & { currentTarget: HTMLInputElement }) {
 		const file = event.currentTarget.files?.[0];
 		const result = file ? parseSplitwise(await file.text(), currency) : undefined;
@@ -30,7 +72,7 @@
 	}
 </script>
 
-<form method="POST" enctype="multipart/form-data" use:enhance={submission.enhance}>
+<form method="POST" enctype="multipart/form-data" use:enhance={submit}>
 	<Block>
 		<p>{m.import_intro()}</p>
 	</Block>

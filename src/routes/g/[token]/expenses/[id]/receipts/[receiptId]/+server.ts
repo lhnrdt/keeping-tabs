@@ -10,7 +10,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	if (!image) error(404);
 	return new Response(image, {
 		headers: {
-			'content-type': 'image/jpeg',
+			// Sealed in an encrypted group (#110): the browser opens it
+			'content-type': group.keyId ? 'application/octet-stream' : 'image/jpeg',
 			// A photo never changes; a new one has a new address
 			'cache-control': 'private, max-age=31536000, immutable'
 		}

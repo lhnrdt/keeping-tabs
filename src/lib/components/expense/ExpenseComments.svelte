@@ -8,6 +8,7 @@
 	import SubmitButton from '#lib/components/SubmitButton.svelte';
 	import type { ErrorCode } from '#lib/errors.ts';
 	import { calmMove, calmSlide } from '#lib/motion/calm.ts';
+	import { sealing } from '#lib/crypto/seal-form.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import { LIMITS } from '#lib/validation.ts';
@@ -74,12 +75,21 @@
 			method="POST"
 			action="?/comment"
 			class="flex flex-col gap-2"
-			use:enhance={() => {
-				sending = true;
-				return async ({ update }) => {
-					await update();
-					sending = false;
-				};
+			use:enhance={(input) => {
+				// Its id, made here: its sealed text says it belongs to this comment
+				const clientId = crypto.randomUUID();
+				input.formData.set('clientId', clientId);
+				return sealing(
+					['comment'],
+					() => {
+						sending = true;
+						return async ({ update }) => {
+							await update();
+							sending = false;
+						};
+					},
+					() => clientId
+				)(input);
 			}}
 		>
 			<PlainField label={m.comment_field()}>

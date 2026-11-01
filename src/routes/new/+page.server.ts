@@ -1,4 +1,6 @@
-import { fail, redirect } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
+import { isSealed } from '#lib/crypto/seal.ts';
+import { allowsPlainNewGroup } from '#lib/server/encryption-handover.ts';
 import { resolve } from '$app/paths';
 import type { ErrorCode } from '#lib/errors.ts';
 import { getLocale } from '#lib/paraglide/runtime.js';
@@ -15,6 +17,9 @@ import {
 	parseMemberNames
 } from '#lib/validation.ts';
 import type { Actions, PageServerLoad } from './$types';
+
+/** Names the key the browser sealed this group's text with (#110); never the key */
+const KEY_ID = /^[\w-]{8}$/;
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const person = await findPerson(locals.db, locals.deviceKey);
@@ -55,8 +60,13 @@ export const actions: Actions = {
 		const memberNames = parseMemberNames([values.you, ...values.members]);
 		if (!memberNames.ok) return invalid(memberNames.error);
 
+		// Every group is encrypted; the browser did that before sending this
+		const keyId = KEY_ID.test(String(form.get('keyId'))) ? String(form.get('keyId')) : null;
+		if (!allowsPlainNewGroup() && (!keyId || !isSealed(name.value))) error(400);
 		const person = await ensurePerson(locals.db, locals.deviceKey);
-		await setProfileName(locals.db, person.id, memberNames.value[0]);
+		if (!isSealed(memberNames.value[0])) {
+			await setProfileName(locals.db, person.id, memberNames.value[0]);
+		}
 		const { shareToken } = await createGroup(locals.db, {
 			name: name.value,
 			description: description.value,
@@ -64,7 +74,9 @@ export const actions: Actions = {
 			kind: kind.value,
 			tint: tint.value,
 			memberNames: memberNames.value,
-			creatorPersonId: person.id
+			creatorPersonId: person.id,
+			keyId,
+			sealedDetails: isSealed(form.get('details')) ? String(form.get('details')) : null
 		});
 		redirect(303, resolve('/g/[token]', { token: shareToken }));
 	}

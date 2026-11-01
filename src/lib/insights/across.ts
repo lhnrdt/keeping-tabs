@@ -1,6 +1,7 @@
 // Your spending across all your groups (#164): your share of each expense, by month, by
 // category, by group, and who you share the most with. Amounts in different currencies
 // don't add up, so it's per currency: the one you spend most in, the others named.
+import { categoryOf, learnCategories } from '#lib/expense/learned.ts';
 import type { GroupKind } from '#lib/group/kinds.ts';
 import type { Tint } from '#lib/tints.ts';
 import type { ExpenseCategory } from '#lib/expense/categories.ts';
@@ -119,3 +120,22 @@ export function spendingAcross(groups: readonly SpendingGroup[]): Spending | nul
 		otherCurrencies: [...totals.keys()].filter((other) => other !== currency).sort()
 	};
 }
+
+/** The same from groups' raw expenses: each in its category as its group shows it */
+export const spendingWithCategories = (
+	groups: readonly (Omit<SpendingGroup, 'entries'> & {
+		entries: readonly (Omit<InsightEntry, 'category'> & Parameters<typeof categoryOf>[0])[];
+	})[]
+) =>
+	spendingAcross(
+		groups.map((group) => {
+			const learned = learnCategories(group.entries);
+			return {
+				...group,
+				entries: group.entries.map((entry) => ({
+					...entry,
+					category: categoryOf(entry, learned)
+				}))
+			};
+		})
+	);

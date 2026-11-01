@@ -10,10 +10,11 @@
 	let { data, form }: PageProps = $props();
 
 	/** A suggested payment links here with ?from=&to=&amount= (amount in minor units). */
+	const suggestion = $derived(new URLSearchParams(page.url.hash.slice(1)));
 	const suggested = $derived({
-		from: page.url.searchParams.get('from') ?? '',
-		to: page.url.searchParams.get('to') ?? '',
-		amount: Number(page.url.searchParams.get('amount')) || 0
+		from: suggestion.get('from') ?? '',
+		to: suggestion.get('to') ?? '',
+		amount: Number(suggestion.get('amount')) || 0
 	});
 
 	const values = $derived(

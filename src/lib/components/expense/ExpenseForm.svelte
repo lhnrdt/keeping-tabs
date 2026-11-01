@@ -68,6 +68,8 @@
 		kind: GroupKind;
 		/** A new expense waits on the device when the connection is gone (#55) */
 		offlineToken?: string;
+		/** The expense being edited; a new one gets its id here */
+		expenseId?: string;
 	};
 
 	let {
@@ -79,7 +81,8 @@
 		submitLabel,
 		canRepeat = false,
 		kind,
-		offlineToken
+		offlineToken,
+		expenseId
 	}: Props = $props();
 	// Its id, made here: sending it again after a lost connection can't add it twice (#55)
 	const clientId = crypto.randomUUID();
@@ -126,7 +129,9 @@
 		resolve('/g/[token]/expenses/[id]', { token: offlineToken ?? '', id: clientId });
 	async function afterSaving() {
 		// Before anything else: the photos may take a while
-		const announced = offlineToken ? announceExpense(offlineToken, clientId) : undefined;
+		const announced = offlineToken
+			? announceExpense(offlineToken, clientId, `${amount} ${amountCurrency}`)
+			: undefined;
 		let missing = false;
 		for (const photo of photos) {
 			const refused = await sendReceipt(photo, expensePage()).catch(() => 'receipt_invalid');
@@ -145,7 +150,14 @@
 	};
 </script>
 
-<GroupForm {error} {submitLabel} {offlineToken} onSaved={offlineToken ? afterSaving : undefined}>
+<GroupForm
+	{error}
+	{submitLabel}
+	{offlineToken}
+	sealed={['title', 'notes', 'items']}
+	sealRow={expenseId ?? clientId}
+	onSaved={offlineToken ? afterSaving : undefined}
+>
 	{#if offlineToken}<input type="hidden" name="clientId" value={clientId} />{/if}
 	<div class="flex flex-col gap-4 px-4 pt-2 pb-4">
 		<TitleNoteField bind:title notes={values.notes} />

@@ -53,7 +53,14 @@ export async function listRecurring(db: Db, groupId: string) {
 		.orderBy(recurringExpenses.nextOn);
 	return rows.map(({ id, template, frequency, nextOn }) => {
 		const input = template as ExpenseInput;
-		return { id, title: input.title, amountCents: input.amountCents, frequency, nextOn };
+		return {
+			id,
+			title: input.title,
+			amountCents: input.amountCents,
+			sealedDetails: input.sealedDetails,
+			frequency,
+			nextOn
+		};
 	});
 }
 
@@ -69,6 +76,8 @@ export async function stopRecurring(db: Db, groupId: string, actorId: string, id
 
 /** Whether everyone the expense names is still in the group */
 const stillThere = (input: ExpenseInput, memberIds: ReadonlySet<string>) =>
+	// Sealed, it can't be told here (#110)
+	Boolean(input.sealedDetails) ||
 	[
 		input.paidBy,
 		...payersOf(input).map((payer) => payer.memberId),

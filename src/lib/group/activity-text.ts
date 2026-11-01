@@ -40,6 +40,8 @@ export function activityText({ action, who: by, entry, name, previousName }: Ite
 			return m.activity_group_update({ who });
 		case 'group.regenerate_link':
 			return m.activity_group_link({ who });
+		case 'group.encrypt':
+			return m.activity_group_encrypt({ who });
 		case 'group.password_set':
 			return m.activity_group_password_set({ who });
 		case 'group.password_remove':

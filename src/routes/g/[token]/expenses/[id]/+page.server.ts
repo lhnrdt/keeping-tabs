@@ -12,7 +12,7 @@ import {
 	softDeleteEntry,
 	updateExpense
 } from '#lib/server/expenses.ts';
-import { parseComment } from '#lib/validation.ts';
+import { clientIdIn, parseComment } from '#lib/validation.ts';
 import { isJpeg, MAX_RECEIPT_BYTES } from '#lib/expense/receipt-image.ts';
 import { addReceipt, deleteReceipt, listReceipts } from '#lib/server/receipts.ts';
 import type { Actions, PageServerLoad } from './$types';
@@ -32,7 +32,7 @@ export const load: PageServerLoad = async ({ locals, params, parent }) => {
 export const actions: Actions = {
 	save: async ({ locals, params, request }) => {
 		const { form, group, actorId } = await formContext(locals, params.token, request);
-		const result = await readExpenseForm(locals.db, group, form);
+		const result = await readExpenseForm(locals.db, group, form, actorId);
 		if (!result.ok) return result.failure;
 		if (!(await updateExpense(locals.db, group.id, actorId, params.id, result.input))) {
 			error(404, m.error_expense_not_found());
@@ -56,7 +56,7 @@ export const actions: Actions = {
 		if (!body.ok) {
 			return fail(400, { commentError: body.error, comment: String(form.get('comment') ?? '') });
 		}
-		await addComment(locals.db, group.id, actorId, params.id, body.value);
+		await addComment(locals.db, group.id, actorId, params.id, body.value, clientIdIn(form));
 		return { commented: true };
 	},
 
@@ -71,11 +71,15 @@ export const actions: Actions = {
 			error(404, m.error_expense_not_found());
 		}
 		const photo = form.get('photo');
-		if (!(photo instanceof File) || photo.size === 0 || photo.size > MAX_RECEIPT_BYTES) {
+		// Sealing adds a little, and hides what it is: only the browser could tell it's a JPEG (#110)
+		const limit = MAX_RECEIPT_BYTES + (group.keyId ? 64 : 0);
+		if (!(photo instanceof File) || photo.size === 0 || photo.size > limit) {
 			return fail(400, { receiptError: 'receipt_invalid' as const });
 		}
 		const bytes = new Uint8Array(await photo.arrayBuffer());
-		if (!isJpeg(bytes)) return fail(400, { receiptError: 'receipt_invalid' as const });
+		// In an encrypted group a readable JPEG is one that wasn't sealed
+		if (Boolean(group.keyId) === isJpeg(bytes))
+			return fail(400, { receiptError: 'receipt_invalid' as const });
 		const refused = await addReceipt(locals.db, group.id, actorId, params.id, bytes);
 		if (refused) return fail(400, { receiptError: refused });
 	},

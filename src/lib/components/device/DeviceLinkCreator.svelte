@@ -7,10 +7,22 @@
 	import Icon from '#lib/components/Icon.svelte';
 	import SubmitButton from '#lib/components/SubmitButton.svelte';
 	import { Submission } from '#lib/forms/submission.svelte.ts';
+	import { onMount } from 'svelte';
+	import { ensureVault, syncKeys } from '#lib/crypto/vault.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { shareOrCopy } from '#lib/share.ts';
 
-	let { link }: { link?: string } = $props();
+	let { link: created }: { link?: string } = $props();
+
+	// It also brings your groups' keys along (#110): the vault key, in the part browsers don't send
+	let vault = $state<string>();
+	onMount(() => {
+		void ensureVault().then((key) => {
+			vault = key;
+			void syncKeys().catch(() => {});
+		});
+	});
+	const link = $derived(created && vault ? `${created}.${vault}` : created);
 
 	const submission = new Submission();
 	let copied = $state(false);

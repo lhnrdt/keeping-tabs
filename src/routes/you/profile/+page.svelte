@@ -1,7 +1,9 @@
 <script lang="ts">
 	// Who you are to the others: name, avatar and how to pay you. Saves as it changes; without
 	// JavaScript, each has its own Save button.
-	import { enhance } from '$app/forms';
+	import { enhance, type SubmitFunction } from '$app/forms';
+	import { onMount } from 'svelte';
+	import { fillPaymentForm, sealForMe } from '#lib/crypto/profile.ts';
 	import { resolve } from '$app/paths';
 	import AppPage from '#lib/components/AppPage.svelte';
 	import FormError from '#lib/components/FormError.svelte';
@@ -21,6 +23,31 @@
 	const setting = new SavedSetting();
 	const submitOnChange = (event: Event & { currentTarget: HTMLFormElement }) =>
 		event.currentTarget.requestSubmit();
+
+	// Both are sealed here, so the server keeps neither readable (#110)
+	const sealedName: SubmitFunction = async (input) => {
+		const name = String(input.formData.get('name') ?? '').trim();
+		if (name) input.formData.set('name', await sealForMe(name));
+		return setting.quietly(input);
+	};
+	const sealedPayment: SubmitFunction = async (input) => {
+		const details = String(input.formData.get('paymentDetails') ?? '').trim();
+		await fillPaymentForm(input.formData, details, data.groups);
+		return setting.quietly(input);
+	};
+
+	// Saved before they were sealed: sealed now, without anyone having to change them
+	onMount(async () => {
+		if (!data.readable) return;
+		const send = (action: string, body: FormData) =>
+			fetch(action, { method: 'POST', headers: { 'x-sveltekit-action': 'true' }, body });
+		const name = new FormData();
+		name.set('name', data.name ? await sealForMe(data.name) : '');
+		const payment = new FormData();
+		await fillPaymentForm(payment, data.paymentDetails, data.groups);
+		await Promise.all([send('?/name', name), send('?/payment', payment)]);
+	});
+
 	const errorFor = (name: string) => (form?.setting === name ? form.error : undefined);
 </script>
 
@@ -31,7 +58,7 @@
 <AppPage title={m.you_title()} back={{ href: resolve('/you'), label: m.settings_title() }}>
 	<div class="page-sections">
 		<section class="page-section">
-			<form method="POST" action="?/name" use:enhance={setting.quietly} onchange={submitOnChange}>
+			<form method="POST" action="?/name" use:enhance={sealedName} onchange={submitOnChange}>
 				<PlainField label={m.field_your_name()}>
 					{#snippet children(id)}
 						<input
@@ -52,12 +79,7 @@
 				<noscript><button type="submit">{m.save()}</button></noscript>
 			</form>
 
-			<form
-				method="POST"
-				action="?/payment"
-				use:enhance={setting.quietly}
-				onchange={submitOnChange}
-			>
+			<form method="POST" action="?/payment" use:enhance={sealedPayment} onchange={submitOnChange}>
 				<PlainField label={m.field_payment_details()}>
 					{#snippet children(id)}
 						<input

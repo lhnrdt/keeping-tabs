@@ -42,6 +42,19 @@ Planned work and ideas are [GitHub issues](https://github.com/lhnrdt/keeping-tab
 
 No tracking, no analytics, and fonts, icons and category keywords are bundled. Two outside services are involved, and only for these features: exchange rates come from [Frankfurter](https://frankfurter.dev) (the server sends currency codes and a date, nothing about you), and notifications, if you turn them on, go encrypted through your browser's push service (Google, Apple or Mozilla). The only personal data is the names you type in. Device keys, link tokens and recovery keys are stored only as hashes.
 
+Every group is encrypted, with nothing to set up. Names, titles, notes, comments, amounts, who paid and who shares, categories, car data, budgets, group settings, photos and how to pay someone are sealed in the browser with AES-256-GCM. Balances, insights and exports are worked out in the browser. The key is in the link's fragment, which browsers don't send to the server. Your devices keep each other's keys through a vault key the server can't read; a device link, a recovery key or a passkey with the PRF extension brings it to a new device.
+
+Groups from before this upgrade themselves, when one of their people opens the app or, a little at a time, on the server's schedule. Their members only have the old link, so the server holds the key for them until everyone who has joined has it, or for at most 90 days.
+
+What this doesn't protect, so nobody assumes it does:
+
+- The server sees that a group exists, its size, each entry's date and whether it's an expense or a payment, repeat schedules, how many comments and photos there are, who wrote or added those, who belongs to which group, the rough size of sealed text, and when and from where requests come. Looking up an exchange rate tells it the two currencies.
+- The server delivers the app's code. A compromised server could ship code that steals keys, which is true of any encryption in a web app.
+- The link is the key. Anyone who reads it can read the group, including the chat service it was shared through.
+- A server with write access could delete rows, or swap member names, undetected. Sealed entries are tied to their row, so moving those between rows shows up as locked.
+- Upgrading an existing group leaves its old plain text in the database's backups for up to 30 days.
+- The encryption hasn't had an independent security review.
+
 ## Tech stack
 
 | Layer     | Choice                                                                                                                         |

@@ -15,6 +15,8 @@ export const BACKUP_FORMAT = 'keeping-tabs-backup';
 export const BACKUP_VERSION = 1;
 
 export type BackupGroup = {
+	/** Only on its way to the browser, which opens it before saving the file (#110) */
+	sealedDetails?: string | null;
 	name: string;
 	description: string | null;
 	currency: string;

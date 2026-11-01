@@ -1,0 +1,1 @@
+ALTER TABLE `groups` ADD `sealed_details` text;

@@ -8,6 +8,8 @@
 	import FormError from '#lib/components/FormError.svelte';
 	import SubmitButton from '#lib/components/SubmitButton.svelte';
 	import { Submission } from '#lib/forms/submission.svelte.ts';
+	import { rememberVault } from '#lib/crypto/keyring.ts';
+	import { isKey } from '#lib/crypto/seal.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import type { PageProps } from './$types';
 
@@ -20,7 +22,10 @@
 
 	onMount(() => {
 		// Stays in the address until it's used, so a reload still works. Once only anyway.
-		token = location.hash.slice(1);
+		const [linkToken, vault] = location.hash.slice(1).split('.');
+		token = linkToken;
+		// Your groups' keys come along with this link (#110)
+		if (isKey(vault)) void rememberVault(vault);
 		ready = true;
 	});
 </script>

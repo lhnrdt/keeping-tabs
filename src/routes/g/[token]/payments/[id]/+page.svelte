@@ -31,6 +31,7 @@
 		members={data.members}
 		currency={data.group.currency}
 		{values}
+		paymentId={data.payment.id}
 		error={form?.error}
 		submitLabel={m.save()}
 	/>

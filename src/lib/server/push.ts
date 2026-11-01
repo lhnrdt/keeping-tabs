@@ -1,5 +1,6 @@
 // Phone notifications (#56) through Web Push: free, from the browser's own push service.
 // Without VAPID keys (a machine or environment where they aren't set) it's simply off.
+import { isSealed } from '#lib/crypto/seal.ts';
 import { buildPushHTTPRequest } from '@pushforge/builder';
 import { and, eq, inArray, isNotNull, isNull, ne } from 'drizzle-orm';
 import { env } from 'cloudflare:workers';
@@ -54,7 +55,14 @@ export async function isSubscribed(db: Db, personId: string, endpoint: string) {
 }
 
 /** What the service worker shows (src/service-worker/push.ts) */
-export type PushPayload = { title: string; body: string; url: string; tag: string };
+export type PushPayload = {
+	title: string;
+	body: string;
+	url: string;
+	tag: string;
+	/** Encrypted groups: what to show if this device can't open the rest (#110) */
+	fallback?: { title: string; body: string };
+};
 
 /**
  * Sends one notification and returns what the push service answered; one it no longer knows is
@@ -115,9 +123,11 @@ export async function sendTest(db: Db, personId: string, locale: string) {
  */
 export async function notifyNewExpense(
 	db: Db,
-	group: { id: string; name: string; shareToken: string; currency: string },
+	group: { id: string; name: string; shareToken: string; currency: string; keyId: string | null },
 	actorId: string | null,
-	expense: { title: string; amountCents: number }
+	expense: { title: string; amountCents: number },
+	/** Encrypted: sealed by the browser, as the server has no amount (#110) */
+	sealedAmount?: FormDataEntryValue | null
 ) {
 	if (!keys().VAPID_PRIVATE_KEY) return;
 	const others = await db
@@ -151,16 +161,28 @@ export async function notifyNewExpense(
 				const chosen = others.find((other) => other.personId === sub.personId)?.locale;
 				return isLocale(chosen) ? chosen : 'en';
 			})();
+			const amount = group.keyId
+				? isSealed(sealedAmount)
+					? sealedAmount
+					: ''
+				: formatAmount(expense.amountCents, group.currency, locale);
 			return send(db, sub, {
+				// In an encrypted group these are sealed: the service worker opens them (#110)
 				title: group.name,
 				body: m.push_new_expense(
 					{
 						name: actor?.name ?? m.activity_someone({}, { locale }),
 						title: expense.title,
-						amount: formatAmount(expense.amountCents, group.currency, locale)
+						amount
 					},
 					{ locale }
 				),
+				...(group.keyId && {
+					fallback: {
+						title: m.app_name({}, { locale }),
+						body: m.push_new_expense_sealed({}, { locale })
+					}
+				}),
 				url: `/g/${group.shareToken}`,
 				tag: `group-${group.id}`
 			});

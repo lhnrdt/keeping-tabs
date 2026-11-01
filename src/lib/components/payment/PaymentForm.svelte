@@ -16,9 +16,12 @@
 		values: { from: string; to: string; amount: string; date: string };
 		error?: ErrorCode;
 		submitLabel: string;
+		paymentId?: string;
 	};
 
-	let { members, currency, values, error, submitLabel }: Props = $props();
+	let { members, currency, values, error, submitLabel, paymentId }: Props = $props();
+	// Sealed for this row (#110): an edited one's, or a new one's, whose id is made here
+	const clientId = crypto.randomUUID();
 
 	// Follows the chosen recipient, to show how to pay them (#47)
 	// Nothing suggested: from you, to the first of the others, as the usual case
@@ -32,7 +35,8 @@
 	const toName = $derived(members.find((member) => member.id === to)?.name ?? '');
 </script>
 
-<GroupForm {error} {submitLabel}>
+<GroupForm {error} {submitLabel} sealed={['payment']} sealRow={paymentId ?? clientId}>
+	<input type="hidden" name="clientId" value={paymentId ? '' : clientId} />
 	<div class="page-sections">
 		<div
 			class="page-section"

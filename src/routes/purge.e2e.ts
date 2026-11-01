@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { open } from './e2e-helpers';
+import { open, keepPlain } from './e2e-helpers';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -7,6 +7,7 @@ test('deleted groups are removed for good after 30 days', async ({ page, request
 	await open(page, '/new');
 	await page.getByLabel('Group name').fill('Long gone');
 	await page.getByLabel('Your name').fill('Anna');
+	await keepPlain(page);
 	await page.getByRole('button', { name: 'Create group' }).click();
 	await expect(page.getByTestId('identity')).toHaveText('Anna');
 

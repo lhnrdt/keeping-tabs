@@ -2,8 +2,9 @@ import { and, eq, gt, isNull } from 'drizzle-orm';
 import type { Accent, Locale, Theme, Units } from '#lib/settings.ts';
 import type { Db } from './db';
 import { once } from './request-cache';
-import { deviceLinks, devices, people } from './db/schema';
-import { newRecoveryKey, normalizeRecoveryKey } from './recovery-key';
+import { deviceLinks, devices, people, personKeys } from './db/schema';
+import { isKey } from '#lib/crypto/seal.ts';
+import { normalizeRecoveryKey, OLD_LENGTH } from '#lib/recovery-key-format.ts';
 import { hashSecret, randomSecret } from './secrets';
 
 // People are created lazily: a device only gets a person once it claims or creates something.
@@ -22,6 +23,7 @@ export type Person = {
 	avatar: string | null;
 	/** How to pay them (#47) */
 	paymentDetails: string | null;
+	sealedPaymentDetails: string | null;
 	/** When they read the friendly note (#112) */
 	notedAt: Date | null;
 };
@@ -46,6 +48,7 @@ export async function findPerson(db: Db, deviceKey: string): Promise<Person | un
 			displayCurrency: people.displayCurrency,
 			avatar: people.avatar,
 			paymentDetails: people.paymentDetails,
+			sealedPaymentDetails: people.sealedPaymentDetails,
 			notedAt: people.notedAt
 		})
 		.from(devices)
@@ -73,6 +76,7 @@ export async function ensurePerson(db: Db, deviceKey: string): Promise<Person> {
 		displayCurrency: null,
 		avatar: null,
 		paymentDetails: null,
+		sealedPaymentDetails: null,
 		notedAt: null
 	};
 }
@@ -124,29 +128,55 @@ export async function attachDevice(db: Db, deviceKey: string, personId: string) 
 		.onConflictDoUpdate({ target: devices.keyHash, set: { personId } });
 }
 
-/** Creates a new recovery key for the person, replacing any previous one (A-16). */
-export async function createRecoveryKey(db: Db, personId: string): Promise<string> {
-	const key = newRecoveryKey();
-	const recoveryHash = await hashSecret(normalizeRecoveryKey(key)!);
-	await db.update(people).set({ recoveryHash }).where(eq(people.id, personId));
-	return key;
+/**
+ * Keeps a new recovery key's proof, replacing any previous one (A-16). The key itself is made in
+ * the browser and never gets here; `vault` is the person's vault sealed with it (#110).
+ */
+export async function saveRecoveryKey(db: Db, personId: string, proof: string, vault: string) {
+	await db
+		.update(people)
+		.set({ recoveryHash: await hashSecret(proof), recoveryVault: vault })
+		.where(eq(people.id, personId));
+}
+
+/** What's hashed for a recovery key as sent: its proof, or an older key itself */
+function recoveryCredential(sent: string) {
+	if (isKey(sent)) return sent;
+	const normalized = normalizeRecoveryKey(sent);
+	return normalized?.length === OLD_LENGTH ? normalized : null;
 }
 
 /** Makes this device the person behind a recovery key. Returns false for unknown keys. */
 export async function restoreWithRecoveryKey(
 	db: Db,
-	input: string,
+	sent: string,
 	deviceKey: string
 ): Promise<boolean> {
-	const normalized = normalizeRecoveryKey(input);
-	if (!normalized) return false;
+	const credential = recoveryCredential(sent);
+	if (!credential) return false;
 	const person = await db.query.people.findFirst({
 		columns: { id: true },
-		where: eq(people.recoveryHash, await hashSecret(normalized))
+		where: eq(people.recoveryHash, await hashSecret(credential))
 	});
 	if (!person) return false;
 	await attachDevice(db, deviceKey, person.id);
 	return true;
+}
+
+/** A key from before keys came along with it: it can't bring back encrypted groups (#110) */
+export async function recoveryKeyIsOutdated(db: Db, personId: string) {
+	const [[row], keys] = await db.batch([
+		db
+			.select({ hash: people.recoveryHash, vault: people.recoveryVault })
+			.from(people)
+			.where(eq(people.id, personId)),
+		db
+			.select({ keyId: personKeys.keyId })
+			.from(personKeys)
+			.where(eq(personKeys.personId, personId))
+			.limit(1)
+	]);
+	return Boolean(row?.hash && !row.vault && keys.length);
 }
 
 /** Whether the person has made a recovery key (#151, for the backup's status) */

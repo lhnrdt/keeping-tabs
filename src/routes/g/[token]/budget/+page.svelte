@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
+	import { sealing } from '#lib/crypto/seal-form.ts';
 	import { resolve } from '$app/paths';
 	import AppPage from '#lib/components/AppPage.svelte';
 	import Field from '#lib/components/Field.svelte';
@@ -26,7 +28,7 @@
 		label: data.group.name
 	}}
 >
-	<GroupForm error={form?.error} submitLabel={m.save()}>
+	<GroupForm error={form?.error} submitLabel={m.save()} sealed={['plan']}>
 		<div class="page-sections">
 			<div class="page-section">
 				<p class="text-sm text-muted">{m.budget_hint()}</p>
@@ -50,7 +52,7 @@
 		</div>
 	</GroupForm>
 	{#if hasPlan}
-		<form method="POST" action="?/remove" class="px-4">
+		<form method="POST" action="?/remove" class="px-4" use:enhance={sealing(['plan'])}>
 			<button type="submit" class="min-h-11 text-sm font-medium tone-destructive"
 				>{m.budget_remove()}</button
 			>

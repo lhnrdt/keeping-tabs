@@ -22,11 +22,21 @@ export async function findGroupByToken(db: Db, token: string) {
 			insightSections: true,
 			budgetCents: true,
 			endsOn: true,
-			defaultSplit: true
+			defaultSplit: true,
+			keyId: true,
+			transitionKey: true,
+			transitionUntil: true,
+			sealedDetails: true
 		},
 		where: and(eq(groups.shareToken, token), isNull(groups.deletedAt))
 	});
-	return group && { ...group, defaultSplit: parseDefaultSplit(group.defaultSplit) };
+	return (
+		group && {
+			...group,
+			transitionKey: handedOver(group),
+			defaultSplit: parseDefaultSplit(group.defaultSplit)
+		}
+	);
 }
 
 /** Current name and look of the groups behind these links; deleted ones are left out (#125) */
@@ -34,7 +44,14 @@ export function findGroupsByTokens(db: Db, tokens: readonly string[]) {
 	const valid = tokens.filter((token) => SHARE_TOKEN_PATTERN.test(token));
 	if (valid.length === 0) return Promise.resolve([]);
 	return db.query.groups.findMany({
-		columns: { id: true, name: true, shareToken: true, kind: true, tint: true },
+		columns: {
+			id: true,
+			name: true,
+			shareToken: true,
+			kind: true,
+			tint: true,
+			sealedDetails: true
+		},
 		where: and(inArray(groups.shareToken, valid), isNull(groups.deletedAt))
 	});
 }
@@ -49,6 +66,19 @@ export async function isDeletedGroupToken(db: Db, token: string) {
 	return Boolean(group);
 }
 
+/** An encrypted group's sealed plan and default split (#110) */
+export const setGroupDetails = (db: Db, groupId: string, sealedDetails: string) =>
+	db.update(groups).set({ sealedDetails }).where(eq(groups.id, groupId));
+
+/** The key still being handed over, if it is (#110) */
+export const handedOver = (group: {
+	transitionKey: string | null;
+	transitionUntil: Date | null;
+}) =>
+	!group.transitionUntil || group.transitionUntil.getTime() > Date.now()
+		? group.transitionKey
+		: null;
+
 /** Current members, with the avatar their person chose (#61) */
 export function listMembers(db: Db, groupId: string) {
 	return db
@@ -57,7 +87,9 @@ export function listMembers(db: Db, groupId: string) {
 			name: members.name,
 			personId: members.personId,
 			avatar: people.avatar,
-			paymentDetails: people.paymentDetails
+			paymentDetails: members.paymentDetails,
+			personPaymentDetails: people.paymentDetails,
+			keyReceived: members.keyReceived
 		})
 		.from(members)
 		.leftJoin(people, eq(members.personId, people.id))
@@ -98,6 +130,9 @@ export async function createGroup(
 		tint: Tint | null;
 		memberNames: string[];
 		creatorPersonId: string;
+		/** Its text is sealed in the browser with this key (#110) */
+		keyId?: string | null;
+		sealedDetails?: string | null;
 	}
 ) {
 	const groupId = crypto.randomUUID();
@@ -119,7 +154,9 @@ export async function createGroup(
 			description: input.description,
 			currency: input.currency,
 			kind: input.kind,
-			tint: input.tint
+			tint: input.tint,
+			keyId: input.keyId ?? null,
+			sealedDetails: input.sealedDetails ?? null
 		}),
 		db.insert(members).values(memberRows),
 		log(db, groupId, creatorId, 'group.create', {
@@ -196,6 +233,10 @@ export async function listGroupsOf(db: Db, personId: string) {
 		.select({
 			id: groups.id,
 			name: groups.name,
+			keyId: groups.keyId,
+			transitionKey: groups.transitionKey,
+			transitionUntil: groups.transitionUntil,
+			sealedDetails: groups.sealedDetails,
 			token: groups.shareToken,
 			currency: groups.currency,
 			kind: groups.kind,
@@ -206,7 +247,13 @@ export async function listGroupsOf(db: Db, personId: string) {
 		.from(members)
 		.innerJoin(groups, eq(members.groupId, groups.id))
 		.where(and(eq(members.personId, personId), isNull(members.deletedAt), isNull(groups.deletedAt)))
-		.orderBy(desc(groups.createdAt));
+		.orderBy(desc(groups.createdAt))
+		.then((rows) =>
+			rows.map(({ transitionUntil, ...row }) => ({
+				...row,
+				transitionKey: handedOver({ transitionKey: row.transitionKey, transitionUntil })
+			}))
+		);
 }
 
 /** Which insights the group shows (#174); null = its type's suggestions */

@@ -15,6 +15,10 @@ export const CHANGELOG: ChangelogEntry[] = [
 		date: '',
 		items: [
 			{
+				en: 'Your groups are now encrypted, including amounts. There’s nothing to do: existing groups upgrade by themselves.',
+				de: 'Deine Gruppen sind jetzt verschlüsselt, auch die Beträge. Du musst nichts tun: Bestehende Gruppen stellen sich von selbst um.'
+			},
+			{
 				en: 'Add another device by scanning a QR code.',
 				de: 'Füge ein weiteres Gerät hinzu, indem du einen QR-Code scannst.'
 			},

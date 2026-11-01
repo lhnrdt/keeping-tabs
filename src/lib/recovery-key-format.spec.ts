@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { newRecoveryKey, normalizeRecoveryKey } from './recovery-key';
+import { newRecoveryKey, normalizeRecoveryKey } from './recovery-key-format';
 
 describe('newRecoveryKey', () => {
 	it('is five groups of four Crockford characters', () => {
-		expect(newRecoveryKey()).toMatch(/^([0-9A-HJKMNP-TV-Z]{4}-){4}[0-9A-HJKMNP-TV-Z]{4}$/);
+		expect(newRecoveryKey()).toMatch(/^([0-9A-HJKMNP-TV-Z]{4}-){5}[0-9A-HJKMNP-TV-Z]{4}$/);
 	});
 
 	it('normalizes back to itself without dashes', () => {

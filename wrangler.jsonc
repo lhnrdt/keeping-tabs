@@ -7,7 +7,7 @@
 	// The SvelteKit worker plus a daily cleanup job (worker/app.ts)
 	"main": "worker/app.ts",
 	// Daily at 03:17 UTC: remove groups deleted more than 30 days ago
-	"triggers": { "crons": ["17 3 * * *"] },
+	"triggers": { "crons": ["17 3 * * *", "*/5 * * * *"] },
 	"assets": {
 		"binding": "ASSETS",
 		"directory": ".svelte-kit/cloudflare"
@@ -47,7 +47,7 @@
 			// Password-protected wrapper around the SvelteKit worker (see worker/staging.ts)
 			"main": "worker/staging.ts",
 			// Triggers aren't inherited by environments
-			"triggers": { "crons": ["17 3 * * *"] },
+			"triggers": { "crons": ["17 3 * * *", "*/5 * * * *"] },
 			"assets": {
 				"binding": "ASSETS",
 				"directory": ".svelte-kit/cloudflare",

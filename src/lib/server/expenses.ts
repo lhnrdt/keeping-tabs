@@ -21,7 +21,8 @@ const expenseColumns = {
 	amountCents: expenses.amountCents,
 	paidBy: expenses.paidBy,
 	date: expenses.date,
-	category: expenses.category
+	category: expenses.category,
+	sealedDetails: expenses.sealedDetails
 };
 
 export const active = (groupId: string) =>
@@ -235,9 +236,15 @@ export async function listSharesOf(db: Db, expenseIds: string[], memberId: strin
 /** Categories chosen by hand in a group, newest first: what its automatic guess learns from. */
 export function listChosenCategories(db: Db, groupId: string) {
 	return db
-		.select({ title: expenses.title, category: expenses.category })
+		.select({
+			title: expenses.title,
+			category: expenses.category,
+			sealedDetails: expenses.sealedDetails
+		})
 		.from(expenses)
-		.where(and(active(groupId), isNotNull(expenses.category)))
+		.where(
+			and(active(groupId), or(isNotNull(expenses.category), isNotNull(expenses.sealedDetails)))
+		)
 		.orderBy(desc(expenses.date), desc(expenses.createdAt));
 }
 
@@ -290,6 +297,14 @@ const payerRows = (db: Db, expenseId: string, input: ExpenseInput) =>
 const splitRows = (expenseId: string, input: ExpenseInput) =>
 	input.shares.map((share) => ({ expenseId, ...share }));
 
+/** A sealed expense has none: who shares it is sealed too (#110) */
+const splitInserts = (db: Db, expenseId: string, input: ExpenseInput) =>
+	input.shares.length ? [db.insert(expenseSplits).values(splitRows(expenseId, input))] : [];
+
+/** What the history keeps of an expense; a sealed one's text is in the expense itself */
+const logged = (expenseId: string, input: ExpenseInput) =>
+	input.sealedDetails ? { expenseId } : { expenseId, ...input };
+
 export async function createExpense(
 	db: Db,
 	groupId: string,
@@ -313,11 +328,12 @@ export async function createExpense(
 			amountCents: input.amountCents,
 			paidBy: input.paidBy,
 			date: input.date,
-			category: input.category
+			category: input.category,
+			sealedDetails: input.sealedDetails
 		}),
-		db.insert(expenseSplits).values(splitRows(id, input)),
+		...splitInserts(db, id, input),
 		...payerRows(db, id, input),
-		log(db, groupId, actorId, 'expense.create', { expenseId: id, ...input })
+		log(db, groupId, actorId, 'expense.create', logged(id, input))
 	]);
 	return id;
 }
@@ -344,14 +360,15 @@ export async function updateExpense(
 				paidBy: input.paidBy,
 				date: input.date,
 				category: input.category,
+				sealedDetails: input.sealedDetails,
 				splitMode: input.splitMode
 			})
 			.where(and(eq(expenses.id, id), active(groupId))),
 		db.delete(expenseSplits).where(eq(expenseSplits.expenseId, id)),
-		db.insert(expenseSplits).values(splitRows(id, input)),
+		...splitInserts(db, id, input),
 		db.delete(expensePayers).where(eq(expensePayers.expenseId, id)),
 		...payerRows(db, id, input),
-		log(db, groupId, actorId, 'expense.update', { expenseId: id, ...input })
+		log(db, groupId, actorId, 'expense.update', logged(id, input))
 	]);
 	return true;
 }

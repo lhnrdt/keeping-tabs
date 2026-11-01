@@ -1,9 +1,12 @@
-import { fail, redirect } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
+import { isSealed } from '#lib/crypto/seal.ts';
+import { SEALED_GROUP_COLUMNS } from '#lib/expense/sealed-details.ts';
+import { m } from '#lib/paraglide/messages.js';
 import { resolve } from '$app/paths';
 import type { ErrorCode } from '#lib/errors.ts';
 import { groupTabUrl } from '#lib/group/tabs.ts';
 import { formContext } from '#lib/server/context.ts';
-import { updateGroup } from '#lib/server/groups.ts';
+import { setGroupDetails, updateGroup } from '#lib/server/groups.ts';
 import { parseDescription, parseGroupName, parseKind, parseTint } from '#lib/validation.ts';
 import type { Actions } from './$types';
 
@@ -16,6 +19,18 @@ export const actions: Actions = {
 		if (!name.ok) return invalid(name.error);
 		const description = parseDescription(form.get('description'));
 		if (!description.ok) return invalid(description.error);
+		// Encrypted: its look and settings were checked and sealed in the browser (#110)
+		if (group.keyId) {
+			const details = form.get('details');
+			if (!isSealed(details)) error(409, m.locked_reload());
+			await setGroupDetails(locals.db, group.id, details);
+			await updateGroup(locals.db, group.id, actorId, {
+				...SEALED_GROUP_COLUMNS,
+				name: name.value,
+				description: description.value
+			});
+			redirect(303, groupTabUrl(resolve('/g/[token]', { token: params.token }), 'group'));
+		}
 		const kind = parseKind(form.get('kind'));
 		if (!kind.ok) return invalid(kind.error);
 		const tint = parseTint(form.get('tint'));

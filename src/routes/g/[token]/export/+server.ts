@@ -1,4 +1,5 @@
 // The group's expenses as a CSV download (#50), in Splitwise's format.
+import { json } from '@sveltejs/kit';
 import { toSplitwiseCsv } from '#lib/export/splitwise.ts';
 import { requireGroup } from '#lib/server/context.ts';
 import { downloadHeaders } from '#lib/server/download.ts';
@@ -14,6 +15,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		listFormerMembers(locals.db, group.id),
 		listExpenses(locals.db, group.id)
 	]);
+	// Encrypted: the browser opens these and makes the file (crypto/open-download.ts)
+	if (group.keyId) return json({ members, formerMembers, expenses });
 	return new Response(toSplitwiseCsv(group.currency, [...members, ...formerMembers], expenses), {
 		headers: downloadHeaders(group.name, 'csv', 'text/csv; charset=utf-8')
 	});

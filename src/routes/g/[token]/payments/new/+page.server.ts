@@ -4,14 +4,15 @@ import { groupTabUrl } from '#lib/group/tabs.ts';
 import { formContext } from '#lib/server/context.ts';
 import { readPaymentForm } from '#lib/server/group-forms.ts';
 import { createPayment } from '#lib/server/payments.ts';
+import { clientIdIn } from '#lib/validation.ts';
 import type { Actions } from './$types';
 
 export const actions: Actions = {
 	save: async ({ locals, params, request }) => {
 		const { form, group, actorId } = await formContext(locals, params.token, request);
-		const result = await readPaymentForm(locals.db, group, form);
+		const result = await readPaymentForm(locals.db, group, form, actorId);
 		if (!result.ok) return result.failure;
-		await createPayment(locals.db, group.id, actorId, result.input);
+		await createPayment(locals.db, group.id, actorId, result.input, clientIdIn(form));
 		redirect(303, groupTabUrl(resolve('/g/[token]', { token: params.token }), 'balances'));
 	}
 };

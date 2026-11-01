@@ -9,12 +9,14 @@ import { notifyNewExpense } from '#lib/server/push.ts';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ locals, params, request }) => {
-	const { group, actorId } = await formContext(locals, params.token, request);
+	const { form, group, actorId } = await formContext(locals, params.token, request);
 	const expense = await claimNotification(locals.db, group.id, params.id);
 	if (expense === undefined) error(404);
 	if (expense === null) return json({ sent: false });
-	await notifyNewExpense(locals.db, group, actorId, expense).catch((failure: unknown) => {
-		logError({ error: failure, route: 'push', method: 'POST' });
-	});
+	await notifyNewExpense(locals.db, group, actorId, expense, form.get('amount')).catch(
+		(failure: unknown) => {
+			logError({ error: failure, route: 'push', method: 'POST' });
+		}
+	);
 	return json({ sent: true });
 };
