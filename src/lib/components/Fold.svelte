@@ -36,5 +36,5 @@
 			<Icon name="expand" size={18} />
 		</span>
 	</summary>
-	<div class="pb-3">{@render children()}</div>
+	<div class={plain ? 'flex flex-col gap-3 px-4 pb-4' : 'pb-3'}>{@render children()}</div>
 </details>

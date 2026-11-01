@@ -14,7 +14,8 @@ self.addEventListener('push', (event) => {
 				body: shown.body,
 				tag: payload.tag,
 				icon: '/icons/icon-192.png',
-				badge: '/icons/icon-192.png',
+				// One color on transparent: Android makes the status bar's icon from its shape
+				badge: '/icons/badge-96.png',
 				data: { url: payload.url ?? '/' }
 			})
 		)

@@ -290,6 +290,7 @@
 	"recovery_replace_hint": "Ein neuer Recovery-Key macht ältere ungültig.",
 	"recovery_shown": "Dein Recovery-Key. Speichere ihn jetzt, er wird nicht noch einmal angezeigt.",
 	"recovery_outdated": "Dein Recovery-Key ist älter als deine verschlüsselten Gruppen und kann ihre Schlüssel nicht zurückholen. Erstelle einen neuen.",
+	"recovery_status_outdated": "Muss erneuert werden",
 	"recovery_copy": "Recovery-Key kopieren",
 	"restore_title": "Recovery",
 	"restore_intro": "Gerät verloren oder Browserdaten gelöscht? Gib deinen Recovery-Key ein, um auf diesem Gerät wieder du zu sein.",

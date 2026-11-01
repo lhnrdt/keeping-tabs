@@ -26,7 +26,7 @@
 				error={form && 'error' in form && !('restored' in form) ? form.error : undefined}
 			/>
 			<Fold plain title={m.device_title()} open={Boolean(form && 'link' in form)}>
-				<p class="px-4 pb-2 text-sm text-muted">{m.device_intro()}</p>
+				<p class="text-sm text-muted">{m.device_intro()}</p>
 				<DeviceLinkCreator link={form && 'link' in form ? form.link : undefined} />
 			</Fold>
 		{/if}
@@ -38,7 +38,7 @@
 				title={m.restore_from_other()}
 				open={!data.hasIdentity || Boolean(form && 'restored' in form)}
 			>
-				<p class="px-4 pb-2 text-sm text-muted">{m.restore_intro()}</p>
+				<p class="text-sm text-muted">{m.restore_intro()}</p>
 				<PasskeyRestore />
 				<RestoreForm
 					error={form && 'error' in form && !('link' in form) ? form.error : undefined}
