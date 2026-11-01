@@ -170,7 +170,7 @@ export async function storeSealed(db: Db, groupId: string, actorId: string, batc
 				.prepare(
 					`update expenses set title = ${column('title')}expenses.id), notes = ${column('notes')}expenses.id),
 					sealed_details = ${column('details')}expenses.id), items = null, amount_cents = 1 /* SEALED_AMOUNT */, paid_by = ?3,
-					split_mode = 'equal', original_currency = null, original_amount_cents = null,
+					split_mode = 'equal', updated_at = cast(unixepoch('subsec') * 1000 as integer), original_currency = null, original_amount_cents = null,
 					exchange_rate = null, category = null, odometer_m = null, fuel_ml = null
 					where group_id = ?2 and id in ${ids}`
 				)

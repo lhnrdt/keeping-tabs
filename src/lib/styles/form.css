@@ -258,3 +258,19 @@ details[open]::details-content {
 		transform: none;
 	}
 }
+
+/* What's on its way: a quiet breath, not a shimmer */
+@keyframes skeleton-breathe {
+	50% {
+		opacity: 0.55;
+	}
+}
+.skeleton {
+	background-color: color-mix(in srgb, currentColor 10%, transparent);
+	animation: skeleton-breathe 1.6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+	.skeleton {
+		animation: none;
+	}
+}

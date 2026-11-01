@@ -563,7 +563,7 @@
 	"how_devices_title": "Keeping your groups",
 	"how_devices_text": "Your groups stay with this device. To have them on another phone or after losing this one, save a passkey or a recovery key, or link your other device while you still have this one.",
 	"how_devices_link": "Set up a backup",
-	"locked_text": "🔒 Locked",
+	"locked_text": "Locked",
 	"encrypted_note": "Encrypted. Only people with the link can read this.",
 	"push_new_expense_sealed": "A new expense in one of your groups",
 	"error_import_encrypted": "That couldn’t be imported. Open the group’s link on this device and try again.",

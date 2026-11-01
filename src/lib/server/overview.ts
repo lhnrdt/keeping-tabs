@@ -39,9 +39,7 @@ export async function yourGroupsWithBalances(db: Db, personId: string) {
 			const { id, name, token, currency, kind, tint, memberId, simplifyDebts } = group;
 			// Encrypted, or on its way: worked out in the browser from all entries (#110)
 			const sealed =
-				group.keyId || group.transitionKey
-					? { members, memberId, simplifyDebts, expenses: await listExpenses(db, id) }
-					: null;
+				group.keyId || group.transitionKey ? { members, memberId, simplifyDebts } : null;
 			return {
 				sealed,
 				sealedDetails: group.sealedDetails,
@@ -72,8 +70,13 @@ export async function peopleOverview(db: Db, personId: string) {
 	// Every entry too: the spending needs each expense's category and date
 	const settled = await Promise.all(
 		groups.map(async (group) => {
-			const [sums, expenses] = await Promise.all([settle(db, group), listExpenses(db, group.id)]);
-			return { ...group, ...sums, expenses };
+			// Encrypted, or on its way: the browser fetches and works out its own (#110, #277)
+			const sealedMoney = Boolean(group.keyId || group.transitionKey);
+			const [sums, expenses] = await Promise.all([
+				settle(db, group),
+				sealedMoney ? [] : listExpenses(db, group.id)
+			]);
+			return { ...group, ...sums, expenses, sealedMoney };
 		})
 	);
 	const spendingGroups = settled.map((group) => ({ ...group, entries: group.expenses }));

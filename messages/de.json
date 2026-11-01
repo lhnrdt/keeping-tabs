@@ -563,7 +563,7 @@
 	"how_devices_title": "Deine Gruppen behalten",
 	"how_devices_text": "Deine Gruppen bleiben auf diesem Gerät. Damit du sie auf einem anderen Handy hast oder nach einem Verlust wiederbekommst, speichere einen Passkey oder Recovery-Key oder verknüpfe dein anderes Gerät, solange du dieses noch hast.",
 	"how_devices_link": "Backup einrichten",
-	"locked_text": "🔒 Gesperrt",
+	"locked_text": "Gesperrt",
 	"encrypted_note": "Verschlüsselt. Nur wer den Link hat, kann das lesen.",
 	"push_new_expense_sealed": "Eine neue Ausgabe in einer deiner Gruppen",
 	"error_import_encrypted": "Das ließ sich nicht importieren. Öffne den Link der Gruppe auf diesem Gerät und versuch es noch mal.",
