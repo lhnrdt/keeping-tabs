@@ -5,6 +5,7 @@
 	import FormError from '#lib/components/FormError.svelte';
 	import type { ErrorCode } from '#lib/errors.ts';
 	import { MAX_RECEIPTS_PER_EXPENSE } from '#lib/expense/receipt-image.ts';
+	import { calmMove, calmPop } from '#lib/motion/calm.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import PhotoPicker from './PhotoPicker.svelte';
 
@@ -50,7 +51,7 @@
 	{#if picked.length}
 		<ul class="grid grid-cols-3 gap-2">
 			{#each picked as photo, i (photo)}
-				<li class="flex flex-col gap-1">
+				<li class="flex flex-col gap-1" transition:calmPop animate:calmMove>
 					<img
 						src={photo.preview}
 						alt={m.receipt_alt({ number: i + 1 })}

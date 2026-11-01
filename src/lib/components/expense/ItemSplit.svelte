@@ -6,6 +6,7 @@
 	import { errorMessage } from '#lib/errors.ts';
 	import type { Member } from '#lib/group/members.ts';
 	import { amountInputValue, currencySymbol, formatAmount, parseAmount } from '#lib/money.ts';
+	import { calmMove, calmSlide } from '#lib/motion/calm.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import { itemShares, itemsTotal, type ExpenseItem, type TypedItem } from '#lib/split/items.ts';
@@ -70,7 +71,7 @@
 <input type="hidden" name="items" value={JSON.stringify(items)} />
 <div class="-mt-1 flex flex-col gap-4" role="group" aria-label={m.split_items()}>
 	{#each items as item, i (item)}
-		<div class="flex flex-col gap-2">
+		<div class="flex flex-col gap-2" transition:calmSlide animate:calmMove>
 			<div class="flex items-center gap-2">
 				<span class="field-well flex-1">
 					<input

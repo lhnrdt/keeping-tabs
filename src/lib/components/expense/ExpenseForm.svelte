@@ -14,6 +14,7 @@
 	import { useIdentity } from '#lib/group/identity.svelte.ts';
 	import type { GroupKind } from '#lib/group/kinds.ts';
 	import type { GroupMember } from '#lib/group/members.ts';
+	import { calmSlide } from '#lib/motion/calm.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { canBeDefault } from '#lib/split/default-split.ts';
 	import { ITEMS_MODE } from '#lib/split/items.ts';
@@ -182,7 +183,9 @@
 		</div>
 
 		{#if payer === SEVERAL_PAYERS}
-			<PayerAmounts {members} {currency} amount={converted} initial={values.payers ?? {}} />
+			<div transition:calmSlide>
+				<PayerAmounts {members} {currency} amount={converted} initial={values.payers ?? {}} />
+			</div>
 		{/if}
 		{#if mode === ITEMS_MODE}
 			<ItemSplit
