@@ -1,6 +1,6 @@
 <script lang="ts">
 	// Asks for a group's password (A-9); on this device only once.
-	import { Block, List } from 'konsta/svelte';
+	import { Block } from 'konsta/svelte';
 	import AppPage from '#lib/components/AppPage.svelte';
 	import Field from '#lib/components/Field.svelte';
 	import ThemeMotif from '#lib/components/illustrations/ThemeMotif.svelte';
@@ -22,7 +22,7 @@
 		<p class="max-w-sm text-muted">{m.group_password_intro()}</p>
 	</div>
 	<form method="POST">
-		<List strong inset>
+		<div class="page-section mx-4 my-4">
 			<Field
 				label={m.field_group_password()}
 				name="password"
@@ -30,7 +30,7 @@
 				required
 				autocomplete="current-password"
 			/>
-		</List>
+		</div>
 		{#if form?.wrong}
 			<Block class="!my-2">
 				<p role="alert" class="text-sm tone-destructive">{m.group_password_wrong()}</p>

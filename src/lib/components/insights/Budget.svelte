@@ -1,7 +1,7 @@
 <script lang="ts">
 	// Budget and pace for trips and events (#168): spent against the budget, where this pace
 	// leads by the end, what's left per day. Without a budget, an invitation to set one.
-	import { Button, List } from 'konsta/svelte';
+	import { Button } from 'konsta/svelte';
 	import Field from '#lib/components/Field.svelte';
 	import FormError from '#lib/components/FormError.svelte';
 	import FormDialog from '#lib/components/group/FormDialog.svelte';
@@ -75,7 +75,7 @@
 	<p class="mb-2 text-sm text-muted">{m.budget_hint()}</p>
 	<!-- Fresh on each opening: from what's saved, not what was typed and left -->
 	{#key editing}
-		<List strong inset class="!mx-0">
+		<div class="page-section my-4">
 			<Field
 				label={`${m.field_budget()} (${currencySymbol(currency, getLocale())})`}
 				name="amount"
@@ -85,7 +85,7 @@
 				value={view?.budget != null ? amountInputValue(view.budget, currency) : ''}
 			/>
 			<Field label={m.field_ends_on()} name="endsOn" type="date" value={view?.endsOn ?? ''} />
-		</List>
+		</div>
 	{/key}
 	<FormError {error} />
 </FormDialog>

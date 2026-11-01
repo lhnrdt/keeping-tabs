@@ -2,7 +2,7 @@
 	// Notifications on this device (#56): a switch that asks the browser for permission and
 	// subscribes it with the push service, or unsubscribes. Where that isn't possible, it says
 	// why (no support, blocked, an iPhone outside the home screen).
-	import { Block, List, ListItem, Toggle } from 'konsta/svelte';
+	import { Toggle } from 'konsta/svelte';
 	import { onMount } from 'svelte';
 	import { m } from '#lib/paraglide/messages.js';
 
@@ -109,20 +109,17 @@
 	}
 </script>
 
-<List strong inset class="!mb-2" role="region" aria-label={m.push_title()}>
-	<ListItem label title={m.push_toggle()}>
-		{#snippet after()}
-			<Toggle
-				checked={status === 'on'}
-				disabled={busy || status === 'loading' || status === 'blocked' || status === 'unsupported'}
-				onChange={toggle}
-				aria-label={m.push_toggle()}
-			/>
-		{/snippet}
-	</ListItem>
-</List>
-<Block class="!my-0"
-	><p class="text-sm text-muted">
+<div class="flex flex-col gap-1.5" role="region" aria-label={m.push_title()}>
+	<div class="field-well min-h-14 justify-between gap-3 px-3.5">
+		<span class="font-medium">{m.push_toggle()}</span>
+		<Toggle
+			checked={status === 'on'}
+			disabled={busy || status === 'loading' || status === 'blocked' || status === 'unsupported'}
+			onChange={toggle}
+			aria-label={m.push_toggle()}
+		/>
+	</div>
+	<p class="text-sm text-muted">
 		{#if status === 'blocked'}
 			{m.push_blocked()}
 		{:else if status === 'unsupported'}
@@ -131,14 +128,14 @@
 			{m.push_hint()}
 		{/if}
 	</p>
-	{#if problem}<p class="mt-1 text-sm tone-destructive" role="alert">{problem}</p>{/if}
+	{#if problem}<p class="text-sm tone-destructive" role="alert">{problem}</p>{/if}
 	{#if status === 'on'}
 		<button
 			type="button"
-			class="mt-1 min-h-11 text-sm font-medium text-accent dark:text-accent-night"
+			class="min-h-11 self-start text-sm font-medium text-accent dark:text-accent-night"
 			disabled={busy}
 			onclick={test}>{m.push_test()}</button
 		>
 		{#if tested}<p class="text-sm text-muted" role="status">{tested}</p>{/if}
-	{/if}</Block
->
+	{/if}
+</div>

@@ -11,14 +11,18 @@
 		/** Status in the positive tone, e.g. once something is set up */
 		done?: boolean;
 		open?: boolean;
+		/** Inside the page's own spacing, looking like a field */
+		plain?: boolean;
 		children: Snippet;
 	};
 
-	let { title, status, done = false, open = false, children }: Props = $props();
+	let { title, status, done = false, open = false, plain = false, children }: Props = $props();
 </script>
 
 <details
-	class="group mx-4 mb-3 overflow-hidden rounded-2xl bg-surface dark:bg-surface-night"
+	class="group overflow-hidden {plain
+		? 'rounded-xl bg-current/[0.07]'
+		: 'mx-4 mb-4 rounded-2xl bg-surface dark:bg-surface-night'}"
 	{open}
 >
 	<summary

@@ -12,17 +12,30 @@
 		arrow?: boolean;
 		/** The control, given the id its label points to */
 		children: Snippet<[string]>;
+		/** On the label's line, at its end, e.g. "Saved" */
+		aside?: Snippet;
 		/** Below the well, e.g. a hint */
 		below?: Snippet;
 		class?: string;
 	};
 
-	let { label, icon, arrow = false, children, below, class: className = '' }: Props = $props();
+	let {
+		label,
+		icon,
+		arrow = false,
+		children,
+		aside,
+		below,
+		class: className = ''
+	}: Props = $props();
 	const id = $props.id();
 </script>
 
 <div class="flex min-w-0 flex-col gap-1.5 {className}">
-	<label for={id} class="field-label">{label}</label>
+	<div class="flex min-h-5 items-center justify-between gap-2">
+		<label for={id} class="field-label">{label}</label>
+		{@render aside?.()}
+	</div>
 	<div class="field-well">
 		{#if icon}<span class="field-icon"><Icon name={icon} size={18} /></span>{/if}
 		{@render children(id)}

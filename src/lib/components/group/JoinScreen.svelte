@@ -4,7 +4,7 @@
 	// so nobody ends up in a group twice.
 	import { enhance } from '$app/forms';
 	import { resolve } from '$app/paths';
-	import { Block, BlockTitle, List } from 'konsta/svelte';
+	import { Block, BlockTitle } from 'konsta/svelte';
 	import AppPage from '#lib/components/AppPage.svelte';
 	import Avatar from '#lib/components/Avatar.svelte';
 	import Field from '#lib/components/Field.svelte';
@@ -107,7 +107,7 @@
 		{/if}
 
 		{#if askName}
-			<List strong inset>
+			<div class="page-section mx-4 my-4">
 				<Field
 					label={m.join_name()}
 					placeholder={m.placeholder_name()}
@@ -117,7 +117,7 @@
 					autocomplete="given-name"
 					bind:value={name}
 				/>
-			</List>
+			</div>
 			{#if lookalike}
 				<Block class="!my-3 space-y-2" aria-live="polite">
 					<p class="font-medium">{m.join_are_you({ name: lookalike.name })}</p>

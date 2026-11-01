@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { Block, BlockTitle, List } from 'konsta/svelte';
-	import Field from '#lib/components/Field.svelte';
+	import PlainField from '#lib/components/fields/PlainField.svelte';
+	import StickySubmit from '#lib/components/StickySubmit.svelte';
 	import KindPicker from '#lib/components/pickers/KindPicker.svelte';
 	import TintPicker from '#lib/components/pickers/TintPicker.svelte';
 	import FormError from '#lib/components/FormError.svelte';
@@ -40,52 +40,68 @@
 
 <section>
 	<form method="POST" use:enhance={submission.enhance}>
-		<List strong inset>
-			<Field
-				label={m.field_group_name()}
-				placeholder={m.placeholder_group_name()}
-				name="name"
-				required
-				maxlength={LIMITS.groupName}
-				value={values?.name ?? ''}
-			/>
-			<Field
-				label={m.field_description()}
-				placeholder={m.placeholder_description()}
-				name="description"
-				type="textarea"
-				maxlength={LIMITS.description}
-				value={values?.description ?? ''}
-			/>
-			<Field label={m.field_currency()} name="currency" type="select" dropdown value={currency}>
-				{#each currencies as option (option.code)}
-					<option value={option.code} selected={option.code === currency}>{option.label}</option>
-				{/each}
-			</Field>
-			<Field
-				label={m.field_your_name()}
-				placeholder={m.placeholder_name()}
-				name="you"
-				required
-				maxlength={LIMITS.memberName}
-				autocomplete="given-name"
-				value={values?.you ?? profileName}
-			/>
-		</List>
-
-		<!-- A card, not a List: pickers are fieldsets, not list items (#79) -->
-		<Block strong inset class="!px-0 !py-3">
-			<KindPicker value={values?.kind ?? DEFAULT_GROUP_KIND} />
-			<TintPicker value={values?.tint ?? ''} />
-		</Block>
-
-		<BlockTitle>{m.field_other_members()}</BlockTitle>
-		<MemberChips names={values?.members} />
-
-		<FormError {error} />
-
-		<Block>
+		<div class="page-sections">
+			<div class="page-section">
+				<PlainField label={m.field_group_name()}>
+					{#snippet children(id)}
+						<input
+							{id}
+							name="name"
+							required
+							maxlength={LIMITS.groupName}
+							placeholder={m.placeholder_group_name()}
+							value={values?.name ?? ''}
+						/>
+					{/snippet}
+				</PlainField>
+				<PlainField label={m.field_description()}>
+					{#snippet children(id)}
+						<textarea
+							{id}
+							name="description"
+							rows="2"
+							maxlength={LIMITS.description}
+							placeholder={m.placeholder_description()}
+							value={values?.description ?? ''}></textarea>
+					{/snippet}
+				</PlainField>
+				<PlainField label={m.field_currency()} arrow>
+					{#snippet children(id)}
+						<select {id} name="currency" value={currency}>
+							{#each currencies as option (option.code)}
+								<option value={option.code} selected={option.code === currency}
+									>{option.label}</option
+								>
+							{/each}
+						</select>
+					{/snippet}
+				</PlainField>
+				<PlainField label={m.field_your_name()}>
+					{#snippet children(id)}
+						<input
+							{id}
+							name="you"
+							required
+							maxlength={LIMITS.memberName}
+							autocomplete="given-name"
+							placeholder={m.placeholder_name()}
+							value={values?.you ?? profileName}
+						/>
+					{/snippet}
+				</PlainField>
+			</div>
+			<div class="-mx-4">
+				<KindPicker value={values?.kind ?? DEFAULT_GROUP_KIND} />
+				<TintPicker value={values?.tint ?? ''} />
+			</div>
+			<section class="-mx-4 flex flex-col gap-2">
+				<h2 class="section-label mx-4">{m.field_other_members()}</h2>
+				<MemberChips names={values?.members} />
+			</section>
+			<FormError {error} />
+		</div>
+		<StickySubmit>
 			<SubmitButton pending={submission.pending}>{m.create_submit()}</SubmitButton>
-		</Block>
+		</StickySubmit>
 	</form>
 </section>

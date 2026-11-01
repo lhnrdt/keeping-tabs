@@ -24,7 +24,7 @@
 		text={m.group_password_hint()}
 	/>
 	<ListButton type="button" onclick={() => (editing = true)}>
-		<Icon name="passkey" />
+		<Icon name="password" />
 		{hasPassword ? m.group_password_change() : m.group_password_set()}
 	</ListButton>
 </List>
@@ -49,7 +49,7 @@
 	submitLabel={m.save()}
 	onClose={() => (editing = false)}
 >
-	<List nested class="-mx-4 my-0">
+	<div class="page-section">
 		<Field
 			label={m.field_group_password()}
 			name="password"
@@ -59,7 +59,7 @@
 			maxlength={LIMITS.groupPassword}
 			autocomplete="new-password"
 		/>
-	</List>
+	</div>
 	<p class="mt-2 text-sm text-muted">{m.group_password_dialog_hint()}</p>
 	<FormError {error} />
 </FormDialog>
