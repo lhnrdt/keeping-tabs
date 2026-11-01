@@ -148,10 +148,13 @@
 						title={titleOf(expense)}
 						subtitle={subtitleOf(expense)}
 						style={transitionName('expense', expense.id)}
-						class={expense.type === 'payment' ? 'italic' : ''}
+						class={expense.type === 'payment'
+							? 'bg-accent-soft/35 dark:bg-accent-soft-night/35'
+							: ''}
 					>
 						{#snippet media()}
 							<IconBadge
+								solid={expense.type === 'payment'}
 								name={expense.type === 'payment'
 									? 'payment'
 									: categoryIcons[expense.category ?? 'other']}
@@ -159,7 +162,12 @@
 						{/snippet}
 						{#snippet after()}
 							{#if expense.type === 'payment'}
-								<AnimatedAmount amount={expense.amountCents} {currency} />
+								<!-- Money that changed hands, not something bought: set apart -->
+								<span
+									class="rounded-full bg-accent-soft px-2.5 py-1 text-sm font-medium text-ink tabular-nums dark:bg-accent-soft-night dark:text-ink-night"
+								>
+									<AnimatedAmount amount={expense.amountCents} {currency} />
+								</span>
 							{:else if expense.yourSide === null}
 								<span class="text-sm text-muted">{m.side_not_involved()}</span>
 							{:else if expense.yourSide >= 0}
