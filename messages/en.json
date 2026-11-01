@@ -539,6 +539,7 @@
 	"field_note": "Note",
 	"field_km": "Km driven",
 	"field_litres": "Fuel (litres)",
+	"field_optional": "Optional",
 	"placeholder_expense_title": "e.g. Groceries",
 	"placeholder_note": "e.g. Tip included",
 	"note_add": "Add a note",
