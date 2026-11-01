@@ -15,10 +15,11 @@ import {
 	isUnits,
 	THEME_COOKIE
 } from '#lib/settings.ts';
-import { listDevices } from '#lib/server/devices.ts';
+import { listDevices, logOutDevice } from '#lib/server/devices.ts';
 import { countPasskeys } from '#lib/server/passkeys.ts';
 import { findPerson, hasRecoveryKey } from '#lib/server/people.ts';
 import {
+	checkSettingsAgain,
 	saveSettings,
 	setAccentCookie,
 	setDisplayCurrencyCookie,
@@ -115,6 +116,14 @@ export const actions: Actions = {
 		if (person) await saveSettings(locals.db, person.id, { locale });
 		setLocaleCookie(cookies, locale);
 		redirect(303, safePath(form.get('next')));
+	},
+
+	/** Log out on this device (#282): the browser forgets what it keeps as this is sent */
+	logOut: async ({ locals, cookies }) => {
+		await logOutDevice(locals.db, locals.deviceKey);
+		forgetDeviceKey(cookies);
+		checkSettingsAgain(cookies);
+		redirect(303, resolve('/'));
 	},
 
 	/** Deletes the identity behind this device, its passkeys and links (GDPR, #74) */
