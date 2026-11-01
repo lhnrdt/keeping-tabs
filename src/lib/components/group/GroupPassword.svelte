@@ -7,6 +7,7 @@
 	import Icon from '#lib/components/Icon.svelte';
 	import type { ErrorCode } from '#lib/errors.ts';
 	import { tabAction } from '#lib/group/tabs.ts';
+	import { calmSlide } from '#lib/motion/calm.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { LIMITS } from '#lib/validation.ts';
 	import FormDialog from './FormDialog.svelte';
@@ -29,6 +30,7 @@
 </List>
 {#if hasPassword}
 	<form
+		transition:calmSlide
 		method="POST"
 		action={tabAction('removePassword', 'group')}
 		class="mx-4 -mt-4 mb-6"

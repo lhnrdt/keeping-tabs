@@ -12,6 +12,7 @@
 		formatAmount,
 		parseAmount
 	} from '#lib/money.ts';
+	import { calmSlide } from '#lib/motion/calm.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 
@@ -141,7 +142,7 @@
 				<span id="converted-note" aria-live="polite" data-testid="converted">{note}</span>
 			</button>
 			{#if showSource}
-				<p class="text-xs text-muted">{m.rate_source()}</p>
+				<p class="text-xs text-muted" transition:calmSlide>{m.rate_source()}</p>
 			{/if}
 		{/if}
 	{/snippet}

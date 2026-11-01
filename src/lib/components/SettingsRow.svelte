@@ -19,8 +19,11 @@
 	let { href, title, icon, value, media, after }: Props = $props();
 </script>
 
-<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- resolved by the caller -->
-<a {href} class="field-well min-h-14 gap-3 px-3.5 active:opacity-70">
+<!-- eslint-disable svelte/no-navigation-without-resolve -- resolved by the caller -->
+<a
+	{href}
+	class="field-well min-h-14 gap-3 px-3.5 transition-[transform,opacity] duration-150 active:scale-[0.99] active:opacity-70"
+>
 	{#if media}{@render media()}{:else if icon}<span class="flex-none opacity-65"
 			><Icon name={icon} size={20} /></span
 		>{/if}
@@ -29,3 +32,4 @@
 	{@render after?.()}
 	<span class="flex-none opacity-50" aria-hidden="true"><Icon name="next" size={18} /></span>
 </a>
+<!-- eslint-enable svelte/no-navigation-without-resolve -->

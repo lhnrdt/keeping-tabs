@@ -10,6 +10,7 @@
 	import { guessCategory, type Learned } from '#lib/expense/learned.ts';
 	import { categoryIcons, categoryLabels } from '#lib/expense/category-style.ts';
 	import type { GroupKind } from '#lib/group/kinds.ts';
+	import { calmPop } from '#lib/motion/calm.ts';
 	import { m } from '#lib/paraglide/messages.js';
 
 	/** value: the chosen category, empty for automatic; title: the expense's current title */
@@ -66,7 +67,7 @@
 	<div class="grid grid-cols-4 gap-1.5">
 		{#each categories as category (category)}
 			<label
-				class="relative flex min-h-16 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border-[1.5px] px-0.5 py-2 text-xs has-focus-visible:ring-2 {shown ===
+				class="relative flex min-h-16 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border-[1.5px] px-0.5 py-2 text-xs transition-colors duration-150 active:scale-[0.97] has-focus-visible:ring-2 {shown ===
 				category
 					? 'border-accent bg-accent-soft/45 text-ink dark:border-accent-night dark:bg-accent-soft-night dark:text-ink-night'
 					: 'border-transparent bg-current/[0.07] text-muted'}"

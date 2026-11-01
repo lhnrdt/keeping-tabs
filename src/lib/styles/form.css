@@ -99,3 +99,64 @@
 	background-color: var(--color-accent-soft-night);
 	color: var(--color-ink-night);
 }
+
+/* Pills, fields and tiles answer calmly */
+.choice-pill {
+	transition:
+		background-color 150ms,
+		border-color 150ms,
+		color 150ms,
+		transform 150ms var(--ease-calm);
+}
+.choice-pill:active {
+	transform: scale(0.97);
+}
+
+/* Opens and closes its height while what's inside stays in the form (and is sent) */
+.reveal {
+	display: grid;
+	grid-template-rows: 0fr;
+	visibility: hidden;
+	transition:
+		grid-template-rows 220ms var(--ease-calm),
+		visibility 0s 220ms;
+}
+.reveal.is-open {
+	grid-template-rows: 1fr;
+	visibility: visible;
+	transition:
+		grid-template-rows 220ms var(--ease-calm),
+		visibility 0s;
+}
+.reveal > * {
+	min-height: 0;
+	overflow: clip;
+	overflow-clip-margin: 4px;
+}
+
+/* Folds open smoothly where the browser can animate to their natural height */
+:root {
+	interpolate-size: allow-keywords;
+}
+details::details-content {
+	block-size: 0;
+	overflow: clip;
+	transition:
+		block-size 220ms var(--ease-calm),
+		content-visibility 220ms allow-discrete;
+}
+details[open]::details-content {
+	block-size: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.choice-pill,
+	.reveal,
+	.reveal.is-open,
+	details::details-content {
+		transition: none;
+	}
+	.choice-pill:active {
+		transform: none;
+	}
+}

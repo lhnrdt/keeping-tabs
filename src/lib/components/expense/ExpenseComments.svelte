@@ -7,6 +7,7 @@
 	import PlainField from '#lib/components/fields/PlainField.svelte';
 	import SubmitButton from '#lib/components/SubmitButton.svelte';
 	import type { ErrorCode } from '#lib/errors.ts';
+	import { calmMove, calmSlide } from '#lib/motion/calm.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import { LIMITS } from '#lib/validation.ts';
@@ -39,7 +40,7 @@
 		<ul class="flex flex-col gap-3">
 			{#each comments as comment (comment.id)}
 				{@const author = byId.get(comment.memberId)}
-				<li class="flex gap-3">
+				<li class="flex gap-3" transition:calmSlide animate:calmMove>
 					<Avatar
 						id={author?.avatarId ?? comment.memberId}
 						name={author?.name ?? '?'}

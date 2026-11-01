@@ -36,16 +36,18 @@
 		</button>
 	{/snippet}
 </PlainField>
-<div class="-mt-1" hidden={!noting}>
-	<PlainField label={m.field_note()}>
-		{#snippet children(id)}
-			<textarea
-				{id}
-				name="notes"
-				rows="2"
-				maxlength={LIMITS.expenseNote}
-				placeholder={m.placeholder_note()}
-				bind:value={note}></textarea>
-		{/snippet}
-	</PlainField>
+<div class="reveal -mt-1 {noting ? 'is-open' : ''}">
+	<div>
+		<PlainField label={m.field_note()}>
+			{#snippet children(id)}
+				<textarea
+					{id}
+					name="notes"
+					rows="2"
+					maxlength={LIMITS.expenseNote}
+					placeholder={m.placeholder_note()}
+					bind:value={note}></textarea>
+			{/snippet}
+		</PlainField>
+	</div>
 </div>

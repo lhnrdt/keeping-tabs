@@ -63,25 +63,27 @@
 		<span class="ms-2 flex-1" data-testid="split-between">{summary}</span>
 		<Icon name="expand" size={16} class="transition-transform {open ? 'rotate-180' : ''}" />
 	</button>
-	<fieldset class="flex flex-col" hidden={!open}>
-		<legend class="sr-only">{m.field_split_between()}</legend>
-		{#each members as member (member.id)}
-			{@const share = shares.get(member.id)}
-			<label
-				class="flex min-h-10 cursor-pointer items-center gap-3 text-sm {picked.includes(member.id)
-					? ''
-					: 'text-muted'}"
-			>
-				<input
-					type="checkbox"
-					name="participants"
-					value={member.id}
-					class="size-[18px] flex-none accent-accent dark:accent-accent-night"
-					bind:group={picked}
-				/>
-				<span class="flex-1">{member.name}</span>
-				<span class="tabular-nums">{share === undefined ? '–' : money(share)}</span>
-			</label>
-		{/each}
-	</fieldset>
+	<div class="reveal {open ? 'is-open' : ''}">
+		<fieldset class="flex flex-col">
+			<legend class="sr-only">{m.field_split_between()}</legend>
+			{#each members as member (member.id)}
+				{@const share = shares.get(member.id)}
+				<label
+					class="flex min-h-10 cursor-pointer items-center gap-3 text-sm {picked.includes(member.id)
+						? ''
+						: 'text-muted'}"
+				>
+					<input
+						type="checkbox"
+						name="participants"
+						value={member.id}
+						class="size-[18px] flex-none accent-accent dark:accent-accent-night"
+						bind:group={picked}
+					/>
+					<span class="flex-1">{member.name}</span>
+					<span class="tabular-nums">{share === undefined ? '–' : money(share)}</span>
+				</label>
+			{/each}
+		</fieldset>
+	</div>
 </div>

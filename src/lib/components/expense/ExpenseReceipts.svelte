@@ -8,6 +8,7 @@
 	import type { ErrorCode } from '#lib/errors.ts';
 	import { MAX_RECEIPTS_PER_EXPENSE } from '#lib/expense/receipt-image.ts';
 	import { sendReceipt } from '#lib/expense/send-receipt.ts';
+	import { calmMove, calmPop } from '#lib/motion/calm.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import PhotoPicker from './PhotoPicker.svelte';
 
@@ -57,7 +58,7 @@
 	{#if receipts.length}
 		<ul class="grid grid-cols-3 gap-2">
 			{#each receipts as receipt, i (receipt.id)}
-				<li class="flex flex-col gap-1">
+				<li class="flex flex-col gap-1" transition:calmPop animate:calmMove>
 					<a
 						href={url(receipt.id)}
 						target="_blank"
