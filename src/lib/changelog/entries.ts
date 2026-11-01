@@ -17,6 +17,8 @@ export const CHANGELOG: ChangelogEntry[] = [
 			{
 				en: 'Back up a group as a file, and restore it as a new group whenever you need it.',
 				de: 'Sichere eine Gruppe als Datei und stelle sie bei Bedarf als neue Gruppe wieder her.'
+			},
+			{
 				en: 'Expense categories fit the group: a car group offers fuel, parking and repairs, a shared home rent and utilities. All the others are one tap away.',
 				de: 'Die Kategorien passen zur Gruppe: Eine Autogruppe bietet Sprit, Parken und Werkstatt, eine WG Miete und Nebenkosten. Alle anderen sind einen Tipp entfernt.'
 			},
