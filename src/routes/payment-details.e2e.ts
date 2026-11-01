@@ -3,7 +3,7 @@ import { createGroup, open } from './e2e-helpers';
 
 test('whoever pays you back sees how to pay you (#47)', async ({ page }) => {
 	const groupUrl = await createGroup(page, 'Flat', 'Anna', ['Ben']);
-	await open(page, '/you');
+	await open(page, '/you/profile');
 	await page.getByLabel('How to pay you').fill('paypal.me/anna');
 	await page.getByLabel('How to pay you').blur();
 	await expect(page.getByText('Saved')).toBeVisible();
@@ -29,7 +29,7 @@ test('whoever pays you back sees how to pay you (#47)', async ({ page }) => {
 
 test('payment details stay with the people in the group (#71)', async ({ page, browser }) => {
 	const groupUrl = await createGroup(page, 'Flat', 'Anna', ['Ben']);
-	await open(page, '/you');
+	await open(page, '/you/profile');
 	await page.getByLabel('How to pay you').fill('DE02120300000000202051');
 	await page.getByLabel('How to pay you').blur();
 	await expect(page.getByText('Saved')).toBeVisible();

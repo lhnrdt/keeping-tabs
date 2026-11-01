@@ -4,11 +4,12 @@ import { createGroup, open, openFold } from './e2e-helpers';
 test('settings are saved and follow you to another device', async ({ browser }) => {
 	test.setTimeout(60_000);
 	const phone = await (await browser.newContext({ locale: 'en-US' })).newPage();
-	await open(phone, '/settings');
+	await open(phone, '/you/profile');
 	// Everything saves as it changes: no Save button
 	await phone.getByLabel('Your name').fill('Anna');
 	await phone.getByLabel('Your name').press('Tab');
 	await expect(phone.getByText('Saved').first()).toBeVisible();
+	await open(phone, '/settings');
 	await phone.getByRole('group', { name: 'Appearance' }).getByText('Dark').click();
 	// The theme switches right away, without reloading
 	await expect(phone.locator('html')).toHaveClass(/dark/);
@@ -16,9 +17,10 @@ test('settings are saved and follow you to another device', async ({ browser }) 
 	await phone.getByRole('group', { name: 'Language' }).getByText('Deutsch').click();
 
 	// The page is served again in German
-	await expect(phone.getByRole('heading', { name: 'Profil' })).toBeVisible();
+	await expect(phone.getByRole('heading', { name: 'Einstellungen' })).toBeVisible();
 	await expect(phone.locator('html')).toHaveAttribute('lang', 'de');
 	await expect(phone.locator('html')).toHaveClass(/dark/);
+	await open(phone, '/you/profile');
 	await expect(phone.getByLabel('Dein Name')).toHaveValue('Anna');
 
 	// A second device linked to Anna starts in German and dark as well
@@ -31,7 +33,7 @@ test('settings are saved and follow you to another device', async ({ browser }) 
 	// Not linked yet, so still in its own (English) language
 	await laptop.getByRole('button', { name: 'Use this device' }).click();
 	await expect(laptop).toHaveURL(/\/$/);
-	await open(laptop, '/settings');
+	await open(laptop, '/you/profile');
 	await expect(laptop.getByRole('heading', { name: 'Profil' })).toBeVisible();
 	await expect(laptop.locator('html')).toHaveClass(/dark/);
 	await expect(laptop.getByLabel('Dein Name')).toHaveValue('Anna');
@@ -50,33 +52,55 @@ test('a chosen light theme wins over a dark device', async ({ browser }) => {
 	await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', '#eaf1ec');
 });
 
-test('everything about you is in one place: profile, settings, devices (#146)', async ({
+test('settings are one tap from the start screen, and lead to profile, devices and backup (#251)', async ({
 	page
 }) => {
-	await open(page, '/settings');
+	await open(page, '/you/profile');
 	await page.getByLabel('Your name').fill('Anna');
 	await page.getByLabel('Your name').press('Tab');
 	await expect(page.getByText('Saved').first()).toBeVisible();
 
-	// The start screen has a way to you, at the top: the same menu as in a group (#156)
 	await open(page, '/');
 	await page.getByRole('link', { name: 'Anna', exact: true }).click();
-	const menu = page.getByRole('dialog', { name: 'Anna' });
-	await expect(menu.getByRole('link', { name: 'Devices & recovery' })).toBeVisible();
-	await menu.getByRole('link', { name: 'Profile' }).click();
 	await expect(page).toHaveURL(/\/you$/);
-	await expect(page.getByRole('heading', { name: 'Profile' })).toBeVisible();
-	await expect(page.getByText('Anna', { exact: true })).toBeVisible();
-	await page.getByRole('link', { name: 'Devices & recovery' }).click();
+	await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
+
+	await page.getByRole('link', { name: /Anna/ }).click();
+	await expect(page).toHaveURL(/\/you\/profile$/);
+	await expect(page.getByLabel('Your name')).toHaveValue('Anna');
+	await page.goBack();
+
+	await page.getByRole('link', { name: /Your devices/ }).click();
 	await expect(page).toHaveURL(/\/you\/devices$/);
+	await page.goBack();
+
+	const backup = page.getByRole('link', { name: /Backup/ });
+	await expect(backup).toContainText('Not set up');
+	await backup.click();
+	await expect(page).toHaveURL(/\/you\/backup$/);
+	await expect(
+		page.getByRole('button', { name: /Recovery key/ }).or(page.getByText('Recovery key').first())
+	).toBeVisible();
 
 	// Old addresses still arrive
 	await open(page, '/device');
 	await expect(page).toHaveURL(/\/you\/devices$/);
 });
 
+test('a group offers your settings from your avatar, and whether you can step back', async ({
+	page
+}) => {
+	const groupUrl = await createGroup(page, 'Flat', 'Anna', ['Ben']);
+	await open(page, groupUrl);
+	await page.getByTestId('identity').click();
+	const menu = page.getByRole('dialog', { name: /Anna/ });
+	await menu.getByRole('link', { name: 'Settings' }).click();
+	await expect(page).toHaveURL(/\/you$/);
+});
+
 test('a nature theme switches at once and is remembered (#60)', async ({ page }) => {
 	await open(page, '/you');
+	await openFold(page, 'Theme');
 	await page.getByRole('group', { name: 'Theme' }).getByText('Fjord', { exact: true }).click();
 	await expect(page.locator('html')).toHaveAttribute('data-accent', 'fjord');
 	await expect(page.getByText('Saved').first()).toBeVisible();
@@ -91,13 +115,14 @@ test('a nature theme switches at once and is remembered (#60)', async ({ page })
 
 	// Back to the default: no attribute at all
 	await open(page, '/you');
+	await openFold(page, 'Theme');
 	await page.getByRole('group', { name: 'Theme' }).getByText('Forest', { exact: true }).click();
 	await expect(page.locator('html')).not.toHaveAttribute('data-accent');
 });
 
 test('choose an avatar and see it wherever you appear (#61)', async ({ page }) => {
 	const groupUrl = await createGroup(page, 'Trip', 'Anna', ['Ben']);
-	await open(page, '/you');
+	await open(page, '/you/profile');
 	await page.getByRole('group', { name: 'Color' }).getByTitle('Moss').click();
 	await page.getByRole('group', { name: 'Picture' }).getByTitle('Deer').click();
 	await expect(page.getByRole('radio', { name: 'Deer' })).toBeChecked();

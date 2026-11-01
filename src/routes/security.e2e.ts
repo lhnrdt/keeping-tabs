@@ -28,7 +28,9 @@ test('pages send security headers and nothing breaks the content security policy
 		`${groupUrl}?tab=balances`,
 		`${groupUrl}?tab=group`,
 		'/you',
-		'/you/devices'
+		'/you/devices',
+		'/you/profile',
+		'/you/backup'
 	]) {
 		await open(page, path);
 	}

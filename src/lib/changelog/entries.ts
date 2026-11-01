@@ -15,6 +15,10 @@ export const CHANGELOG: ChangelogEntry[] = [
 		date: '',
 		items: [
 			{
+				en: 'Simpler settings: everything in one place, with your profile, devices and backup a tap away.',
+				de: 'Einfachere Einstellungen: alles an einem Ort, und dein Profil, deine Geräte und dein Backup nur einen Tipp entfernt.'
+			},
+			{
 				en: 'Keep a photo of the receipt with an expense.',
 				de: 'Bewahre ein Foto der Rechnung bei einer Ausgabe auf.'
 			},

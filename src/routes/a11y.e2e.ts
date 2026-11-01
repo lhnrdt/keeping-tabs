@@ -39,7 +39,8 @@ for (const colorScheme of ['light', 'dark'] as const) {
 		});
 
 		test('home, new group, settings and devices', async ({ page }) => {
-			for (const path of ['/', '/new', '/you', '/you/devices']) await expectAccessible(page, path);
+			for (const path of ['/', '/new', '/you', '/you/profile', '/you/devices', '/you/backup'])
+				await expectAccessible(page, path);
 		});
 
 		test('a group with an expense and a payment', async ({ page }) => {

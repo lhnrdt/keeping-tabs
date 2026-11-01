@@ -86,7 +86,7 @@ test('join as yourself, stay yourself, rejoin after losing access, and identitie
 	await expect(stranger.getByRole('alert')).toContainText('expired or was already used');
 
 	// A recovery key brings Anna back on a fresh browser after losing everything (A-16)
-	await open(anna, '/you/devices');
+	await open(anna, '/you/backup');
 	await openFold(anna, 'Recovery key');
 	await anna.getByRole('button', { name: 'Create recovery key' }).click();
 	const recoveryKey = (await anna.getByTestId('recovery-key').innerText()).trim();
@@ -132,7 +132,7 @@ test('a synced passkey brings you and your groups back on a new device', async (
 	await expect(phone.getByTestId('identity')).toHaveText('Mia');
 	const groupUrl = phone.url();
 
-	await open(phone, '/you/devices');
+	await open(phone, '/you/backup');
 	await openFold(phone, 'Passkey');
 	await phone.getByRole('button', { name: 'Save as passkey' }).click();
 	await expect(phone.getByRole('status')).toContainText('1 passkey');

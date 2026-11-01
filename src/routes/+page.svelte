@@ -6,7 +6,6 @@
 	import LinkButton from '#lib/components/LinkButton.svelte';
 	import HomeHero from '#lib/components/home/HomeHero.svelte';
 	import ProfileButton from '#lib/components/home/ProfileButton.svelte';
-	import YouMenu from '#lib/components/YouMenu.svelte';
 	import RecentlyDeleted from '#lib/components/home/RecentlyDeleted.svelte';
 	import YourGroups from '#lib/components/home/YourGroups.svelte';
 	import { totalsByCurrency } from '#lib/money.ts';
@@ -16,7 +15,6 @@
 	let { data, form }: PageProps = $props();
 
 	// Your menu (#156), opened from the navbar; rendered here, outside the bar
-	let showingYou = $state(false);
 	const named = $derived(
 		data.me?.name ? { avatarId: data.me.id, name: data.me.name, avatar: data.me.avatar } : null
 	);
@@ -28,7 +26,7 @@
 
 <AppPage title={m.app_name()}>
 	{#snippet right()}
-		<ProfileButton me={named} onopen={() => (showingYou = true)} />
+		<ProfileButton me={named} />
 	{/snippet}
 	{#snippet hero()}
 		<HomeHero totals={totalsByCurrency(data.yourGroups)} />
@@ -41,7 +39,4 @@
 		</LinkButton>
 	</Block>
 	<RecentlyDeleted groups={data.recentlyDeleted} error={form?.error} />
-	{#if named}
-		<YouMenu opened={showingYou} onClose={() => (showingYou = false)} me={named} />
-	{/if}
 </AppPage>
