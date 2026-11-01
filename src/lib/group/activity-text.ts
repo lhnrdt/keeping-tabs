@@ -58,5 +58,9 @@ export function activityText({ action, who: by, entry, name, previousName }: Ite
 			return m.activity_comment_create({ who, title });
 		case 'comment.delete':
 			return m.activity_comment_delete({ who, title });
+		case 'receipt.add':
+			return m.activity_receipt_add({ who, title });
+		case 'receipt.delete':
+			return m.activity_receipt_delete({ who, title });
 	}
 }

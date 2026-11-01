@@ -84,6 +84,7 @@
 					entry.odometerM && formatDistance(entry.odometerM, getLocale(), page.data.units),
 					entry.fuelMl && formatFuel(entry.fuelMl, getLocale(), page.data.units),
 					entry.notes && m.has_note(),
+					entry.receipts > 0 && m.has_receipt(),
 					entry.comments === 1 && m.has_comment(),
 					entry.comments > 1 && m.has_comments({ count: entry.comments })
 				]

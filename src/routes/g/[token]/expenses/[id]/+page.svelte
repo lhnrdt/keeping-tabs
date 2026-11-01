@@ -3,6 +3,7 @@
 	import AppPage from '#lib/components/AppPage.svelte';
 	import DeleteEntry from '#lib/components/group/DeleteEntry.svelte';
 	import ExpenseComments from '#lib/components/expense/ExpenseComments.svelte';
+	import ExpenseReceipts from '#lib/components/expense/ExpenseReceipts.svelte';
 	import ExpenseForm from '#lib/components/expense/ExpenseForm.svelte';
 	import { fuelInputValue, odometerInputValue } from '#lib/expense/driving.ts';
 	import { amountInputValue } from '#lib/money.ts';
@@ -67,6 +68,12 @@
 		error={form && 'error' in form ? form.error : undefined}
 		submitLabel={m.save()}
 		kind={data.group.kind}
+	/>
+	<ExpenseReceipts
+		receipts={data.receipts}
+		token={data.group.shareToken}
+		expenseId={data.expense.id}
+		canChange={data.members.some((member) => member.mine)}
 	/>
 	<ExpenseComments
 		comments={data.comments}
