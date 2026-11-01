@@ -17,10 +17,12 @@
 		submitLabel: string;
 		/** The group's token, when this form can wait for the connection */
 		offlineToken?: string;
+		/** Runs once it's saved, before moving on; can name a different page to go to */
+		onSaved?: () => Promise<string | void>;
 		children: Snippet;
 	};
 
-	let { error, submitLabel, offlineToken, children }: Props = $props();
+	let { error, submitLabel, offlineToken, onSaved, children }: Props = $props();
 
 	const submission = new Submission();
 
@@ -53,6 +55,15 @@
 				if (kept) {
 					submission.pending = false;
 					await goto(resolve('/g/[token]', { token: offlineToken }));
+					return;
+				}
+			}
+			if (result.type === 'redirect' && onSaved) {
+				const elsewhere = await onSaved();
+				if (elsewhere) {
+					submission.pending = false;
+					// eslint-disable-next-line svelte/no-navigation-without-resolve -- resolved by the caller
+					await goto(elsewhere);
 					return;
 				}
 			}
