@@ -12,7 +12,7 @@ export type ChangelogEntry = {
 export const CHANGELOG: ChangelogEntry[] = [
 	{
 		version: '0.16.0',
-		date: '',
+		date: '2026-11-01',
 		items: [
 			{
 				en: 'Simpler settings: everything in one place, with your profile, devices and backup a tap away.',
