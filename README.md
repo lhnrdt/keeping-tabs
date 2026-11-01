@@ -40,7 +40,7 @@ Planned work and ideas are [GitHub issues](https://github.com/lhnrdt/keeping-tab
 
 ## Privacy
 
-No tracking, no analytics, no third-party requests (fonts, icons and category keywords are bundled). The only personal data is the names you type in. Device keys, link tokens and recovery keys are stored only as hashes.
+No tracking, no analytics, and fonts, icons and category keywords are bundled. Two outside services are involved, and only for these features: exchange rates come from [Frankfurter](https://frankfurter.dev) (the server sends currency codes and a date, nothing about you), and notifications, if you turn them on, go encrypted through your browser's push service (Google, Apple or Mozilla). The only personal data is the names you type in. Device keys, link tokens and recovery keys are stored only as hashes.
 
 ## Tech stack
 
