@@ -90,6 +90,7 @@ export const icons = {
 	remove: IconX,
 	share: IconShare,
 	settings: IconSettings,
+	password: IconKey,
 	// Expense form fields
 	title: IconTag,
 	note: IconNote,

@@ -1,19 +1,19 @@
 <script lang="ts">
 	// The group's "simplify debts" setting (B-6) as a checkbox with what it means.
-	import { Checkbox, ListItem } from 'konsta/svelte';
 	import { m } from '#lib/paraglide/messages.js';
 
 	let { checked }: { checked: boolean } = $props();
 </script>
 
-<ListItem label title={m.field_simplify_debts()} text={m.simplify_debts_hint()}>
-	{#snippet media()}
-		<!-- Konsta hides the input with display:none; keep it reachable (N-7) -->
-		<Checkbox
-			class="[&>input]:sr-only [&>input]:block [&>input:focus-visible+i]:ring-2 [&>input:focus-visible+i]:ring-offset-2"
-			component="div"
-			name="simplifyDebts"
-			{checked}
-		/>
-	{/snippet}
-</ListItem>
+<label class="flex cursor-pointer items-start gap-3">
+	<input
+		type="checkbox"
+		name="simplifyDebts"
+		class="mt-0.5 size-[18px] shrink-0 accent-accent dark:accent-accent-night"
+		{checked}
+	/>
+	<span class="flex flex-col">
+		<span class="text-sm font-medium">{m.field_simplify_debts()}</span>
+		<span class="text-sm text-muted">{m.simplify_debts_hint()}</span>
+	</span>
+</label>

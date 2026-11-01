@@ -7,6 +7,7 @@
 	import { resolve } from '$app/paths';
 	import type { Snippet } from 'svelte';
 	import FormError from '#lib/components/FormError.svelte';
+	import StickySubmit from '#lib/components/StickySubmit.svelte';
 	import SubmitButton from '#lib/components/SubmitButton.svelte';
 	import type { ErrorCode } from '#lib/errors.ts';
 	import { Submission } from '#lib/forms/submission.svelte.ts';
@@ -75,10 +76,7 @@
 <form method="POST" action="?/save" use:enhance={submit}>
 	{@render children()}
 	<FormError {error} />
-	<!-- Always in reach: the button stays at the bottom of the screen while the form scrolls -->
-	<div
-		class="sticky bottom-0 z-10 bg-canvas/95 px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur-sm dark:bg-canvas-night/95"
+	<StickySubmit
+		><SubmitButton pending={submission.pending}>{submitLabel}</SubmitButton></StickySubmit
 	>
-		<SubmitButton pending={submission.pending}>{submitLabel}</SubmitButton>
-	</div>
 </form>

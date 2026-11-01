@@ -86,7 +86,7 @@
 	submitLabel={m.save()}
 	onClose={() => (editing = false)}
 >
-	<List nested class="-mx-4 my-0">
+	<div class="page-section">
 		<Field
 			label={m.field_group_name()}
 			placeholder={m.placeholder_group_name()}
@@ -104,7 +104,7 @@
 			value={group.description ?? ''}
 		/>
 		<SimplifyDebtsField checked={group.simplifyDebts} />
-	</List>
+	</div>
 	<div class="-mx-4">
 		<KindPicker value={group.kind} />
 		<TintPicker value={group.tint ?? ''} />

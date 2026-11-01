@@ -1,4 +1,35 @@
 /*
+ * The app's spacing for forms and settings, the same everywhere: the 16px gutter, 1.5rem between
+ * sections, 1rem between what's in them. Controls bring no margins of their own.
+ */
+.page-sections {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	padding: 0.5rem 1rem 1rem;
+}
+.page-section {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+/* Lists and blocks follow the page's spacing here instead of bringing their own */
+.page-sections :is(.k-list, .k-block) {
+	margin: 0;
+}
+.page-sections .k-block {
+	padding-inline: 0;
+}
+.section-label {
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: var(--color-ink-muted);
+}
+.dark .section-label {
+	color: var(--color-ink-muted-night);
+}
+
+/*
  * Plain form fields (the expense form): a small label above a soft, rounded well, and round
  * choice pills. No cards around them; the wells set the fields apart.
  */

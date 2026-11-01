@@ -1,6 +1,6 @@
 <script lang="ts">
 	// The door of a private app among friends (#109): one shared password, once per device.
-	import { Block, List } from 'konsta/svelte';
+	import { Block } from 'konsta/svelte';
 	import AppPage from '#lib/components/AppPage.svelte';
 	import Field from '#lib/components/Field.svelte';
 	import ThemeMotif from '#lib/components/illustrations/ThemeMotif.svelte';
@@ -22,7 +22,7 @@
 		<p class="max-w-sm text-muted">{m.welcome_intro()}</p>
 	</div>
 	<form method="POST">
-		<List strong inset>
+		<div class="page-section mx-4 my-4">
 			<Field
 				label={m.welcome_password()}
 				name="password"
@@ -30,7 +30,7 @@
 				required
 				autocomplete="current-password"
 			/>
-		</List>
+		</div>
 		{#if form?.wrong}
 			<Block class="!my-2">
 				<p role="alert" class="text-sm tone-destructive">{m.welcome_wrong()}</p>

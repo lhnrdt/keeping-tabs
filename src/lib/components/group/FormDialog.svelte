@@ -47,7 +47,7 @@
 	role="dialog"
 	aria-modal="true"
 	aria-label={heading}
-	class="!w-[calc(100vw-2rem)] !max-w-lg"
+	class="!max-h-[calc(100dvh-2rem)] !w-[calc(100vw-2rem)] !max-w-lg overflow-y-auto"
 >
 	<!-- Konsta 5.5.0's Dialog crashes on string titles (missing printText import), so pass a snippet -->
 	{#snippet title()}{heading}{/snippet}

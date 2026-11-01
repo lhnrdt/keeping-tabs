@@ -7,7 +7,7 @@
 	let { name, legend, options, value = $bindable() }: Props = $props();
 </script>
 
-<fieldset class="mx-4 mt-3 mb-4">
+<fieldset>
 	<legend class="sr-only">{legend}</legend>
 	<div class="flex rounded-full bg-surface-muted p-1 dark:bg-surface-muted-night">
 		{#each options as option (option.value)}

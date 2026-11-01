@@ -2,7 +2,7 @@
 	// What you can do with a person: rename, let them join again after they lost access, or
 	// remove them while they're settled up (M-6).
 	import { enhance } from '$app/forms';
-	import { Actions, ActionsButton, ActionsGroup, ActionsLabel, List } from 'konsta/svelte';
+	import { Actions, ActionsButton, ActionsGroup, ActionsLabel } from 'konsta/svelte';
 	import Field from '#lib/components/Field.svelte';
 	import FormError from '#lib/components/FormError.svelte';
 	import FormDialog from '#lib/components/group/FormDialog.svelte';
@@ -93,7 +93,7 @@
 >
 	{#if shown}
 		<input type="hidden" name="memberId" value={shown.id} />
-		<List nested class="-mx-4 my-0">
+		<div class="page-section">
 			<Field
 				label={m.field_member_name()}
 				name="name"
@@ -101,7 +101,7 @@
 				maxlength={LIMITS.memberName}
 				value={shown.name}
 			/>
-		</List>
+		</div>
 		<FormError error={renameError} />
 	{/if}
 </FormDialog>

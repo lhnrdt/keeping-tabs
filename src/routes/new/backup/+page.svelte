@@ -22,7 +22,7 @@
 	<form
 		method="POST"
 		enctype="multipart/form-data"
-		class="flex flex-col gap-4 p-4"
+		class="page-sections"
 		use:enhance={submission.enhance}
 	>
 		<p class="text-sm text-muted">{m.backup_restore_intro()}</p>
