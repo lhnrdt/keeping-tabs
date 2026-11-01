@@ -33,6 +33,7 @@
 			weekday: 'short',
 			day: 'numeric',
 			month: 'short',
+			year: 'numeric',
 			timeZone: 'UTC'
 		}).format(new Date(`${iso}T00:00:00Z`));
 	/** 0 = Monday: 2024-01-01 was one */

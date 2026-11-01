@@ -1,7 +1,8 @@
 <script lang="ts">
 	// Spending over time (#161, #188): one column per day, week or month in the theme's accent
-	// (LayerChart), first, middle and last dates on the axis, the amount on hover or tap. Big
+	// (LayerChart), the same time axis as every chart, the amount on hover or tap. Big
 	// one-offs can be left out (#167). The table below is for screen readers.
+	import { barLabel, barTicks } from '#lib/insights/time-axis.ts';
 	import { BarChart, Tooltip } from 'layerchart';
 	import { shownAmount, shownCompact } from '#lib/shown-money.ts';
 	import { m } from '#lib/paraglide/messages.js';
@@ -22,9 +23,9 @@
 	const buckets = $derived(leaveOutBig && withoutBig ? withoutBig : all);
 
 	const formats: Record<Unit, Intl.DateTimeFormatOptions> = {
-		day: { day: 'numeric', month: 'short' },
-		week: { day: 'numeric', month: 'short' },
-		month: { month: 'short', year: '2-digit' }
+		day: { day: 'numeric', month: 'short', year: 'numeric' },
+		week: { day: 'numeric', month: 'short', year: 'numeric' },
+		month: { month: 'short', year: 'numeric' }
 	};
 	const dateLabel = (iso: string) =>
 		new Intl.DateTimeFormat(getLocale(), { ...formats[unit], timeZone: 'UTC' }).format(
@@ -33,12 +34,8 @@
 	const money = (amount: number) => shownAmount(amount, currency);
 	const compact = (amount: number) => shownCompact(amount, currency);
 
-	/** First, middle and last labels: enough to read the span without crowding */
-	const ticks = $derived(
-		[...new Set([0, Math.floor((buckets.length - 1) / 2), buckets.length - 1])]
-			.filter((i) => i >= 0)
-			.map((i) => buckets[i].start)
-	);
+	const starts = $derived(buckets.map((bucket) => bucket.start));
+	const ticks = $derived(barTicks(starts));
 </script>
 
 <figure class="mx-4 rounded-2xl bg-surface px-4 pt-3 pb-2 dark:bg-surface-night">
@@ -65,7 +62,7 @@
 			bandPadding={0.3}
 			grid={{ x: false }}
 			props={{
-				xAxis: { ticks, format: dateLabel },
+				xAxis: { ticks, format: barLabel(starts, getLocale()) },
 				yAxis: { format: compact, ticks: 3 },
 				bars: { strokeWidth: 0 }
 			}}

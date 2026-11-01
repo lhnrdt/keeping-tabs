@@ -8,6 +8,7 @@
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import type { Point } from '#lib/insights/standing.ts';
+	import { fullDate, timeLabel, timeTicks } from '#lib/insights/time-axis.ts';
 
 	let { points, currency }: { points: Point[]; currency: string } = $props();
 
@@ -20,12 +21,9 @@
 	const high = $derived(Math.max(0, ...points.map((point) => point.balance)));
 
 	const money = (amount: number) => shownAmount(Math.abs(amount), currency);
-	const date = (day: Date) =>
-		new Intl.DateTimeFormat(getLocale(), {
-			day: 'numeric',
-			month: 'short',
-			timeZone: 'UTC'
-		}).format(day);
+	const date = (day: Date) => fullDate(day, getLocale());
+	const from = $derived(data[0].day);
+	const to = $derived(data.at(-1)!.day);
 	const describe = (balance: number) =>
 		balance > 0
 			? m.position_owed({ amount: money(balance) })
@@ -56,7 +54,7 @@
 			yNice
 			grid={{ x: false }}
 			props={{
-				xAxis: { ticks: 3, format: date },
+				xAxis: { ticks: timeTicks(from, to), format: timeLabel(from, to, getLocale()) },
 				yAxis: { ticks: 3, format: (value: number) => shownCompact(value, currency) },
 				highlight: { area: false, lines: true, points: false },
 				tooltip: { context: { mode: 'bisect-x', findTooltipData: 'left' } }
