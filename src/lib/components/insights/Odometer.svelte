@@ -1,15 +1,17 @@
 <script lang="ts">
-	// Km driven as a car's odometer: digits on dark rollers that turn into place, the tenth
+	// The reading as a car's odometer: digits on dark rollers that turn into place, the tenth
 	// set apart. The rollers are decoration; the number itself is there for screen readers.
-	import { formatKm, odometerDigits } from '#lib/expense/driving.ts';
+	import { page } from '$app/state';
+	import { distanceUnit, formatDistance, odometerDigits } from '#lib/expense/driving.ts';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 
 	let { metres }: { metres: number } = $props();
 
-	const digits = $derived(odometerDigits(metres));
+	const units = $derived(page.data.units);
+	const digits = $derived(odometerDigits(metres, units));
 </script>
 
-<span class="sr-only">{formatKm(metres, getLocale())}</span>
+<span class="sr-only">{formatDistance(metres, getLocale(), units)}</span>
 <div class="flex items-center justify-center gap-[3px]" aria-hidden="true" data-testid="odometer">
 	{#each digits.whole as digit, i (i)}
 		<span class="odometer-digit bg-canvas-night text-ink-night">
@@ -19,7 +21,7 @@
 	<span class="odometer-digit bg-ink-night text-canvas-night">
 		<span style={`animation-delay: ${digits.whole.length * 60}ms`}>{digits.tenth}</span>
 	</span>
-	<span class="ms-1.5 self-end text-sm font-medium text-muted">km</span>
+	<span class="ms-1.5 self-end text-sm font-medium text-muted">{distanceUnit(units)}</span>
 </div>
 
 <style>

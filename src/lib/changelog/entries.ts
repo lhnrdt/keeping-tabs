@@ -11,6 +11,16 @@ export type ChangelogEntry = {
 /** Newest first */
 export const CHANGELOG: ChangelogEntry[] = [
 	{
+		version: '0.16.0',
+		date: '',
+		items: [
+			{
+				en: 'Choose your units in your profile: km and litres, or miles and gallons. You can also see your balance in another currency.',
+				de: 'Wähle in deinem Profil deine Einheiten: Km und Liter oder Meilen und Gallonen. Deinen Saldo kannst du dir auch in einer anderen Währung anzeigen lassen.'
+			}
+		]
+	},
+	{
 		version: '0.15.0',
 		date: '2026-11-01',
 		items: [
