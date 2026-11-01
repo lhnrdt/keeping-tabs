@@ -364,3 +364,11 @@ export function parseCategory(value: unknown): Result<ExpenseCategory | null> {
 		? { ok: true, value: category }
 		: { ok: false, error: 'category_invalid' };
 }
+
+/** An id made on the device: a version 4 UUID, if the form has one */
+export function clientIdIn(form: FormData) {
+	const id = String(form.get('clientId') ?? '');
+	return /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(id)
+		? id
+		: undefined;
+}

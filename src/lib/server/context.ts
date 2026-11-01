@@ -1,5 +1,5 @@
 import { error } from '@sveltejs/kit';
-import { isSealed } from '#lib/crypto/seal.ts';
+import { isSealed, keyIdIn } from '#lib/crypto/seal.ts';
 import { DELETED_GROUP_DAYS } from '#lib/group/retention.ts';
 import { m } from '#lib/paraglide/messages.js';
 import type { Db } from './db';
@@ -32,7 +32,12 @@ export function refuseUnsealed(group: { keyId: string | null }, form: FormData) 
 	if (!group.keyId) return;
 	for (const name of ['title', 'notes', 'comment', 'name', 'description']) {
 		const value = form.get(name);
-		if (typeof value === 'string' && value.trim() && !isSealed(value)) {
+		// Sealed with another key: a page from before the group's key was changed
+		if (
+			typeof value === 'string' &&
+			value.trim() &&
+			(!isSealed(value) || keyIdIn(value) !== group.keyId)
+		) {
 			error(409, m.locked_reload());
 		}
 	}

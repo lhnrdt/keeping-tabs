@@ -225,6 +225,13 @@
       "when": 1793541722844,
       "tag": "0031_group_encryption",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "6",
+      "when": 1793544236478,
+      "tag": "0032_person_keys_by_vault",
+      "breakpoints": true
     }
   ]
 }

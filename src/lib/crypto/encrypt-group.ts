@@ -3,7 +3,7 @@
 // again, so running this after an interruption picks up where it was.
 import { isJpeg } from '#lib/expense/receipt-image.ts';
 import { keyFor, rememberKey } from './keyring';
-import { isSealed, keyIdIn, newKey, sealBytes, sealText } from './seal';
+import { isSealed, keyIdIn, newKey, sealBytes, sealText, textContext } from './seal';
 import { syncKeys } from './vault';
 
 const BATCH = 100;
@@ -50,12 +50,17 @@ export async function encryptGroup(
 	if (!key) throw new Error('started on another device');
 	const keyId = await rememberKey(key);
 
-	const seal = (value: string) => sealText(key, value);
-	const sealOptional = async (value: string | null | undefined) => (value ? seal(value) : value);
-	const sealItems = async (items: Item[] | null | undefined) =>
+	const seal = (value: string, field: string, row?: string) =>
+		sealText(key, value, textContext(field, row));
+	const sealOptional = async (value: string | null | undefined, field: string, row?: string) =>
+		value ? seal(value, field, row) : value;
+	const sealItems = async (items: Item[] | null | undefined, row?: string) =>
 		items &&
 		Promise.all(
-			items.map(async (item) => ({ ...item, name: item.name && (await seal(item.name)) }))
+			items.map(async (item) => ({
+				...item,
+				name: item.name && (await seal(item.name, 'item', row))
+			}))
 		);
 
 	const send = async (body: unknown) => {
@@ -96,29 +101,36 @@ export async function encryptGroup(
 		await send({
 			batch: {
 				group: {
-					name: await seal(text.group.name),
-					description: await sealOptional(text.group.description)
+					name: await seal(text.group.name, 'name'),
+					description: await sealOptional(text.group.description, 'description')
 				}
 			}
 		});
 	}
 	step(1);
-	await sendAll('members', members, async (row) => ({ id: row.id, name: await seal(row.name) }));
+	await sendAll('members', members, async (row) => ({
+		id: row.id,
+		name: await seal(row.name, 'name')
+	}));
 	await sendAll('expenses', expenses, async (row) => ({
 		id: row.id,
-		title: await seal(row.title),
-		notes: await sealOptional(row.notes),
-		items: row.items ? JSON.stringify(await sealItems(row.items)) : null,
+		title: await seal(row.title, 'title', row.id),
+		notes: await sealOptional(row.notes, 'notes', row.id),
+		items: row.items ? JSON.stringify(await sealItems(row.items, row.id)) : null,
 		// Sealed titles can't be guessed from anymore
 		autoCategory: row.category ? null : guessCategory(row.title)
 	}));
-	await sendAll('comments', comments, async (row) => ({ id: row.id, body: await seal(row.body) }));
+	await sendAll('comments', comments, async (row) => ({
+		id: row.id,
+		body: await seal(row.body, 'body', row.id)
+	}));
 	await sendAll('rules', rules, async (row) => ({
 		id: row.id,
 		template: JSON.stringify({
 			...row.template,
-			title: await seal(row.template.title),
-			notes: (await sealOptional(row.template.notes)) ?? null,
+			// Bound to no row: it goes on every expense that repeats
+			title: await seal(row.template.title, 'title'),
+			notes: (await sealOptional(row.template.notes, 'notes')) ?? null,
 			items: (await sealItems(row.template.items)) ?? null
 		})
 	}));
@@ -129,7 +141,12 @@ export async function encryptGroup(
 		});
 		const bytes = new Uint8Array(await photo.arrayBuffer());
 		if (isJpeg(bytes)) {
-			await send({ receipt: { id: receipt.id, image: toBase64(await sealBytes(key, bytes)) } });
+			await send({
+				receipt: {
+					id: receipt.id,
+					image: toBase64(await sealBytes(key, bytes, textContext('photo', receipt.expenseId)))
+				}
+			});
 		}
 		step(1);
 	}

@@ -68,6 +68,8 @@
 		kind: GroupKind;
 		/** A new expense waits on the device when the connection is gone (#55) */
 		offlineToken?: string;
+		/** The expense being edited; a new one gets its id here */
+		expenseId?: string;
 	};
 
 	let {
@@ -79,7 +81,8 @@
 		submitLabel,
 		canRepeat = false,
 		kind,
-		offlineToken
+		offlineToken,
+		expenseId
 	}: Props = $props();
 	// Its id, made here: sending it again after a lost connection can't add it twice (#55)
 	const clientId = crypto.randomUUID();
@@ -150,6 +153,7 @@
 	{submitLabel}
 	{offlineToken}
 	sealed={['title', 'notes', 'items']}
+	sealRow={expenseId ?? clientId}
 	onSaved={offlineToken ? afterSaving : undefined}
 >
 	{#if offlineToken}<input type="hidden" name="clientId" value={clientId} />{/if}

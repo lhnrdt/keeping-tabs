@@ -6,23 +6,32 @@ import { page } from '$app/state';
 import { m } from '#lib/paraglide/messages.js';
 import { keyFor } from './keyring';
 import { openDeep } from './open-data';
-import { sealText } from './seal';
+import { sealText, textContext } from './seal';
 
 /** Receipt items are JSON: only their names are text to seal */
-async function sealItems(key: string, json: string) {
+async function sealItems(key: string, json: string, row: string) {
 	const items = JSON.parse(json) as { name: string }[];
 	return JSON.stringify(
 		await Promise.all(
 			items.map(async (item) => ({
 				...item,
-				name: item.name.trim() ? await sealText(key, item.name) : item.name
+				name: item.name.trim()
+					? await sealText(key, item.name, textContext('item', row))
+					: item.name
 			}))
 		)
 	);
 }
 
-/** Seals these fields in place; empty ones stay empty, so "required" still means something */
-export async function sealFields(form: FormData, key: string, names: readonly string[]) {
+/** What a field is called once sealed, where the form calls it something else */
+const SEALED_AS: Record<string, string> = { comment: 'body' };
+
+/**
+ * Seals these fields in place; empty ones stay empty, so "required" still means something. `row`
+ * binds them to the row they're for. What repeats goes on many rows, so it's bound to none.
+ */
+export async function sealFields(form: FormData, key: string, names: readonly string[], row = '') {
+	const bindTo = form.get('repeats') ? '' : row;
 	for (const name of names) {
 		const values = form.getAll(name);
 		if (values.length === 0) continue;
@@ -30,8 +39,9 @@ export async function sealFields(form: FormData, key: string, names: readonly st
 		for (const value of values) {
 			const text = String(value);
 			if (!text.trim()) form.append(name, text);
-			else if (name === 'items') form.append(name, await sealItems(key, text));
-			else form.append(name, await sealText(key, text));
+			else if (name === 'items') form.append(name, await sealItems(key, text, bindTo));
+			else
+				form.append(name, await sealText(key, text, textContext(SEALED_AS[name] ?? name, bindTo)));
 		}
 	}
 }
@@ -45,7 +55,7 @@ export async function currentGroupKey() {
 
 /** For `use:enhance`: seals `names` if the group is encrypted, around what the form does anyway */
 export const sealing =
-	(names: readonly string[], inner?: SubmitFunction): SubmitFunction =>
+	(names: readonly string[], inner?: SubmitFunction, row?: () => string): SubmitFunction =>
 	async (input) => {
 		const key = await currentGroupKey();
 		if (key === undefined) {
@@ -54,7 +64,7 @@ export const sealing =
 			window.alert(m.locked_cannot_save());
 			return;
 		}
-		if (key) await sealFields(input.formData, key, names);
+		if (key) await sealFields(input.formData, key, names, row?.());
 		const after = await inner?.(input);
 		return async (options) => {
 			if (options.result.type === 'failure') {

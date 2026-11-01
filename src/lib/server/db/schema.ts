@@ -274,10 +274,12 @@ export const personKeys = sqliteTable(
 			.notNull()
 			.references(() => people.id, { onDelete: 'cascade' }),
 		keyId: text('key_id').notNull(),
+		// Which vault key it's sealed with: someone can end up with more than one
+		vaultId: text('vault_id').notNull(),
 		// The group's key, sealed with the person's vault key, which the server never has
 		sealed: text('sealed').notNull()
 	},
-	(t) => [primaryKey({ columns: [t.personId, t.keyId] })]
+	(t) => [primaryKey({ columns: [t.personId, t.keyId, t.vaultId] })]
 );
 
 /** A short conversation under an expense (#49), visible to the group; each removes only their own */

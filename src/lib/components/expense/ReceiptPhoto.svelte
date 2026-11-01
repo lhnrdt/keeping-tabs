@@ -3,7 +3,7 @@
 	// large in place, since the browser can't open it as an address of its own.
 	import { page } from '$app/state';
 	import { keyFor } from '#lib/crypto/keyring.ts';
-	import { openBytes, toBase64Url } from '#lib/crypto/seal.ts';
+	import { openBytes, textContext, toBase64Url } from '#lib/crypto/seal.ts';
 	import { m } from '#lib/paraglide/messages.js';
 
 	let { url, alt }: { url: string; alt: string } = $props();
@@ -19,7 +19,12 @@
 			if (!key) return;
 			// Not from the browser's cache: it may hold the photo from before the group was encrypted
 			const response = await fetch(url, { cache: 'no-cache' });
-			const bytes = await openBytes(key, new Uint8Array(await response.arrayBuffer()));
+			const expenseId = /\/expenses\/([^/]+)/.exec(url)?.[1] ?? '';
+			const bytes = await openBytes(
+				key,
+				new Uint8Array(await response.arrayBuffer()),
+				textContext('photo', expenseId)
+			);
 			const base64 = toBase64Url(bytes).replace(/-/g, '+').replace(/_/g, '/');
 			opened = `data:image/jpeg;base64,${base64}`;
 		})().catch(() => {});

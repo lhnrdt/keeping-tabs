@@ -285,6 +285,7 @@
 	"recovery_create": "Create recovery key",
 	"recovery_replace_hint": "Creating a new key makes any older one stop working.",
 	"recovery_shown": "Your recovery key. Save it now; it won't be shown again.",
+	"recovery_outdated": "Your recovery key is older than your encrypted groups, so it can’t bring back their keys. Create a new one.",
 	"recovery_copy": "Copy key",
 	"restore_title": "Restore",
 	"restore_intro": "Lost your device or cleared your browser? Enter your recovery key to be you again on this device.",

@@ -6,10 +6,8 @@ import { formContext } from '#lib/server/context.ts';
 import { addDueRecurring, startRecurring } from '#lib/server/recurring.ts';
 import { readExpenseForm, rememberDefaultSplit } from '#lib/server/group-forms.ts';
 import { createExpense, entryGroupOf, listChosenCategories } from '#lib/server/expenses.ts';
+import { clientIdIn } from '#lib/validation.ts';
 import type { Actions, PageServerLoad } from './$types';
-
-/** An id made on the device: a version 4 UUID */
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 
 export const load: PageServerLoad = async ({ locals, parent }) => {
 	const { group } = await parent();
@@ -20,8 +18,7 @@ export const actions: Actions = {
 	save: async ({ locals, params, request }) => {
 		const { form, group, actorId } = await formContext(locals, params.token, request);
 		// Sent again after a lost connection (#55): it's there already, nothing more to do
-		const clientId = String(form.get('clientId') ?? '');
-		const fromDevice = UUID.test(clientId) ? clientId : undefined;
+		const fromDevice = clientIdIn(form);
 		const existing = fromDevice ? await entryGroupOf(locals.db, fromDevice) : null;
 		if (existing === group.id) redirect(303, resolve('/g/[token]', { token: params.token }));
 		const result = await readExpenseForm(locals.db, group, form);

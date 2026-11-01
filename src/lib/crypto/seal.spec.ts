@@ -8,8 +8,21 @@ import {
 	openBytes,
 	openText,
 	sealBytes,
-	sealText
+	sealText,
+	contextIn,
+	textContext
 } from './seal';
+
+describe('a sealed text’s context', () => {
+	it('opens only with the context it was sealed for', async () => {
+		const key = newKey();
+		const sealed = await sealText(key, 'Pizza', textContext('title', 'row-1'));
+		expect(contextIn(sealed)).toBe('title_row-1');
+		expect(await openText(key, sealed)).toBe('Pizza');
+		const moved = sealed.replace('title_row-1', 'title_row-2');
+		await expect(openText(key, moved)).rejects.toThrow();
+	});
+});
 
 describe('sealing', () => {
 	it('gives text back only with its key', async () => {

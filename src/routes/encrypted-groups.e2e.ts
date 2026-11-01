@@ -225,14 +225,23 @@ test('a recovery key brings the keys back on a new device (#110)', async ({ page
 	const { groupUrl } = await encryptedGroup(page);
 	await open(page, '/you/backup');
 	await openFold(page, 'Recovery key');
+	const sent: string[] = [];
+	page.on('request', (request) => sent.push(request.postData() ?? ''));
 	await page.getByRole('button', { name: 'Create recovery key' }).click();
 	const recoveryKey = (await page.getByTestId('recovery-key').innerText()).trim();
+	// Made in the browser: the server never gets the key itself
+	expect(sent.join()).toContain('recoveryProof');
+	expect(sent.join()).not.toContain(recoveryKey);
 
 	const newPhone = await (await browser.newContext()).newPage();
 	await open(newPhone, '/device');
+	const restoring: string[] = [];
+	newPhone.on('request', (request) => restoring.push(request.postData() ?? ''));
 	await newPhone.getByLabel('Recovery key').fill(recoveryKey);
 	await newPhone.getByRole('button', { name: 'Restore' }).click();
 	await expect(newPhone.getByRole('status')).toContainText('Welcome back');
+	expect(restoring.join()).not.toContain(recoveryKey);
+	expect(restoring.join()).not.toContain(recoveryKey.replace(/-/g, ''));
 	await open(newPhone, groupUrl);
 	await expect(newPhone.getByRole('link', { name: /Whiskey tasting/ })).toBeVisible();
 });

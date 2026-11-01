@@ -23,10 +23,11 @@ export async function addComment(
 	groupId: string,
 	actorId: string,
 	expenseId: string,
-	body: string
+	body: string,
+	id?: string
 ) {
 	await db.batch([
-		db.insert(expenseComments).values({ expenseId, memberId: actorId, body }),
+		db.insert(expenseComments).values({ id, expenseId, memberId: actorId, body }),
 		log(db, groupId, actorId, 'comment.create', { expenseId })
 	]);
 }

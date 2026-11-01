@@ -75,13 +75,22 @@
 			method="POST"
 			action="?/comment"
 			class="flex flex-col gap-2"
-			use:enhance={sealing(['comment'], () => {
-				sending = true;
-				return async ({ update }) => {
-					await update();
-					sending = false;
-				};
-			})}
+			use:enhance={(input) => {
+				// Its id, made here: its sealed text says it belongs to this comment
+				const clientId = crypto.randomUUID();
+				input.formData.set('clientId', clientId);
+				return sealing(
+					['comment'],
+					() => {
+						sending = true;
+						return async ({ update }) => {
+							await update();
+							sending = false;
+						};
+					},
+					() => clientId
+				)(input);
+			}}
 		>
 			<PlainField label={m.comment_field()}>
 				{#snippet children(id)}

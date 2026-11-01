@@ -1,8 +1,12 @@
 // Sends one receipt photo to an expense's page (#52).
 import { deserialize } from '$app/forms';
-import { sealBytes } from '#lib/crypto/seal.ts';
+import { sealBytes, textContext } from '#lib/crypto/seal.ts';
 import { currentGroupKey } from '#lib/crypto/seal-form.ts';
 import type { ErrorCode } from '#lib/errors.ts';
+
+/** A photo's seal says which expense it's for */
+const photoContext = (page: string) =>
+	textContext('photo', /\/expenses\/([^/?]+)/.exec(page || location.pathname)?.[1]);
 
 /** The refusal's reason, or null when it's in. `page`: the expense's page; here if left out */
 export async function sendReceipt(photo: Blob, page = ''): Promise<ErrorCode | null> {
@@ -13,7 +17,7 @@ export async function sendReceipt(photo: Blob, page = ''): Promise<ErrorCode | n
 	const bytes = new Uint8Array(await photo.arrayBuffer());
 	body.set(
 		'photo',
-		new Blob([(key ? await sealBytes(key, bytes) : bytes) as BlobPart]),
+		new Blob([(key ? await sealBytes(key, bytes, photoContext(page)) : bytes) as BlobPart]),
 		'receipt.jpg'
 	);
 	const response = await fetch(`${page}?/addReceipt`, {

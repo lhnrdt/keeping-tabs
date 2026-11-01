@@ -12,7 +12,7 @@ import {
 	softDeleteEntry,
 	updateExpense
 } from '#lib/server/expenses.ts';
-import { parseComment } from '#lib/validation.ts';
+import { clientIdIn, parseComment } from '#lib/validation.ts';
 import { isJpeg, MAX_RECEIPT_BYTES } from '#lib/expense/receipt-image.ts';
 import { addReceipt, deleteReceipt, listReceipts } from '#lib/server/receipts.ts';
 import type { Actions, PageServerLoad } from './$types';
@@ -56,7 +56,7 @@ export const actions: Actions = {
 		if (!body.ok) {
 			return fail(400, { commentError: body.error, comment: String(form.get('comment') ?? '') });
 		}
-		await addComment(locals.db, group.id, actorId, params.id, body.value);
+		await addComment(locals.db, group.id, actorId, params.id, body.value, clientIdIn(form));
 		return { commented: true };
 	},
 

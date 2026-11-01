@@ -1,5 +1,6 @@
 // What's kept for a person's other devices (#110): only sealed copies of keys.
 import { eq, sql } from 'drizzle-orm';
+import { keyIdIn } from '#lib/crypto/seal.ts';
 import type { Db } from './db';
 import { people, personKeys } from './db/schema';
 
@@ -22,9 +23,9 @@ export async function storeKeys(
 	for (const { keyId, sealed } of keys) {
 		await db
 			.insert(personKeys)
-			.values({ personId, keyId, sealed })
+			.values({ personId, keyId, vaultId: keyIdIn(sealed), sealed })
 			.onConflictDoUpdate({
-				target: [personKeys.personId, personKeys.keyId],
+				target: [personKeys.personId, personKeys.keyId, personKeys.vaultId],
 				set: { sealed: sql`excluded.sealed` }
 			});
 	}
