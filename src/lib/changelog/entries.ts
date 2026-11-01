@@ -13,6 +13,32 @@ export type ChangelogEntry = {
 /** Newest first */
 export const CHANGELOG: ChangelogEntry[] = [
 	{
+		version: '0.18.1',
+		date: '2026-11-01',
+		items: [
+			{
+				icon: 'insights',
+				en: 'Charts mark every year, and dates in Insights say their year.',
+				de: 'Diagramme markieren jedes Jahr, und Daten in den Insights nennen ihr Jahr.'
+			},
+			{
+				icon: 'payment',
+				en: 'Payments are a quiet line between expenses.',
+				de: 'Zahlungen sind jetzt eine dezente Zeile zwischen den Ausgaben.'
+			},
+			{
+				icon: 'settings',
+				en: 'Tidier settings, backup and devices pages, and long names fit beside the charts.',
+				de: 'Aufgeräumtere Einstellungen, Backup- und Geräteseiten, und lange Namen passen neben die Diagramme.'
+			},
+			{
+				icon: 'notifications',
+				en: 'Notifications have their own section, and say when they’re not available.',
+				de: 'Benachrichtigungen haben einen eigenen Bereich und sagen, wenn sie nicht verfügbar sind.'
+			}
+		]
+	},
+	{
 		version: '0.18.0',
 		date: '2026-11-01',
 		items: [
