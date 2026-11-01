@@ -4,6 +4,7 @@
 	import { Navbar, NavbarBackLink, Page } from 'konsta/svelte';
 	import type { Snippet } from 'svelte';
 	import { m } from '#lib/paraglide/messages.js';
+	import BackToTop from './BackToTop.svelte';
 	import VersionFooter from './VersionFooter.svelte';
 
 	type Props = {
@@ -50,4 +51,5 @@
 	<div class="pb-24">
 		<VersionFooter />
 	</div>
+	<BackToTop />
 </Page>
