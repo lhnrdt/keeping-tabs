@@ -558,3 +558,31 @@ test('settings are sealed, the history still says who, and the key leaves the se
 		)
 		.toBe(1);
 });
+
+test('a member can’t overwrite an encrypted group behind everyone’s back (#110)', async ({
+	page
+}) => {
+	const { groupUrl } = await encryptedGroup(page);
+	await open(page, groupUrl);
+	const entry = page.getByRole('link', { name: /Whiskey tasting/ });
+	const id = (await entry.getAttribute('href'))!.split('/').at(-1)!;
+	const junk = 'enc1.AAAAAAAA.title_.AAAA';
+	const post = (data: unknown) => page.request.post(`${groupUrl}/encrypt/data`, { data });
+
+	// Rows under another key are only set aside, and declaring it done without all of it is refused
+	const batch = { expenses: [{ id, title: junk, notes: null, details: junk }] };
+	expect((await post({ batch })).ok()).toBe(true);
+	expect((await post({ finish: 'AAAAAAAA' })).ok()).toBe(false);
+	await page.reload();
+	await expect(entry).toBeVisible();
+	await expect(entry).toContainText('€30.00');
+
+	// Nothing under the group's own key gets in that way, and a real change of link still works
+	await page.goto(`${groupUrl}?tab=group`);
+	await page.getByRole('link', { name: 'Create new link' }).click();
+	await page.getByRole('button', { name: 'Create new link' }).click();
+	const field = page.getByLabel('Share', { exact: true });
+	await expect(field).toHaveValue(/#key=/, { timeout: 30_000 });
+	await open(page, (await field.inputValue()).split('#')[0]);
+	await expect(entry).toContainText('€30.00');
+});

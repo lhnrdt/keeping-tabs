@@ -1,6 +1,10 @@
 // Opens what the server sent (#110): every sealed text in a page's data becomes readable here,
 // in the browser, before anything shows. The server only ever passes sealed text along.
-import { DETAIL_FIELDS, GROUP_DETAIL_FIELDS } from '#lib/expense/sealed-details.ts';
+import {
+	checkEntryDetails,
+	checkGroupDetails,
+	UNREADABLE_ENTRY
+} from '#lib/expense/check-details.ts';
 import { m } from '#lib/paraglide/messages.js';
 import { takeKeyFromAddress } from './key-from-address';
 import { keyFor, rememberKey } from './keyring';
@@ -32,17 +36,29 @@ const openOne = async (sealed: string) => {
 	return (await openKept(sealed)) ?? unreadable;
 };
 
-const DETAILS: readonly string[] = [...DETAIL_FIELDS, ...GROUP_DETAIL_FIELDS];
+const parsed = (text: string | null) => {
+	try {
+		return JSON.parse(text ?? 'null') as unknown;
+	} catch {
+		return null;
+	}
+};
 
-/** A row's sealed details as its usual fields, if they can be read and are this row's */
+/**
+ * A row's sealed details as its usual fields, as far as they make sense (check-details.ts). An entry
+ * they can't be read from, or that has another's, shows as locked and counts for nothing.
+ */
 async function detailsOf(row: Record<string, unknown>) {
 	const sealed = row.sealedDetails;
 	if (!browser || !isSealed(sealed)) return {};
-	if (typeof row.id === 'string' && !belongsTo(sealed, 'details', row.id)) return {};
-	const read = JSON.parse((await openKept(sealed)) ?? '{}') as Record<string, unknown>;
-	const details: Record<string, unknown> = Object.fromEntries(
-		DETAILS.filter((name) => name in read).map((name) => [name, read[name]])
-	);
+	const isEntry = 'amountCents' in row;
+	if (typeof row.id === 'string' && !belongsTo(sealed, 'details', row.id)) {
+		return isEntry ? UNREADABLE_ENTRY : {};
+	}
+	const read = parsed(await openKept(sealed));
+	if (!isEntry) return checkGroupDetails(read);
+	const details: Record<string, unknown> | null = checkEntryDetails(read);
+	if (!details) return UNREADABLE_ENTRY;
 	// The list's category is what to show: the guess, if nothing was chosen
 	if (row.category && !details.category) details.category = details.autoCategory;
 	return details;

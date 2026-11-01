@@ -298,6 +298,24 @@ export const personKeys = sqliteTable(
 	(t) => [primaryKey({ columns: [t.personId, t.keyId, t.vaultId] })]
 );
 
+/**
+ * A group's text and money sealed under a new key, until all of it is here (#110): only then does it
+ * replace what's there, all at once, so a key change cut off or sent by mistake leaves nothing broken.
+ */
+export const rekeyRows = sqliteTable(
+	'rekey_rows',
+	{
+		groupId: text('group_id')
+			.notNull()
+			.references(() => groups.id, { onDelete: 'cascade' }),
+		kind: text('kind').notNull(),
+		rowId: text('row_id').notNull(),
+		value: text('value').notNull(),
+		createdAt: createdAt()
+	},
+	(t) => [primaryKey({ columns: [t.groupId, t.kind, t.rowId] })]
+);
+
 /** A short conversation under an expense (#49), visible to the group; each removes only their own */
 export const expenseComments = sqliteTable(
 	'expense_comments',

@@ -11,7 +11,7 @@ import { getDb } from '../src/lib/server/db/index.ts';
 const ENCRYPT_CRON = '*/5 * * * *';
 
 import { encryptNextUnopened } from '../src/lib/server/encrypt-unopened.ts';
-import { endHandovers } from '../src/lib/server/encryption-handover.ts';
+import { dropStaleRekeys, endHandovers } from '../src/lib/server/encryption-handover.ts';
 import { purgeDeletedGroups } from '../src/lib/server/purge.ts';
 import { addDueRecurring } from '../src/lib/server/recurring.ts';
 
@@ -31,6 +31,7 @@ export default {
 			Promise.all([
 				purgeDeletedGroups(db, now),
 				endHandovers(db, now),
+				dropStaleRekeys(db, now),
 				addDueRecurring(db, now.toISOString().slice(0, 10))
 			])
 		);
