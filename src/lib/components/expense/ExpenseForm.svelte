@@ -18,6 +18,7 @@
 	import { calmSlide } from '#lib/motion/calm.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { canBeDefault } from '#lib/split/default-split.ts';
+	import type { Frequency } from '#lib/expense/recurrence.ts';
 	import { ITEMS_MODE } from '#lib/split/items.ts';
 	import { isSplitMode, SPLIT_MODES, type SplitMode } from '#lib/split/modes.ts';
 	import { SEVERAL_PAYERS } from '#lib/validation.ts';
@@ -64,6 +65,8 @@
 		submitLabel: string;
 		/** A new expense can repeat (#45) */
 		canRepeat?: boolean;
+		/** Editing a repeating expense itself: how often, and it can't be "never" */
+		repeats?: Frequency;
 		/** The group's type: what categories it offers; a car group notes km and fuel */
 		kind: GroupKind;
 		/** A new expense waits on the device when the connection is gone (#55) */
@@ -80,6 +83,7 @@
 		error,
 		submitLabel,
 		canRepeat = false,
+		repeats,
 		kind,
 		offlineToken,
 		expenseId
@@ -246,11 +250,11 @@
 		<CategoryPicker value={values.category} {title} learned={learnCategories(chosen)} {kind} />
 		<DateChips bind:date />
 		{#if offlineToken}<NewExpensePhotos onchange={(chosen) => (photos = chosen)} />{/if}
-		{#if canRepeat}
+		{#if canRepeat || repeats}
 			<PlainField label={m.field_repeats()} icon="repeats" arrow>
 				{#snippet children(id)}
-					<select {id} name="repeats">
-						<option value="">{m.repeats_never()}</option>
+					<select {id} name="repeats" value={repeats ?? ''}>
+						{#if !repeats}<option value="">{m.repeats_never()}</option>{/if}
 						<option value="weekly">{m.repeats_weekly()}</option>
 						<option value="monthly">{m.repeats_monthly()}</option>
 						<option value="yearly">{m.repeats_yearly()}</option>
