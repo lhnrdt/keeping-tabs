@@ -1,7 +1,12 @@
 // What encrypting a group takes from a browser (#110): its text to seal, and what's sealed coming back.
 import { error, json } from '@sveltejs/kit';
 import { requireGroup } from '#lib/server/context.ts';
-import { encryptStep, textOf, type EncryptStep } from '#lib/server/encrypt-group.ts';
+import {
+	encryptStep,
+	textOf,
+	textWithStaged,
+	type EncryptStep
+} from '#lib/server/encrypt-group.ts';
 import { memberOf } from '#lib/server/groups.ts';
 import { findPerson } from '#lib/server/people.ts';
 import type { RequestHandler } from './$types';
@@ -17,7 +22,7 @@ async function context(locals: App.Locals, token: string) {
 
 export const GET: RequestHandler = async ({ locals, params }) => {
 	const { group } = await context(locals, params.token);
-	return json(await textOf(locals.db, group.id));
+	return json(await (group.keyId ? textWithStaged : textOf)(locals.db, group.id));
 };
 
 export const POST: RequestHandler = async ({ locals, params, request }) => {

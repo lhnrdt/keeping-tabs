@@ -6,22 +6,6 @@ import type { ExpenseInput, PaymentInput } from '#lib/validation.ts';
 /** What a sealed row's amount column holds: the database wants one above zero, and it says nothing */
 export const SEALED_AMOUNT = 1;
 
-export const DETAIL_FIELDS = [
-	'amountCents',
-	'paidBy',
-	'splitMode',
-	'items',
-	'splits',
-	'payers',
-	'originalCurrency',
-	'originalAmountCents',
-	'exchangeRate',
-	'category',
-	'autoCategory',
-	'odometerM',
-	'fuelMl'
-] as const;
-
 /** A group's settings, sealed the same way */
 export const GROUP_DETAIL_FIELDS = [
 	'budgetCents',

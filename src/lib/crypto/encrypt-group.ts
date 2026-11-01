@@ -114,13 +114,16 @@ export async function encryptWith(
 		return openText(old, value);
 	};
 
-	const first = await fetchText();
-	const resumed =
-		isSealed(first.group.name) && keyIdIn(first.group.name) !== currentKeyId
-			? await keyFor(keyIdIn(first.group.name))
-			: undefined;
-	if (isSealed(first.group.name) && keyIdIn(first.group.name) !== currentKeyId && !resumed) {
-		throw new Error('started on another device');
+	let first = await fetchText();
+	let resumed: string | undefined;
+	if (isSealed(first.group.name) && keyIdIn(first.group.name) !== currentKeyId) {
+		resumed = await keyFor(keyIdIn(first.group.name));
+		if (!resumed) {
+			// Someone else's key change that never finished: theirs goes, this one starts over
+			if (!currentKeyId) throw new Error('started on another device');
+			await send({ discardRekey: true });
+			first = await fetchText();
+		}
 	}
 	// A new group key goes to the server first: whoever comes next carries on with the same one
 	const begun = currentKeyId ? undefined : (await send({ begin: newKey() })).key;

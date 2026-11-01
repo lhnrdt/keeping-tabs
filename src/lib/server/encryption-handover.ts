@@ -5,7 +5,7 @@ import { env } from 'cloudflare:workers';
 import { isNotNull, lt, and } from 'drizzle-orm';
 import { isSealed } from '#lib/crypto/seal.ts';
 import type { Db } from './db';
-import { groups } from './db/schema';
+import { groups, rekeyRows } from './db/schema';
 import { listMembers } from './groups';
 
 const HANDOVER_DAYS = 90;
@@ -52,3 +52,7 @@ export async function placeholderMember(db: Db, groupId: string) {
 	const [first] = await listMembers(db, groupId);
 	return first?.id ?? null;
 }
+
+/** Key changes never finished: long forgotten after a week */
+export const dropStaleRekeys = (db: Db, now: Date) =>
+	db.delete(rekeyRows).where(lt(rekeyRows.createdAt, new Date(now.getTime() - 7 * 86_400_000)));
