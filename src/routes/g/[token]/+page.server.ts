@@ -1,4 +1,4 @@
-import { fail, redirect } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
 import { todayInputValue } from '#lib/dates.ts';
 import type { ErrorCode } from '#lib/errors.ts';
@@ -26,11 +26,13 @@ import {
 	listMembers,
 	regenerateShareToken,
 	setDefaultSplit,
+	setGroupDetails,
 	renameMember
 } from '#lib/server/groups.ts';
 import { ensurePerson, personOf, setProfileName } from '#lib/server/people.ts';
 import { addDueRecurring, listRecurring, stopRecurring } from '#lib/server/recurring.ts';
 import { isSealed } from '#lib/crypto/seal.ts';
+import { m } from '#lib/paraglide/messages.js';
 import { parseMemberName } from '#lib/validation.ts';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -187,7 +189,14 @@ export const actions: Actions = {
 
 	/** New expenses go back to an equal split (#41) */
 	clearDefaultSplit: async ({ locals, params, request }) => {
-		const { group, actorId } = await context(locals, params.token, request);
+		const { form, group, actorId } = await context(locals, params.token, request);
+		// Encrypted: sealed in the browser, with the group's other settings (#110)
+		const sealed = form.get('details');
+		if (group.keyId) {
+			if (!isSealed(sealed)) error(409, m.locked_reload());
+			await setGroupDetails(locals.db, group.id, sealed);
+			return;
+		}
 		await setDefaultSplit(locals.db, group.id, actorId, null);
 	},
 

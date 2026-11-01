@@ -2,6 +2,7 @@
 // before sending, so the server only ever sees them sealed. If the server sends them back with
 // a refusal, they're opened again for the form.
 import { applyAction, type SubmitFunction } from '$app/forms';
+import { invalidateAll } from '$app/navigation';
 import { page } from '$app/state';
 import { m } from '#lib/paraglide/messages.js';
 import { expenseValues, paymentValues } from '#lib/expense/form-values.ts';
@@ -149,6 +150,12 @@ async function sealGroupForm(form: FormData, key: string): Promise<Refusal | nul
 	return null;
 }
 
+/** New expenses back to an equal split */
+async function sealClearedSplit(form: FormData, key: string): Promise<Refusal | null> {
+	form.set('details', await sealGroupDetails(key, { defaultSplit: null }));
+	return null;
+}
+
 /** Which insights the group shows; none chosen goes back to its type's suggestions */
 async function sealSections(form: FormData, key: string): Promise<Refusal | null> {
 	const chosen = form.getAll('section').filter(isSection);
@@ -168,6 +175,7 @@ const SEAL_MONEY: Record<
 	payment: sealPayment,
 	plan: sealPlan,
 	groupForm: sealGroupForm,
+	clearDefaultSplit: sealClearedSplit,
 	sections: sealSections
 };
 
@@ -177,6 +185,9 @@ export async function currentGroupKey() {
 	if (!keyId) return null;
 	return keyFor(keyId);
 }
+
+/** Forms sent again once already, so a refusal can't go round in circles */
+const resent = new WeakSet<HTMLFormElement>();
 
 /** For `use:enhance`: seals `names` if the group is encrypted, around what the form does anyway */
 export const sealing =
@@ -200,6 +211,15 @@ export const sealing =
 		if (key) await sealFields(input.formData, key, names, row?.());
 		const after = await inner?.(input);
 		return async (options) => {
+			// Encrypted since this page loaded: with what's current, it goes again, sealed
+			const { result } = options;
+			if (result.type === 'error' && result.status === 409 && !resent.has(input.formElement)) {
+				resent.add(input.formElement);
+				await invalidateAll();
+				input.formElement.requestSubmit(input.submitter as HTMLElement | null);
+				return;
+			}
+			resent.delete(input.formElement);
 			if (options.result.type === 'failure') {
 				options.result.data = await openDeep(options.result.data);
 			}

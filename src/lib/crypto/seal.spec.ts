@@ -10,7 +10,8 @@ import {
 	sealBytes,
 	sealText,
 	contextIn,
-	textContext
+	textContext,
+	toBase64Url
 } from './seal';
 
 describe('a sealed text’s length', () => {
@@ -20,6 +21,13 @@ describe('a sealed text’s length', () => {
 		const longer = await sealText(key, 'Abendessen im Fischerhaus');
 		expect(short.length).toBe(longer.length);
 		expect(await openText(key, longer)).toBe('Abendessen im Fischerhaus');
+	});
+
+	it('reads text sealed before there was padding, whole', async () => {
+		const key = newKey();
+		const bytes = await sealBytes(key, new TextEncoder().encode('Golf teilen'));
+		const sealed = `enc1.${await keyIdOf(key)}..${toBase64Url(bytes)}`;
+		expect(await openText(key, sealed)).toBe('Golf teilen');
 	});
 
 	it('keeps text of exactly one step whole', async () => {

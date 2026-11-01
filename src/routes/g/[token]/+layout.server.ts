@@ -24,7 +24,8 @@ export const load: LayoutServerLoad = async ({ locals, params }) => {
 		group,
 		hasPassword: Boolean(lock?.passwordHash),
 		members: members.map(
-			({ id, name, personId, avatar, paymentDetails, personPaymentDetails }) => ({
+			({ id, name, personId, avatar, paymentDetails, personPaymentDetails, createdAt }) => ({
+				joinedAt: createdAt.getTime(),
 				id,
 				name,
 				avatarId: personId ?? id,

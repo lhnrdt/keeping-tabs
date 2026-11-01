@@ -2,6 +2,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import { encryptGroup } from '#lib/crypto/encrypt-group.ts';
 	import ListSkeleton from '#lib/components/skeleton/ListSkeleton.svelte';
+	import BackupNudge from '#lib/components/home/BackupNudge.svelte';
 	import { categorize } from '#lib/expense/categorize.ts';
 	import { resolve } from '$app/paths';
 	import { Block } from 'konsta/svelte';
@@ -56,6 +57,7 @@
 	{:else}
 		<YourGroups memberOf={data.yourGroups} />
 	{/if}
+	{#if data.needsBackup}<BackupNudge />{/if}
 	<Block>
 		<LinkButton href={resolve('/new')}>
 			<Icon name="add" />

@@ -85,7 +85,11 @@ function padded(bytes: Uint8Array) {
 	return result;
 }
 
-const unpadded = (bytes: Uint8Array) => bytes.subarray(0, bytes.lastIndexOf(0x80));
+/** Up to the marker; text sealed before there was padding has none, and is whole as it is */
+function unpadded(bytes: Uint8Array) {
+	const marker = bytes.lastIndexOf(0x80);
+	return marker === -1 ? bytes : bytes.subarray(0, marker);
+}
 
 export async function sealText(key: string, text: string, context = '') {
 	const sealed = await sealBytes(key, padded(new TextEncoder().encode(text)), context);

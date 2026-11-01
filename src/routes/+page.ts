@@ -1,5 +1,6 @@
 import { resolve } from '$app/paths';
 import { browser, openedLoad } from '#lib/crypto/open-data.ts';
+import { m } from '#lib/paraglide/messages.js';
 import { sealedEntries } from '#lib/group/sealed-entries.ts';
 import { summaryOf, type SealedEntry } from '#lib/group/sealed-money.ts';
 import type { PageLoad } from './$types';
@@ -18,6 +19,8 @@ export const load: PageLoad = async ({ data, fetch }) => {
 				group.sealed
 					? {
 							...group,
+							// Without the key its money can't be known: not the same as settled up
+							unreadable: group.name === m.locked_text(),
 							...summaryOf({
 								...group.sealed,
 								expenses: await sealedEntries<SealedEntry>(
