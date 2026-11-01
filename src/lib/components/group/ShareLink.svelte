@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-	import { Block, Button, List, ListButton, ListItem, Toast } from 'konsta/svelte';
-	import CopyButton from '#lib/components/CopyButton.svelte';
+	import { Button, Toast } from 'konsta/svelte';
+	import LinkField from '#lib/components/LinkField.svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import FormDialog from './FormDialog.svelte';
 	import { tabAction } from '#lib/group/tabs.ts';
@@ -22,27 +22,22 @@
 	}
 </script>
 
-<Block class="!mb-2">
+<div class="flex flex-col gap-3 px-4 pb-4">
 	<p class="text-sm text-muted">{m.share_hint()}</p>
-</Block>
-<List strong inset>
-	<ListItem title={shareUrl} titleWrapClass="truncate select-all" aria-label={m.share_title()} />
-	<ListButton
-		type="button"
-		class="[&_button]:tone-destructive"
-		onclick={() => (confirmingRegenerate = true)}
-	>
-		<Icon name="newLink" />
-		{m.regenerate_link()}
-	</ListButton>
-</List>
-<Block class="grid grid-cols-2 gap-3">
+	<LinkField link={shareUrl} label={m.share_title()} />
 	<Button large rounded type="button" class="gap-2" onclick={share}>
 		<Icon name="share" />
 		{m.share_button()}
 	</Button>
-	<CopyButton text={shareUrl} label={m.copy_link()} />
-</Block>
+	<button
+		type="button"
+		class="flex min-h-11 items-center justify-center gap-2 text-sm font-medium tone-destructive"
+		onclick={() => (confirmingRegenerate = true)}
+	>
+		<Icon name="newLink" size={18} />
+		{m.regenerate_link()}
+	</button>
+</div>
 
 <Toast position="center" opened={copied}>{m.share_copied()}</Toast>
 

@@ -27,7 +27,7 @@ test('settings are saved and follow you to another device', async ({ browser }) 
 	await open(phone, '/you/devices');
 	await openFold(phone, 'Weiteres Gerät hinzufügen');
 	await phone.getByRole('button', { name: 'Link erstellen' }).click();
-	const link = (await phone.getByRole('listitem', { name: 'One-Time-Link' }).innerText()).trim();
+	const link = (await phone.getByLabel('One-Time-Link').inputValue()).trim();
 	const laptop = await (await browser.newContext({ locale: 'en-US' })).newPage();
 	await open(laptop, link);
 	// Not linked yet, so still in its own (English) language

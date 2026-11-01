@@ -1,8 +1,8 @@
 <script lang="ts">
 	// Creates a one-time link for another device and offers to share or copy it (A-14).
 	import { enhance } from '$app/forms';
-	import { Block, Button, List, ListItem, Toast } from 'konsta/svelte';
-	import CopyButton from '#lib/components/CopyButton.svelte';
+	import { Block, Button, Toast } from 'konsta/svelte';
+	import LinkField from '#lib/components/LinkField.svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import SubmitButton from '#lib/components/SubmitButton.svelte';
 	import { Submission } from '#lib/forms/submission.svelte.ts';
@@ -22,20 +22,13 @@
 </script>
 
 {#if link}
-	<List strong inset>
-		<ListItem
-			title={link}
-			titleWrapClass="truncate select-all"
-			aria-label={m.device_link_label()}
-		/>
-	</List>
-	<Block class="grid grid-cols-2 gap-3">
+	<div class="flex flex-col gap-3 px-4 pb-1">
+		<LinkField {link} label={m.device_link_label()} />
 		<Button large rounded type="button" class="gap-2" onclick={() => share(link)}>
 			<Icon name="share" />
 			{m.share_button()}
 		</Button>
-		<CopyButton text={link} label={m.copy_link()} />
-	</Block>
+	</div>
 	<Toast position="center" opened={copied}>{m.share_copied()}</Toast>
 {:else}
 	<form method="POST" action="?/createLink" use:enhance={submission.enhance}>
