@@ -30,9 +30,6 @@
 		height: 2.5rem;
 		overflow: hidden;
 		border-radius: 0.25rem;
-		box-shadow:
-			inset 0 6px 6px -5px rgb(0 0 0 / 0.6),
-			inset 0 -6px 6px -5px rgb(0 0 0 / 0.6);
 		font-size: 1.375rem;
 		font-weight: 600;
 		font-variant-numeric: tabular-nums;
