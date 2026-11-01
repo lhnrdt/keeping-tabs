@@ -5,7 +5,7 @@
 import type { Dot, Line, Shape } from './scenes';
 import type { ThemeId } from './palettes';
 
-export type Motif = { shapes: (Shape & { snow?: boolean })[]; lines?: Line[]; dots?: Dot[] };
+export type Motif = { shapes: Shape[]; lines?: Line[]; dots?: Dot[] };
 
 /** A filled pine, standing on y, h tall */
 const pine = (x: number, y: number, h: number) => {

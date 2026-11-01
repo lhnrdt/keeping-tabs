@@ -4,8 +4,19 @@
 // canvas is 400×200, and the scene stays anchored to its bottom right corner.
 import type { ThemeId } from './palettes';
 
-export type Shape = { d: string; strength: number; cut?: boolean };
-export type Line = { d: string; strength: number };
+/** How it moves, if it does (styles/scene-motion.css) */
+export type SceneMotion =
+	'rise' | 'bob' | 'bob-slow' | 'flutter' | 'pulse' | 'idle' | 'drift' | 'breathe' | 'flicker';
+
+export type Shape = {
+	d: string;
+	strength: number;
+	cut?: boolean;
+	/** Soft white, in light and dark */
+	snow?: boolean;
+	motion?: SceneMotion;
+};
+export type Line = { d: string; strength: number; motion?: SceneMotion };
 export type Dot = [x: number, y: number, r: number, strength: number];
 export type Scene = { shapes: Shape[]; lines?: Line[]; dots?: Dot[] };
 
@@ -55,15 +66,22 @@ export const SCENES: Record<ThemeId, Scene> = {
 			{ d: 'M278 158h26l-5 7h-16Z M290 157v-15l9 13Z', strength: 0.85 }
 		],
 		lines: [
-			{ d: waves(226, 176, 3), strength: 0.5 },
-			{ d: waves(298, 188, 4), strength: 0.5 }
+			{ d: waves(226, 176, 3), strength: 0.5, motion: 'drift' },
+			{ d: waves(298, 188, 4), strength: 0.5, motion: 'drift' }
 		]
 	},
 	mountains: {
 		shapes: [
-			{ d: 'M200 200L262 92L300 142L348 70L400 138V200Z', strength: 0.35 },
-			{ d: 'M250 200L324 86L400 184V200Z', strength: 0.7 },
-			{ d: 'M324 86L346 115L334 110L324 122L314 110L303 118Z', strength: 1, cut: true },
+			{ d: 'M200 200L262 112L300 150L346 98L400 150V200Z', strength: 0.35 },
+			// Snow caps end on the slopes of their peaks, and the ones behind go behind what's in front
+			{ d: 'M262 112L278 128L270 123L264 132L257 125L250.7 128Z', strength: 1, snow: true },
+			{
+				d: 'M346 98L364.7 116L356 112L350 120L343 113L336 119L330.1 116Z',
+				strength: 1,
+				snow: true
+			},
+			{ d: 'M250 200L324 104L400 188V200Z', strength: 0.7 },
+			{ d: 'M324 104L347.5 130L338 123L330 135L322 125L314 134L304 130Z', strength: 1, snow: true },
 			{ d: 'M300 200C330 182 370 176 400 182V200Z', strength: 0.9 }
 		]
 	},
@@ -131,15 +149,23 @@ export const SCENES: Record<ThemeId, Scene> = {
 			{ d: 'M352 72L365 56L378 72Z', strength: 0.9 }
 		],
 		lines: [
-			{ d: waves(210, 168, 4), strength: 0.5 },
-			{ d: waves(230, 182, 3), strength: 0.5 },
-			{ d: waves(206, 194, 4), strength: 0.5 }
+			{ d: waves(210, 168, 4), strength: 0.5, motion: 'drift' },
+			{ d: waves(230, 182, 3), strength: 0.5, motion: 'drift' },
+			{ d: waves(206, 194, 4), strength: 0.5, motion: 'drift' }
 		]
 	},
 	aurora: {
 		shapes: [
-			{ d: 'M250 0C262 40 244 80 262 124L292 110C278 72 296 36 284 0Z', strength: 0.25 },
-			{ d: 'M300 0C314 44 296 84 314 116L348 104C332 66 350 34 338 0Z', strength: 0.35 },
+			{
+				d: 'M250 0C262 40 244 80 262 124L292 110C278 72 296 36 284 0Z',
+				strength: 0.25,
+				motion: 'breathe'
+			},
+			{
+				d: 'M300 0C314 44 296 84 314 116L348 104C332 66 350 34 338 0Z',
+				strength: 0.35,
+				motion: 'breathe'
+			},
 			{ d: 'M356 0C366 36 352 70 368 100L400 92V0Z', strength: 0.25 },
 			{ d: 'M195 200L262 134L306 166L352 122L400 158V200Z', strength: 0.5 },
 			{ d: pine(286, 192, 38) + pine(322, 196, 48) + pine(372, 194, 42), strength: 0.9 }
