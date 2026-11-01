@@ -26,6 +26,7 @@ export type Action =
 	| 'payment.delete'
 	| 'payment.restore'
 	| 'recurring.create'
+	| 'recurring.update'
 	| 'recurring.stop'
 	| 'comment.create'
 	| 'comment.delete'

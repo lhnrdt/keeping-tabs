@@ -64,6 +64,75 @@ export async function listRecurring(db: Db, groupId: string) {
 	});
 }
 
+/** A repeating expense as the form needs it, with its next date as the date */
+export async function findRecurring(db: Db, groupId: string, id: string) {
+	const [rule] = await db
+		.select({
+			id: recurringExpenses.id,
+			template: recurringExpenses.template,
+			frequency: recurringExpenses.frequency,
+			nextOn: recurringExpenses.nextOn
+		})
+		.from(recurringExpenses)
+		.where(
+			and(
+				eq(recurringExpenses.id, id),
+				eq(recurringExpenses.groupId, groupId),
+				isNull(recurringExpenses.stoppedAt)
+			)
+		);
+	if (!rule) return undefined;
+	const input = rule.template as ExpenseInput;
+	return {
+		id: rule.id,
+		frequency: rule.frequency,
+		expense: {
+			title: input.title,
+			notes: input.notes,
+			amountCents: input.amountCents,
+			originalCurrency: input.original?.currency ?? null,
+			originalAmountCents: input.original?.amountCents ?? null,
+			exchangeRate: input.original?.rate ?? null,
+			odometerM: input.odometerM,
+			fuelMl: input.fuelMl,
+			date: rule.nextOn,
+			paidBy: input.paidBy,
+			payers: input.payers,
+			category: input.category,
+			items: input.items,
+			splitMode: input.splitMode,
+			splits: input.shares,
+			// Encrypted: all of the above, sealed (#110)
+			sealedDetails: input.sealedDetails
+		}
+	};
+}
+
+/** From now on as this, starting on its date; what it added before stays */
+export async function updateRecurring(
+	db: Db,
+	groupId: string,
+	actorId: string,
+	id: string,
+	input: ExpenseInput,
+	frequency: Frequency
+) {
+	const updated = await db
+		.update(recurringExpenses)
+		.set({ template: input, frequency, added: 0, nextOn: input.date })
+		.where(
+			and(
+				eq(recurringExpenses.id, id),
+				eq(recurringExpenses.groupId, groupId),
+				isNull(recurringExpenses.stoppedAt)
+			)
+		)
+		.returning({ id: recurringExpenses.id });
+	if (updated.length === 0) return false;
+	await log(db, groupId, actorId, 'recurring.update', { recurringId: id, title: input.title });
+	return true;
+}
+
 export async function stopRecurring(db: Db, groupId: string, actorId: string, id: string) {
 	await db.batch([
 		db

@@ -595,3 +595,35 @@ test('a member can’t overwrite an encrypted group behind everyone’s back (#1
 	await open(page, (await field.inputValue()).split('#')[0]);
 	await expect(entry).toContainText('€30.00');
 });
+
+test('a repeating expense can be changed, encrypted or not (#45, #110)', async ({ page }) => {
+	for (const encrypted of [true, false]) {
+		const groupUrl = encrypted
+			? (await encryptedGroup(page)).groupUrl
+			: await createGroup(page, 'Plain', 'Anna', ['Ben']);
+		await open(page, `${groupUrl}/expenses/new`);
+		await page.getByLabel('What was it for?').fill('Rent');
+		await page.getByLabel('Amount (€)').fill('600');
+		await page.getByLabel('Repeats').selectOption({ label: 'Every month' });
+		await page.getByRole('button', { name: 'Add expense' }).click();
+		await page.waitForURL(groupUrl);
+
+		await open(page, `${groupUrl}?tab=group`);
+		const rules = page.getByRole('region', { name: 'Repeating expenses' });
+		await rules.getByRole('link', { name: 'Edit Rent' }).click();
+		await expect(page.getByLabel('Amount (€)')).toHaveValue('600.00');
+		await expect(page.getByLabel('Repeats')).toHaveValue('monthly');
+		await page.getByLabel('What was it for?').fill('New rent');
+		await page.getByLabel('Amount (€)').fill('650');
+		await page.getByLabel('Repeats').selectOption({ label: 'Every week' });
+		await page.getByRole('button', { name: 'Save' }).click();
+		await page.waitForURL(/tab=group/);
+		await expect(rules).toContainText('New rent');
+		await expect(rules).toContainText('€650.00');
+		await expect(rules).toContainText('Every week');
+
+		// What it added before stays as it was
+		await open(page, groupUrl);
+		await expect(page.getByRole('link', { name: /^Rent/ })).toContainText('€600.00');
+	}
+});

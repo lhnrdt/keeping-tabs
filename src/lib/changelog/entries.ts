@@ -32,6 +32,11 @@ export const CHANGELOG: ChangelogEntry[] = [
 				de: 'Melde dich auf einem geteilten oder geliehenen Gerät ab, ohne dein Konto anzufassen.'
 			},
 			{
+				icon: 'repeats',
+				en: 'Change a repeating expense after setting it up.',
+				de: 'Ändere eine wiederkehrende Ausgabe, nachdem du sie angelegt hast.'
+			},
+			{
 				icon: 'phone',
 				en: 'Add another device by scanning a QR code.',
 				de: 'Füge ein weiteres Gerät hinzu, indem du einen QR-Code scannst.'

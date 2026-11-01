@@ -32,7 +32,7 @@
 </script>
 
 <div class="flex flex-col gap-3 px-4 pb-4">
-	<p class="text-sm text-muted">{m.share_hint()}</p>
+	<p class="pt-1 text-sm text-muted">{m.share_hint()}</p>
 	<LinkField link={shareUrl} label={m.share_title()} />
 	<Button large rounded type="button" class="gap-2" onclick={share}>
 		<Icon name="share" />

@@ -124,7 +124,11 @@
 				/>
 				<BlockTitle>{m.group_details()}</BlockTitle>
 				<GroupDetails group={data.group} members={data.members} hasPassword={data.hasPassword} />
-				<RecurringList rules={data.recurring} currency={data.group.currency} />
+				<RecurringList
+					rules={data.recurring}
+					currency={data.group.currency}
+					token={data.group.shareToken}
+				/>
 				<BlockTitle>{m.share_title()}</BlockTitle>
 				<ShareLink token={data.group.shareToken} groupName={data.group.name} />
 				<DeleteGroup groupId={data.group.id} name={data.group.name} />
