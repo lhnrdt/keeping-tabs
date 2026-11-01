@@ -82,11 +82,11 @@ test('a finished trip gets a recap to look back on and share (#163)', async ({ p
 	// Its last expense was more than two weeks ago (August 2026)
 	const groupUrl = await tripWithExpenses(page);
 	await open(page, `${groupUrl}?tab=insights`);
-	await page.getByRole('button', { name: 'Customize insights' }).click();
-	const customize = page.getByRole('dialog', { name: 'Customize insights' });
-	await customize.getByRole('checkbox', { name: /^Recap/ }).check();
-	await customize.getByRole('button', { name: 'Save' }).click();
-	await expect(customize).toBeHidden();
+	await page.getByRole('link', { name: 'Customize insights' }).click();
+	await expect(page).toHaveURL(/customize-insights/);
+	await page.getByRole('checkbox', { name: /^Recap/ }).check();
+	await page.getByRole('button', { name: 'Save' }).click();
+	await expect(page).toHaveURL(/tab=insights/);
 
 	const recap = page.getByRole('article', { name: 'Recap' });
 	await expect(recap).toContainText('€480.00');
@@ -117,20 +117,21 @@ test('a group can choose its insights, starting from its type’s suggestions (#
 	expect(await titles()).toContain('Biggest expenses');
 	expect(await titles()).not.toContain('Fixed costs');
 
-	await page.getByRole('button', { name: 'Customize insights' }).click();
-	const dialog = page.getByRole('dialog', { name: 'Customize insights' });
-	await dialog.getByLabel(/Biggest expenses/).uncheck();
-	await dialog.getByLabel(/Who paid how often/).check();
-	await dialog.getByRole('button', { name: 'Save' }).click();
-	await expect(dialog).toBeHidden();
+	await page.getByRole('link', { name: 'Customize insights' }).click();
+	await expect(page).toHaveURL(/customize-insights/);
+	await page.getByLabel(/Biggest expenses/).uncheck();
+	await page.getByLabel(/Who paid how often/).check();
+	await page.getByRole('button', { name: 'Save' }).click();
+	await expect(page).toHaveURL(/tab=insights/);
 	await expect.poll(titles).toContain('Who paid how often');
 	expect(await titles()).not.toContain('Biggest expenses');
 
 	// It stays for the group, and goes back to the suggestions on request
 	await open(page, `${groupUrl}?tab=insights`);
 	expect(await titles()).toContain('Who paid how often');
-	await page.getByRole('button', { name: 'Customize insights' }).click();
-	await dialog.getByRole('button', { name: 'Back to suggested' }).click();
+	await page.getByRole('link', { name: 'Customize insights' }).click();
+	await expect(page).toHaveURL(/customize-insights/);
+	await page.getByRole('button', { name: 'Back to suggested' }).click();
 	await expect.poll(titles).toContain('Biggest expenses');
 	expect(await titles()).not.toContain('Who paid how often');
 });
@@ -162,21 +163,20 @@ test('a trip on the way sees its budget, where the pace leads, and what’s left
 
 	// Not suggested for this kind of group, but there to choose
 	await open(page, `${groupUrl}?tab=insights`);
-	await page.getByRole('button', { name: 'Customize insights' }).click();
-	const customize = page.getByRole('dialog', { name: 'Customize insights' });
-	await customize.getByRole('checkbox', { name: /^Budget/ }).check();
-	await customize.getByRole('button', { name: 'Save' }).click();
-	await expect(customize).toBeHidden();
+	await page.getByRole('link', { name: 'Customize insights' }).click();
+	await expect(page).toHaveURL(/customize-insights/);
+	await page.getByRole('checkbox', { name: /^Budget/ }).check();
+	await page.getByRole('button', { name: 'Save' }).click();
+	await expect(page).toHaveURL(/tab=insights/);
 
-	await page.getByRole('button', { name: 'Set a budget' }).click();
-	const dialog = page.getByRole('dialog', { name: 'Set a budget' });
-	await dialog.getByLabel('Budget (€)').fill('abc');
-	await dialog.getByRole('button', { name: 'Save' }).click();
-	await expect(dialog.getByRole('alert')).toContainText('Enter an amount');
-	await dialog.getByLabel('Budget (€)').fill('700');
-	await dialog.getByLabel('Ends on').fill(daysFromToday(3));
-	await dialog.getByRole('button', { name: 'Save' }).click();
-	await expect(dialog).toBeHidden();
+	await page.getByRole('link', { name: 'Set a budget' }).click();
+	await page.getByLabel('Budget (€)').fill('abc');
+	await page.getByRole('button', { name: 'Save' }).click();
+	await expect(page.getByRole('alert')).toContainText('Enter an amount');
+	await page.getByLabel('Budget (€)').fill('700');
+	await page.getByLabel('Ends on').fill(daysFromToday(3));
+	await page.getByRole('button', { name: 'Save' }).click();
+	await expect(page).toHaveURL(/tab=insights/);
 
 	// €300 in two days is €150 a day; three more days make €750, over the €700
 	await expect(page.getByText('of €700.00')).toBeVisible();
@@ -186,12 +186,11 @@ test('a trip on the way sees its budget, where the pace leads, and what’s left
 	await expect(page.getByRole('img', { name: 'Budget' })).toBeVisible();
 
 	// Changing starts from what's set
-	await page.getByRole('button', { name: 'Change budget' }).click();
-	const change = page.getByRole('dialog', { name: 'Change budget' });
-	await expect(change.getByLabel('Budget (€)')).toHaveValue('700.00');
-	await expect(change.getByLabel('Ends on')).toHaveValue(daysFromToday(3));
-	await change.getByRole('button', { name: 'Remove budget' }).click();
-	await expect(page.getByRole('button', { name: 'Set a budget' })).toBeVisible();
+	await page.getByRole('link', { name: 'Change budget' }).click();
+	await expect(page.getByLabel('Budget (€)')).toHaveValue('700.00');
+	await expect(page.getByLabel('Ends on')).toHaveValue(daysFromToday(3));
+	await page.getByRole('button', { name: 'Remove budget' }).click();
+	await expect(page.getByRole('link', { name: 'Set a budget' })).toBeVisible();
 });
 
 test('insights for a chosen year, month or day (#184)', async ({ page }) => {

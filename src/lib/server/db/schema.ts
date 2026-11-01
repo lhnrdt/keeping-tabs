@@ -202,6 +202,8 @@ export const expenses = sqliteTable(
 		odometerM: integer('odometer_m'),
 		fuelMl: integer('fuel_ml'),
 		category: text('category').$type<ExpenseCategory>(),
+		// When the group was told about it (#56); each expense only once
+		notifiedAt: integer('notified_at', { mode: 'timestamp_ms' }),
 		// Where an imported row came from (e.g. "sw:…" for Splitwise), so re-imports skip it (I-3)
 		importKey: text('import_key'),
 		createdAt: createdAt(),

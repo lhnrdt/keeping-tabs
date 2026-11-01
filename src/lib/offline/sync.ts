@@ -4,6 +4,7 @@
 import { deserialize } from '$app/forms';
 import { invalidateAll } from '$app/navigation';
 import type { ErrorCode } from '#lib/errors.ts';
+import { announceExpense } from '#lib/expense/announce.ts';
 import { drop, markFailed, pendingItems } from './outbox';
 
 const RETRY_MS = 30_000;
@@ -36,6 +37,7 @@ export async function flushOutbox() {
 			if (result.type === 'success' || result.type === 'redirect') {
 				drop(item.id);
 				sent = true;
+				void announceExpense(item.token, item.id);
 			} else if (result.type === 'failure') {
 				const error = (result.data as { error?: ErrorCode } | undefined)?.error;
 				markFailed(item.id, error ?? 'amount_invalid');

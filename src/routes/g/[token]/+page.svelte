@@ -104,7 +104,6 @@
 					<GroupInsights
 						insights={data.insights}
 						today={data.today}
-						budgetError={errorFor('budget')}
 						group={data.group}
 						members={data.members}
 						everyone={[...data.members, ...data.formerMembers]}
