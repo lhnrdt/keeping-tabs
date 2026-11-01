@@ -3,6 +3,7 @@
 	// their share. One bar per person (LayerChart), most often first, the counts written out.
 	import { BarChart } from 'layerchart';
 	import type { GroupMember } from '#lib/group/members.ts';
+	import { chartName, chartNamesWidth } from '#lib/insights/chart-names.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import type { MemberSpend } from '#lib/insights/insights.ts';
 
@@ -40,11 +41,12 @@
 			props={{
 				bars: { strokeWidth: 0 },
 				yAxis: {
+					format: chartName,
 					tickMarks: false,
 					tickLabelProps: { class: 'fill-ink text-sm font-medium dark:fill-ink-night' }
 				}
 			}}
-			padding={{ left: 64, right: 64 }}
+			padding={{ left: chartNamesWidth(data.map((row) => row.name)), right: 64 }}
 		/>
 	</div>
 	<!-- Around the table: a table's caption stays visible when the table itself is hidden this way -->
