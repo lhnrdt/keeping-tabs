@@ -89,7 +89,28 @@ describe('insightsOf', () => {
 		);
 		expect(overTime.unit).toBe('month');
 		expect(overTime.buckets).toHaveLength(9);
-		expect(change).toEqual({ current: 200, previous: 300, against: 'month' });
+		expect(change).toEqual({ current: 200, previous: 300, against: 'month', soFar: false });
+	});
+
+	it('compares a running month only with the same days of the one before', () => {
+		const { change } = insightsOf(
+			[
+				expense('2026-08-02', 100),
+				expense('2026-08-20', 900),
+				expense('2026-09-03', 50),
+				expense('2026-09-20', 7)
+			],
+			MEMBERS,
+			null,
+			[],
+			{
+				range: { from: '2026-09-01', to: '2026-09-30' },
+				previous: { from: '2026-08-01', to: '2026-08-31' },
+				unit: 'day',
+				today: '2026-09-05'
+			}
+		);
+		expect(change).toEqual({ current: 50, previous: 100, against: 'month', soFar: true });
 	});
 
 	it('orders categories by amount and folds the small ones into the rest', () => {

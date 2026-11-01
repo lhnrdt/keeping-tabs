@@ -15,7 +15,7 @@ import { highlightsOf, type Highlight } from './highlights';
 import { kindsByMonth, type KindMonth } from './kind-months';
 import { MAX_PLACES, placesOf, type Place } from './places';
 import { seriesCategories, slicesOf, type Slice } from './category-slices';
-import { inRange, type DateRange } from './period';
+import { inRange, soFarRange, type DateRange } from './period';
 import { owingSince, paidBack, positionOverTime, positionWithin, type Point } from './standing';
 
 export type InsightEntry = {
@@ -65,7 +65,13 @@ export type Insights = {
 		withoutBig: Bucket[] | null;
 	};
 	/** This period against the one before; for all of it, the latest week or month */
-	change: { current: number; previous: number; against: 'day' | Unit | 'year' } | null;
+	change: {
+		current: number;
+		previous: number;
+		against: 'day' | Unit | 'year';
+		/** The period still runs: both are only the days so far */
+		soFar: boolean;
+	} | null;
 	byCategory: CategoryShare[];
 	/** The period by category for the donut (#183): the group's largest categories keep
 	 * their colour in every period, the others are the rest */
@@ -185,22 +191,55 @@ export function byMember(expenses: readonly InsightEntry[], memberIds: readonly 
 	return [...rows.values()];
 }
 
-/** A period against the one before; for all of it, the latest week or month against the one before */
+const dayBefore = (iso: string) => {
+	const date = toDate(iso);
+	date.setUTCDate(date.getUTCDate() - 1);
+	return toIso(date);
+};
+
+/**
+ * A period against the one before; for all of it, the latest week or month against the one
+ * before. While it's still running, only against the same part of the one before (`soFar`).
+ */
 function changeOf(
+	expenses: readonly InsightEntry[],
 	range: DateRange | null,
-	previous: number | null,
-	total: number,
+	previous: DateRange | null | undefined,
 	buckets: readonly Bucket[],
-	unit: Unit
+	unit: Unit,
+	today: string | undefined
 ): Insights['change'] {
-	if (range && previous !== null) {
+	const sum = (within: DateRange) =>
+		expenses
+			.filter((expense) => inRange(expense.date, within))
+			.reduce((total, { amountCents }) => total + amountCents, 0);
+	const compare = (
+		now: DateRange,
+		before: DateRange,
+		against: 'day' | 'week' | 'month' | 'year'
+	) => {
+		const soFar = today ? soFarRange(now, before, today) : null;
+		return soFar
+			? {
+					current: sum({ from: now.from, to: today! }),
+					previous: sum(soFar),
+					against,
+					soFar: true
+				}
+			: { current: sum(now), previous: sum(before), against, soFar: false };
+	};
+	if (range && previous) {
 		const days =
 			Math.round((toDate(range.to).getTime() - toDate(range.from).getTime()) / DAY_MS) + 1;
-		const against = days === 1 ? 'day' : days <= 31 ? 'month' : 'year';
-		return { current: total, previous, against };
+		return compare(range, previous, days === 1 ? 'day' : days <= 31 ? 'month' : 'year');
 	}
 	if (range || unit === 'day' || buckets.length < 2) return null;
-	return { current: buckets.at(-1)!.amount, previous: buckets.at(-2)!.amount, against: unit };
+	const latest = buckets.at(-1)!.start;
+	return compare(
+		{ from: latest, to: dayBefore(nextStart(latest, unit)) },
+		{ from: buckets.at(-2)!.start, to: dayBefore(latest) },
+		unit
+	);
 }
 
 export function insightsOf(
@@ -215,7 +254,13 @@ export function insightsOf(
 	 * kinds of costs, colours) is still worked out from all of it, and your position starts
 	 * from where you stood when the period began.
 	 */
-	period: { range?: DateRange | null; previous?: DateRange | null; unit?: Unit | null } = {}
+	period: {
+		range?: DateRange | null;
+		previous?: DateRange | null;
+		unit?: Unit | null;
+		/** Today as YYYY-MM-DD, so a running period is compared fairly */
+		today?: string;
+	} = {}
 ): Insights {
 	const everything = entries.filter((entry) => entry.type === 'expense');
 	const range = period.range ?? null;
@@ -243,11 +288,6 @@ export function insightsOf(
 	const series = seriesCategories(
 		everythingTotal > 0 ? byCategory(everything, everythingTotal) : []
 	);
-	const previous = period.previous
-		? everything
-				.filter((expense) => inRange(expense.date, period.previous!))
-				.reduce((sum, { amountCents }) => sum + amountCents, 0)
-		: null;
 	const withoutBig = expenses.filter((expense) => kinds.get(expense.id) !== 'big');
 	return {
 		total,
@@ -263,7 +303,7 @@ export function insightsOf(
 			buckets,
 			withoutBig: withoutBig.length < expenses.length ? overTime(withoutBig, unit, range) : null
 		},
-		change: changeOf(range, previous, total, buckets, unit),
+		change: changeOf(everything, range, period.previous, buckets, unit, period.today),
 		byCategory: categories,
 		donut: { series, slices: slicesOf(expenses, series) },
 		byKind: KINDS.filter((kind) => kindAmounts.has(kind)).map((kind) => ({
