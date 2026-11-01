@@ -23,6 +23,8 @@ async function violationsOn(page: Page) {
 }
 
 async function expectAccessible(page: Page, path: string) {
+	// Measured at rest, not while things fade in
+	await page.emulateMedia({ reducedMotion: 'reduce' });
 	await open(page, path);
 	// Soft: one run reports every screen
 	expect.soft(await violationsOn(page), path).toEqual([]);

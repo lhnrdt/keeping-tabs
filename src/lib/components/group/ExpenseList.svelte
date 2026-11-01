@@ -114,7 +114,7 @@
 </script>
 
 {#if expenses.length}
-	<section aria-label={m.expenses_title()}>
+	<section class="rows-rise" aria-label={m.expenses_title()}>
 		{#each months as group (group.month)}
 			<h3 class="mx-8 mt-6 mb-2 text-sm font-medium text-muted first:mt-2">
 				{formatMonth(group.month)}
