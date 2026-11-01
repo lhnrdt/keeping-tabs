@@ -537,6 +537,7 @@
 	"field_note": "Notiz",
 	"field_km": "Gefahrene km",
 	"field_litres": "Getankt (Liter)",
+	"field_optional": "Optional",
 	"placeholder_expense_title": "z. B. Einkauf",
 	"placeholder_note": "z. B. Trinkgeld inklusive",
 	"note_add": "Notiz hinzufügen",

@@ -9,7 +9,14 @@
 <div class="grid grid-cols-2 gap-2.5">
 	<PlainField label={m.field_km()}>
 		{#snippet children(id)}
-			<input {id} name="km" inputmode="decimal" autocomplete="off" placeholder="0" value={km} />
+			<input
+				{id}
+				name="km"
+				inputmode="decimal"
+				autocomplete="off"
+				placeholder={m.field_optional()}
+				value={km}
+			/>
 			<span class="flex-none pe-3 text-sm text-muted" aria-hidden="true">km</span>
 		{/snippet}
 	</PlainField>
@@ -20,7 +27,7 @@
 				name="litres"
 				inputmode="decimal"
 				autocomplete="off"
-				placeholder="0"
+				placeholder={m.field_optional()}
 				value={litres}
 			/>
 			<span class="flex-none pe-3 text-sm text-muted" aria-hidden="true">l</span>
