@@ -72,7 +72,7 @@
 						entries={data.entries}
 						hasMore={data.hasMore}
 						query={data.query}
-						searchHere={Boolean(data.group.keyId)}
+						searchHere={Boolean(data.group.keyId || data.group.transitionKey)}
 					/>
 				{/key}
 				<FloatingLink

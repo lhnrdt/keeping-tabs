@@ -129,7 +129,7 @@ export type ExpenseInput = {
 	payers: Payer[] | null;
 	/** Chosen by hand; null follows the title */
 	category: ExpenseCategory | null;
-	/** In an encrypted group: category and car data, sealed (#110) */
+	/** In an encrypted group: all the money, category and car data, sealed (#110) */
 	sealedDetails: string | null;
 	splitMode: SplitMode;
 	/** Each member's share, in member order; they add up to the amount */
@@ -189,8 +189,6 @@ export function parseExpense(
 		/** With paidBy "several" (#39): what each member paid, by member id */
 		payers?: Record<string, unknown>;
 		category: unknown;
-		/** In an encrypted group: category and car data, sealed (#110) */
-		details?: unknown;
 		splitMode: unknown;
 		/** For an equal split: who takes part */
 		participants: unknown[];
@@ -242,7 +240,7 @@ export function parseExpense(
 			date: date.value,
 			...payers.value,
 			category: category.value,
-			sealedDetails: isSealed(values.details) ? values.details : null,
+			sealedDetails: null,
 			...split.value
 		}
 	};
@@ -321,7 +319,14 @@ function parsePayers(
 	return { ok: true, value: { paidBy: payers[0].memberId, payers } };
 }
 
-export type PaymentInput = { from: string; to: string; amountCents: number; date: string };
+export type PaymentInput = {
+	/** In an encrypted group: all of this, sealed (#110); the rest are placeholders then */
+	sealedDetails?: string | null;
+	from: string;
+	to: string;
+	amountCents: number;
+	date: string;
+};
 
 /** Validates a payment between two members (B-3). */
 export function parsePayment(
@@ -365,10 +370,12 @@ export function parseCategory(value: unknown): Result<ExpenseCategory | null> {
 		: { ok: false, error: 'category_invalid' };
 }
 
+export const isClientId = (id: unknown) =>
+	typeof id === 'string' &&
+	/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(id);
+
 /** An id made on the device: a version 4 UUID, if the form has one */
 export function clientIdIn(form: FormData) {
 	const id = String(form.get('clientId') ?? '');
-	return /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(id)
-		? id
-		: undefined;
+	return isClientId(id) ? id : undefined;
 }

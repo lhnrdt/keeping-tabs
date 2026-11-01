@@ -6,6 +6,8 @@ import { log } from './activity';
 import type { Db } from './db';
 import { handoverEnds } from './encryption-handover';
 import {
+	expensePayers,
+	expenseSplits,
 	expenseComments,
 	expenseReceipts,
 	expenses,
@@ -14,57 +16,115 @@ import {
 	recurringExpenses
 } from './db/schema';
 
-/** Every text of the group, including what's deleted or stopped */
+/** Every text and all the money of the group, including what's deleted or stopped */
 export async function textOf(db: Db, groupId: string) {
-	const [group, memberRows, expenseRows, comments, rules, receipts] = await db.batch([
-		db
-			.select({ name: groups.name, description: groups.description })
-			.from(groups)
-			.where(eq(groups.id, groupId)),
-		db
-			.select({ id: members.id, name: members.name })
-			.from(members)
-			.where(eq(members.groupId, groupId)),
-		db
-			.select({
-				id: expenses.id,
-				title: expenses.title,
-				notes: expenses.notes,
-				items: expenses.items,
-				category: expenses.category,
-				odometerM: expenses.odometerM,
-				fuelMl: expenses.fuelMl,
-				sealedDetails: expenses.sealedDetails
-			})
-			.from(expenses)
-			.where(eq(expenses.groupId, groupId)),
-		db
-			.select({ id: expenseComments.id, body: expenseComments.body })
-			.from(expenseComments)
-			.innerJoin(expenses, eq(expenseComments.expenseId, expenses.id))
-			.where(eq(expenses.groupId, groupId)),
-		db
-			.select({ id: recurringExpenses.id, template: recurringExpenses.template })
-			.from(recurringExpenses)
-			.where(eq(recurringExpenses.groupId, groupId)),
-		db
-			.select({ id: expenseReceipts.id, expenseId: expenseReceipts.expenseId })
-			.from(expenseReceipts)
-			.innerJoin(expenses, eq(expenseReceipts.expenseId, expenses.id))
-			.where(eq(expenses.groupId, groupId))
-	]);
-	return { group: group[0], members: memberRows, expenses: expenseRows, comments, rules, receipts };
+	const inGroup = eq(expenses.groupId, groupId);
+	const [group, memberRows, expenseRows, splits, payers, comments, rules, receipts] =
+		await db.batch([
+			db
+				.select({
+					name: groups.name,
+					description: groups.description,
+					budgetCents: groups.budgetCents,
+					endsOn: groups.endsOn,
+					defaultSplit: groups.defaultSplit,
+					sealedDetails: groups.sealedDetails
+				})
+				.from(groups)
+				.where(eq(groups.id, groupId)),
+			db
+				.select({ id: members.id, name: members.name, paymentDetails: members.paymentDetails })
+				.from(members)
+				.where(eq(members.groupId, groupId)),
+			db
+				.select({
+					id: expenses.id,
+					type: expenses.type,
+					title: expenses.title,
+					notes: expenses.notes,
+					items: expenses.items,
+					amountCents: expenses.amountCents,
+					paidBy: expenses.paidBy,
+					splitMode: expenses.splitMode,
+					originalCurrency: expenses.originalCurrency,
+					originalAmountCents: expenses.originalAmountCents,
+					exchangeRate: expenses.exchangeRate,
+					category: expenses.category,
+					odometerM: expenses.odometerM,
+					fuelMl: expenses.fuelMl,
+					sealedDetails: expenses.sealedDetails
+				})
+				.from(expenses)
+				.where(inGroup),
+			db
+				.select({
+					expenseId: expenseSplits.expenseId,
+					memberId: expenseSplits.memberId,
+					shareCents: expenseSplits.shareCents,
+					input: expenseSplits.input
+				})
+				.from(expenseSplits)
+				.innerJoin(expenses, eq(expenseSplits.expenseId, expenses.id))
+				.where(inGroup),
+			db
+				.select({
+					expenseId: expensePayers.expenseId,
+					memberId: expensePayers.memberId,
+					amountCents: expensePayers.amountCents
+				})
+				.from(expensePayers)
+				.innerJoin(expenses, eq(expensePayers.expenseId, expenses.id))
+				.where(inGroup),
+			db
+				.select({ id: expenseComments.id, body: expenseComments.body })
+				.from(expenseComments)
+				.innerJoin(expenses, eq(expenseComments.expenseId, expenses.id))
+				.where(inGroup),
+			db
+				.select({
+					id: recurringExpenses.id,
+					memberId: recurringExpenses.memberId,
+					template: recurringExpenses.template
+				})
+				.from(recurringExpenses)
+				.where(eq(recurringExpenses.groupId, groupId)),
+			db
+				.select({ id: expenseReceipts.id, expenseId: expenseReceipts.expenseId })
+				.from(expenseReceipts)
+				.innerJoin(expenses, eq(expenseReceipts.expenseId, expenses.id))
+				.where(inGroup)
+		]);
+	const splitsOf = Map.groupBy(splits, (split) => split.expenseId);
+	const payersOf = Map.groupBy(payers, (payer) => payer.expenseId);
+	return {
+		group: group[0],
+		members: memberRows,
+		expenses: expenseRows.map((row) => ({
+			...row,
+			splits: (splitsOf.get(row.id) ?? []).map(({ memberId, shareCents, input }) => ({
+				memberId,
+				shareCents,
+				input
+			})),
+			payers: (payersOf.get(row.id) ?? []).map(({ memberId, amountCents }) => ({
+				memberId,
+				amountCents
+			}))
+		})),
+		comments,
+		rules,
+		receipts
+	};
 }
 
 export type SealedBatch = {
-	group?: { name: string; description: string | null };
+	group?: { name: string; description: string | null; details: string };
 	members?: { id: string; name: string; paymentDetails: string | null }[];
 	expenses?: {
 		id: string;
 		title: string;
 		notes: string | null;
-		items: string | null;
-		details: string | null;
+		details: string;
 	}[];
 	comments?: { id: string; body: string }[];
 	rules?: { id: string; template: string }[];
@@ -74,15 +134,18 @@ const column = (name: string) =>
 	`(select json_extract(value, '$.${name}') from json_each(?1) where json_extract(value, '$.id') = `;
 
 /** Stores sealed text in one go; only for this group's rows, however the ids were chosen */
-export async function storeSealed(db: Db, groupId: string, batch: SealedBatch) {
+export async function storeSealed(db: Db, groupId: string, actorId: string, batch: SealedBatch) {
 	const d1 = db.$client;
 	const ids = "(select json_extract(value, '$.id') from json_each(?1))";
 	const statements: D1PreparedStatement[] = [];
 	if (batch.group) {
 		statements.push(
 			d1
-				.prepare('update groups set name = ?1, description = ?2 where id = ?3')
-				.bind(batch.group.name, batch.group.description, groupId)
+				.prepare(
+					`update groups set name = ?1, description = ?2, sealed_details = ?3,
+					budget_cents = null, ends_on = null, default_split = null where id = ?4`
+				)
+				.bind(batch.group.name, batch.group.description, batch.group.details, groupId)
 		);
 	}
 	if (batch.members?.length) {
@@ -96,15 +159,20 @@ export async function storeSealed(db: Db, groupId: string, batch: SealedBatch) {
 		);
 	}
 	if (batch.expenses?.length) {
+		const rows = JSON.stringify(batch.expenses);
+		const inGroup = `expense_id in ${ids} and expense_id in (select id from expenses where group_id = ?2)`;
 		statements.push(
 			d1
 				.prepare(
 					`update expenses set title = ${column('title')}expenses.id), notes = ${column('notes')}expenses.id),
-					items = ${column('items')}expenses.id), sealed_details = ${column('details')}expenses.id),
-					category = null, odometer_m = null, fuel_ml = null
+					sealed_details = ${column('details')}expenses.id), items = null, amount_cents = 1 /* SEALED_AMOUNT */, paid_by = ?3,
+					split_mode = 'equal', original_currency = null, original_amount_cents = null,
+					exchange_rate = null, category = null, odometer_m = null, fuel_ml = null
 					where group_id = ?2 and id in ${ids}`
 				)
-				.bind(JSON.stringify(batch.expenses), groupId)
+				.bind(rows, groupId, actorId),
+			d1.prepare(`delete from expense_splits where ${inGroup}`).bind(rows, groupId),
+			d1.prepare(`delete from expense_payers where ${inGroup}`).bind(rows, groupId)
 		);
 	}
 	if (batch.comments?.length) {

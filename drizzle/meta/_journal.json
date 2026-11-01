@@ -253,6 +253,13 @@
       "when": 1793547904881,
       "tag": "0035_encryption_handover",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "6",
+      "when": 1793549451736,
+      "tag": "0036_group_sealed_details",
+      "breakpoints": true
     }
   ]
 }

@@ -565,7 +565,7 @@
 	"how_devices_link": "Set up a backup",
 	"locked_text": "🔒 Locked",
 	"encrypted_note": "Encrypted. Only people with the link can read this.",
-	"push_new_expense_sealed": "A new expense in one of your encrypted groups · {amount}",
+	"push_new_expense_sealed": "A new expense in one of your groups",
 	"error_import_encrypted": "That couldn’t be imported. Open the group’s link on this device and try again.",
 	"rekey_intro": "Someone shouldn’t follow this group anymore? This makes a new link, and the old one stops working.",
 	"rekey_warning": "Everyone else then needs the new link, once on each device. Send it to them afterwards.",

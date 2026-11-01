@@ -1,29 +1,8 @@
-// Downloads of an encrypted group (#110): the server's file holds sealed text, so the browser
-// opens it before saving. A plain group's link just downloads as it is.
+// Downloads of an encrypted group (#110): the server only has sealed text and money, so the browser
+// opens them and makes the file. A plain group's link just downloads as it is.
 import { resolve } from '$app/paths';
-import { textCell } from '#lib/export/csv.ts';
-import { keyFor } from './keyring';
+import { toSplitwiseCsv } from '#lib/export/splitwise.ts';
 import { openDeep } from './open-data';
-import { contextIn, keyIdIn, openText, SEALED_ANYWHERE } from './seal';
-
-const categoryIn = (details: string) =>
-	(details ? (JSON.parse(details) as { category?: string }).category : '') ?? '';
-
-/** A CSV cell's sealed text, opened and quoted the way CSV needs it */
-async function openCsv(csv: string) {
-	const opened = new Map<string, string>();
-	for (const sealed of new Set(csv.match(SEALED_ANYWHERE))) {
-		const key = await keyFor(keyIdIn(sealed));
-		const text = key ? await openText(key, sealed).catch(() => '') : '';
-		// Details stand in for the category they hold
-		opened.set(sealed, contextIn(sealed).startsWith('details_') ? categoryIn(text) : text);
-	}
-	// Sealed text has no commas or quotes, so a cell holding it is unquoted
-	return csv.replace(/(?<=^|,)[^,\r\n"]*enc1\.[^,\r\n"]*(?=,|\r?$)/gm, (cell) => {
-		const text = textCell(cell.replace(SEALED_ANYWHERE, (sealed) => opened.get(sealed) ?? ''));
-		return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
-	});
-}
 
 function save(text: string, name: string, type: string) {
 	const link = document.createElement('a');
@@ -33,22 +12,72 @@ function save(text: string, name: string, type: string) {
 	URL.revokeObjectURL(link.href);
 }
 
-/** For the download links: `undefined` for a plain group, which needs nothing special */
+type ExportRows = {
+	members: { id: string; name: string }[];
+	formerMembers: { id: string; name: string }[];
+	expenses: Parameters<typeof toSplitwiseCsv>[2];
+};
+
+type Details = {
+	splits?: unknown;
+	originalCurrency?: string | null;
+	originalAmountCents?: number | null;
+	exchangeRate?: string | null;
+};
+
+/** A repeating expense as a restored backup expects it: opened, it's in an entry's terms */
+const templateOf = ({
+	splits,
+	originalCurrency,
+	originalAmountCents,
+	exchangeRate,
+	...rest
+}: Details) => ({
+	...rest,
+	shares: splits,
+	original: originalCurrency
+		? { currency: originalCurrency, amountCents: originalAmountCents, rate: exchangeRate }
+		: null
+});
+
+/** A backup file, in the form of a plain group's */
+const openedBackup = async (sealed: unknown) => {
+	const backup = await openDeep(
+		sealed as { entries: object[]; repeating: { template: Details }[] }
+	);
+	return {
+		...backup,
+		entries: backup.entries.map((entry) => ({
+			...entry,
+			payers: (entry as { payers?: unknown }).payers ?? []
+		})),
+		repeating: backup.repeating.map((rule) => ({
+			...rule,
+			template: rule.template.splits ? templateOf(rule.template) : rule.template
+		}))
+	};
+};
+
+/** For the download links; a plain group needs nothing special */
 export const openedDownload =
-	(group: { keyId: string | null; name: string; shareToken: string }, kind: 'csv' | 'json') =>
+	(
+		group: { keyId: string | null; name: string; shareToken: string; currency: string },
+		kind: 'csv' | 'json'
+	) =>
 	async (event: MouseEvent) => {
 		if (!group.keyId) return;
 		event.preventDefault();
 		const token = group.shareToken;
-		const response = await fetch(
-			kind === 'csv'
-				? resolve('/g/[token]/export', { token })
-				: resolve('/g/[token]/backup', { token })
-		);
 		if (kind === 'csv') {
-			save(await openCsv(await response.text()), `${group.name}.csv`, 'text/csv');
+			const response = await fetch(resolve('/g/[token]/export', { token }));
+			const { members, formerMembers, expenses } = await openDeep<ExportRows>(
+				await response.json()
+			);
+			const csv = toSplitwiseCsv(group.currency, [...members, ...formerMembers], expenses);
+			save(csv, `${group.name}.csv`, 'text/csv');
 		} else {
-			const opened = await openDeep(await response.json());
+			const response = await fetch(resolve('/g/[token]/backup', { token }));
+			const opened = await openedBackup(await response.json());
 			save(JSON.stringify(opened), `${group.name} backup.json`, 'application/json');
 		}
 	};

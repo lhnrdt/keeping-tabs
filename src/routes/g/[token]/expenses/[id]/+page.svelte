@@ -68,6 +68,7 @@
 		error={form && 'error' in form ? form.error : undefined}
 		submitLabel={m.save()}
 		kind={data.group.kind}
+		expenseId={data.expense.id}
 	/>
 	<ExpenseReceipts
 		receipts={data.receipts}

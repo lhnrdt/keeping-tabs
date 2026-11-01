@@ -54,7 +54,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	}
 	if (body.batch) {
 		if (!allSealed(body.batch)) error(400);
-		await storeSealed(locals.db, group.id, body.batch);
+		await storeSealed(locals.db, group.id, actorId, body.batch);
 	}
 	if (body.receipt) {
 		// Base64 of a photo at most the usual size, plus what sealing adds

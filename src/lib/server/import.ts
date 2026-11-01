@@ -5,7 +5,9 @@ import { and, eq, isNotNull } from 'drizzle-orm';
 import type { PlannedEntry } from '#lib/import/plan.ts';
 import { log } from './activity';
 import type { Db } from './db';
+import { SEALED_AMOUNT } from '#lib/expense/sealed-details.ts';
 import { expenses, members } from './db/schema';
+import type { SealedImport } from './sealed-import';
 
 export type ImportInput = {
 	/** Member id per person (column) of the export; null = add them as a new member */
@@ -73,7 +75,6 @@ export async function importEntries(
 				paidBy: memberIds[row.paidBy],
 				date: row.date,
 				category: row.category,
-				sealedDetails: row.sealedDetails ?? null,
 				key: row.key
 			}))
 		);
@@ -117,4 +118,47 @@ export async function importEntries(
 	]);
 
 	return { imported: entries.length, skipped };
+}
+
+/** An import sealed in the browser (#110): rows with nothing to read, in the same few queries */
+export async function importSealedEntries(
+	db: Db,
+	groupId: string,
+	actorId: string,
+	input: SealedImport
+) {
+	const known = await importedKeys(db, groupId);
+	const entries = input.entries.filter((entry) => !known.has(entry.key));
+	const now = Date.now();
+	const rows = entries.map((entry) => ({
+		id: crypto.randomUUID(),
+		type: entry.type,
+		splitMode: 'equal',
+		title: entry.title,
+		amount: SEALED_AMOUNT,
+		paidBy: actorId,
+		date: entry.date,
+		category: null,
+		sealedDetails: entry.sealedDetails,
+		key: entry.key
+	}));
+	const newMembers = input.newMembers.map((member) => ({ ...member, groupId }));
+	const pieces = Array.from({ length: Math.ceil(rows.length / ROWS_PER_STATEMENT) }, (_, i) =>
+		rows.slice(i * ROWS_PER_STATEMENT, (i + 1) * ROWS_PER_STATEMENT)
+	);
+	const record = log(db, groupId, actorId, 'group.import', {
+		source: 'splitwise',
+		imported: entries.length
+	});
+	const d1 = db.$client;
+	const prepare = ({ sql, params }: { sql: string; params: unknown[] }) =>
+		d1.prepare(sql).bind(...params);
+	await d1.batch([
+		prepare(record.toSQL()),
+		...(newMembers.length ? [prepare(db.insert(members).values(newMembers).toSQL())] : []),
+		...pieces.map((piece) =>
+			d1.prepare(INSERT_EXPENSES).bind(groupId, now, now, JSON.stringify(piece))
+		)
+	]);
+	return { imported: entries.length, skipped: input.entries.length - entries.length };
 }

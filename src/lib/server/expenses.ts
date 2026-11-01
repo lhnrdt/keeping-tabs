@@ -297,6 +297,14 @@ const payerRows = (db: Db, expenseId: string, input: ExpenseInput) =>
 const splitRows = (expenseId: string, input: ExpenseInput) =>
 	input.shares.map((share) => ({ expenseId, ...share }));
 
+/** A sealed expense has none: who shares it is sealed too (#110) */
+const splitInserts = (db: Db, expenseId: string, input: ExpenseInput) =>
+	input.shares.length ? [db.insert(expenseSplits).values(splitRows(expenseId, input))] : [];
+
+/** What the history keeps of an expense; a sealed one's text is in the expense itself */
+const logged = (expenseId: string, input: ExpenseInput) =>
+	input.sealedDetails ? { expenseId } : { expenseId, ...input };
+
 export async function createExpense(
 	db: Db,
 	groupId: string,
@@ -323,9 +331,9 @@ export async function createExpense(
 			category: input.category,
 			sealedDetails: input.sealedDetails
 		}),
-		db.insert(expenseSplits).values(splitRows(id, input)),
+		...splitInserts(db, id, input),
 		...payerRows(db, id, input),
-		log(db, groupId, actorId, 'expense.create', { expenseId: id, ...input })
+		log(db, groupId, actorId, 'expense.create', logged(id, input))
 	]);
 	return id;
 }
@@ -357,10 +365,10 @@ export async function updateExpense(
 			})
 			.where(and(eq(expenses.id, id), active(groupId))),
 		db.delete(expenseSplits).where(eq(expenseSplits.expenseId, id)),
-		db.insert(expenseSplits).values(splitRows(id, input)),
+		...splitInserts(db, id, input),
 		db.delete(expensePayers).where(eq(expensePayers.expenseId, id)),
 		...payerRows(db, id, input),
-		log(db, groupId, actorId, 'expense.update', { expenseId: id, ...input })
+		log(db, groupId, actorId, 'expense.update', logged(id, input))
 	]);
 	return true;
 }

@@ -54,6 +54,8 @@ export const groups = sqliteTable('groups', {
 	// old link, so the server holds it for a while. Set before anything's sealed; gone at the time below
 	transitionKey: text('transition_key'),
 	transitionUntil: integer('transition_until', { mode: 'timestamp_ms' }),
+	// An encrypted group's budget, end date and default split, sealed (#110)
+	sealedDetails: text('sealed_details'),
 	// Optional password on top of the link (A-8), salted and slow (group-password.ts); null = none
 	passwordHash: text('password_hash'),
 	// Budget (minor units) and end date for trips and events, both optional (#168)
@@ -216,7 +218,7 @@ export const expenses = sqliteTable(
 		odometerM: integer('odometer_m'),
 		fuelMl: integer('fuel_ml'),
 		category: text('category').$type<ExpenseCategory>(),
-		// An encrypted group's category and car data (#110), sealed; those columns stay empty there
+		// An encrypted group's money, category and car data (#110), sealed; those columns stay empty there
 		sealedDetails: text('sealed_details'),
 		// When the group was told about it (#56); each expense only once
 		notifiedAt: integer('notified_at', { mode: 'timestamp_ms' }),

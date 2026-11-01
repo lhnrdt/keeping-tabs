@@ -27,29 +27,43 @@ export async function sealImport(
 	if (!parsed.ok) return parsed;
 	const memberOf = resolvePeople(choices, parsed.value.people, members);
 	if (!memberOf.ok) return memberOf;
+	// New members get their id here: their shares are sealed with it
+	const memberIds = memberOf.value.map((id) => id ?? crypto.randomUUID());
+	const newMembers = await Promise.all(
+		memberOf.value.flatMap((id, person) =>
+			id
+				? []
+				: [
+						sealText(key, parsed.value.people[person], textContext('name')).then((name) => ({
+							id: memberIds[person],
+							name
+						}))
+					]
+		)
+	);
 	const entries = await Promise.all(
-		parsed.value.rows.flatMap(planRow).map(async ({ title, category, ...entry }) => ({
-			...entry,
-			key: await privateKey(key, entry.key),
-			title: title && (await sealText(key, title, textContext('title'))),
-			category: null,
-			sealedDetails:
-				entry.type === 'expense'
-					? await sealText(
-							key,
-							JSON.stringify({
-								category,
-								autoCategory: category ? null : categorize(title),
-								odometerM: null,
-								fuelMl: null
-							}),
-							textContext('details')
-						)
-					: null
-		}))
+		parsed.value.rows.flatMap(planRow).map(async (entry) => {
+			const shares = entry.shares.map(({ person, shareCents }) => ({
+				memberId: memberIds[person],
+				shareCents,
+				input: entry.splitMode === 'exact' ? shareCents : null
+			}));
+			const details = {
+				amountCents: entry.amountCents,
+				paidBy: memberIds[entry.paidBy],
+				splitMode: entry.splitMode,
+				splits: shares,
+				category: entry.category,
+				autoCategory: entry.category || entry.type === 'payment' ? null : categorize(entry.title)
+			};
+			return {
+				type: entry.type,
+				date: entry.date,
+				key: await privateKey(key, entry.key),
+				title: entry.title && (await sealText(key, entry.title, textContext('title'))),
+				sealedDetails: await sealText(key, JSON.stringify(details), textContext('details'))
+			};
+		})
 	);
-	const names = await Promise.all(
-		parsed.value.people.map((name) => sealText(key, name, textContext('name')))
-	);
-	return { ok: true as const, value: { memberOf: memberOf.value, names, entries } };
+	return { ok: true as const, value: { newMembers, entries } };
 }

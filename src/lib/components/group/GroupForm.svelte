@@ -39,6 +39,7 @@
 	}: Props = $props();
 
 	const submission = new Submission();
+	let typed = new FormData();
 
 	/** The request never reached the server (no connection), as opposed to it saying no */
 	const unreachable = (failure: unknown) => failure instanceof TypeError || !navigator.onLine;
@@ -55,7 +56,7 @@
 					string,
 					string
 				][];
-				const field = (name: string) => String(input.formData.get(name) ?? '');
+				const field = (name: string) => String(typed.get(name) ?? '');
 				const kept = keep({
 					id: field('clientId') || crypto.randomUUID(),
 					token: offlineToken,
@@ -86,7 +87,15 @@
 	};
 </script>
 
-<form method="POST" action="?/save" use:enhance={sealing(sealed, submit, () => sealRow ?? '')}>
+<form
+	method="POST"
+	action="?/save"
+	use:enhance={(input) => {
+		// As typed, for the list of what's waiting to be sent; what's sent may be sealed
+		typed = new FormData(input.formElement);
+		return sealing(sealed, submit, () => sealRow ?? '')(input);
+	}}
+>
 	{@render children()}
 	<FormError {error} />
 	<StickySubmit

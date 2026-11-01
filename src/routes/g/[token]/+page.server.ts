@@ -47,30 +47,22 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 	// only for the insights
 	const deletedId = url.searchParams.get(UNDO_PARAM);
 	const onInsights = currentTab(url) === 'insights';
+	// Encrypted, or on its way: the browser works out the money from all entries (#110)
+	const sealedMoney = Boolean(group.keyId || group.transitionKey);
 	const [ledger, expenses, page, justDeleted, recurring] = await Promise.all([
 		listLedger(locals.db, group.id),
-		onInsights ? listExpenses(locals.db, group.id) : undefined,
+		onInsights || sealedMoney ? listExpenses(locals.db, group.id) : undefined,
 		// An encrypted group is searched in the browser: the server can't read it (#110)
-		entryPage(locals.db, group.id, mine, 0, shown, group.keyId ? '' : query),
+		entryPage(locals.db, group.id, mine, 0, shown, sealedMoney ? '' : query),
 		// Right after deleting: offer "Undo" (#78); gone once it's restored
 		deletedId ? findDeletedEntry(locals.db, group.id, deletedId) : undefined,
 		currentTab(url) === 'group' ? listRecurring(locals.db, group.id) : []
 	]);
 	const memberIds = members.map((member) => member.id);
 	const today = todayInputValue();
-	const transfers = settleTransfers(group.simplifyDebts, memberIds, ledger);
-	const insightsArgs =
-		onInsights && expenses
-			? ([
-					expenses,
-					memberIds,
-					mine,
-					transfers,
-					{ budget: group.budgetCents, endsOn: group.endsOn },
-					today,
-					parsePeriod(url.searchParams, defaultPeriod(group.kind, today))
-				] as const)
-			: null;
+	const transfers = sealedMoney ? [] : settleTransfers(group.simplifyDebts, memberIds, ledger);
+	const plan = { budget: group.budgetCents, endsOn: group.endsOn };
+	const period = parsePeriod(url.searchParams, defaultPeriod(group.kind, today));
 	return {
 		balances: Object.fromEntries(balances(memberIds, ledger)),
 		transfers,
@@ -80,10 +72,12 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 		recurring,
 		query,
 		today,
-		// Only on its tab: everything else doesn't need it (#161). In an encrypted group the browser
-		// works it out (+page.ts), since it takes categories only it can read (#110)
-		insights: insightsArgs && !group.keyId ? groupInsights(...insightsArgs) : null,
-		sealedInsights: insightsArgs && group.keyId ? insightsArgs : null
+		// Only on its tab: everything else doesn't need it (#161)
+		insights:
+			onInsights && expenses && !sealedMoney
+				? groupInsights(expenses, memberIds, mine, transfers, plan, today, period)
+				: null,
+		sealed: sealedMoney ? { expenses: expenses ?? [], me: mine, onInsights, today, period } : null
 	};
 };
 

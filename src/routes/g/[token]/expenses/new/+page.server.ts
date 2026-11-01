@@ -21,7 +21,7 @@ export const actions: Actions = {
 		const fromDevice = clientIdIn(form);
 		const existing = fromDevice ? await entryGroupOf(locals.db, fromDevice) : null;
 		if (existing === group.id) redirect(303, resolve('/g/[token]', { token: params.token }));
-		const result = await readExpenseForm(locals.db, group, form);
+		const result = await readExpenseForm(locals.db, group, form, actorId);
 		if (!result.ok) return result.failure;
 		await createExpense(
 			locals.db,

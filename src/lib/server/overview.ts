@@ -35,8 +35,14 @@ export async function yourGroupsWithBalances(db: Db, personId: string) {
 				lastEntryDate(db, group.id)
 			]);
 			const names = new Map(members.map((member) => [member.id, member.name]));
-			const { id, name, token, currency, kind, tint, memberId } = group;
+			const { id, name, token, currency, kind, tint, memberId, simplifyDebts } = group;
+			// Encrypted, or on its way: worked out in the browser from all entries (#110)
+			const sealed =
+				group.keyId || group.transitionKey
+					? { members, memberId, simplifyDebts, expenses: await listExpenses(db, id) }
+					: null;
 			return {
+				sealed,
 				id,
 				name,
 				token,
@@ -70,9 +76,9 @@ export async function peopleOverview(db: Db, personId: string) {
 	const spendingGroups = settled.map((group) => ({ ...group, entries: group.expenses }));
 	// With an encrypted group among them the browser works it out, since it takes categories only
 	// it can read (#110)
-	const anySealed = groups.some((group) => group.keyId);
+	const anySealed = groups.some((group) => group.keyId || group.transitionKey);
 	return {
-		people: summarizePeople(settled),
+		people: anySealed ? [] : summarizePeople(settled),
 		spending: anySealed ? null : spendingWithCategories(spendingGroups),
 		sealedSpending: anySealed ? spendingGroups : null
 	};

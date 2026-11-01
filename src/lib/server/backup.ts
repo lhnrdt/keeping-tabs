@@ -84,7 +84,8 @@ export async function backupOf(db: Db, group: Group): Promise<Backup> {
 			insightSections: group.insightSections,
 			defaultSplit: group.defaultSplit,
 			budgetCents: group.budgetCents,
-			endsOn: group.endsOn
+			endsOn: group.endsOn,
+			sealedDetails: group.sealedDetails
 		},
 		members: memberRows.map(({ id, name, deletedAt }) => ({
 			id,

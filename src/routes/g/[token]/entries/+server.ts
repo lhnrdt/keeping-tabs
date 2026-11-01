@@ -21,7 +21,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			offset,
 			EXPENSES_PER_PAGE,
 			// An encrypted group is searched in the browser (#110)
-			group.keyId ? '' : readQuery(url.searchParams)
+			group.keyId || group.transitionKey ? '' : readQuery(url.searchParams)
 		)
 	);
 };

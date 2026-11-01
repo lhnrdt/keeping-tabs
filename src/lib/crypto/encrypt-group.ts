@@ -3,6 +3,9 @@
 // under the new key is skipped, and the new key is found from the group's name, which goes first, so
 // running this after an interruption picks up where it was.
 import { isJpeg } from '#lib/expense/receipt-image.ts';
+import { detailsFromInput, sealedInput } from '#lib/expense/sealed-details.ts';
+import type { ExpenseItem } from '#lib/split/items.ts';
+import type { ExpenseInput } from '#lib/validation.ts';
 import { keyFor, rememberKey } from './keyring';
 import {
 	isSealed,
@@ -21,25 +24,45 @@ const BATCH = 100;
 const PASSES = 3;
 
 type Item = { name: string };
-type Details = {
-	category?: string | null;
-	odometerM?: number | null;
-	fuelMl?: number | null;
-	sealedDetails?: string | null;
-};
+type Share = { memberId: string; shareCents: number; input: number | null };
+type Payer = { memberId: string; amountCents: number };
 type Text = {
-	group: { name: string; description: string | null };
+	group: {
+		name: string;
+		description: string | null;
+		budgetCents: number | null;
+		endsOn: string | null;
+		defaultSplit: unknown;
+		sealedDetails: string | null;
+	};
 	members: { id: string; name: string; paymentDetails: string | null }[];
-	expenses: ({
+	expenses: {
 		id: string;
+		type: string;
 		title: string;
 		notes: string | null;
 		items: Item[] | null;
-	} & Details)[];
+		amountCents: number;
+		paidBy: string;
+		splitMode: string;
+		originalCurrency: string | null;
+		originalAmountCents: number | null;
+		exchangeRate: string | null;
+		category: string | null;
+		odometerM: number | null;
+		fuelMl: number | null;
+		sealedDetails: string | null;
+		splits: Share[];
+		payers: Payer[];
+	}[];
 	comments: { id: string; body: string }[];
 	rules: {
 		id: string;
-		template: { title: string; notes?: string | null; items?: Item[] | null };
+		memberId: string;
+		template: Omit<ExpenseInput, 'sealedDetails' | 'items'> & {
+			items: (Item & ExpenseItem)[] | null;
+			sealedDetails?: string | null;
+		};
 	}[];
 	receipts: { id: string; expenseId: string }[];
 };
@@ -112,26 +135,67 @@ export async function encryptGroup(
 		sealText(key, await readable(value), textContext(field, row));
 	const sealOptional = async (value: string | null | undefined, field: string, row?: string) =>
 		value ? seal(value, field, row) : value;
-	const sealItems = async (items: Item[] | null | undefined, row?: string) =>
-		items &&
-		Promise.all(
-			items.map(async (item) => ({
-				...item,
-				name: item.name && (await seal(item.name, 'item', row))
-			}))
-		);
 
-	/** A row's category and car data, however it holds them now */
-	const sealDetails = async (row: Details & { title: string }, id?: string) => {
-		const details = row.sealedDetails
-			? JSON.parse(await readable(row.sealedDetails))
-			: {
-					category: row.category ?? null,
-					autoCategory: row.category ? null : guessCategory(await readable(row.title)),
-					odometerM: row.odometerM ?? null,
-					fuelMl: row.fuelMl ?? null
-				};
-		return sealText(key, JSON.stringify(details), textContext('details', id));
+	/** Already sealed details under the new key */
+	const resealed = async (sealed: string, id?: string) =>
+		sealText(key, await readable(sealed), textContext('details', id));
+	const sealJson = (details: unknown, id?: string) =>
+		sealText(key, JSON.stringify(details), textContext('details', id));
+	/** Text inside the details is as typed: it's all sealed together */
+	const openedItems = async (items: Item[] | null) =>
+		items && Promise.all(items.map(async (item) => ({ ...item, name: await readable(item.name) })));
+
+	const sealExpenseDetails = async (row: Text['expenses'][number]) => {
+		if (row.sealedDetails) return resealed(row.sealedDetails, row.id);
+		return sealJson(
+			{
+				amountCents: row.amountCents,
+				paidBy: row.paidBy,
+				splitMode: row.splitMode,
+				items: await openedItems(row.items),
+				splits: row.splits,
+				payers: row.payers.length ? row.payers : null,
+				originalCurrency: row.originalCurrency,
+				originalAmountCents: row.originalAmountCents,
+				exchangeRate: row.exchangeRate,
+				category: row.category,
+				autoCategory:
+					row.category || row.type === 'payment' ? null : guessCategory(await readable(row.title)),
+				odometerM: row.odometerM,
+				fuelMl: row.fuelMl
+			},
+			row.id
+		);
+	};
+
+	const sealGroupPlan = (group: Text['group']) =>
+		group.sealedDetails
+			? resealed(group.sealedDetails)
+			: sealJson({
+					budgetCents: group.budgetCents,
+					endsOn: group.endsOn,
+					defaultSplit: group.defaultSplit
+				});
+
+	/** A repeating expense: what stays is only what's needed to add the next one */
+	const sealRule = async (rule: Text['rules'][number]) => {
+		const { template } = rule;
+		const sealedDetails = template.sealedDetails
+			? await resealed(template.sealedDetails)
+			: await sealJson(
+					detailsFromInput(
+						{ ...template, items: (await openedItems(template.items)) as ExpenseItem[] | null },
+						template.category ? null : guessCategory(await readable(template.title))
+					)
+				);
+		return sealedInput({
+			// Bound to no row: it goes on every expense that repeats
+			title: await seal(template.title, 'title'),
+			notes: (await sealOptional(template.notes, 'notes')) ?? null,
+			date: template.date,
+			paidBy: rule.memberId,
+			sealedDetails
+		});
 	};
 
 	let done = 0;
@@ -152,9 +216,9 @@ export async function encryptGroup(
 
 	for (let pass = 0, text = first; pass < PASSES; pass++, text = await fetchText()) {
 		const members = text.members.filter((row) => !isDone(row.name));
-		const expenses = text.expenses.filter((row) => !isDone(row.title));
+		const expenses = text.expenses.filter((row) => !isDone(row.sealedDetails ?? ''));
 		const comments = text.comments.filter((row) => !isDone(row.body));
-		const rules = text.rules.filter((row) => !isDone(row.template.title));
+		const rules = text.rules.filter((row) => !isDone(row.template.sealedDetails ?? ''));
 		// Only the first time: nobody can tell from a photo which key it's under without trying
 		const receipts = pass === 0 ? text.receipts : [];
 		const sealName = !isDone(text.group.name);
@@ -166,7 +230,8 @@ export async function encryptGroup(
 				batch: {
 					group: {
 						name: await seal(text.group.name, 'name'),
-						description: await sealOptional(text.group.description, 'description')
+						description: await sealOptional(text.group.description, 'description'),
+						details: await sealGroupPlan(text.group)
 					}
 				}
 			});
@@ -180,10 +245,9 @@ export async function encryptGroup(
 		}));
 		await sendAll('expenses', expenses, total, async (row) => ({
 			id: row.id,
-			title: await seal(row.title, 'title', row.id),
+			title: row.title && (await seal(row.title, 'title', row.id)),
 			notes: await sealOptional(row.notes, 'notes', row.id),
-			items: row.items ? JSON.stringify(await sealItems(row.items, row.id)) : null,
-			details: await sealDetails(row, row.id)
+			details: await sealExpenseDetails(row)
 		}));
 		await sendAll('comments', comments, total, async (row) => ({
 			id: row.id,
@@ -191,17 +255,7 @@ export async function encryptGroup(
 		}));
 		await sendAll('rules', rules, total, async (row) => ({
 			id: row.id,
-			template: JSON.stringify({
-				...row.template,
-				// Bound to no row: it goes on every expense that repeats
-				title: await seal(row.template.title, 'title'),
-				notes: (await sealOptional(row.template.notes, 'notes')) ?? null,
-				items: (await sealItems(row.template.items)) ?? null,
-				category: null,
-				odometerM: null,
-				fuelMl: null,
-				sealedDetails: await sealDetails(row.template)
-			})
+			template: JSON.stringify(await sealRule(row))
 		}));
 		for (const receipt of receipts) {
 			// Not from the browser's cache: an earlier run may have sealed it since

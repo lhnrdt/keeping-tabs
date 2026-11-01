@@ -4,8 +4,11 @@
 import { applyAction, type SubmitFunction } from '$app/forms';
 import { page } from '$app/state';
 import { m } from '#lib/paraglide/messages.js';
-import { parseFuel, parseOdometer } from '#lib/expense/driving.ts';
-import { normalizeText, parseCategory } from '#lib/validation.ts';
+import { expenseValues, paymentValues } from '#lib/expense/form-values.ts';
+import { detailsFromInput, detailsFromPayment } from '#lib/expense/sealed-details.ts';
+import { parseAmount } from '#lib/money.ts';
+import { defaultFrom } from '#lib/split/default-split.ts';
+import { normalizeText, parseDate, parseExpense, parsePayment } from '#lib/validation.ts';
 import { keyFor } from './keyring';
 import { openDeep } from './open-data';
 import { sealText, textContext } from './seal';
@@ -48,33 +51,86 @@ export async function sealFields(form: FormData, key: string, names: readonly st
 	}
 }
 
-/**
- * An expense's category and car data, sealed together in `details`. What the server would refuse
- * stays as it is, for it to say so; nothing's stored then. Returns what was taken out, to put back
- * into the form if the server refuses something else.
- */
-async function sealDetails(form: FormData, key: string, row: string) {
-	const units = form.get('units') === 'imperial' ? 'imperial' : 'metric';
-	const category = parseCategory(form.get('category'));
-	const odometer = parseOdometer(form.get('odometer'), units);
-	const fuel = parseFuel(form.get('litres'), units);
-	if (!category.ok || !odometer.ok || !fuel.ok) return {};
-	const details = {
-		category: category.value,
-		autoCategory: form.get('autoCategory') || null,
-		odometerM: odometer.value,
-		fuelMl: fuel.value
-	};
-	const plain = {
-		category: String(form.get('category') ?? ''),
-		odometer: String(form.get('odometer') ?? ''),
-		litres: String(form.get('litres') ?? '')
-	};
-	for (const name of ['category', 'autoCategory', 'odometer', 'litres']) form.delete(name);
-	const context = textContext('details', form.get('repeats') ? '' : row);
-	form.set('details', await sealText(key, JSON.stringify(details), context));
-	return plain;
+const groupMemberIds = () =>
+	((page.data.members ?? []) as { id: string }[]).map((member) => member.id);
+const groupCurrency = () => String(page.data.group?.currency ?? '');
+
+/** A group's plan and default split, with these changes */
+async function sealGroupDetails(key: string, changes: Record<string, unknown>) {
+	const { budgetCents = null, endsOn = null, defaultSplit = null } = page.data.group ?? {};
+	return sealText(
+		key,
+		JSON.stringify({ budgetCents, endsOn, defaultSplit, ...changes }),
+		textContext('details')
+	);
 }
+
+type Refusal = { error: string; values?: unknown };
+
+const leaveOnly = (form: FormData, kept: readonly string[]) => {
+	for (const name of new Set(form.keys())) if (!kept.includes(name)) form.delete(name);
+};
+
+/**
+ * An expense: checked here, since the server can't, and everything about its money sealed in
+ * `details`. What's left goes through sealFields. Returns why it can't be saved, if so.
+ */
+async function sealExpense(form: FormData, key: string, row: string): Promise<Refusal | null> {
+	const values = expenseValues(form, String(form.get('rate') ?? ''));
+	const parsed = parseExpense(values, { memberIds: groupMemberIds(), currency: groupCurrency() });
+	if (!parsed.ok) return { error: parsed.error, values };
+	const input = parsed.value;
+	const details = detailsFromInput(input, String(form.get('autoCategory') ?? '') || null);
+	const defaultSplit =
+		form.get('makeDefault') === 'on' ? defaultFrom(input.splitMode, input.shares) : null;
+	const context = textContext('details', form.get('repeats') ? '' : row);
+	leaveOnly(form, ['title', 'notes', 'date', 'clientId', 'repeats']);
+	form.set('details', await sealText(key, JSON.stringify(details), context));
+	if (defaultSplit) form.set('groupDetails', await sealGroupDetails(key, { defaultSplit }));
+	return null;
+}
+
+async function sealPayment(form: FormData, key: string, row: string): Promise<Refusal | null> {
+	const values = paymentValues(form);
+	const parsed = parsePayment(values, { memberIds: groupMemberIds(), currency: groupCurrency() });
+	if (!parsed.ok) return { error: parsed.error, values };
+	leaveOnly(form, ['date', 'clientId']);
+	form.set(
+		'details',
+		await sealText(
+			key,
+			JSON.stringify(detailsFromPayment(parsed.value)),
+			textContext('details', row)
+		)
+	);
+	return null;
+}
+
+/** A budget and end date; an empty form takes them away */
+async function sealPlan(form: FormData, key: string): Promise<Refusal | null> {
+	const amount = String(form.get('amount') ?? '').trim();
+	const budgetCents = amount ? parseAmount(amount, groupCurrency()) : null;
+	if (amount && budgetCents === null) return { error: 'amount_invalid' };
+	const date = String(form.get('endsOn') ?? '').trim();
+	const endsOn = date ? parseDate(date) : null;
+	if (endsOn && !endsOn.ok) return { error: endsOn.error };
+	leaveOnly(form, []);
+	form.set(
+		'details',
+		await sealGroupDetails(key, { budgetCents, endsOn: endsOn?.ok ? endsOn.value : null })
+	);
+	return null;
+}
+
+/** What these forms hold besides plain text, by the name standing for it in `sealing` */
+const SEAL_MONEY: Record<
+	string,
+	(form: FormData, key: string, row: string) => Promise<Refusal | null>
+> = {
+	title: sealExpense,
+	payment: sealPayment,
+	plan: sealPlan
+};
 
 /** The current group's key; null if it has none, undefined if this device doesn't have it */
 export async function currentGroupKey() {
@@ -94,15 +150,19 @@ export const sealing =
 			window.alert(m.locked_cannot_save());
 			return;
 		}
-		const plain =
-			key && names.includes('title') ? await sealDetails(input.formData, key, row?.() ?? '') : {};
+		const sealMoney = names.map((name) => SEAL_MONEY[name]).find(Boolean);
+		const refused = key && sealMoney ? await sealMoney(input.formData, key, row?.() ?? '') : null;
+		if (refused) {
+			input.cancel();
+			const refusal = { type: 'failure', status: 400, data: refused };
+			await applyAction(refusal as unknown as Parameters<typeof applyAction>[0]);
+			return;
+		}
 		if (key) await sealFields(input.formData, key, names, row?.());
 		const after = await inner?.(input);
 		return async (options) => {
 			if (options.result.type === 'failure') {
-				const data = await openDeep(options.result.data);
-				if (data?.values) data.values = { ...(data.values as object), ...plain };
-				options.result.data = data;
+				options.result.data = await openDeep(options.result.data);
 			}
 			if (after) await after(options);
 			else await options.update();

@@ -22,7 +22,7 @@
 	const names = $derived(namesById(members));
 
 	const paymentHref = (from: string, to: string, amountCents: number) =>
-		`${resolve('/g/[token]/payments/new', { token })}?${new URLSearchParams({
+		`${resolve('/g/[token]/payments/new', { token })}#${new URLSearchParams({
 			from,
 			to,
 			amount: String(amountCents)

@@ -32,7 +32,7 @@ export const load: PageServerLoad = async ({ locals, params, parent }) => {
 export const actions: Actions = {
 	save: async ({ locals, params, request }) => {
 		const { form, group, actorId } = await formContext(locals, params.token, request);
-		const result = await readExpenseForm(locals.db, group, form);
+		const result = await readExpenseForm(locals.db, group, form, actorId);
 		if (!result.ok) return result.failure;
 		if (!(await updateExpense(locals.db, group.id, actorId, params.id, result.input))) {
 			error(404, m.error_expense_not_found());

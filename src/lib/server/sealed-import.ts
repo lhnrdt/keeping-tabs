@@ -1,44 +1,35 @@
-// Checks an import sealed in the browser (#110). The text can't be read, but the numbers go into
-// everyone's balances and the references into the database, so those are held to what the server's
-// own import produces.
+// Checks an import sealed in the browser (#110). Nothing in it can be read, so only that it's sealed
+// and in the right shape, for what goes into the database.
 import { isSealed } from '#lib/crypto/seal.ts';
 import { MAX_IMPORT_ROWS } from '#lib/import/limits.ts';
-import type { ImportInput } from './import';
+import { isClientId } from '#lib/validation.ts';
 
-const isCents = (value: unknown) => Number.isSafeInteger(value) && (value as number) >= 0;
-const isPerson = (value: unknown, people: number) =>
-	Number.isInteger(value) && (value as number) >= 0 && (value as number) < people;
+export type SealedImport = {
+	newMembers: { id: string; name: string }[];
+	entries: {
+		type: 'expense' | 'payment';
+		title: string;
+		date: string;
+		key: string;
+		sealedDetails: string;
+	}[];
+};
 
-type Entry = ImportInput['entries'][number];
+const isEntry = (entry: SealedImport['entries'][number]) =>
+	(entry?.type === 'expense'
+		? isSealed(entry.title)
+		: entry?.type === 'payment' && entry.title === '') &&
+	isSealed(entry.sealedDetails) &&
+	/^\d{4}-\d{2}-\d{2}$/.test(String(entry.date)) &&
+	typeof entry.key === 'string' &&
+	entry.key.length <= 100;
 
-function isEntry(entry: Entry, people: number) {
-	const expense = entry?.type === 'expense';
-	if (!expense && entry?.type !== 'payment') return false;
-	if (expense ? !isSealed(entry.title) : entry.title !== '') return false;
-	if (expense ? !isSealed(entry.sealedDetails) : entry.sealedDetails !== null) return false;
-	if (entry.category !== null) return false;
-	if (!/^\d{4}-\d{2}-\d{2}$/.test(String(entry.date))) return false;
-	if (entry.splitMode !== 'equal' && entry.splitMode !== 'exact') return false;
-	if (typeof entry.key !== 'string' || entry.key.length > 100) return false;
-	if (!isCents(entry.amountCents) || !isPerson(entry.paidBy, people)) return false;
-	if (!Array.isArray(entry.shares) || entry.shares.length === 0) return false;
-	const valid = entry.shares.every(
-		(share) => isCents(share?.shareCents) && isPerson(share?.person, people)
-	);
-	const total = valid ? entry.shares.reduce((sum, share) => sum + share.shareCents, 0) : -1;
-	return total === entry.amountCents;
-}
-
-export function parseSealedImport(body: unknown, memberIds: readonly string[]): ImportInput | null {
-	const input = body as ImportInput | null;
-	if (!Array.isArray(input?.memberOf) || !Array.isArray(input.names)) return null;
-	if (!Array.isArray(input.entries) || input.entries.length > MAX_IMPORT_ROWS) return null;
-	const people = input.memberOf.length;
-	if (input.names.length !== people || people === 0) return null;
-	const chosen = input.memberOf.filter((id) => id !== null);
-	if (new Set(chosen).size !== chosen.length) return null;
-	if (!chosen.every((id) => memberIds.includes(id))) return null;
-	if (!input.names.every(isSealed)) return null;
-	if (!input.entries.every((entry) => isEntry(entry, people))) return null;
-	return { memberOf: input.memberOf, names: input.names, entries: input.entries };
+export function parseSealedImport(body: unknown): SealedImport | null {
+	const input = body as SealedImport | null;
+	if (!Array.isArray(input?.newMembers) || !Array.isArray(input.entries)) return null;
+	if (input.entries.length > MAX_IMPORT_ROWS || input.newMembers.length > 500) return null;
+	if (!input.newMembers.every((member) => isClientId(member?.id) && isSealed(member.name)))
+		return null;
+	if (!input.entries.every(isEntry)) return null;
+	return { newMembers: input.newMembers, entries: input.entries };
 }

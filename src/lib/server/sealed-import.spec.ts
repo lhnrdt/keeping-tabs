@@ -2,37 +2,28 @@ import { describe, expect, it } from 'vitest';
 import { parseSealedImport } from './sealed-import';
 
 const SEALED = 'enc1.abcdefgh.title_.AAAA';
+const ID = '11111111-1111-4111-8111-111111111111';
 const entry = {
 	type: 'expense',
 	title: SEALED,
 	date: '2026-01-02',
-	amountCents: 300,
-	paidBy: 0,
-	shares: [
-		{ person: 0, shareCents: 100 },
-		{ person: 1, shareCents: 200 }
-	],
-	splitMode: 'exact',
-	category: null,
 	sealedDetails: SEALED,
-	key: 'sealed:x'
+	key: 'k'
 };
-const valid = { memberOf: ['m1', null], names: [SEALED, SEALED], entries: [entry] };
+const valid = { newMembers: [{ id: ID, name: SEALED }], entries: [entry] };
 
 describe('parseSealedImport', () => {
 	it('takes what the browser sends', () => {
-		expect(parseSealedImport(valid, ['m1'])).not.toBeNull();
+		expect(parseSealedImport(valid)).not.toBeNull();
 	});
 
 	it.each([
 		['plain text', { entries: [{ ...entry, title: 'Pizza' }] }],
-		['a plain category', { entries: [{ ...entry, category: 'food' }] }],
-		['shares that don’t add up', { entries: [{ ...entry, amountCents: 301 }] }],
-		['someone unknown', { entries: [{ ...entry, paidBy: 2 }] }],
-		['another group’s member', { memberOf: ['other', null] }],
-		['the same member twice', { memberOf: ['m1', 'm1'] }],
-		['a plain name', { names: ['Ben', SEALED] }]
+		['plain money', { entries: [{ ...entry, sealedDetails: '{"amountCents":1}' }] }],
+		['a bad date', { entries: [{ ...entry, date: 'soon' }] }],
+		['a plain name', { newMembers: [{ id: ID, name: 'Ben' }] }],
+		['a made up id', { newMembers: [{ id: 'x', name: SEALED }] }]
 	])('refuses %s', (_, change) => {
-		expect(parseSealedImport({ ...valid, ...change }, ['m1'])).toBeNull();
+		expect(parseSealedImport({ ...valid, ...change })).toBeNull();
 	});
 });

@@ -13,27 +13,37 @@ const paymentColumns = (input: PaymentInput) => ({
 	title: '',
 	amountCents: input.amountCents,
 	paidBy: input.from,
-	date: input.date
+	date: input.date,
+	sealedDetails: input.sealedDetails ?? null
 });
 
-const recipientSplit = (expenseId: string, input: PaymentInput) => ({
-	expenseId,
-	memberId: input.to,
-	shareCents: input.amountCents,
-	input: input.amountCents
-});
+/** A sealed payment has none: who it went to is sealed too (#110) */
+const recipientSplit = (db: Db, expenseId: string, input: PaymentInput) =>
+	input.sealedDetails
+		? []
+		: [
+				db.insert(expenseSplits).values({
+					expenseId,
+					memberId: input.to,
+					shareCents: input.amountCents,
+					input: input.amountCents
+				})
+			];
+
+const logged = (expenseId: string, input: PaymentInput) =>
+	input.sealedDetails ? { expenseId } : { expenseId, ...input };
 
 export async function createPayment(
 	db: Db,
 	groupId: string,
 	actorId: string | null,
-	input: PaymentInput
+	input: PaymentInput,
+	id: string = crypto.randomUUID()
 ) {
-	const id = crypto.randomUUID();
 	await db.batch([
 		db.insert(expenses).values({ id, groupId, ...paymentColumns(input) }),
-		db.insert(expenseSplits).values(recipientSplit(id, input)),
-		log(db, groupId, actorId, 'payment.create', { expenseId: id, ...input })
+		...recipientSplit(db, id, input),
+		log(db, groupId, actorId, 'payment.create', logged(id, input))
 	]);
 	return id;
 }
@@ -52,8 +62,8 @@ export async function updatePayment(
 			.set(paymentColumns(input))
 			.where(and(eq(expenses.id, id), eq(expenses.type, 'payment'), active(groupId))),
 		db.delete(expenseSplits).where(eq(expenseSplits.expenseId, id)),
-		db.insert(expenseSplits).values(recipientSplit(id, input)),
-		log(db, groupId, actorId, 'payment.update', { expenseId: id, ...input })
+		...recipientSplit(db, id, input),
+		log(db, groupId, actorId, 'payment.update', logged(id, input))
 	]);
 	return true;
 }

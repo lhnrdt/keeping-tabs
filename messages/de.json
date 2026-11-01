@@ -565,7 +565,7 @@
 	"how_devices_link": "Backup einrichten",
 	"locked_text": "🔒 Gesperrt",
 	"encrypted_note": "Verschlüsselt. Nur wer den Link hat, kann das lesen.",
-	"push_new_expense_sealed": "Eine neue Ausgabe in einer deiner verschlüsselten Gruppen · {amount}",
+	"push_new_expense_sealed": "Eine neue Ausgabe in einer deiner Gruppen",
 	"error_import_encrypted": "Das ließ sich nicht importieren. Öffne den Link der Gruppe auf diesem Gerät und versuch es noch mal.",
 	"rekey_intro": "Jemand soll dieser Gruppe nicht mehr folgen? Das erstellt einen neuen Link, der alte funktioniert dann nicht mehr.",
 	"rekey_warning": "Alle anderen brauchen danach den neuen Link, einmal pro Gerät. Schick ihn ihnen anschließend.",

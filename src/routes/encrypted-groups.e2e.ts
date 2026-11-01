@@ -142,6 +142,7 @@ test('comments, search, a refused form and the downloads work in the browser (#1
 	await page.getByRole('link', { name: 'Export as CSV' }).click();
 	const csvText = await readDownload(await csv);
 	expect(csvText).toContain('Whiskey tasting');
+	expect(csvText).toContain('30.00');
 	expect(csvText).not.toContain('enc1.');
 	// Quoted as CSV needs, and not able to start a formula
 	expect(csvText).toContain(`"'=Snacks, ""good"" ones"`);
@@ -402,4 +403,61 @@ test('a passkey brings the keys along where it can (#110)', async ({ page }) => 
 	await expect(page).toHaveURL(/\/$/);
 	await open(page, groupUrl);
 	await expect(page.getByRole('link', { name: /Whiskey tasting/ })).toBeVisible();
+});
+
+test('amounts and who pays stay sealed, and everything still adds up (#110)', async ({ page }) => {
+	const { groupUrl, link } = await encryptedGroup(page);
+	await open(page, groupUrl);
+	await addExpense(page, 'Secret boat', '37.13');
+
+	// What the server sends and keeps holds none of it
+	for (const path of ['/__data.json', '/__data.json?tab=balances', '/activity/__data.json']) {
+		const raw = await (await page.request.get(`${groupUrl}${path}`)).text();
+		expect(raw).not.toContain('3713');
+		expect(raw).not.toContain('37.13');
+	}
+	const home = await (await page.request.get('/__data.json')).text();
+	expect(home).not.toContain('3713');
+
+	// Yet the browser adds it all up: half of 30 and half of 37.13, on every screen
+	await expect(page.getByRole('link', { name: /Secret boat/ })).toContainText('€37.13');
+	await expect(page.locator('body')).toContainText('€33.57');
+	await open(page, '/');
+	await expect(page.locator('body')).toContainText('€33.57');
+	await open(page, '/balances');
+	await expect(page.locator('body')).toContainText('€33.57');
+
+	// Editing starts from the real amount
+	await open(page, groupUrl);
+	await page.getByRole('link', { name: /Secret boat/ }).click();
+	await expect(page.getByLabel('Amount (€)')).toHaveValue('37.13');
+	await page.getByLabel('Amount (€)').fill('40');
+	await page.getByRole('button', { name: 'Save' }).click();
+	await expect(page.getByRole('link', { name: /Secret boat/ })).toContainText('€40.00');
+	await expect(page.locator('body')).toContainText('€35.00');
+
+	// Settling up: a payment is sealed too, and the suggestion never reaches the server
+	const asked: string[] = [];
+	page.on('request', (request) => asked.push(request.url()));
+	await open(page, `${groupUrl}?tab=balances`);
+	await page.getByRole('region', { name: 'Settle up' }).getByRole('link').first().click();
+	await expect(page.getByLabel(/Amount/)).toHaveValue('35.00');
+	expect(asked.join()).not.toContain('3500');
+	await page.getByRole('button', { name: 'Record payment' }).click();
+	await open(page, `${groupUrl}?tab=balances`);
+	await expect(page.locator('body')).toContainText('All settled');
+	const settled = await (await page.request.get(`${groupUrl}/__data.json`)).text();
+	expect(settled).not.toContain('3500');
+
+	// A budget too
+	await open(page, `${groupUrl}/budget`);
+	await page.getByLabel(/Budget/).fill('912.34');
+	await page.getByRole('button', { name: 'Save' }).click();
+	await expect(page).toHaveURL(/tab=insights/);
+	const planned = await (await page.request.get(`${groupUrl}/__data.json`)).text();
+	expect(planned).not.toContain('91234');
+	await open(page, `${groupUrl}/budget`);
+	await expect(page.getByLabel(/Budget/)).toHaveValue('912.34');
+
+	expect(link).toContain('#key=');
 });

@@ -129,7 +129,9 @@
 		resolve('/g/[token]/expenses/[id]', { token: offlineToken ?? '', id: clientId });
 	async function afterSaving() {
 		// Before anything else: the photos may take a while
-		const announced = offlineToken ? announceExpense(offlineToken, clientId) : undefined;
+		const announced = offlineToken
+			? announceExpense(offlineToken, clientId, `${amount} ${amountCurrency}`)
+			: undefined;
 		let missing = false;
 		for (const photo of photos) {
 			const refused = await sendReceipt(photo, expensePage()).catch(() => 'receipt_invalid');

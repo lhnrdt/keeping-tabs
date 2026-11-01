@@ -25,7 +25,8 @@ export async function findGroupByToken(db: Db, token: string) {
 			defaultSplit: true,
 			keyId: true,
 			transitionKey: true,
-			transitionUntil: true
+			transitionUntil: true,
+			sealedDetails: true
 		},
 		where: and(eq(groups.shareToken, token), isNull(groups.deletedAt))
 	});
@@ -57,6 +58,10 @@ export async function isDeletedGroupToken(db: Db, token: string) {
 	});
 	return Boolean(group);
 }
+
+/** An encrypted group's sealed plan and default split (#110) */
+export const setGroupDetails = (db: Db, groupId: string, sealedDetails: string) =>
+	db.update(groups).set({ sealedDetails }).where(eq(groups.id, groupId));
 
 /** The key still being handed over, if it is (#110) */
 export const handedOver = (group: {

@@ -1,5 +1,6 @@
 // Opens what the server sent (#110): every sealed text in a page's data becomes readable here,
 // in the browser, before anything shows. The server only ever passes sealed text along.
+import { DETAIL_FIELDS, GROUP_DETAIL_FIELDS } from '#lib/expense/sealed-details.ts';
 import { m } from '#lib/paraglide/messages.js';
 import { takeKeyFromAddress } from './key-from-address';
 import { keyFor, rememberKey } from './keyring';
@@ -16,8 +17,7 @@ const openOne = async (sealed: string) => {
 	return openText(key, sealed).catch(() => unreadable);
 };
 
-/** What an encrypted group's expense keeps sealed apart from its text */
-const DETAILS = ['category', 'autoCategory', 'odometerM', 'fuelMl'] as const;
+const DETAILS: readonly string[] = [...DETAIL_FIELDS, ...GROUP_DETAIL_FIELDS];
 
 /** A row's sealed details as its usual fields, if they can be read and are this row's */
 async function detailsOf(row: Record<string, unknown>) {
@@ -27,7 +27,9 @@ async function detailsOf(row: Record<string, unknown>) {
 	const key = await keyFor(keyIdIn(sealed));
 	if (!key) return {};
 	const read = JSON.parse(await openText(key, sealed).catch(() => '{}')) as Record<string, unknown>;
-	const details = Object.fromEntries(DETAILS.map((name) => [name, read[name] ?? null]));
+	const details: Record<string, unknown> = Object.fromEntries(
+		DETAILS.filter((name) => name in read).map((name) => [name, read[name]])
+	);
 	// The list's category is what to show: the guess, if nothing was chosen
 	if (row.category && !details.category) details.category = details.autoCategory;
 	return details;
