@@ -9,6 +9,7 @@ import { ACCENT_COOKIE, LOCALE_COOKIE, THEME_COOKIE } from '#lib/settings.ts';
 import { paraglideMiddleware } from '#lib/paraglide/server.js';
 import { getDb } from '#lib/server/db/index.ts';
 import { grantAccess, hasAccess, isOpenPath } from '#lib/server/access.ts';
+import { findGroupLock, isUnlocked } from '#lib/server/group-password.ts';
 import { ensureDeviceKey } from '#lib/server/device.ts';
 import { noteDeviceSeen } from '#lib/server/devices.ts';
 import { logError } from '#lib/server/error-log.ts';
@@ -91,6 +92,21 @@ const handleAccess: Handle = async ({ event, resolve }) => {
 };
 
 /**
+ * A group's password (A-9): here, before anything of the group runs, so every page, download
+ * and data request behind its link is covered, new ones too.
+ */
+const handleGroupPassword: Handle = async ({ event, resolve }) => {
+	const token = /^\/g\/([^/]+)/.exec(event.url.pathname)?.[1];
+	if (!token) return resolve(event);
+	const lock = await findGroupLock(event.locals.db, token);
+	if (!lock?.passwordHash || (await isUnlocked(event.cookies, lock.id, lock.passwordHash))) {
+		return resolve(event);
+	}
+	const next = `${event.url.pathname}${event.url.search}`;
+	redirect(303, `${resolveRoute('/unlock/[token]', { token })}?${new URLSearchParams({ next })}`);
+};
+
+/**
  * Rate limits per address (#66): changes and guessing secrets are counted. Last in the
  * sequence, so the answer is in the visitor's language.
  */
@@ -140,6 +156,7 @@ export const handle: Handle = sequence(
 	handleDb,
 	handleDevice,
 	handleAccess,
+	handleGroupPassword,
 	handleSettings,
 	handleParaglide,
 	handleRateLimit

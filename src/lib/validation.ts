@@ -17,6 +17,8 @@ export const LIMITS = {
 	expenseTitle: 80,
 	expenseNote: 500,
 	comment: 500,
+	groupPassword: 100,
+	groupPasswordMin: 4,
 	paymentDetails: 200
 } as const;
 
@@ -130,6 +132,14 @@ export function parseNote(value: unknown): Result<string | null> {
 	const note = typeof value === 'string' ? value.replace(/\r\n?/g, '\n').trim() : '';
 	if (note.length > LIMITS.expenseNote) return { ok: false, error: 'expense_note_too_long' };
 	return { ok: true, value: note || null };
+}
+
+/** A group's password (A-8): not trimmed, it's the person's to choose */
+export function parseGroupPassword(value: unknown): Result<string> {
+	const password = typeof value === 'string' ? value : '';
+	return password.length >= LIMITS.groupPasswordMin && password.length <= LIMITS.groupPassword
+		? { ok: true, value: password }
+		: { ok: false, error: 'group_password_invalid' };
 }
 
 /** A comment on an expense (#49): line breaks kept, trimmed, not empty */

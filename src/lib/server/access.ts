@@ -3,6 +3,7 @@
 // it. The password is a Cloudflare secret (ACCESS_PASSWORD); without it nobody gets in.
 import type { Cookies } from '@sveltejs/kit';
 import { env } from 'cloudflare:workers';
+import { sameBytes } from './secrets';
 
 const ACCESS_COOKIE = 'kt-access';
 const ACCESS_MAX_AGE = 400 * 24 * 60 * 60;
@@ -22,6 +23,8 @@ export const isOpenPath = (pathname: string) =>
 	pathname.startsWith('/g/') ||
 	pathname.startsWith('/device/link') ||
 	pathname.startsWith('/welcome') ||
+	// A group's own password comes with a group link
+	pathname.startsWith('/unlock/') ||
 	// Accepting the friendly note, also for friends who came with a group link
 	pathname === '/note';
 
@@ -49,11 +52,4 @@ export async function isAccessPassword(given: unknown) {
 		crypto.subtle.digest('SHA-256', encode(password))
 	]);
 	return sameBytes(new Uint8Array(a), new Uint8Array(b));
-}
-
-/** Looks at every byte, whatever differs; digests always have the same length */
-function sameBytes(a: Uint8Array, b: Uint8Array) {
-	let difference = 0;
-	for (let i = 0; i < a.length; i++) difference |= a[i] ^ b[i];
-	return difference === 0;
 }
