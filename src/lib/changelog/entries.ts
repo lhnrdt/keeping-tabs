@@ -27,6 +27,11 @@ export const CHANGELOG: ChangelogEntry[] = [
 				de: 'Deine Gruppen sind jetzt verschlüsselt, auch die Beträge. Du musst nichts tun: Bestehende Gruppen stellen sich von selbst um.'
 			},
 			{
+				icon: 'identity',
+				en: 'Log out on a shared or borrowed device, without touching your account.',
+				de: 'Melde dich auf einem geteilten oder geliehenen Gerät ab, ohne dein Konto anzufassen.'
+			},
+			{
 				icon: 'phone',
 				en: 'Add another device by scanning a QR code.',
 				de: 'Füge ein weiteres Gerät hinzu, indem du einen QR-Code scannst.'
