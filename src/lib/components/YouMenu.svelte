@@ -1,6 +1,6 @@
 <script lang="ts">
-	// What your avatar opens, everywhere (#156): you, your profile, devices & recovery. A group
-	// adds its own lines and actions (`children`), e.g. "Not you?".
+	// What your avatar opens in a group: who you are there, your settings, and the group's own
+	// lines and actions (`children`), e.g. "Not you?".
 	import { resolve } from '$app/paths';
 	import { Button, Sheet } from 'konsta/svelte';
 	import type { Snippet } from 'svelte';
@@ -44,12 +44,8 @@
 
 		<div class="mt-6 flex flex-col gap-2">
 			<a href={resolve('/you')} onclick={onClose} class={link}>
-				<Icon name="identity" size={20} />
-				{m.you_title()}
-			</a>
-			<a href={resolve('/you/devices')} onclick={onClose} class={link}>
-				<Icon name="passkey" size={20} />
-				{m.identity_title()}
+				<Icon name="settings" size={20} />
+				{m.settings_title()}
 			</a>
 			{@render children?.()}
 			<Button large rounded clear type="button" onclick={onClose}>{m.close()}</Button>
