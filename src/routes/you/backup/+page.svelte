@@ -23,19 +23,23 @@
 			status={data.passkeyCount > 0 ? `✓ ${m.backup_saved()}` : m.backup_not_set_up()}
 			done={data.passkeyCount > 0}
 		>
-			<p class="px-4 pb-2 text-sm text-muted">{m.passkey_intro()}</p>
+			<p class="text-sm text-muted">{m.passkey_intro()}</p>
 			<PasskeySave count={data.passkeyCount} />
 		</Fold>
 		<Fold
 			plain
 			title={m.recovery_title()}
-			status={data.hasRecoveryKey ? `✓ ${m.backup_saved()}` : m.backup_not_set_up()}
-			done={data.hasRecoveryKey}
+			status={data.recoveryKeyOutdated
+				? m.recovery_status_outdated()
+				: data.hasRecoveryKey
+					? `✓ ${m.backup_saved()}`
+					: m.backup_not_set_up()}
+			done={data.hasRecoveryKey && !data.recoveryKeyOutdated}
 			open={Boolean(form?.recoveryCreated) || data.recoveryKeyOutdated}
 		>
-			<p class="px-4 pb-2 text-sm text-muted">{m.recovery_intro()}</p>
+			<p class="text-sm text-muted">{m.recovery_intro()}</p>
 			{#if data.recoveryKeyOutdated}
-				<p class="px-4 pb-2 text-sm font-medium" role="status">{m.recovery_outdated()}</p>
+				<p class="text-sm font-medium" role="status">{m.recovery_outdated()}</p>
 			{/if}
 			<RecoveryKeyCreator />
 		</Fold>

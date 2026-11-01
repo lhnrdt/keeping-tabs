@@ -137,7 +137,7 @@ test('a synced passkey brings you and your groups back on a new device', async (
 	await open(phone, '/you/backup');
 	await openFold(phone, 'Passkey');
 	await phone.getByRole('button', { name: 'Save as passkey' }).click();
-	await expect(phone.getByRole('status')).toContainText('1 passkey');
+	await expect(phone.getByRole('status')).toContainText('Passkeys saved: 1');
 
 	// The platform syncs the passkey to Mia's new laptop (A-18)
 	const { credentials } = await phoneKeys.cdp.send('WebAuthn.getCredentials', {

@@ -8,6 +8,7 @@
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import type { BudgetView } from '#lib/insights/budget.ts';
+	import { fullDate, timeLabel, timeTicks } from '#lib/insights/time-axis.ts';
 	import BudgetRoad from './BudgetRoad.svelte';
 
 	let { view, currency }: { view: BudgetView; currency: string } = $props();
@@ -34,12 +35,7 @@
 	);
 
 	const money = (amount: number) => shownAmount(amount, currency);
-	const date = (value: Date) =>
-		new Intl.DateTimeFormat(getLocale(), {
-			day: 'numeric',
-			month: 'short',
-			timeZone: 'UTC'
-		}).format(value);
+	const date = (value: Date) => fullDate(value, getLocale());
 </script>
 
 {#if view.budget !== null}
@@ -55,7 +51,10 @@
 		yNice
 		grid={{ x: false }}
 		props={{
-			xAxis: { ticks: 3, format: date },
+			xAxis: {
+				ticks: timeTicks(day(view.from), end),
+				format: timeLabel(day(view.from), end, getLocale())
+			},
 			yAxis: { ticks: 3, format: (value: number) => shownCompact(value, currency) },
 			highlight: { area: false, lines: true, points: false },
 			tooltip: { context: { mode: 'bisect-x', findTooltipData: 'left' } }

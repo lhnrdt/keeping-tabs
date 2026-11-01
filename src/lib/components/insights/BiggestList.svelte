@@ -19,6 +19,7 @@
 	const date = new Intl.DateTimeFormat(getLocale(), {
 		day: 'numeric',
 		month: 'short',
+		year: 'numeric',
 		timeZone: 'UTC'
 	});
 	const largest = $derived(rows[0]?.amount ?? 1);

@@ -2,6 +2,7 @@
 	// Who pays (#185, #188): per person how much more or less they paid than their share, as
 	// bars from zero (LayerChart): more to the right in the positive tone, less to the left in
 	// the negative one, the difference written beside each. Tap for paid and share.
+	import { chartName, chartNamesWidth } from '#lib/insights/chart-names.ts';
 	import { BarChart, Tooltip } from 'layerchart';
 	import type { GroupMember } from '#lib/group/members.ts';
 	import { shownAmount } from '#lib/shown-money.ts';
@@ -53,11 +54,12 @@
 			props={{
 				bars: { strokeWidth: 0 },
 				yAxis: {
+					format: chartName,
 					tickMarks: false,
 					tickLabelProps: { class: 'fill-ink text-sm font-medium dark:fill-ink-night' }
 				}
 			}}
-			padding={{ left: 64, right: 4 }}
+			padding={{ left: chartNamesWidth(data.map((row) => row.name)), right: 4 }}
 		>
 			{#snippet tooltip()}
 				<Tooltip.Root>

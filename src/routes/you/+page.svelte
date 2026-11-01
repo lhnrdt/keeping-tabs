@@ -12,11 +12,10 @@
 	import DeleteIdentity from '#lib/components/device/DeleteIdentity.svelte';
 	import LogOut from '#lib/components/device/LogOut.svelte';
 	import PushToggle from '#lib/components/device/PushToggle.svelte';
-	import Fold from '#lib/components/Fold.svelte';
 	import FormError from '#lib/components/FormError.svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import PlainField from '#lib/components/fields/PlainField.svelte';
-	import AccentPicker, { accentLabels } from '#lib/components/pickers/AccentPicker.svelte';
+	import AccentPicker from '#lib/components/pickers/AccentPicker.svelte';
 	import SegmentedPicker from '#lib/components/pickers/SegmentedPicker.svelte';
 	import SavedHint from '#lib/components/SavedHint.svelte';
 	import SettingField from '#lib/components/SettingField.svelte';
@@ -139,10 +138,7 @@
 					saved={setting.saved === 'accent'}
 					error={errorFor('accent')}
 				>
-					<!-- Folded: nine tiles would outweigh everything else here -->
-					<Fold plain title={accentLabels[data.accent]()}>
-						<AccentPicker value={data.accent} />
-					</Fold>
+					<AccentPicker value={data.accent} />
 				</SettingField>
 				<noscript><button type="submit">{m.save()}</button></noscript>
 			</form>
@@ -186,10 +182,12 @@
 				</PlainField>
 				<noscript><button type="submit">{m.save()}</button></noscript>
 			</form>
+		</section>
 
-			{#if data.pushPublicKey}
-				<PushToggle publicKey={data.pushPublicKey} />
-			{/if}
+		<!-- Also where it can't be used: then shown as off, saying why -->
+		<section class="page-section">
+			<h2 class="section-label">{m.push_title()}</h2>
+			<PushToggle publicKey={data.pushPublicKey ?? null} />
 		</section>
 
 		<section class="page-section">
