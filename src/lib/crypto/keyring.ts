@@ -2,7 +2,7 @@
 // group's key arrives in its link's fragment (the part after #, which browsers don't send), is
 // kept here, and taken out of the address. A person's other devices get them through the vault
 // (vault.ts).
-import { isKey, keyIdOf } from './seal';
+import { keyIdOf } from './seal';
 
 const DATABASE = 'keeping-tabs-keys';
 const STORE = 'keys';
@@ -83,17 +83,6 @@ export async function rememberVault(key: string) {
 export async function forgetKeys() {
 	memory.clear();
 	await withStore('readwrite', (store) => store.clear()).catch(() => {});
-}
-
-const HASH_KEY = /(?:^#|&)key=([\w-]{43})(?:&|$)/;
-
-/** A group link's key, if the address has one: kept, and taken out of the address */
-export async function takeKeyFromAddress() {
-	const key = HASH_KEY.exec(location.hash)?.[1];
-	if (!isKey(key)) return undefined;
-	const id = await rememberKey(key);
-	history.replaceState(history.state, '', `${location.pathname}${location.search}`);
-	return { key, id };
 }
 
 /** A group's link with its key, to pass on */

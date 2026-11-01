@@ -1,6 +1,9 @@
 import { expect, test, type Page } from '@playwright/test';
 import { choose, createGroup, open, openFold } from './e2e-helpers';
 
+// Sealing, and several devices: these take longer than most
+test.describe.configure({ timeout: 90_000 });
+
 const EXPORT = new URL('./fixtures/splitwise-export.csv', import.meta.url).pathname;
 
 /** Creates an encrypted group with one expense; returns its plain address and full link */

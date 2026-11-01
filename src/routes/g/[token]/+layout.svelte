@@ -3,7 +3,8 @@
 	import GroupScope from '#lib/components/group/GroupScope.svelte';
 	import { invalidateAll } from '$app/navigation';
 	import LockedNotice from '#lib/components/group/LockedNotice.svelte';
-	import { keyFor, takeKeyFromAddress } from '#lib/crypto/keyring.ts';
+	import { takeKeyFromAddress } from '#lib/crypto/key-from-address.ts';
+	import { keyFor } from '#lib/crypto/keyring.ts';
 	import { resolve } from '$app/paths';
 	import { paymentCopies } from '#lib/crypto/profile.ts';
 	import { syncKeys } from '#lib/crypto/vault.ts';

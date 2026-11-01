@@ -1,7 +1,8 @@
 // Opens what the server sent (#110): every sealed text in a page's data becomes readable here,
 // in the browser, before anything shows. The server only ever passes sealed text along.
 import { m } from '#lib/paraglide/messages.js';
-import { keyFor, takeKeyFromAddress } from './keyring';
+import { takeKeyFromAddress } from './key-from-address';
+import { keyFor } from './keyring';
 import { contextIn, isSealed, keyIdIn, openText, textContext } from './seal';
 
 export const browser = typeof window !== 'undefined';
