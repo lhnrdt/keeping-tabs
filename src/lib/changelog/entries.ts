@@ -12,7 +12,7 @@ export type ChangelogEntry = {
 export const CHANGELOG: ChangelogEntry[] = [
 	{
 		version: '0.15.0',
-		date: '',
+		date: '2026-11-01',
 		items: [
 			{
 				en: 'An open group now shows what others add, without reloading.',
