@@ -27,7 +27,11 @@
 	const preview = $derived(
 		formatAvatar(
 			icon === DRAWN
-				? { icon: null, tint, drawing: drawing?.d ? drawing : undefined }
+				? {
+						icon: null,
+						tint,
+						drawing: (drawing ?? value.drawing)?.d ? (drawing ?? value.drawing) : undefined
+					}
 				: { icon, tint }
 		)
 	);
@@ -114,6 +118,10 @@
 
 {#if icon === DRAWN}
 	<div class="pt-4">
-		<AvatarDrawing tint={tintClass(id, tint)} initial={value.drawing} bind:drawing />
+		<AvatarDrawing
+			tint={tintClass(id, tint)}
+			initial={value.drawing}
+			onDraw={(drawn) => (drawing = drawn)}
+		/>
 	</div>
 {/if}

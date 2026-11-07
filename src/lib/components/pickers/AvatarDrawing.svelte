@@ -14,10 +14,10 @@
 		/** What was saved, to go on from */
 		initial?: Drawing;
 		/** The drawing so far, for the preview */
-		drawing?: Drawing;
+		onDraw: (drawing: Drawing) => void;
 	};
 
-	let { tint, initial, drawing = $bindable() }: Props = $props();
+	let { tint, initial, onDraw }: Props = $props();
 
 	/** Saved paths come back as one stroke per "M" */
 	const strokesOf = (d: string): Point[][] =>
@@ -35,13 +35,10 @@
 	let pad: SVGSVGElement;
 
 	const d = $derived(pathOf(current ? [...strokes, current] : strokes));
-	$effect(() => {
-		drawing = { width, d: pathOf(strokes) };
-	});
 
 	/** Into the form, which saves it */
 	function commit() {
-		drawing = { width, d: pathOf(strokes) };
+		onDraw({ width, d: pathOf(strokes) });
 		// Once the hidden fields hold it
 		void tick().then(() => fields.dispatchEvent(new Event('change', { bubbles: true })));
 	}
