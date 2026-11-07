@@ -194,6 +194,43 @@ test('a device link carries the keys along (#110)', async ({ page, browser }) =>
 	await expect(laptop.getByRole('link', { name: /Whiskey tasting/ })).toBeVisible();
 });
 
+test('a group joined in Safari opens in the home screen app too, with its own storage (#298)', async ({
+	page,
+	browser
+}) => {
+	// The home screen app: its own vault, and the server knows its public key
+	const mine = await encryptedGroup(page);
+	await expect
+		.poll(async () => (await (await page.request.get('/device/keys')).json()).vaults.length)
+		.toBe(1);
+
+	// Safari: still signed in as the same person, but its storage has been cleared
+	const safari = await (await browser.newContext()).newPage();
+	await safari.context().addCookies(await page.context().cookies());
+
+	// An invite opened there
+	const ben = await newVisitor(page);
+	const { groupUrl, link } = await encryptedGroup(ben);
+	const handedOver = safari.waitForResponse(
+		(response) =>
+			response.url().endsWith('/device/keys') &&
+			(response.request().postData() ?? '').includes('"keys"')
+	);
+	await open(safari, link);
+	await safari.getByRole('button', { name: "I'm Benedikt" }).click();
+	await expect(safari.getByRole('link', { name: /Whiskey tasting/ })).toBeVisible();
+	await handedOver;
+
+	// The home screen app reads it, and puts its own groups in Safari's vault in turn
+	await open(page, groupUrl);
+	await expect(page.getByRole('link', { name: /Whiskey tasting/ })).toBeVisible();
+	await expect(page.locator('body')).not.toContainText('••••••');
+	await open(page, '/');
+	await expect(page.getByRole('link', { name: /Secret trip/ })).toHaveCount(2);
+	await open(safari, mine.groupUrl);
+	await expect(safari.getByRole('link', { name: /Whiskey tasting/ })).toBeVisible();
+});
+
 test('an existing group gets encrypted by itself, and nobody has to do anything (#110)', async ({
 	page,
 	browser

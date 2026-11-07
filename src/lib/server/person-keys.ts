@@ -1,22 +1,61 @@
 // What's kept for a person's other devices (#110): only sealed copies of keys.
-import { count, eq, sql } from 'drizzle-orm';
+import { and, count, desc, eq, gt, sql } from 'drizzle-orm';
 import { keyIdIn } from '#lib/crypto/seal.ts';
 import type { Db } from './db';
-import { people, personKeys } from './db/schema';
+import { people, personKeys, personVaults } from './db/schema';
 
-export async function keysOf(db: Db, personId: string) {
-	const [keys, [person]] = await db.batch([
+/** Vaults no device has said it holds for this long are left out: probably cleared away */
+const VAULT_GONE_MS = 90 * 24 * 60 * 60 * 1000;
+/** ...and only the latest few, so a device doesn't put each key in ever more vaults */
+const MAX_VAULTS = 10;
+
+export async function keysOf(db: Db, personId: string, now = new Date()) {
+	const [keys, [person], vaults] = await db.batch([
 		db
 			.select({ keyId: personKeys.keyId, sealed: personKeys.sealed })
 			.from(personKeys)
 			.where(eq(personKeys.personId, personId)),
-		db.select({ recoveryVault: people.recoveryVault }).from(people).where(eq(people.id, personId))
+		db.select({ recoveryVault: people.recoveryVault }).from(people).where(eq(people.id, personId)),
+		db
+			.select({
+				vaultId: personVaults.vaultId,
+				publicKey: personVaults.publicKey,
+				seenAt: personVaults.seenAt
+			})
+			.from(personVaults)
+			.where(
+				and(
+					eq(personVaults.personId, personId),
+					gt(personVaults.seenAt, new Date(now.getTime() - VAULT_GONE_MS))
+				)
+			)
+			.orderBy(desc(personVaults.seenAt))
+			.limit(MAX_VAULTS)
 	]);
-	return { keys, recoveryVault: person?.recoveryVault ?? null };
+	return {
+		keys,
+		recoveryVault: person?.recoveryVault ?? null,
+		vaults: vaults.map(({ seenAt, ...vault }) => ({ ...vault, seenAt: seenAt.getTime() }))
+	};
 }
 
-/** Sealed copies one person can keep: far more groups than anyone is in */
-const MAX_STORED = 2_000;
+/** A device holding this vault says so, with its public key */
+export const storeVault = (
+	db: Db,
+	personId: string,
+	{ vaultId, publicKey }: { vaultId: string; publicKey: string },
+	now = new Date()
+) =>
+	db
+		.insert(personVaults)
+		.values({ personId, vaultId, publicKey, seenAt: now })
+		.onConflictDoUpdate({
+			target: [personVaults.personId, personVaults.vaultId],
+			set: { publicKey, seenAt: now }
+		});
+
+/** Sealed copies one person can keep, one per group and vault: far more than anyone needs */
+const MAX_STORED = 10_000;
 
 export async function storeKeys(
 	db: Db,

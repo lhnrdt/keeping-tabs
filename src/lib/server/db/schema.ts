@@ -300,6 +300,21 @@ export const personKeys = sqliteTable(
 	(t) => [primaryKey({ columns: [t.personId, t.keyId, t.vaultId] })]
 );
 
+/** Each of a person's vaults' public keys, so their devices can put keys in each other's (#298) */
+export const personVaults = sqliteTable(
+	'person_vaults',
+	{
+		personId: text('person_id')
+			.notNull()
+			.references(() => people.id, { onDelete: 'cascade' }),
+		vaultId: text('vault_id').notNull(),
+		publicKey: text('public_key').notNull(),
+		// Last said by a device holding it: vaults no device has anymore are left out
+		seenAt: integer('seen_at', { mode: 'timestamp_ms' }).notNull()
+	},
+	(t) => [primaryKey({ columns: [t.personId, t.vaultId] })]
+);
+
 /**
  * A group's text and money sealed under a new key, until all of it is here (#110): only then does it
  * replace what's there, all at once, so a key change cut off or sent by mistake leaves nothing broken.
