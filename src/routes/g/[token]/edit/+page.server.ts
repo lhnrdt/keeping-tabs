@@ -5,6 +5,7 @@ import { m } from '#lib/paraglide/messages.js';
 import { resolve } from '$app/paths';
 import type { ErrorCode } from '#lib/errors.ts';
 import { groupTabUrl } from '#lib/group/tabs.ts';
+import { entryCurrencyOf } from '#lib/expense/exchange.ts';
 import { formContext } from '#lib/server/context.ts';
 import { setGroupDetails, updateGroup } from '#lib/server/groups.ts';
 import { parseDescription, parseGroupName, parseKind, parseTint } from '#lib/validation.ts';
@@ -35,6 +36,8 @@ export const actions: Actions = {
 		if (!kind.ok) return invalid(kind.error);
 		const tint = parseTint(form.get('tint'));
 		if (!tint.ok) return invalid(tint.error);
+		const entryCurrency = entryCurrencyOf(form.get('entryCurrency'), group.currency);
+		if (!entryCurrency.ok) return invalid(entryCurrency.error);
 
 		await updateGroup(locals.db, group.id, actorId, {
 			name: name.value,
@@ -42,7 +45,8 @@ export const actions: Actions = {
 			kind: kind.value,
 			tint: tint.value,
 			// A checkbox: present when on
-			simplifyDebts: form.get('simplifyDebts') === 'on'
+			simplifyDebts: form.get('simplifyDebts') === 'on',
+			entryCurrency: entryCurrency.value
 		});
 		redirect(303, groupTabUrl(resolve('/g/[token]', { token: params.token }), 'group'));
 	}

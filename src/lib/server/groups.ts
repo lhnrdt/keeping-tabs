@@ -23,6 +23,7 @@ export async function findGroupByToken(db: Db, token: string) {
 			budgetCents: true,
 			endsOn: true,
 			defaultSplit: true,
+			entryCurrency: true,
 			keyId: true,
 			transitionKey: true,
 			transitionUntil: true,
@@ -180,6 +181,7 @@ export async function updateGroup(
 		kind: GroupKind;
 		tint: Tint | null;
 		simplifyDebts: boolean;
+		entryCurrency: string | null;
 	}
 ) {
 	await db.batch([

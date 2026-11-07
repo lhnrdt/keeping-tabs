@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { createGroup } from './e2e-helpers';
+import { createGroup, open } from './e2e-helpers';
 
 test('an expense in another currency, converted at the day’s rate (#54)', async ({ page }) => {
 	// The day's rate, without asking the real source
@@ -28,4 +28,24 @@ test('an expense in another currency, converted at the day’s rate (#54)', asyn
 	await expect(page.getByLabel('Currency')).toHaveValue('JPY');
 	await expect(page.getByLabel('Amount (¥)')).toHaveValue('3000');
 	await expect(page.getByTestId('converted')).toContainText('€16.92');
+});
+
+test('a group can have new expenses typed in another currency (#307)', async ({ page }) => {
+	await page.route('**/fx?*', (route) => route.fulfill({ json: { rate: '0.0056389' } }));
+	const groupUrl = await createGroup(page, 'Japan', 'Anna', ['Ben']);
+	await open(page, `${groupUrl}?tab=group`);
+	const details = page.getByRole('region', { name: 'Details' });
+	await details.getByRole('link', { name: /Currency for new expenses/ }).click();
+	await page.getByLabel('Currency for new expenses').selectOption('JPY');
+	await page.getByRole('button', { name: 'Save' }).click();
+	await expect(details).toContainText('JPY');
+
+	await open(page, groupUrl);
+	await page.getByRole('link', { name: 'Add expense' }).click();
+	await expect(page.getByLabel('Currency')).toHaveValue('JPY');
+	await page.getByLabel('What was it for?').fill('Sushi');
+	await page.getByLabel('Amount (¥)').fill('3000');
+	await expect(page.getByTestId('converted')).toContainText('€16.92');
+	await page.getByRole('button', { name: 'Add expense' }).click();
+	await expect(page.getByRole('link', { name: /Sushi/ })).toContainText('¥3,000 (€16.92)');
 });
