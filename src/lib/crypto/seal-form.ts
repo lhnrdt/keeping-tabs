@@ -2,6 +2,7 @@
 // before sending, so the server only ever sees them sealed. If the server sends them back with
 // a refusal, they're opened again for the form.
 import { applyAction, type SubmitFunction } from '$app/forms';
+import { announceEvent } from '#lib/push/announce-event.ts';
 import { invalidateAll } from '$app/navigation';
 import { page } from '$app/state';
 import { m } from '#lib/paraglide/messages.js';
@@ -241,6 +242,11 @@ export const sealing =
 				return;
 			}
 			resent.delete(input.formElement);
+			// Tells the group about it, if the form says what it's about (#267)
+			const event = input.formElement.dataset.announce;
+			if (event && (result.type === 'success' || result.type === 'redirect')) {
+				announceEvent(event);
+			}
 			if (options.result.type === 'failure') {
 				options.result.data = await openDeep(options.result.data);
 			}

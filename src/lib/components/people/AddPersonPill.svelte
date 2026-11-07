@@ -29,6 +29,7 @@
 	<form
 		method="POST"
 		action={tabAction('addMember', 'group')}
+		data-announce="joined"
 		use:enhance={nameIsFree('addMember', sealing(['name'], submission.enhance))}
 		class="inline-flex min-h-11 items-center gap-1 rounded-full bg-surface ps-4 pe-1 shadow-[0_0_0_2px_var(--color-accent)] dark:bg-surface-night"
 	>

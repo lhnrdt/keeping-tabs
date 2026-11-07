@@ -74,6 +74,7 @@
 		<form
 			method="POST"
 			action="?/comment"
+			data-announce="comment"
 			class="flex flex-col gap-2"
 			use:enhance={(input) => {
 				// Its id, made here: its sealed text says it belongs to this comment

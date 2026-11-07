@@ -17,6 +17,8 @@
 		title: string;
 		/** Form action URL, see tabAction() */
 		action: string;
+		/** What to tell the group about once it's done (#267) */
+		announce?: string;
 		submitLabel: string;
 		destructive?: boolean;
 		onClose: () => void;
@@ -31,6 +33,7 @@
 		opened,
 		title: heading,
 		action,
+		announce,
 		submitLabel,
 		destructive = false,
 		onClose,
@@ -59,6 +62,7 @@
 	{#snippet title()}{heading}{/snippet}
 	<!-- Long content scrolls inside, so the buttons below stay on screen -->
 	<form
+		data-announce={announce}
 		id={formId}
 		method="POST"
 		{action}

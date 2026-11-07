@@ -187,7 +187,7 @@
 		<!-- Also where it can't be used: then shown as off, saying why -->
 		<section class="page-section">
 			<h2 class="section-label">{m.push_title()}</h2>
-			<PushToggle publicKey={data.pushPublicKey ?? null} />
+			<PushToggle publicKey={data.pushPublicKey ?? null} muted={data.pushMuted} />
 		</section>
 
 		<section class="page-section">
