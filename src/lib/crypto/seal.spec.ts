@@ -53,7 +53,8 @@ describe('sealing', () => {
 		const key = newKey();
 		const sealed = await sealText(key, 'Grüße, 🍕 & "Quotes"');
 		expect(isSealed(sealed)).toBe(true);
-		expect(sealed).not.toContain('Gr');
+		// The text itself; a few letters of it can turn up in the random part by chance
+		expect(sealed).not.toContain('Grüße');
 		expect(keyIdIn(sealed)).toBe(await keyIdOf(key));
 		expect(await openText(key, sealed)).toBe('Grüße, 🍕 & "Quotes"');
 		await expect(openText(newKey(), sealed)).rejects.toThrow();
