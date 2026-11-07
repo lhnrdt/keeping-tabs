@@ -99,7 +99,9 @@
 		<div class="flex min-h-12 items-center gap-3">
 			<span class="flex flex-1 flex-col">
 				<span>{member.name}</span>
-				{#if amounts && share !== null}<span class="text-xs text-muted tabular-nums">{money(share)}</span>{/if}
+				{#if amounts && share !== null}<span class="text-xs text-muted tabular-nums"
+						>{money(share)}</span
+					>{/if}
 			</span>
 			<span class="field-well !min-h-10 w-32">
 				<input
