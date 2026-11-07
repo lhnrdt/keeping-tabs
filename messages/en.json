@@ -390,6 +390,7 @@
 	"default_split_equal": "Equally",
 	"default_split_reset": "Back to equal",
 	"default_split_remember": "Use this split for new expenses",
+	"default_split_hint": "New expenses start split this way. Each expense can still be split differently.",
 	"simplify_debts_hint": "Settle up with the fewest payments: if Anna owes Ben and Ben owes Cara, Anna pays Cara directly.",
 	"on": "On",
 	"off": "Off",

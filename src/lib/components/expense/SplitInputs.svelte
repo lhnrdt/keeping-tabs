@@ -24,9 +24,11 @@
 		amount: string;
 		/** Inputs to start with (by member id) and the mode they belong to */
 		initial: { mode: SplitMode; inputs: Record<string, string> };
+		/** Each member's resulting amount below their name; not for a split without an amount */
+		amounts?: boolean;
 	};
 
-	let { mode, members, currency, amount, initial }: Props = $props();
+	let { mode, members, currency, amount, initial, amounts = true }: Props = $props();
 
 	// Typed values per mode, so switching modes back and forth keeps them
 	const startWith = () =>
@@ -97,7 +99,9 @@
 		<div class="flex min-h-12 items-center gap-3">
 			<span class="flex flex-1 flex-col">
 				<span>{member.name}</span>
-				{#if share !== null}<span class="text-xs text-muted tabular-nums">{money(share)}</span>{/if}
+				{#if amounts && share !== null}<span class="text-xs text-muted tabular-nums"
+						>{money(share)}</span
+					>{/if}
 			</span>
 			<span class="field-well !min-h-10 w-32">
 				<input
