@@ -15,6 +15,7 @@ import {
 import { clientIdIn, parseComment } from '#lib/validation.ts';
 import { isJpeg, MAX_RECEIPT_BYTES } from '#lib/expense/receipt-image.ts';
 import { addReceipt, deleteReceipt, listReceipts } from '#lib/server/receipts.ts';
+import { keptEqualShares } from '#lib/split/kept-cents.ts';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, params, parent }) => {
@@ -34,10 +35,11 @@ export const actions: Actions = {
 		const { form, group, actorId } = await formContext(locals, params.token, request);
 		const result = await readExpenseForm(locals.db, group, form, actorId);
 		if (!result.ok) return result.failure;
-		if (!(await updateExpense(locals.db, group.id, actorId, params.id, result.input))) {
+		const input = keptEqualShares(result.input, await findExpense(locals.db, group.id, params.id));
+		if (!(await updateExpense(locals.db, group.id, actorId, params.id, input))) {
 			error(404, m.error_expense_not_found());
 		}
-		await rememberDefaultSplit(locals.db, group.id, actorId, form, result.input);
+		await rememberDefaultSplit(locals.db, group.id, actorId, form, input);
 		redirect(303, resolve('/g/[token]', { token: params.token }));
 	},
 
