@@ -114,6 +114,15 @@ test('a finished trip gets a recap to look back on and share (#163)', async ({ p
 	expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
 		'Lofoten, Aug 1 – 5, 2026: €480.00 in 5 days, €240.00 per person'
 	);
+
+	// As a picture (#291): saved where the share sheet doesn't take files
+	await page.evaluate(() => Object.defineProperty(navigator, 'canShare', { value: undefined }));
+	const download = page.waitForEvent('download');
+	await recap.getByRole('button', { name: 'Share as picture' }).click();
+	const picture = await download;
+	expect(picture.suggestedFilename()).toBe('Lofoten.png');
+	if (process.env.POSTER_TO) await picture.saveAs(process.env.POSTER_TO);
+	await expect(recap.getByRole('button', { name: 'Picture saved' })).toBeVisible();
 });
 
 test('an empty group invites to add expenses first', async ({ page }) => {
