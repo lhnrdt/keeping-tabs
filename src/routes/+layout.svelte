@@ -35,6 +35,16 @@
 	});
 
 	onMount(refreshOnReturn);
+	// No browser menu on a long press or right click, except where text can be typed or copied
+	onMount(() => {
+		const menu = (event: Event) => {
+			if (!(event.target as Element).closest('input, textarea, [contenteditable], .selectable')) {
+				event.preventDefault();
+			}
+		};
+		document.addEventListener('contextmenu', menu);
+		return () => document.removeEventListener('contextmenu', menu);
+	});
 	// Expenses kept while offline go out when the connection is back (#55)
 	onMount(startSync);
 	// Keys this device holds go to your others, whichever page it's opened on (#110)
