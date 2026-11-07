@@ -23,6 +23,8 @@ export type BackupGroup = {
 	kind: GroupKind;
 	tint: Tint | null;
 	simplifyDebts: boolean;
+	/** Optional: backups from before #307 have none */
+	entryCurrency?: string | null;
 	insightSections: string | null;
 	defaultSplit: DefaultSplit | null;
 	budgetCents: number | null;

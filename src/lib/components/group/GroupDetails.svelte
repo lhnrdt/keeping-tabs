@@ -10,6 +10,7 @@
 	import type { DefaultSplit } from '#lib/split/default-split.ts';
 	import { formatSplitInput } from '#lib/split/inputs.ts';
 	import type { Tint } from '#lib/tints.ts';
+	import { isEntryCurrency } from '#lib/expense/exchange.ts';
 
 	type Group = {
 		shareToken: string;
@@ -18,6 +19,7 @@
 		currency: string;
 		kind: GroupKind;
 		tint: Tint | null;
+		entryCurrency: string | null;
 		simplifyDebts: boolean;
 		/** New expenses' split (#41), null = equal */
 		defaultSplit: DefaultSplit | null;
@@ -68,6 +70,14 @@
 		after={group.tint ? tintLabels[group.tint]() : m.tint_auto()}
 	/>
 	<ListItem title={m.field_currency()} after={group.currency} />
+	{#if isEntryCurrency(group.currency)}
+		<ListItem
+			link
+			{href}
+			title={m.field_entry_currency()}
+			after={group.entryCurrency ?? group.currency}
+		/>
+	{/if}
 	<ListItem
 		link
 		href={resolve('/g/[token]/split', { token: group.shareToken })}

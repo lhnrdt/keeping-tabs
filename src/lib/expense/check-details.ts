@@ -7,6 +7,7 @@ import { parseDefaultSplit } from '#lib/split/default-split.ts';
 import { SPLIT_MODES } from '#lib/split/modes.ts';
 import { ITEMS_MODE } from '#lib/split/items.ts';
 import { isTint } from '#lib/tints.ts';
+import { isEntryCurrency } from '#lib/expense/exchange.ts';
 
 const isCents = (value: unknown) => Number.isSafeInteger(value) && (value as number) >= 0;
 const isCurrency = (value: unknown) => typeof value === 'string' && /^[A-Z]{3}$/.test(value);
@@ -77,6 +78,7 @@ export function checkGroupDetails(read: unknown) {
 		kind: isGroupKind,
 		tint: (value) => value === null || isTint(value),
 		simplifyDebts: (value) => typeof value === 'boolean',
+		entryCurrency: (value) => value === null || isEntryCurrency(value),
 		budgetCents: (value) => value === null || isCents(value),
 		endsOn: (value) => value === null || isText(value),
 		insightSections: (value) => value === null || isText(value)

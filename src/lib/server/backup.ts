@@ -81,6 +81,7 @@ export async function backupOf(db: Db, group: Group): Promise<Backup> {
 			kind: group.kind,
 			tint: group.tint,
 			simplifyDebts: group.simplifyDebts,
+			entryCurrency: group.entryCurrency,
 			insightSections: group.insightSections,
 			defaultSplit: group.defaultSplit,
 			budgetCents: group.budgetCents,

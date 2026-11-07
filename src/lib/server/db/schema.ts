@@ -48,6 +48,8 @@ export const groups = sqliteTable('groups', {
 	insightSections: text('insight_sections'),
 	// New expenses start split this way, e.g. {"mode":"percent","inputs":{…}} (#41); null = equal
 	defaultSplit: text('default_split', { mode: 'json' }),
+	/** What new expenses are typed in, converted into `currency` (#307); null: that one */
+	entryCurrency: text('entry_currency'),
 	// Which key seals this group's text (#110); null = stored as plain text. Never the key itself
 	keyId: text('key_id'),
 	// Handing an existing group's key to its people when it was encrypted (#110): they only have the

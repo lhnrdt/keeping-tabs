@@ -288,6 +288,13 @@
       "when": 1794033135295,
       "tag": "0040_person_vaults",
       "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "6",
+      "when": 1794036477109,
+      "tag": "0041_entry_currency",
+      "breakpoints": true
     }
   ]
 }

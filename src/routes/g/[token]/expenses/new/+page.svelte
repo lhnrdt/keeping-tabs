@@ -18,6 +18,8 @@
 			// E-4: everyone takes part by default
 			participants: data.members.map((member) => member.id),
 			category: '',
+			// Typed in the group's currency for new expenses, if it has one (#307)
+			currency: data.group.entryCurrency ?? '',
 			// The group's default split, if it has one (#41)
 			...(data.group.defaultSplit
 				? defaultFormValues(
