@@ -19,8 +19,9 @@
 	let { title, status, done = false, open = false, plain = false, children }: Props = $props();
 </script>
 
+<!-- Right under a section's title, as far from it as a list would be -->
 <details
-	class="group overflow-hidden {plain
+	class="group overflow-hidden [.k-block-title+&]:mt-4 {plain
 		? 'rounded-xl bg-current/[0.07]'
 		: 'mx-4 mb-4 rounded-2xl bg-surface dark:bg-surface-night'}"
 	{open}
