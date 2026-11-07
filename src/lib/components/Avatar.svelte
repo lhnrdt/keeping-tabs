@@ -3,7 +3,7 @@
 	// (chosen, else derived from them). Decorative: the name is always shown next to it, so
 	// the initials are drawn with CSS and stay out of the text content.
 	import { avatarIcons } from '#lib/avatar-icons.ts';
-	import { parseAvatar } from '#lib/avatars.ts';
+	import { DRAWING_SIZE, parseAvatar, STROKE_WIDTHS } from '#lib/avatars.ts';
 	import { initials } from '#lib/group/members.ts';
 	import { tintClass } from '#lib/tints.ts';
 
@@ -18,6 +18,7 @@
 	let { id, name, avatar, size = 'md' }: Props = $props();
 
 	const choice = $derived(parseAvatar(avatar));
+	const drawing = $derived(choice?.drawing);
 	const Glyph = $derived(choice?.icon ? avatarIcons[choice.icon] : null);
 	const sizes = {
 		xs: 'h-[22px] w-[22px] text-[10px]',
@@ -32,11 +33,24 @@
 	class="{tintClass(
 		id,
 		choice?.tint
-	)} grid shrink-0 place-items-center rounded-full bg-(--tint-bg) font-semibold text-(--tint-fg) {Glyph
+	)} grid shrink-0 place-items-center overflow-hidden rounded-full bg-(--tint-bg) font-semibold text-(--tint-fg) {Glyph ||
+	drawing
 		? ''
 		: 'before:content-[attr(data-initials)]'} {sizes[size]}"
-	data-initials={Glyph ? undefined : initials(name)}
+	data-initials={Glyph || drawing ? undefined : initials(name)}
 	aria-hidden="true"
 >
-	{#if Glyph}<Glyph size={iconSizes[size]} stroke={1.75} />{/if}
+	{#if drawing}
+		<!-- Their own drawing (#158) -->
+		<svg viewBox="0 0 {DRAWING_SIZE} {DRAWING_SIZE}" class="h-full w-full">
+			<path
+				d={drawing.d}
+				fill="none"
+				stroke="currentColor"
+				stroke-width={STROKE_WIDTHS[drawing.width]}
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			/>
+		</svg>
+	{:else if Glyph}<Glyph size={iconSizes[size]} stroke={1.75} />{/if}
 </span>

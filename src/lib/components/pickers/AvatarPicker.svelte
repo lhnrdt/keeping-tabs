@@ -2,7 +2,16 @@
 	// Choose your avatar (#61): your initials or a nature icon, on one of the palette's tints.
 	// The preview follows the choice at once; the form saves it.
 	import { avatarIcons } from '#lib/avatar-icons.ts';
-	import { AVATAR_ICONS, formatAvatar, type AvatarChoice } from '#lib/avatars.ts';
+	import {
+		AVATAR_ICONS,
+		DRAWN,
+		formatAvatar,
+		type AvatarChoice,
+		type AvatarIcon,
+		type Drawing
+	} from '#lib/avatars.ts';
+	import Icon from '#lib/components/Icon.svelte';
+	import AvatarDrawing from './AvatarDrawing.svelte';
 	import Avatar from '#lib/components/Avatar.svelte';
 	import { tintLabels } from '#lib/group/kind-style.ts';
 	import { initials } from '#lib/group/members.ts';
@@ -12,15 +21,23 @@
 	let { id, name, value }: { id: string; name: string; value: AvatarChoice } = $props();
 
 	// Follows the saved value, and the choice right away
-	let icon = $derived(value.icon);
+	let icon = $derived<AvatarIcon | null | typeof DRAWN>(value.drawing ? DRAWN : value.icon);
 	let tint = $derived(value.tint);
+	let drawing = $state<Drawing | undefined>(undefined);
+	const preview = $derived(
+		formatAvatar(
+			icon === DRAWN
+				? { icon: null, tint, drawing: drawing?.d ? drawing : undefined }
+				: { icon, tint }
+		)
+	);
 
 	const option =
 		'grid h-11 w-11 place-items-center rounded-full bg-(--tint-bg) text-(--tint-fg) ring-offset-2 ring-offset-canvas peer-checked:ring-2 peer-checked:ring-accent peer-focus-visible:outline-2 dark:ring-offset-canvas-night dark:peer-checked:ring-accent-night';
 </script>
 
 <div class="flex items-center gap-3 px-4 pb-3">
-	<Avatar {id} {name} avatar={formatAvatar({ icon, tint })} size="lg" />
+	<Avatar {id} {name} avatar={preview} size="lg" />
 	<p class="text-sm text-muted">{m.avatar_hint()}</p>
 </div>
 
@@ -74,5 +91,29 @@
 				</span>
 			</label>
 		{/each}
+		<label class="cursor-pointer">
+			<input
+				class="peer sr-only"
+				type="radio"
+				name="icon"
+				value={DRAWN}
+				checked={icon === DRAWN}
+				onchange={(event) => {
+					icon = DRAWN;
+					// Nothing drawn yet: nothing to save until there is
+					if (!value.drawing) event.stopPropagation();
+				}}
+			/>
+			<span class="{tintClass(id, tint)} {option}" title={m.avatar_draw()}>
+				<Icon name="edit" size={20} />
+				<span class="sr-only">{m.avatar_draw()}</span>
+			</span>
+		</label>
 	</div>
 </fieldset>
+
+{#if icon === DRAWN}
+	<div class="pt-4">
+		<AvatarDrawing tint={tintClass(id, tint)} initial={value.drawing} bind:drawing />
+	</div>
+{/if}
