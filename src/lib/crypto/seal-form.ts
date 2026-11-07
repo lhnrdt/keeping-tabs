@@ -15,6 +15,7 @@ import type { GroupKind } from '#lib/group/kinds.ts';
 import { choiceToStore, isSection } from '#lib/insights/sections.ts';
 import { parseAmount } from '#lib/money.ts';
 import { defaultFrom } from '#lib/split/default-split.ts';
+import { keptEqualShares } from '#lib/split/kept-cents.ts';
 import {
 	normalizeText,
 	parseDate,
@@ -92,7 +93,10 @@ async function sealExpense(form: FormData, key: string, row: string): Promise<Re
 	const values = expenseValues(form, String(form.get('rate') ?? ''));
 	const parsed = parseExpense(values, { memberIds: groupMemberIds(), currency: groupCurrency() });
 	if (!parsed.ok) return { error: parsed.error, values };
-	const input = parsed.value;
+	// Editing: an unchanged equal split keeps its cents where they were (#303)
+	const before = page.data.expense as
+		(Parameters<typeof keptEqualShares>[1] & { id?: string }) | undefined;
+	const input = keptEqualShares(parsed.value, before?.id === row ? before : null);
 	const details = detailsFromInput(input, String(form.get('autoCategory') ?? '') || null);
 	const defaultSplit =
 		form.get('makeDefault') === 'on' ? defaultFrom(input.splitMode, input.shares) : null;
