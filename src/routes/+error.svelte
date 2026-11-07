@@ -10,6 +10,7 @@
 
 	// Not there (404) or deleted (410): nothing to try again
 	const notFound = $derived(page.status === 404 || page.status === 410);
+	const offline = $derived(typeof navigator !== 'undefined' && !navigator.onLine);
 	const heading = $derived(notFound ? m.error_not_found_title() : m.error_title());
 	// Messages from our own errors are written for people; others get a friendly default
 	const message = $derived(
@@ -23,7 +24,7 @@
 
 <AppPage title={m.app_name()}>
 	<div class="flex flex-col items-center gap-3 px-6 pt-10 pb-6 text-center" role="alert">
-		<ThemeMotif />
+		<ThemeMotif moment={notFound ? 'lost' : offline ? 'offline' : 'broken'} />
 		<h1 class="font-display text-3xl font-semibold">{heading}</h1>
 		<p class="max-w-sm text-muted">{message}</p>
 	</div>

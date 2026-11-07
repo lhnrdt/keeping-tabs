@@ -3,6 +3,7 @@
 	// full link, with its key, has been opened here. Pasting it does the same.
 	import { invalidateAll } from '$app/navigation';
 	import PlainField from '#lib/components/fields/PlainField.svelte';
+	import ThemeMotif from '#lib/components/illustrations/ThemeMotif.svelte';
 	import { isKey } from '#lib/crypto/seal.ts';
 	import { rememberKey } from '#lib/crypto/keyring.ts';
 	import { syncKeys } from '#lib/crypto/vault.ts';
@@ -25,6 +26,7 @@
 </script>
 
 <div class="mx-4 mt-2 flex flex-col gap-2 rounded-xl bg-current/[0.07] p-3.5" role="status">
+	<div class="self-center"><ThemeMotif moment="locked" /></div>
 	<p class="font-medium">{m.locked_title()}</p>
 	<p class="text-sm text-muted">{m.locked_intro()}</p>
 	<PlainField label={m.locked_paste()}>

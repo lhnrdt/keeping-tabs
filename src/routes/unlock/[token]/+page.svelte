@@ -17,7 +17,7 @@
 
 <AppPage title={m.app_name()}>
 	<div class="flex flex-col items-center gap-3 px-6 pt-10 pb-4 text-center">
-		<ThemeMotif />
+		<ThemeMotif moment="locked" />
 		<h1 class="font-display text-3xl font-semibold">{m.group_password_title()}</h1>
 		<p class="max-w-sm text-muted">{m.group_password_intro()}</p>
 	</div>
