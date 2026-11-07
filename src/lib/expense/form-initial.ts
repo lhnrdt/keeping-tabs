@@ -1,5 +1,6 @@
 // What the expense form starts from for something already saved: as it was typed.
 import { fuelInputValue, odometerInputValue } from '#lib/expense/driving.ts';
+import { isPaidByEach, PAID_BY_EACH } from './paid-by-each';
 import { amountInputValue } from '#lib/money.ts';
 import type { Units } from '#lib/settings.ts';
 import { splitInputValues } from '#lib/split/inputs.ts';
@@ -21,7 +22,7 @@ type Saved = Parameters<typeof splitInputValues>[0] & {
 	category: string | null;
 	items: readonly { name: string; cents: number; memberIds: string[] }[] | null;
 	splitMode: string;
-	splits: readonly { memberId: string }[];
+	splits: readonly { memberId: string; shareCents: number }[];
 };
 
 export const expenseFormValues = (expense: Saved, currency: string, units: Units) => ({
@@ -37,7 +38,7 @@ export const expenseFormValues = (expense: Saved, currency: string, units: Units
 	litres: fuelInputValue(expense.fuelMl, units),
 	date: expense.date,
 	// Several payers (#39): each with what they paid
-	paidBy: expense.payers ? SEVERAL_PAYERS : expense.paidBy,
+	paidBy: isPaidByEach(expense) ? PAID_BY_EACH : expense.payers ? SEVERAL_PAYERS : expense.paidBy,
 	payers: Object.fromEntries(
 		(expense.payers ?? []).map((payer) => [
 			payer.memberId,

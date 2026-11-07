@@ -181,6 +181,9 @@
 									{#snippet after()}
 										{#if expense.yourSide === null}
 											<span class="text-sm text-muted">{m.side_not_involved()}</span>
+										{:else if expense.yourSide === 0 && expense.payers?.length}
+											<!-- Everyone paid their own share (#301) -->
+											<span class="text-sm text-muted">{m.side_paid_own()}</span>
 										{:else if expense.yourSide >= 0}
 											<span class="text-sm font-medium tone-positive tabular-nums">
 												<AnimatedAmount

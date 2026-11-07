@@ -5,6 +5,7 @@ import type { ExpenseCategory } from '#lib/expense/categories.ts';
 import type { GroupKind } from '#lib/group/kinds.ts';
 import type { Accent, Locale, Theme, Units } from '#lib/settings.ts';
 import type { Tint } from '#lib/tints.ts';
+import { FREQUENCIES } from '#lib/expense/recurrence.ts';
 import {
 	check,
 	index,
@@ -383,7 +384,7 @@ export const recurringExpenses = sqliteTable(
 		// The member who set it up; the expenses it adds are theirs
 		memberId: text('member_id').references(() => members.id),
 		template: text('template', { mode: 'json' }).notNull(),
-		frequency: text('frequency', { enum: ['weekly', 'monthly', 'yearly'] }).notNull(),
+		frequency: text('frequency', { enum: FREQUENCIES }).notNull(),
 		// Added this many times; the next one is time number `added` after the first date
 		added: integer('added').notNull().default(1),
 		// When the next one is due, for finding what's due quickly

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { frequencyLabels } from '#lib/expense/frequency-labels.ts';
 	// The group's repeating expenses (#45): what, how much, how often and when next, each with
 	// a red Stop. What they added before stays.
 	import { enhance } from '$app/forms';
@@ -20,11 +21,7 @@
 
 	let { rules, currency, token }: { rules: Rule[]; currency: string; token: string } = $props();
 
-	const every: Record<Frequency, () => string> = {
-		weekly: m.repeats_weekly,
-		monthly: m.repeats_monthly,
-		yearly: m.repeats_yearly
-	};
+	const every = frequencyLabels;
 	const date = (iso: string) =>
 		new Intl.DateTimeFormat(getLocale(), {
 			day: 'numeric',

@@ -60,3 +60,30 @@ test('other groups do not ask for the odometer or fuel', async ({ page }) => {
 	await open(page, `${groupUrl}/expenses/new`);
 	await expect(page.getByLabel('Odometer')).toHaveCount(0);
 });
+
+test('a car group keeps costs everyone already paid, without anyone owing for them (#301)', async ({
+	page
+}) => {
+	const groupUrl = await createGroup(page, 'Family car', 'Anna', ['Ben']);
+	await open(page, `${groupUrl}/expenses/new`);
+	await page.getByLabel('What was it for?').fill('Insurance');
+	await page.getByLabel('Amount (€)').fill('300');
+	await page.getByLabel('Paid by').selectOption({ label: 'Everyone, already paid' });
+	await page.getByLabel('Repeats').selectOption({ label: 'Every 6 months' });
+	await page.getByRole('button', { name: 'Add expense' }).click();
+	await expect(page).toHaveURL(groupUrl);
+
+	// Counted, but nobody owes anybody
+	const row = page.getByRole('link', { name: /Insurance/ });
+	await expect(row).toContainText('already paid');
+	await expect(page.getByRole('banner')).toContainText('all square');
+	await open(page, `${groupUrl}?tab=insights`);
+	await expect(page.locator('body')).toContainText('€300');
+
+	// Repeating every 6 months, and edited as it was entered
+	await open(page, `${groupUrl}?tab=group`);
+	await expect(page.locator('body')).toContainText('Every 6 months');
+	await open(page, groupUrl);
+	await row.click();
+	await expect(page.getByLabel('Paid by')).toHaveValue('each');
+});
