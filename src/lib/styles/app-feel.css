@@ -1,0 +1,25 @@
+/*
+ * An app, not a web page (#321): no text selection, link previews or the browser's own menu when
+ * pressing and holding. Holding an entry opens its own menu instead (EntryMenu). What's typed, and
+ * text marked `selectable`, can still be selected and copied.
+ */
+html {
+	-webkit-user-select: none;
+	user-select: none;
+	-webkit-touch-callout: none;
+	-webkit-tap-highlight-color: transparent;
+}
+input,
+textarea,
+[contenteditable],
+.selectable,
+.selectable * {
+	-webkit-user-select: text;
+	user-select: text;
+	-webkit-touch-callout: default;
+}
+/* Pictures and links can't be dragged out of the app */
+img,
+a {
+	-webkit-user-drag: none;
+}

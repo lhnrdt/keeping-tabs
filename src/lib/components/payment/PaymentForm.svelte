@@ -61,7 +61,9 @@
 		{#if details}
 			<div class="flex flex-col gap-2 rounded-xl bg-current/[0.07] p-3.5" transition:calmSlide>
 				<p class="text-sm text-muted">{m.payment_details_of({ name: toName })}</p>
-				<p class="font-medium break-words select-all" data-testid="payment-details">{details}</p>
+				<p class="selectable font-medium break-words select-all" data-testid="payment-details">
+					{details}
+				</p>
 				<CopyButton text={details} label={m.copy()} />
 			</div>
 		{/if}

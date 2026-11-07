@@ -17,6 +17,11 @@ export const CHANGELOG: ChangelogEntry[] = [
 		date: '2026-11-07',
 		items: [
 			{
+				icon: 'fast',
+				en: 'Press and hold an expense, payment, group, comment or repeating expense (or right click it) for what you can do with it. It feels more like an app now: no more selecting text or link previews by accident.',
+				de: 'Halte eine Ausgabe, Zahlung, Gruppe, einen Kommentar oder eine wiederkehrende Ausgabe gedrückt (oder klick mit rechts) für alles, was du damit tun kannst. Es fühlt sich jetzt mehr wie eine App an: kein versehentliches Markieren von Text und keine Link-Vorschauen mehr.'
+			},
+			{
 				icon: 'notifications',
 				en: 'Notifications for more: a payment to you, a changed or deleted expense, comments and people joining. Choose which ones you want in Settings.',
 				de: 'Benachrichtigungen für mehr: eine Zahlung an dich, geänderte oder gelöschte Ausgaben, Kommentare und neue Leute in der Gruppe. Welche du willst, wählst du in den Einstellungen.'
