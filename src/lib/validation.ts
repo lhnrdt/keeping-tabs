@@ -5,6 +5,7 @@ import { isSealed } from './crypto/seal';
 import { parseFuel, parseOdometer } from './expense/driving';
 import { convert, parseRate, type Original } from './expense/exchange';
 import type { Payer } from './expense/payers';
+import { PAID_BY_EACH, payersFromShares } from './expense/paid-by-each';
 import { parseAmount } from './money';
 import { ITEMS_MODE, itemShares, parseItems, type ExpenseItem } from './split/items';
 import { computeShares, type Share, type SplitEntry } from './split/compute';
@@ -219,11 +220,11 @@ export function parseExpense(
 	const date = parseDate(values.date);
 	if (!date.ok) return date;
 
-	const payers = parsePayers(values, amountCents, group);
-	if (!payers.ok) return payers;
-
 	const split = parseExpenseSplit(values, amountCents, original, group);
 	if (!split.ok) return split;
+
+	const payers = parsePayers(values, amountCents, group, split.value.shares);
+	if (!payers.ok) return payers;
 
 	const category = parseCategory(values.category);
 	if (!category.ok) return category;
@@ -296,9 +297,16 @@ export const SEVERAL_PAYERS = 'several';
 function parsePayers(
 	values: { paidBy: unknown; payers?: Record<string, unknown> },
 	amountCents: number,
-	group: { memberIds: readonly string[]; currency: string }
+	group: { memberIds: readonly string[]; currency: string },
+	shares: readonly Share[]
 ): Result<{ paidBy: string; payers: Payer[] | null }> {
 	const paidBy = normalizeText(values.paidBy);
+	// Everyone already paid their share (#301): nobody owes anybody for it
+	if (paidBy === PAID_BY_EACH) {
+		const each = payersFromShares(shares);
+		if (each.length === 0) return { ok: false, error: 'payer_invalid' };
+		return { ok: true, value: { paidBy: each[0].memberId, payers: each.length > 1 ? each : null } };
+	}
 	if (paidBy !== SEVERAL_PAYERS) {
 		return group.memberIds.includes(paidBy)
 			? { ok: true, value: { paidBy, payers: null } }

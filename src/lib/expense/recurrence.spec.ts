@@ -19,3 +19,11 @@ describe('recurrence (#45)', () => {
 		expect(dueTimes('2026-08-01', 'monthly', 3, '2026-10-27')).toEqual([]);
 	});
 });
+
+describe('every quarter and half year (#301)', () => {
+	it('keeps the day, months apart', () => {
+		expect(occurrence('2026-01-31', 'quarterly', 1)).toBe('2026-04-30');
+		expect(occurrence('2026-03-15', 'halfYearly', 1)).toBe('2026-09-15');
+		expect(occurrence('2026-03-15', 'halfYearly', 2)).toBe('2027-03-15');
+	});
+});
