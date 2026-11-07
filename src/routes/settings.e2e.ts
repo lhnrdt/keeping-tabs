@@ -145,3 +145,33 @@ test('choose an avatar and see it wherever you appear (#61)', async ({ page }) =
 	await open(page, '/');
 	await expect(page.getByRole('link', { name: 'Anna', exact: true }).locator('svg')).toBeVisible();
 });
+
+test('draw your own avatar, and see it wherever you appear (#158)', async ({ page }) => {
+	const groupUrl = await createGroup(page, 'Trip', 'Anna', ['Ben']);
+	await open(page, '/you/profile');
+	await page.getByRole('group', { name: 'Picture' }).getByTitle('Draw your own').click();
+	const pad = page.getByRole('img', { name: 'Drawing area' });
+	await pad.scrollIntoViewIfNeeded();
+	const box = (await pad.boundingBox())!;
+	await page.mouse.move(box.x + box.width * 0.3, box.y + box.height * 0.3);
+	await page.mouse.down();
+	await page.mouse.move(box.x + box.width * 0.5, box.y + box.height * 0.6, { steps: 8 });
+	await page.mouse.move(box.x + box.width * 0.7, box.y + box.height * 0.3, { steps: 8 });
+	await page.mouse.up();
+	await expect(page.getByText('Saved').first()).toBeVisible();
+
+	// Kept, and shown in the group as a line drawing
+	await open(page, `${groupUrl}?tab=group`);
+	const anna = page
+		.getByRole('list', { name: 'Members' })
+		.locator('li')
+		.filter({ hasText: 'Anna' });
+	await expect(anna.locator('svg path')).toHaveAttribute('d', /^M\d+ \d+L/);
+
+	// Only lines get through, whatever's sent
+	const refused = await page.request.post('/you/profile?/avatar', {
+		headers: { origin: new URL(groupUrl).origin },
+		form: { icon: 'drawn', tint: 'sky', width: '1', drawing: 'M1 1"/><script>alert(1)</script>' }
+	});
+	expect(await refused.text()).toContain('settings_invalid');
+});
