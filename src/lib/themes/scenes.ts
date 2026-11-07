@@ -15,10 +15,31 @@ export type Shape = {
 	/** Soft white, in light and dark */
 	snow?: boolean;
 	motion?: SceneMotion;
+	/** The sun, which the moon takes the place of at night (time-of-day.ts) */
+	sun?: { x: number; y: number; r: number };
 };
-export type Line = { d: string; strength: number; motion?: SceneMotion };
+export type Line = {
+	d: string;
+	strength: number;
+	motion?: SceneMotion;
+	/** A sun's rays: gone at night */
+	rays?: boolean;
+};
 export type Dot = [x: number, y: number, r: number, strength: number];
-export type Scene = { shapes: Shape[]; lines?: Line[]; dots?: Dot[] };
+export type Scene = {
+	shapes: Shape[];
+	lines?: Line[];
+	dots?: Dot[];
+	/** Already a night sky, at any time of day */
+	night?: boolean;
+};
+
+/** A round sun at x, y */
+const sun = (x: number, y: number, r: number, strength: number): Shape => ({
+	d: `M${x - r} ${y}a${r} ${r} 0 1 1 ${r * 2} 0a${r} ${r} 0 1 1 ${-r * 2} 0Z`,
+	strength,
+	sun: { x, y, r }
+});
 
 /** A filled pine, standing on y, h tall */
 const pine = (x: number, y: number, h: number) => {
@@ -125,7 +146,7 @@ export const SCENES: Record<ThemeId, Scene> = {
 	},
 	meadow: {
 		shapes: [
-			{ d: 'M322 62a26 26 0 1 1 52 0a26 26 0 1 1 -52 0Z', strength: 0.35 },
+			sun(348, 62, 26, 0.35),
 			{ d: 'M195 200C250 150 330 134 400 142V200Z', strength: 0.35 },
 			{ d: 'M250 200C300 170 350 164 400 172V200Z', strength: 0.65 }
 		],
@@ -142,7 +163,7 @@ export const SCENES: Record<ThemeId, Scene> = {
 	},
 	coast: {
 		shapes: [
-			{ d: 'M250 44a18 18 0 1 1 36 0a18 18 0 1 1 -36 0Z', strength: 0.3 },
+			sun(268, 44, 18, 0.3),
 			{ d: 'M300 200L318 150L352 134L400 128V200Z', strength: 0.6 },
 			{ d: 'M352 134L356 72H374L378 134Z', strength: 0.8 },
 			{ d: 'M354 92H376L377 106H353Z', strength: 1, cut: true },
@@ -155,6 +176,7 @@ export const SCENES: Record<ThemeId, Scene> = {
 		]
 	},
 	aurora: {
+		night: true,
 		shapes: [
 			{
 				d: 'M250 0C262 40 244 80 262 124L292 110C278 72 296 36 284 0Z',

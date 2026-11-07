@@ -4,6 +4,8 @@
 	import { GROUP_SETTLED, GROUP_SUBJECTS, LANDSCAPE_STRENGTH } from '#lib/themes/group-subjects.ts';
 	import { SCENES, type Scene } from '#lib/themes/scenes.ts';
 	import { useTheme } from '#lib/themes/current.svelte.ts';
+	import { atNight, hasSun, isNight, moonForSun } from '#lib/themes/time-of-day.ts';
+	import { onMount } from 'svelte';
 
 	type Props = {
 		kind?: GroupKind;
@@ -19,15 +21,24 @@
 	const SNOW_STRENGTH = 0.6;
 
 	const theme = useTheme();
+	// The visitor's own time of day, so only once in the browser
+	let night = $state(false);
+	onMount(() => (night = isNight(new Date().getHours())));
+	const moment = $derived(kind && settled ? GROUP_SETTLED[kind] : undefined);
+	const landscape = $derived(
+		night ? atNight(SCENES[theme.id], { ownMoon: !(moment && hasSun(moment)) }) : SCENES[theme.id]
+	);
 	/** Back to front, each at its strength */
 	const layers: { scene: Scene; strength: number; moment?: boolean }[] = $derived(
 		kind
 			? [
-					{ scene: SCENES[theme.id], strength: LANDSCAPE_STRENGTH },
+					{ scene: landscape, strength: LANDSCAPE_STRENGTH },
 					{ scene: GROUP_SUBJECTS[kind], strength: 1 },
-					...(settled ? [{ scene: GROUP_SETTLED[kind], strength: 1, moment: true }] : [])
+					...(moment
+						? [{ scene: night ? moonForSun(moment) : moment, strength: 1, moment: true }]
+						: [])
 				]
-			: [{ scene: SCENES[theme.id], strength: 1 }]
+			: [{ scene: landscape, strength: 1 }]
 	);
 </script>
 
