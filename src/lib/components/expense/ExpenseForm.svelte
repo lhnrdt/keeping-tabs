@@ -163,6 +163,7 @@
 	{offlineToken}
 	sealed={['title', 'notes', 'items']}
 	sealRow={expenseId ?? clientId}
+	announce={expenseId ? 'changed' : undefined}
 	onSaved={offlineToken ? afterSaving : undefined}
 >
 	{#if offlineToken}<input type="hidden" name="clientId" value={clientId} />{/if}

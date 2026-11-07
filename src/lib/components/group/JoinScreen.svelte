@@ -78,6 +78,7 @@
 	<form
 		method="POST"
 		action={`${resolve('/g/[token]', { token: group.shareToken })}?/join`}
+		data-announce="joined"
 		use:enhance={sealing(['name'], submission.enhance)}
 	>
 		{#if open.length}

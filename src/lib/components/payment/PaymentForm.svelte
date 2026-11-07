@@ -35,7 +35,13 @@
 	const toName = $derived(members.find((member) => member.id === to)?.name ?? '');
 </script>
 
-<GroupForm {error} {submitLabel} sealed={['payment']} sealRow={paymentId ?? clientId}>
+<GroupForm
+	{error}
+	{submitLabel}
+	sealed={['payment']}
+	sealRow={paymentId ?? clientId}
+	announce={paymentId ? undefined : 'payment'}
+>
 	<input type="hidden" name="clientId" value={paymentId ? '' : clientId} />
 	<div class="page-sections">
 		<div

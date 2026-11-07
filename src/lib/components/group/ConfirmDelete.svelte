@@ -13,13 +13,15 @@
 		title?: string;
 		/** Form action URL, e.g. "?/delete" or tabAction() */
 		action: string;
+		/** What to tell the group about once it's done (#267) */
+		announce?: string;
 		confirmLabel?: string;
 		/** Runs when the form is submitted, before the server answers */
 		onSubmit?: () => void;
 		children: Snippet;
 	};
 
-	let { label, title, action, confirmLabel, onSubmit, children }: Props = $props();
+	let { label, title, action, announce, confirmLabel, onSubmit, children }: Props = $props();
 
 	let confirming = $state(false);
 </script>
@@ -42,6 +44,7 @@
 	opened={confirming}
 	title={title ?? label}
 	{action}
+	{announce}
 	submitLabel={confirmLabel ?? m.delete_confirm()}
 	destructive
 	{onSubmit}

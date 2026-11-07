@@ -5,9 +5,25 @@
 	// why (no support, blocked, an iPhone outside the home screen).
 	import { Toggle } from 'konsta/svelte';
 	import { onMount } from 'svelte';
+	import { SvelteSet } from 'svelte/reactivity';
 	import { m } from '#lib/paraglide/messages.js';
+	import { KIND_LABELS, KINDS, type Kind } from '#lib/push/kinds.ts';
 
-	let { publicKey }: { publicKey: string | null } = $props();
+	let { publicKey, muted = [] }: { publicKey: string | null; muted?: readonly string[] } = $props();
+
+	// Which kinds, while it's on (#267): saved as soon as one changes
+	// As loaded; then this page's own choice
+	const initialMuted = () => [...muted];
+	const off = new SvelteSet<string>(initialMuted());
+	function choose(kind: Kind, on: boolean) {
+		if (on) off.delete(kind);
+		else off.add(kind);
+		void fetch('/device/push/kinds', {
+			method: 'POST',
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify({ muted: [...off] })
+		}).catch(() => {});
+	}
 
 	const WORKER_WAIT_MS = 4000;
 
@@ -148,6 +164,20 @@
 	</p>
 	{#if problem}<p class="text-sm tone-destructive" role="alert">{problem}</p>{/if}
 	{#if status === 'on'}
+		<fieldset class="mt-1 flex flex-col">
+			<legend class="field-label mb-1">{m.push_kinds()}</legend>
+			{#each KINDS as kind (kind)}
+				<label class="flex min-h-11 cursor-pointer items-center gap-3">
+					<input
+						type="checkbox"
+						class="size-[18px] shrink-0 accent-accent dark:accent-accent-night"
+						checked={!off.has(kind)}
+						onchange={(event) => choose(kind, event.currentTarget.checked)}
+					/>
+					{KIND_LABELS[kind]()}
+				</label>
+			{/each}
+		</fieldset>
 		<button
 			type="button"
 			class="min-h-11 self-start text-sm font-medium text-accent dark:text-accent-night"

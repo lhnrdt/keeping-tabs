@@ -23,6 +23,8 @@
 		sealed?: readonly string[];
 		/** The row they're for, when it's known */
 		sealRow?: string;
+		/** What to tell the group about once it's saved (#267), e.g. "payment" */
+		announce?: string;
 		/** Runs once it's saved, before moving on; can name a different page to go to */
 		onSaved?: () => Promise<string | void>;
 		children: Snippet;
@@ -34,6 +36,7 @@
 		offlineToken,
 		sealed = [],
 		sealRow,
+		announce,
 		onSaved,
 		children
 	}: Props = $props();
@@ -90,6 +93,7 @@
 <form
 	method="POST"
 	action="?/save"
+	data-announce={announce}
 	use:enhance={(input) => {
 		// As typed, for the list of what's waiting to be sent; what's sent may be sealed
 		typed = new FormData(input.formElement);

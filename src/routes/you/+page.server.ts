@@ -27,7 +27,7 @@ import {
 	setThemeCookie,
 	setUnitsCookie
 } from '#lib/server/settings.ts';
-import { pushPublicKey } from '#lib/server/push.ts';
+import { mutedKinds, pushPublicKey } from '#lib/server/push.ts';
 import { RATE_CURRENCIES } from '#lib/expense/exchange.ts';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -52,7 +52,8 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
 		accent: isAccent(accent) ? accent : (person?.accent ?? DEFAULT_ACCENT),
 		avatar: person?.avatar ?? null,
 		// Notifications (#56), when this environment has its keys
-		pushPublicKey: pushPublicKey()
+		pushPublicKey: pushPublicKey(),
+		pushMuted: mutedKinds(person?.pushMuted)
 	};
 };
 
