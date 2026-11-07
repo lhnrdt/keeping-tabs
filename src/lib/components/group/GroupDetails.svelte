@@ -1,12 +1,9 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-	import { sealing } from '#lib/crypto/seal-form.ts';
 	import { resolve } from '$app/paths';
 	import { List, ListButton, ListItem } from 'konsta/svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import { kindLabels, tintLabels } from '#lib/group/kind-style.ts';
 	import type { GroupKind } from '#lib/group/kinds.ts';
-	import { tabAction } from '#lib/group/tabs.ts';
 	import { m } from '#lib/paraglide/messages.js';
 
 	import type { Member } from '#lib/group/members.ts';
@@ -71,24 +68,14 @@
 		after={group.tint ? tintLabels[group.tint]() : m.tint_auto()}
 	/>
 	<ListItem title={m.field_currency()} after={group.currency} />
-	{#if group.defaultSplit}
-		<ListItem strongTitle={false} title={m.field_default_split()} text={splitText}>
-			{#snippet after()}
-				<!-- Back to an equal split for new expenses (red, like every reset) -->
-				<form
-					method="POST"
-					action={tabAction('clearDefaultSplit', 'group')}
-					use:enhance={sealing(['clearDefaultSplit'])}
-				>
-					<button type="submit" class="text-sm font-medium tone-destructive"
-						>{m.default_split_reset()}</button
-					>
-				</form>
-			{/snippet}
-		</ListItem>
-	{:else}
-		<ListItem title={m.field_default_split()} after={m.default_split_equal()} />
-	{/if}
+	<ListItem
+		link
+		href={resolve('/g/[token]/split', { token: group.shareToken })}
+		strongTitle={false}
+		title={m.field_default_split()}
+		text={group.defaultSplit ? splitText : undefined}
+		after={group.defaultSplit ? undefined : m.default_split_equal()}
+	/>
 	<ListItem
 		link
 		title={m.field_group_password()}
