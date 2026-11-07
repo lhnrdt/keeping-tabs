@@ -141,9 +141,13 @@ export const GROUP_SUBJECTS: Record<GroupKind, Scene> = {
 };
 
 const sun = (x: number, y: number): Scene => ({
-	shapes: [{ d: disc(x, y, 13), strength: 0.9, motion: 'pulse' }],
+	shapes: [{ d: disc(x, y, 13), strength: 0.9, motion: 'pulse', sun: { x, y, r: 13 } }],
 	lines: [
-		{ d: `M${x} ${y - 20}v-7M${x} ${y + 20}v7M${x - 20} ${y}h-7M${x + 20} ${y}h7`, strength: 0.8 }
+		{
+			d: `M${x} ${y - 20}v-7M${x} ${y + 20}v7M${x - 20} ${y}h-7M${x + 20} ${y}h7`,
+			strength: 0.8,
+			rays: true
+		}
 	]
 });
 

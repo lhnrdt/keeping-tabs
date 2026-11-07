@@ -73,6 +73,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
 				`${groupUrl}/encrypt`,
 				`${groupUrl}/password`,
 				`${groupUrl}/budget`,
+				`${groupUrl}/split`,
 				`${groupUrl}/customize-insights`,
 				`${groupUrl}/import`
 			]) {

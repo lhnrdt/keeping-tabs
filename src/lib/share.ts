@@ -31,3 +31,24 @@ export async function shareText(text: string): Promise<'shared' | 'copied' | 'fa
 	}
 	return (await copyText(text)) ? 'copied' : 'failed';
 }
+
+/**
+ * Shares a picture through the system share sheet where it takes files (#291), otherwise saves it.
+ * Returns "saved" when it was downloaded instead.
+ */
+export async function shareFile(blob: Blob, name: string): Promise<'shared' | 'saved'> {
+	const file = new File([blob], name, { type: blob.type });
+	if (navigator.canShare?.({ files: [file] })) {
+		try {
+			await navigator.share({ files: [file] });
+		} catch {
+			// Dismissed by the user
+		}
+		return 'shared';
+	}
+	const url = URL.createObjectURL(blob);
+	const link = Object.assign(document.createElement('a'), { href: url, download: name });
+	link.click();
+	setTimeout(() => URL.revokeObjectURL(url), 1000);
+	return 'saved';
+}

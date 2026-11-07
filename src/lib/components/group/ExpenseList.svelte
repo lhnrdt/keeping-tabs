@@ -6,6 +6,8 @@
 	import IconBadge from '#lib/components/IconBadge.svelte';
 	import AnimatedAmount from '#lib/components/AnimatedAmount.svelte';
 	import { whenVisible } from '#lib/actions/when-visible.ts';
+	import { entryOf, longPress } from '#lib/actions/long-press.ts';
+	import EntryMenu, { type MenuItem } from '#lib/components/EntryMenu.svelte';
 
 	import { categoryIcons } from '#lib/expense/category-style.ts';
 	import { formatDistance, formatFuel } from '#lib/expense/driving.ts';
@@ -134,10 +136,29 @@
 		entry.type === 'payment'
 			? resolve('/g/[token]/payments/[id]', { token, id: entry.id })
 			: resolve('/g/[token]/expenses/[id]', { token, id: entry.id });
+
+	// Press and hold an entry: what to do with it
+	let held = $state<Entry | null>(null);
+	const menuItems = (entry: Entry): MenuItem[] => {
+		const payment = entry.type === 'payment';
+		return [
+			{ label: payment ? m.edit_payment() : m.edit_expense(), href: hrefOf(entry) },
+			{
+				label: payment ? m.delete_payment() : m.delete_expense(),
+				action: `${hrefOf(entry)}?/delete`,
+				announce: payment ? undefined : 'changed',
+				destructive: true
+			}
+		];
+	};
+	const hold = (target: Element) => {
+		const id = entryOf(target);
+		held = loaded.find((entry) => entry.id === id) ?? null;
+	};
 </script>
 
 {#if expenses.length}
-	<section class="rows-rise" aria-label={m.expenses_title()}>
+	<section class="rows-rise" aria-label={m.expenses_title()} use:longPress={hold}>
 		{#each months as group (group.month)}
 			<h3 class="mx-8 mt-6 mb-2 text-sm font-medium text-muted first:mt-2">
 				{formatMonth(group.month)}
@@ -148,7 +169,7 @@
 						{@const payment = run[0]}
 						<!-- Money that changed hands, not something bought: not in a card with the expenses -->
 						<ul class="mx-4">
-							<li style={transitionName('expense', payment.id)}>
+							<li style={transitionName('expense', payment.id)} data-entry={payment.id}>
 								<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- resolved in hrefOf -->
 								<a
 									href={hrefOf(payment)}
@@ -174,6 +195,7 @@
 									title={titleOf(expense)}
 									subtitle={subtitleOf(expense)}
 									style={transitionName('expense', expense.id)}
+									data-entry={expense.id}
 								>
 									{#snippet media()}
 										<IconBadge name={categoryIcons[expense.category ?? 'other']} />
@@ -181,6 +203,9 @@
 									{#snippet after()}
 										{#if expense.yourSide === null}
 											<span class="text-sm text-muted">{m.side_not_involved()}</span>
+										{:else if expense.yourSide === 0 && expense.payers?.length}
+											<!-- Everyone paid their own share (#301) -->
+											<span class="text-sm text-muted">{m.side_paid_own()}</span>
 										{:else if expense.yourSide >= 0}
 											<span class="text-sm font-medium tone-positive tabular-nums">
 												<AnimatedAmount
@@ -236,3 +261,9 @@
 {:else}
 	<EmptyState text={query ? m.search_none({ query }) : m.expenses_empty()} />
 {/if}
+
+<EntryMenu
+	title={held ? titleOf(held) : null}
+	items={held ? menuItems(held) : []}
+	onClose={() => (held = null)}
+/>

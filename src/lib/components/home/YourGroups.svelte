@@ -6,6 +6,8 @@
 	import GroupTile from '#lib/components/GroupTile.svelte';
 	import YourBalance from '#lib/components/YourBalance.svelte';
 	import { onMount } from 'svelte';
+	import { entryOf, longPress } from '#lib/actions/long-press.ts';
+	import EntryMenu from '#lib/components/EntryMenu.svelte';
 	import { todayInputValue } from '#lib/dates.ts';
 	import { openDeep } from '#lib/crypto/open-data.ts';
 	import { getRecentGroups } from '#lib/device.ts';
@@ -42,6 +44,13 @@
 	const active = $derived(groups.filter((group) => !isSettled(group)));
 	const settled = $derived(groups.filter(isSettled));
 
+	// Press and hold a group: straight to what you'd do there
+	let held = $state<(typeof groups)[number] | null>(null);
+	const hold = (target: Element) => {
+		const id = entryOf(target);
+		held = groups.find((group) => group.id === id) ?? null;
+	};
+
 	onMount(() => {
 		// What's remembered may have been kept sealed by an earlier version (#110)
 		void openDeep(getRecentGroups()).then((groups) => (local = groups));
@@ -57,7 +66,12 @@
 </script>
 
 {#snippet row(group: (typeof groups)[number])}
-	<ListItem link title={group.name} href={resolve('/g/[token]', { token: group.token })}>
+	<ListItem
+		link
+		title={group.name}
+		href={resolve('/g/[token]', { token: group.token })}
+		data-entry={group.id}
+	>
 		{#snippet media()}
 			<GroupTile kind={group.kind} tint={group.tint} />
 		{/snippet}
@@ -85,7 +99,7 @@
 {/snippet}
 
 {#if groups.length}
-	<section class="rows-rise" aria-labelledby="your-groups">
+	<section class="rows-rise" aria-labelledby="your-groups" use:longPress={hold}>
 		<BlockTitle id="your-groups">{m.home_your_groups()}</BlockTitle>
 		{#if active.length}
 			<List strong inset>
@@ -104,6 +118,26 @@
 			</Fold>
 		{/if}
 	</section>
+	<EntryMenu
+		title={held?.name ?? null}
+		items={held
+			? [
+					{
+						label: m.add_expense(),
+						href: resolve('/g/[token]/expenses/new', { token: held.token })
+					},
+					{
+						label: m.tab_balances(),
+						href: `${resolve('/g/[token]', { token: held.token })}?tab=balances`
+					},
+					{
+						label: m.tab_insights(),
+						href: `${resolve('/g/[token]', { token: held.token })}?tab=insights`
+					}
+				]
+			: []}
+		onClose={() => (held = null)}
+	/>
 {:else if mounted}
 	<!-- Only once this browser's own list is known, so returning visitors don't see a flash -->
 	<EmptyState text={m.home_empty()} />

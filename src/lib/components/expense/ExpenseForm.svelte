@@ -22,6 +22,9 @@
 	import { ITEMS_MODE } from '#lib/split/items.ts';
 	import { isSplitMode, SPLIT_MODES, type SplitMode } from '#lib/split/modes.ts';
 	import { SEVERAL_PAYERS } from '#lib/validation.ts';
+	import { PAID_BY_EACH } from '#lib/expense/paid-by-each.ts';
+	import { frequencyLabels } from '#lib/expense/frequency-labels.ts';
+	import { FREQUENCIES } from '#lib/expense/recurrence.ts';
 	import AmountCurrencyField from './AmountCurrencyField.svelte';
 	import DateChips from './DateChips.svelte';
 	import DrivingFields from './DrivingFields.svelte';
@@ -160,6 +163,7 @@
 	{offlineToken}
 	sealed={['title', 'notes', 'items']}
 	sealRow={expenseId ?? clientId}
+	announce={expenseId ? 'changed' : undefined}
 	onSaved={offlineToken ? afterSaving : undefined}
 >
 	{#if offlineToken}<input type="hidden" name="clientId" value={clientId} />{/if}
@@ -187,6 +191,7 @@
 							<option value={member.id}>{member.name}</option>
 						{/each}
 						<option value={SEVERAL_PAYERS}>{m.payers_several()}</option>
+						<option value={PAID_BY_EACH}>{m.payers_each()}</option>
 					</select>
 				{/snippet}
 			</PlainField>
@@ -255,9 +260,9 @@
 				{#snippet children(id)}
 					<select {id} name="repeats" value={repeats ?? ''}>
 						{#if !repeats}<option value="">{m.repeats_never()}</option>{/if}
-						<option value="weekly">{m.repeats_weekly()}</option>
-						<option value="monthly">{m.repeats_monthly()}</option>
-						<option value="yearly">{m.repeats_yearly()}</option>
+						{#each FREQUENCIES as frequency (frequency)}
+							<option value={frequency}>{frequencyLabels[frequency]()}</option>
+						{/each}
 					</select>
 				{/snippet}
 			</PlainField>

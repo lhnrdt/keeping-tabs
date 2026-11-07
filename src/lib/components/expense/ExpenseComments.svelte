@@ -2,6 +2,9 @@
 	// A short conversation under an expense (#49): "Was the tip included?". Oldest first, each
 	// with who wrote it and when; your own have a red Remove. Only members can write.
 	import { enhance } from '$app/forms';
+	import { entryOf, longPress } from '#lib/actions/long-press.ts';
+	import EntryMenu, { type MenuItem } from '#lib/components/EntryMenu.svelte';
+	import { copyText } from '#lib/clipboard.ts';
 	import Avatar from '#lib/components/Avatar.svelte';
 	import FormError from '#lib/components/FormError.svelte';
 	import PlainField from '#lib/components/fields/PlainField.svelte';
@@ -33,15 +36,41 @@
 	const when = (date: Date) =>
 		new Intl.DateTimeFormat(getLocale(), { dateStyle: 'medium', timeStyle: 'short' }).format(date);
 	let sending = $state(false);
+
+	// Press and hold a comment: copy it, or take back your own
+	let held = $state<(typeof comments)[number] | null>(null);
+	const hold = (target: Element) => {
+		const id = entryOf(target);
+		held = comments.find((comment) => comment.id === id) ?? null;
+	};
+	const menuItems = (comment: (typeof comments)[number]): MenuItem[] => [
+		{ label: m.copy(), onclick: () => void copyText(comment.body) },
+		...(comment.memberId === me
+			? [
+					{
+						label: m.comment_remove(),
+						action: '?/uncomment',
+						fields: { commentId: comment.id },
+						destructive: true
+					}
+				]
+			: [])
+	];
 </script>
+
+<EntryMenu
+	title={held ? (byId.get(held.memberId)?.name ?? '?') : null}
+	items={held ? menuItems(held) : []}
+	onClose={() => (held = null)}
+/>
 
 <section class="flex flex-col gap-3 px-4 pt-4" aria-label={m.comments_title()}>
 	<h2 class="field-label">{m.comments_title()}</h2>
 	{#if comments.length}
-		<ul class="flex flex-col gap-3">
+		<ul class="flex flex-col gap-3" use:longPress={hold}>
 			{#each comments as comment (comment.id)}
 				{@const author = byId.get(comment.memberId)}
-				<li class="flex gap-3" transition:calmSlide animate:calmMove>
+				<li class="flex gap-3" data-entry={comment.id} transition:calmSlide animate:calmMove>
 					<Avatar
 						id={author?.avatarId ?? comment.memberId}
 						name={author?.name ?? '?'}
@@ -53,7 +82,7 @@
 							<span class="font-medium">{author?.name ?? '?'}</span>
 							<span class="text-xs text-muted">{when(comment.createdAt)}</span>
 						</p>
-						<p class="text-sm break-words whitespace-pre-line">{comment.body}</p>
+						<p class="selectable text-sm break-words whitespace-pre-line">{comment.body}</p>
 					</div>
 					{#if comment.memberId === me}
 						<form method="POST" action="?/uncomment" use:enhance>
@@ -74,6 +103,7 @@
 		<form
 			method="POST"
 			action="?/comment"
+			data-announce="comment"
 			class="flex flex-col gap-2"
 			use:enhance={(input) => {
 				// Its id, made here: its sealed text says it belongs to this comment

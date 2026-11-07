@@ -7,7 +7,13 @@
 	import { categoryLabels } from '#lib/expense/category-style.ts';
 	import { shownAmount } from '#lib/shown-money.ts';
 	import { m } from '#lib/paraglide/messages.js';
-	import { shareText } from '#lib/share.ts';
+	import { shareFile, shareText } from '#lib/share.ts';
+	import { page } from '$app/state';
+	import type { GroupKind } from '#lib/group/kinds.ts';
+	import { recapPoster } from '#lib/insights/recap-poster.ts';
+	import { useTheme } from '#lib/themes/current.svelte.ts';
+	import { GROUP_SUBJECTS, LANDSCAPE_STRENGTH } from '#lib/themes/group-subjects.ts';
+	import { SCENES } from '#lib/themes/scenes.ts';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import type { Recap } from '#lib/insights/recap.ts';
 
@@ -42,6 +48,46 @@
 		{ label: m.insights_per_day(), value: money(recap.perDay) },
 		{ label: m.insights_expenses(), value: String(recap.count) }
 	]);
+
+	const theme = useTheme();
+	const kind: GroupKind | undefined = $derived(page.data.group?.kind);
+
+	/** As a picture (#291): the group's scene in its header's colors, with the numbers */
+	let saved = $state(false);
+	async function sharePicture() {
+		const header = document.querySelector('header.tint-theme') ?? document.documentElement;
+		const style = getComputedStyle(header);
+		const root = getComputedStyle(document.documentElement);
+		const read = (name: string, fallback: string) =>
+			style.getPropertyValue(name).trim() || fallback;
+		const blob = await recapPoster(
+			kind
+				? [
+						{ scene: SCENES[theme.id], strength: LANDSCAPE_STRENGTH },
+						{ scene: GROUP_SUBJECTS[kind], strength: 1 }
+					]
+				: [{ scene: SCENES[theme.id], strength: 1 }],
+			{
+				background: read('--tint-bg', '#e3eae5'),
+				line: read('--tint-line', '#2b5a3f'),
+				text: read('--tint-fg', '#1f3327')
+			},
+			{
+				app: m.app_name(),
+				name,
+				dates,
+				total: money(recap.total),
+				lines: numbers.map((number) => `${number.label}: ${number.value}`)
+			},
+			{
+				display: root.getPropertyValue('--font-display').trim() || 'serif',
+				body: root.getPropertyValue('--font-ios').trim() || 'sans-serif'
+			}
+		);
+		if ((await shareFile(blob, `${name}.png`)) !== 'saved') return;
+		saved = true;
+		setTimeout(() => (saved = false), 2000);
+	}
 
 	let copied = $state(false);
 	async function share() {
@@ -95,8 +141,14 @@
 			{/if}
 		</ul>
 	{/if}
-	<Button rounded tonal small type="button" class="mt-4 gap-1.5" onclick={share}>
-		<Icon name={copied ? 'check' : 'share'} size={16} />
-		<span aria-live="polite">{copied ? m.copied() : m.recap_share()}</span>
-	</Button>
+	<div class="mt-4 flex flex-wrap gap-2">
+		<Button rounded tonal small inline type="button" class="gap-1.5" onclick={share}>
+			<Icon name={copied ? 'check' : 'share'} size={16} />
+			<span aria-live="polite">{copied ? m.copied() : m.recap_share()}</span>
+		</Button>
+		<Button rounded tonal small inline type="button" class="gap-1.5" onclick={sharePicture}>
+			<Icon name={saved ? 'check' : 'photo'} size={16} />
+			<span aria-live="polite">{saved ? m.recap_picture_saved() : m.recap_share_picture()}</span>
+		</Button>
+	</div>
 </article>

@@ -2,6 +2,7 @@
 // before sending, so the server only ever sees them sealed. If the server sends them back with
 // a refusal, they're opened again for the form.
 import { applyAction, type SubmitFunction } from '$app/forms';
+import { announceEvent } from '#lib/push/announce-event.ts';
 import { invalidateAll } from '$app/navigation';
 import { page } from '$app/state';
 import { m } from '#lib/paraglide/messages.js';
@@ -15,6 +16,10 @@ import type { GroupKind } from '#lib/group/kinds.ts';
 import { choiceToStore, isSection } from '#lib/insights/sections.ts';
 import { parseAmount } from '#lib/money.ts';
 import { defaultFrom } from '#lib/split/default-split.ts';
+import { keptEqualShares } from '#lib/split/kept-cents.ts';
+import { parseDefaultSplitForm } from '#lib/split/default-split-form.ts';
+import { readSplitInputs } from '#lib/split/form.ts';
+import { entryCurrencyOf } from '#lib/expense/exchange.ts';
 import {
 	normalizeText,
 	parseDate,
@@ -92,7 +97,10 @@ async function sealExpense(form: FormData, key: string, row: string): Promise<Re
 	const values = expenseValues(form, String(form.get('rate') ?? ''));
 	const parsed = parseExpense(values, { memberIds: groupMemberIds(), currency: groupCurrency() });
 	if (!parsed.ok) return { error: parsed.error, values };
-	const input = parsed.value;
+	// Editing: an unchanged equal split keeps its cents where they were (#303)
+	const before = page.data.expense as
+		(Parameters<typeof keptEqualShares>[1] & { id?: string }) | undefined;
+	const input = keptEqualShares(parsed.value, before?.id === row ? before : null);
 	const details = detailsFromInput(input, String(form.get('autoCategory') ?? '') || null);
 	const defaultSplit =
 		form.get('makeDefault') === 'on' ? defaultFrom(input.splitMode, input.shares) : null;
@@ -142,17 +150,31 @@ async function sealGroupForm(form: FormData, key: string): Promise<Refusal | nul
 	const tint = parseTint(form.get('tint'));
 	if (!tint.ok) return { error: tint.error };
 	const simplifyDebts = form.get('simplifyDebts') === 'on';
+	const entryCurrency = entryCurrencyOf(form.get('entryCurrency'), groupCurrency());
+	if (!entryCurrency.ok) return { error: entryCurrency.error };
 	leaveOnly(form, ['name', 'description']);
 	form.set(
 		'details',
-		await sealGroupDetails(key, { kind: kind.value, tint: tint.value, simplifyDebts })
+		await sealGroupDetails(key, {
+			kind: kind.value,
+			tint: tint.value,
+			simplifyDebts,
+			entryCurrency: entryCurrency.value
+		})
 	);
 	return null;
 }
 
-/** New expenses back to an equal split */
-async function sealClearedSplit(form: FormData, key: string): Promise<Refusal | null> {
-	form.set('details', await sealGroupDetails(key, { defaultSplit: null }));
+/** The split for new expenses (#306), checked here since the server can't */
+async function sealDefaultSplit(form: FormData, key: string): Promise<Refusal | null> {
+	const values = { splitMode: form.get('splitMode'), inputs: readSplitInputs(form) };
+	const parsed = parseDefaultSplitForm(values, {
+		memberIds: groupMemberIds(),
+		currency: groupCurrency()
+	});
+	if (!parsed.ok) return { error: parsed.error };
+	leaveOnly(form, []);
+	form.set('details', await sealGroupDetails(key, { defaultSplit: parsed.value }));
 	return null;
 }
 
@@ -175,7 +197,7 @@ const SEAL_MONEY: Record<
 	payment: sealPayment,
 	plan: sealPlan,
 	groupForm: sealGroupForm,
-	clearDefaultSplit: sealClearedSplit,
+	defaultSplit: sealDefaultSplit,
 	sections: sealSections
 };
 
@@ -220,6 +242,11 @@ export const sealing =
 				return;
 			}
 			resent.delete(input.formElement);
+			// Tells the group about it, if the form says what it's about (#267)
+			const event = input.formElement.dataset.announce;
+			if (event && (result.type === 'success' || result.type === 'redirect')) {
+				announceEvent(event);
+			}
 			if (options.result.type === 'failure') {
 				options.result.data = await openDeep(options.result.data);
 			}

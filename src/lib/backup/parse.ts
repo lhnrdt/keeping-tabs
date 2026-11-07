@@ -1,7 +1,7 @@
 // Reads a backup file (#57). It can come from anywhere, so everything in it is checked the way
 // the forms check it, and only what's known is kept. Nothing is trusted because it's a backup.
 import { isExpenseCategory, type ExpenseCategory } from '#lib/expense/categories.ts';
-import { parseRate } from '#lib/expense/exchange.ts';
+import { isEntryCurrency, parseRate } from '#lib/expense/exchange.ts';
 import { isFrequency } from '#lib/expense/recurrence.ts';
 import { parseSections } from '#lib/insights/sections.ts';
 import { parseDefaultSplit } from '#lib/split/default-split.ts';
@@ -85,6 +85,7 @@ function readGroup(raw: Raw): BackupGroup {
 		kind: unwrap(parseKind(raw.kind)),
 		tint: unwrap(parseTint(raw.tint ?? '')),
 		simplifyDebts: raw.simplifyDebts !== false,
+		entryCurrency: isEntryCurrency(raw.entryCurrency) ? raw.entryCurrency : null,
 		insightSections: sections,
 		defaultSplit: parseDefaultSplit(raw.defaultSplit),
 		budgetCents: orNull(raw.budgetCents, (cents) => integer(cents, 1)),

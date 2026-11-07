@@ -2,6 +2,8 @@
 	import { resolve } from '$app/paths';
 	import AppPage from '#lib/components/AppPage.svelte';
 	import Field from '#lib/components/Field.svelte';
+	import PlainField from '#lib/components/fields/PlainField.svelte';
+	import { isEntryCurrency, RATE_CURRENCIES } from '#lib/expense/exchange.ts';
 	import GroupForm from '#lib/components/group/GroupForm.svelte';
 	import SimplifyDebtsField from '#lib/components/group/SimplifyDebtsField.svelte';
 	import KindPicker from '#lib/components/pickers/KindPicker.svelte';
@@ -54,6 +56,21 @@
 				<KindPicker value={data.group.kind} />
 				<TintPicker value={data.group.tint ?? ''} />
 			</div>
+			{#if isEntryCurrency(data.group.currency)}
+				<div class="page-section">
+					<PlainField label={m.field_entry_currency()} arrow>
+						{#snippet children(id)}
+							<select {id} name="entryCurrency" value={data.group.entryCurrency ?? ''}>
+								<option value="">{m.entry_currency_group({ currency: data.group.currency })}</option
+								>
+								{#each RATE_CURRENCIES.filter((code) => code !== data.group.currency) as code (code)}
+									<option value={code}>{code}</option>
+								{/each}
+							</select>
+						{/snippet}
+					</PlainField>
+				</div>
+			{/if}
 		</div>
 	</GroupForm>
 </AppPage>

@@ -13,6 +13,52 @@ export type ChangelogEntry = {
 /** Newest first */
 export const CHANGELOG: ChangelogEntry[] = [
 	{
+		version: '0.19.0',
+		date: '2026-11-07',
+		items: [
+			{
+				icon: 'fast',
+				en: 'Press and hold an expense, payment, group, comment or repeating expense (or right click it) for what you can do with it. It feels more like an app now: no more selecting text or link previews by accident.',
+				de: 'Halte eine Ausgabe, Zahlung, Gruppe, einen Kommentar oder eine wiederkehrende Ausgabe gedrückt (oder klick mit rechts) für alles, was du damit tun kannst. Es fühlt sich jetzt mehr wie eine App an: kein versehentliches Markieren von Text und keine Link-Vorschauen mehr.'
+			},
+			{
+				icon: 'notifications',
+				en: 'Notifications for more: a payment to you, a changed or deleted expense, comments and people joining. Choose which ones you want in Settings.',
+				de: 'Benachrichtigungen für mehr: eine Zahlung an dich, geänderte oder gelöschte Ausgaben, Kommentare und neue Leute in der Gruppe. Welche du willst, wählst du in den Einstellungen.'
+			},
+			{
+				icon: 'kindCar',
+				en: 'Car groups as a logbook: add costs everyone already paid, like insurance, so they count without anyone owing for them. Expenses can now repeat every 3 or 6 months.',
+				de: 'Autogruppen als Fahrtenbuch: Trag Kosten ein, die alle schon bezahlt haben, wie die Versicherung. Sie zählen mit, ohne dass jemand etwas schuldet. Ausgaben können sich jetzt auch alle 3 oder 6 Monate wiederholen.'
+			},
+			{
+				icon: 'settings',
+				en: 'Set a group’s split and currency for new expenses right in its details, which now read like settings.',
+				de: 'Stell die Aufteilung und Währung für neue Ausgaben direkt in den Details der Gruppe ein, die jetzt wie Einstellungen aussehen.'
+			},
+			{
+				icon: 'edit',
+				en: 'Draw your own avatar.',
+				de: 'Zeichne deinen eigenen Avatar.'
+			},
+			{
+				icon: 'sparkles',
+				en: 'More artwork: night skies after dark, small scenes when something’s off, a hop when you tap a header, and a trip’s recap to share as a picture.',
+				de: 'Mehr Bilder: Nachthimmel, wenn es dunkel ist, kleine Szenen, wenn etwas nicht klappt, ein Hüpfer, wenn du auf den Kopfbereich tippst, und den Rückblick einer Reise zum Teilen als Bild.'
+			},
+			{
+				icon: 'locked',
+				en: 'Groups joined in Safari on an iPhone now open in the home screen app too.',
+				de: 'Gruppen, denen du in Safari auf dem iPhone beitrittst, öffnen sich jetzt auch in der App auf dem Home-Bildschirm.'
+			},
+			{
+				icon: 'balances',
+				en: 'Editing an imported expense no longer moves its odd cent to someone else.',
+				de: 'Eine importierte Ausgabe zu bearbeiten, verschiebt ihren übrigen Cent nicht mehr zu jemand anderem.'
+			}
+		]
+	},
+	{
 		version: '0.18.1',
 		date: '2026-11-01',
 		items: [

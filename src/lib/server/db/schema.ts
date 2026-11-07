@@ -5,6 +5,7 @@ import type { ExpenseCategory } from '#lib/expense/categories.ts';
 import type { GroupKind } from '#lib/group/kinds.ts';
 import type { Accent, Locale, Theme, Units } from '#lib/settings.ts';
 import type { Tint } from '#lib/tints.ts';
+import { FREQUENCIES } from '#lib/expense/recurrence.ts';
 import {
 	check,
 	index,
@@ -48,6 +49,8 @@ export const groups = sqliteTable('groups', {
 	insightSections: text('insight_sections'),
 	// New expenses start split this way, e.g. {"mode":"percent","inputs":{…}} (#41); null = equal
 	defaultSplit: text('default_split', { mode: 'json' }),
+	/** What new expenses are typed in, converted into `currency` (#307); null: that one */
+	entryCurrency: text('entry_currency'),
 	// Which key seals this group's text (#110); null = stored as plain text. Never the key itself
 	keyId: text('key_id'),
 	// Handing an existing group's key to its people when it was encrypted (#110): they only have the
@@ -85,6 +88,8 @@ export const people = sqliteTable('people', {
 	notedAt: integer('noted_at', { mode: 'timestamp_ms' }),
 	// Which version of it: when what it says changes, they're shown it once more
 	notedVersion: integer('noted_version').notNull().default(0),
+	/** Notification kinds switched off, comma-separated (#267) */
+	pushMuted: text('push_muted'),
 	// How to pay them, e.g. a PayPal.me link or IBAN (#47); shown to people in their groups
 	paymentDetails: text('payment_details'),
 	// How to pay them, sealed with their vault key (#110): each group gets its own copy from there
@@ -300,6 +305,21 @@ export const personKeys = sqliteTable(
 	(t) => [primaryKey({ columns: [t.personId, t.keyId, t.vaultId] })]
 );
 
+/** Each of a person's vaults' public keys, so their devices can put keys in each other's (#298) */
+export const personVaults = sqliteTable(
+	'person_vaults',
+	{
+		personId: text('person_id')
+			.notNull()
+			.references(() => people.id, { onDelete: 'cascade' }),
+		vaultId: text('vault_id').notNull(),
+		publicKey: text('public_key').notNull(),
+		// Last said by a device holding it: vaults no device has anymore are left out
+		seenAt: integer('seen_at', { mode: 'timestamp_ms' }).notNull()
+	},
+	(t) => [primaryKey({ columns: [t.personId, t.vaultId] })]
+);
+
 /**
  * A group's text and money sealed under a new key, until all of it is here (#110): only then does it
  * replace what's there, all at once, so a key change cut off or sent by mistake leaves nothing broken.
@@ -366,7 +386,7 @@ export const recurringExpenses = sqliteTable(
 		// The member who set it up; the expenses it adds are theirs
 		memberId: text('member_id').references(() => members.id),
 		template: text('template', { mode: 'json' }).notNull(),
-		frequency: text('frequency', { enum: ['weekly', 'monthly', 'yearly'] }).notNull(),
+		frequency: text('frequency', { enum: FREQUENCIES }).notNull(),
 		// Added this many times; the next one is time number `added` after the first date
 		added: integer('added').notNull().default(1),
 		// When the next one is due, for finding what's due quickly
@@ -390,7 +410,9 @@ export const activityLog = sqliteTable(
 		sealedActor: text('sealed_actor'),
 		action: text('action').notNull(),
 		payload: text('payload', { mode: 'json' }),
-		createdAt: createdAt()
+		createdAt: createdAt(),
+		/** Told the group about it (#267): only ever once */
+		notifiedAt: integer('notified_at', { mode: 'timestamp_ms' })
 	},
 	(t) => [index('activity_log_group_created_idx').on(t.groupId, t.createdAt)]
 );

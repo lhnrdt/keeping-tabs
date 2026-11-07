@@ -11,6 +11,7 @@ export const GROUP_DETAIL_FIELDS = [
 	'budgetCents',
 	'endsOn',
 	'defaultSplit',
+	'entryCurrency',
 	'currency',
 	'kind',
 	'tint',
@@ -27,7 +28,8 @@ export const SEALED_GROUP_COLUMNS = {
 	insightSections: null,
 	budgetCents: null,
 	endsOn: null,
-	defaultSplit: null
+	defaultSplit: null,
+	entryCurrency: null
 } as const;
 
 export const detailsFromInput = (

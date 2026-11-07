@@ -1,5 +1,5 @@
 import { fail } from '@sveltejs/kit';
-import { formatAvatar, parseAvatar } from '#lib/avatars.ts';
+import { DRAWN, formatAvatar, parseAvatar } from '#lib/avatars.ts';
 import type { ErrorCode } from '#lib/errors.ts';
 import { isSealed } from '#lib/crypto/seal.ts';
 import { listGroupsOf } from '#lib/server/groups.ts';
@@ -81,7 +81,11 @@ export const actions: Actions = {
 	/** Your avatar (#61): an icon or "initials", on a tint */
 	avatar: async ({ locals, request }) => {
 		const form = await request.formData();
-		const choice = parseAvatar(`${form.get('icon')}:${form.get('tint')}`);
+		const choice = parseAvatar(
+			form.get('icon') === DRAWN
+				? `${DRAWN}:${form.get('tint')}:${form.get('width')}:${form.get('drawing')}`
+				: `${form.get('icon')}:${form.get('tint')}`
+		);
 		if (!choice) return fail(400, { setting: 'avatar', error: 'settings_invalid' as ErrorCode });
 		const person = await ensurePerson(locals.db, locals.deviceKey);
 		await saveSettings(locals.db, person.id, { avatar: formatAvatar(choice) });
