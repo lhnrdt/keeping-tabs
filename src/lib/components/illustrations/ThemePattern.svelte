@@ -28,6 +28,21 @@
 	const landscape = $derived(
 		night ? atNight(SCENES[theme.id], { ownMoon: !(moment && hasSun(moment)) }) : SCENES[theme.id]
 	);
+
+	// Tapping the header, anywhere but on what's in it, makes the scene hop (#291)
+	let svg: SVGSVGElement;
+	let poked = $state(false);
+	const INTERACTIVE = 'a, button, input, select, textarea, label, summary';
+	onMount(() => {
+		const header = svg.parentElement;
+		const poke = (event: MouseEvent) => {
+			if ((event.target as Element).closest(INTERACTIVE)) return;
+			poked = false;
+			requestAnimationFrame(() => (poked = true));
+		};
+		header?.addEventListener('click', poke);
+		return () => header?.removeEventListener('click', poke);
+	});
 	/** Back to front, each at its strength */
 	const layers: { scene: Scene; strength: number; moment?: boolean }[] = $derived(
 		kind
@@ -43,7 +58,11 @@
 </script>
 
 <svg
-	class="pointer-events-none absolute inset-0 h-full w-full"
+	bind:this={svg}
+	onanimationend={(event) => {
+		if (event.animationName === 'scene-poke') poked = false;
+	}}
+	class="pointer-events-none absolute inset-0 h-full w-full {poked ? 'scene-poke' : ''}"
 	viewBox="0 0 400 200"
 	preserveAspectRatio="xMaxYMax slice"
 	aria-hidden="true"
