@@ -28,6 +28,8 @@
 	"group_password_dialog_hint": "Everyone with the link has to enter it once on each device, including people already in the group. Share it with them yourself.",
 	"field_description": "Description (optional)",
 	"field_currency": "Currency",
+	"field_entry_currency": "Currency for new expenses",
+	"entry_currency_group": "The group’s ({currency})",
 	"field_your_name": "Your name",
 	"settings_title": "Settings",
 	"settings_preferences": "Preferences",

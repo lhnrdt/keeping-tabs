@@ -18,6 +18,7 @@ import { defaultFrom } from '#lib/split/default-split.ts';
 import { keptEqualShares } from '#lib/split/kept-cents.ts';
 import { parseDefaultSplitForm } from '#lib/split/default-split-form.ts';
 import { readSplitInputs } from '#lib/split/form.ts';
+import { entryCurrencyOf } from '#lib/expense/exchange.ts';
 import {
 	normalizeText,
 	parseDate,
@@ -148,10 +149,17 @@ async function sealGroupForm(form: FormData, key: string): Promise<Refusal | nul
 	const tint = parseTint(form.get('tint'));
 	if (!tint.ok) return { error: tint.error };
 	const simplifyDebts = form.get('simplifyDebts') === 'on';
+	const entryCurrency = entryCurrencyOf(form.get('entryCurrency'), groupCurrency());
+	if (!entryCurrency.ok) return { error: entryCurrency.error };
 	leaveOnly(form, ['name', 'description']);
 	form.set(
 		'details',
-		await sealGroupDetails(key, { kind: kind.value, tint: tint.value, simplifyDebts })
+		await sealGroupDetails(key, {
+			kind: kind.value,
+			tint: tint.value,
+			simplifyDebts,
+			entryCurrency: entryCurrency.value
+		})
 	);
 	return null;
 }

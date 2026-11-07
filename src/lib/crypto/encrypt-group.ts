@@ -37,6 +37,7 @@ export type Text = {
 		kind: string;
 		tint: string | null;
 		simplifyDebts: boolean;
+		entryCurrency: string | null;
 		insightSections: string | null;
 		sealedDetails: string | null;
 	};
@@ -181,6 +182,7 @@ export async function encryptWith(
 					kind: group.kind,
 					tint: group.tint,
 					simplifyDebts: group.simplifyDebts,
+					entryCurrency: group.entryCurrency,
 					insightSections: group.insightSections
 				});
 

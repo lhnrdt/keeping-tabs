@@ -58,3 +58,16 @@ export const RATE_CURRENCIES = [
 	'USD',
 	'ZAR'
 ] as const;
+
+/** Whether new expenses can be typed in this currency and converted (#307) */
+export const isEntryCurrency = (value: unknown): value is string =>
+	(RATE_CURRENCIES as readonly unknown[]).includes(value);
+
+/** A group's currency for new expenses as chosen: none means its own, and only one with rates */
+export function entryCurrencyOf(value: unknown, groupCurrency: string) {
+	const code = String(value ?? '').trim();
+	if (!code || code === groupCurrency) return { ok: true as const, value: null };
+	return isEntryCurrency(code) && isEntryCurrency(groupCurrency)
+		? { ok: true as const, value: code }
+		: { ok: false as const, error: 'currency_invalid' as const };
+}
