@@ -390,6 +390,7 @@
 	"default_split_equal": "Gleichmäßig",
 	"default_split_reset": "Zurück zu gleich",
 	"default_split_remember": "Diese Aufteilung für neue Ausgaben verwenden",
+	"default_split_hint": "Neue Ausgaben werden erst einmal so aufgeteilt. Jede Ausgabe lässt sich trotzdem anders aufteilen.",
 	"simplify_debts_hint": "Mit möglichst wenigen Zahlungen ausgleichen: Schuldet Anna Ben und Ben Cara, zahlt Anna direkt an Cara.",
 	"on": "An",
 	"off": "Aus",

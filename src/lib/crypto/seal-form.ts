@@ -16,6 +16,8 @@ import { choiceToStore, isSection } from '#lib/insights/sections.ts';
 import { parseAmount } from '#lib/money.ts';
 import { defaultFrom } from '#lib/split/default-split.ts';
 import { keptEqualShares } from '#lib/split/kept-cents.ts';
+import { parseDefaultSplitForm } from '#lib/split/default-split-form.ts';
+import { readSplitInputs } from '#lib/split/form.ts';
 import {
 	normalizeText,
 	parseDate,
@@ -154,9 +156,16 @@ async function sealGroupForm(form: FormData, key: string): Promise<Refusal | nul
 	return null;
 }
 
-/** New expenses back to an equal split */
-async function sealClearedSplit(form: FormData, key: string): Promise<Refusal | null> {
-	form.set('details', await sealGroupDetails(key, { defaultSplit: null }));
+/** The split for new expenses (#306), checked here since the server can't */
+async function sealDefaultSplit(form: FormData, key: string): Promise<Refusal | null> {
+	const values = { splitMode: form.get('splitMode'), inputs: readSplitInputs(form) };
+	const parsed = parseDefaultSplitForm(values, {
+		memberIds: groupMemberIds(),
+		currency: groupCurrency()
+	});
+	if (!parsed.ok) return { error: parsed.error };
+	leaveOnly(form, []);
+	form.set('details', await sealGroupDetails(key, { defaultSplit: parsed.value }));
 	return null;
 }
 
@@ -179,7 +188,7 @@ const SEAL_MONEY: Record<
 	payment: sealPayment,
 	plan: sealPlan,
 	groupForm: sealGroupForm,
-	clearDefaultSplit: sealClearedSplit,
+	defaultSplit: sealDefaultSplit,
 	sections: sealSections
 };
 
