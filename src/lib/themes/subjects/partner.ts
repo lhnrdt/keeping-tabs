@@ -11,6 +11,7 @@ import {
 	person,
 	pine,
 	rect,
+	rounded,
 	seated,
 	sitting,
 	star,
@@ -224,18 +225,35 @@ export const PARTNER: Record<ThemeId, Scene> = {
 			{ d: heart(304, 112, 5), strength: 0.8, motion: 'pulse' }
 		]
 	},
-	// A picnic for two on a blanket
+	// Lying in the grass, heads together, a cloud drifting by in the shape of a heart
 	meadow: {
+		backdrop: {
+			shapes: [
+				{ d: 'M60 186Q220 136 460 148V186Z', strength: 0.22 },
+				{ d: 'M150 186Q300 158 470 166V186Z', strength: 0.34 }
+			]
+		},
 		shapes: [
-			GROUND,
-			{ d: 'M240 192L270 172H372L396 192Z', strength: 0.8 },
+			{ d: GROUND.d, strength: 0.5 },
+			{ d: heart(306, 90, 20), strength: 0.45, motion: 'drift' },
+			{ d: rounded(232.4, 172.5, 62.1, 13.5, 6.8) + disc(302.6, 176.6, 10), strength: 1 },
+			{ d: rounded(321.5, 172.5, 62.1, 13.5, 6.8) + disc(316.1, 171.2, 10), strength: 0.8 },
 			{
-				d: 'M262 184l10-8h20l-10 8ZM302 184l10-8h20l-10 8ZM342 184l10-8h20l-10 8Z',
-				strength: 1,
-				cut: true
+				d: limb(291.8, 175.2, 302.6, 164.4, 4.1) + limb(324.2, 175.2, 313.4, 161.7, 4.1),
+				strength: 0.9
 			},
-			{ d: sitting(286, 172, 54) + sitting(352, 172, 54, -1), strength: 1 },
-			{ d: heart(318, 104, 8), strength: 1, motion: 'pulse' }
+			{ d: limb(300, 178, 296, 146, 3.4), strength: 1 },
+			{
+				d: disc(230, 182, 2.5) + disc(240, 180, 2.5) + disc(380, 181, 2.5) + disc(392, 183, 2.5),
+				strength: 1
+			}
+		],
+		lines: [
+			{
+				d: 'M220 186l-2-10M228 186l1-12M236 186l3-10M376 186l-2-11M388 186l2-12M396 186l-1-10',
+				strength: 0.8,
+				motion: 'sway'
+			}
 		]
 	},
 	// Two on a jetty, watching the sea

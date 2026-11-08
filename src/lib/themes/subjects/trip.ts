@@ -322,25 +322,60 @@ export const TRIP: Record<ThemeId, Scene> = {
 		],
 		lines: [{ d: steam(384, 130, 22) + steam(372, 122, 18), strength: 0.5, motion: 'rise' }]
 	},
-	// A loaded bike leaning on its stand by the field path, flowers in its basket
+	// Cycling the lane between the wheat fields, round hay bales out in the stubble
 	meadow: {
+		backdrop: {
+			shapes: [
+				{ d: 'M60 186Q220 136 460 148V186Z', strength: 0.22 },
+				{ d: 'M150 186Q300 158 470 166V186Z', strength: 0.34 },
+				{ d: disc(236, 170, 8) + disc(262, 166, 7) + disc(350, 162, 6), strength: 0.6 }
+			],
+			lines: [{ d: 'M170 182Q290 170 420 172M190 178Q300 166 420 166', strength: 0.4 }]
+		},
 		shapes: [
-			GROUND,
-			{ d: disc(282, 164, 22), strength: 1 },
-			{ d: disc(282, 164, 18), strength: 1, cut: true },
-			{ d: disc(362, 164, 22), strength: 1 },
-			{ d: disc(362, 164, 18), strength: 1, cut: true },
-			{ d: rounded(264, 128, 28, 30, 6) + rect(268, 124, 34, 4), strength: 0.9 },
-			{ d: rounded(356, 120, 22, 14, 3), strength: 0.85 },
-			{ d: disc(362, 116, 4) + disc(370, 114, 3) + disc(377, 117, 3), strength: 1 },
-			{ d: rect(238, 160, 4, 26) + 'M226 156h28l6 6-6 6h-28Z', strength: 0.7 }
+			{ d: 'M-200 200V186H400V200Z', strength: 0.45 },
+			{ d: disc(274.2, 171.7, 14.3) + disc(341.8, 171.7, 14.3), strength: 1 },
+			{ d: disc(274.2, 171.7, 11.7) + disc(341.8, 171.7, 11.7), strength: 1, cut: true },
+			{
+				d:
+					limb(274.2, 171.7, 297.6, 171.7, 2.6) +
+					limb(297.6, 171.7, 289.8, 141.8, 2.6) +
+					limb(289.8, 141.8, 328.8, 141.8, 2.6) +
+					limb(328.8, 141.8, 341.8, 171.7, 2.6) +
+					limb(297.6, 171.7, 328.8, 141.8, 2.6) +
+					limb(326.2, 134.0, 331.4, 141.8, 2.6) +
+					limb(321.0, 132.7, 334.0, 132.7, 3.1) +
+					rounded(283.3, 136.6, 15.6, 5.2, 2.6),
+				strength: 1
+			},
+			{ d: rounded(331.4, 119.7, 18.2, 13.0, 2.6), strength: 0.85 },
+			{
+				d: disc(336.6, 117.1, 3.4) + disc(344.4, 115.8, 3.4) + disc(340.5, 111.9, 3.1),
+				strength: 1
+			},
+			{
+				d:
+					disc(305.4, 89.8, 7.8) +
+					'M292.4 139.2q-2.6 -33.8 15.6 -39.0q10.4 2.6 7.8 18.2l-5.2 20.8Z' +
+					limb(310.6, 108.0, 323.6, 131.4, 4.4) +
+					limb(297.6, 139.2, 305.4, 156.1, 4.7) +
+					limb(305.4, 156.1, 297.6, 171.7, 4.4),
+				strength: 1
+			}
 		],
 		lines: [
 			{
-				d: 'M282 164L308 130H346L362 164M308 130L324 164L346 130M346 130L344 114h12M302 126h16',
-				strength: 1
-			},
-			{ d: 'M324 164L318 186', strength: 1 }
+				d: 'M212 200l-1-22M218 200l1-26M226 200l-2-20M390 200l1-24M396 200l-1-20',
+				strength: 1,
+				motion: 'sway'
+			}
+		],
+		dots: [
+			[211, 178, 2.4, 1],
+			[219, 174, 2.4, 1],
+			[224, 180, 2.4, 1],
+			[391, 176, 2.4, 1],
+			[395, 180, 2.4, 1]
 		]
 	},
 	// A sailboat passing the lighthouse, the crew at the helm

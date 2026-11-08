@@ -13,6 +13,7 @@ import {
 	pine,
 	rect,
 	rounded,
+	roundTree,
 	seated,
 	sitting,
 	steam,
@@ -211,15 +212,47 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 			{ d: 'M362 186q14 4 28 0M358 191q18 5 36 0', strength: 0.6, motion: 'flow' }
 		]
 	},
-	// A kickabout in front of the goal
+	// A kickabout on the meadow: the shot flying in, the keeper stretching for it
 	meadow: {
+		backdrop: {
+			shapes: [
+				{ d: 'M60 186Q220 136 460 148V186Z', strength: 0.22 },
+				{ d: 'M150 186Q300 158 470 166V186Z', strength: 0.34 },
+				{ d: roundTree(220, 170, 40) + roundTree(248, 172, 30), strength: 0.4 }
+			]
+		},
 		shapes: [
-			GROUND,
-			{ d: rect(330, 120, 6, 66) + rect(390, 120, 6, 66) + rect(330, 116, 66, 6), strength: 1 },
-			{ d: person(270, 186, 58) + person(352, 186, 50), strength: 1 },
-			{ d: disc(306, 178, 8), strength: 1, motion: 'bob' }
+			{ d: GROUND.d, strength: 0.5 },
+			{
+				d:
+					rect(366, 152, 1, 34) +
+					rect(372, 152, 1, 34) +
+					rect(378, 152, 1, 34) +
+					rect(384, 152, 1, 34) +
+					rect(390, 152, 1, 34) +
+					rect(362, 156, 34, 1) +
+					rect(362, 162, 34, 1) +
+					rect(362, 168, 34, 1) +
+					rect(362, 174, 34, 1) +
+					rect(362, 180, 34, 1),
+				strength: 0.5
+			},
+			{ d: rect(360, 150, 3, 36) + rect(360, 150, 38, 3), strength: 1 },
+			{
+				d: figure(372, 186, 48) + limb(366, 158, 352, 146, 3.4) + limb(376, 158, 364, 142, 3.4),
+				strength: 0.85
+			},
+
+			{ d: figure(290, 186, 56, { hat: 'cap' }) + limb(296, 178, 312, 168, 3.6), strength: 1 },
+			{ d: disc(336, 146, 8.5), strength: 1, motion: 'fly' },
+			{
+				d: 'M334 142l3 1-1 3-3-1ZM340 149l2 2-2 2-2-2ZM331 150l2 1-1 2-2-1Z',
+				strength: 1,
+				cut: true,
+				motion: 'fly'
+			}
 		],
-		lines: [{ d: 'M338 130L388 180M350 124L392 168M336 150L370 184', strength: 0.35 }]
+		lines: [{ d: 'M314 164q8-10 14-14M312 156q8-6 14-8', strength: 0.5 }]
 	},
 	// Beach volleyball over the net
 	coast: {

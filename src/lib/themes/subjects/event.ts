@@ -248,22 +248,44 @@ export const EVENT: Record<ThemeId, Scene> = {
 			{ d: 'M271 120l-3-4M280 120l3-4M345 120l-3-4', strength: 0.8 }
 		]
 	},
-	// A cake on the table, candles lit
+	// The open-air concert in the field: the stage lit up, the crowd's arms in the air up close
 	meadow: {
+		backdrop: {
+			shapes: [
+				{ d: 'M60 186Q220 136 460 148V186Z', strength: 0.22 },
+				{ d: 'M150 186Q300 158 470 166V186Z', strength: 0.34 }
+			]
+		},
 		shapes: [
-			GROUND,
-			{ d: rect(256, 160, 128, 7), strength: 1 },
-			{ d: rect(268, 167, 7, 19) + rect(365, 167, 7, 19), strength: 0.9 },
-			{ d: rounded(282, 128, 76, 32, 4), strength: 1 },
-			{ d: rounded(296, 104, 48, 24, 4), strength: 0.9 },
-			{ d: rect(282, 140, 76, 4), strength: 1, cut: true },
-			{ d: rect(308, 90, 3, 14) + rect(319, 88, 3, 16) + rect(330, 90, 3, 14), strength: 1 },
+			{ d: GROUND.d, strength: 0.5 },
+			{ d: rect(300, 160, 96, 8) + rect(306, 168, 4, 18) + rect(386, 168, 4, 18), strength: 1 },
 			{
-				d: disc(309.5, 84, 3) + disc(320.5, 82, 3) + disc(331.5, 84, 3),
+				d: 'M296 120Q348 96 400 120V126H296Z' + rect(298, 124, 4, 36) + rect(394, 124, 4, 36),
+				strength: 0.85
+			},
+			{ d: rect(306, 136, 12, 24) + rect(378, 136, 12, 24), strength: 1 },
+			{
+				d: disc(310, 142, 3) + disc(310, 152, 3.5) + disc(382, 142, 3) + disc(382, 152, 3.5),
 				strength: 1,
-				motion: 'flicker'
+				cut: true
+			},
+			{
+				d: figure(348, 160, 30) + limb(352, 144, 358, 136, 2.4) + rect(356, 134, 1.4, 26),
+				strength: 1
+			},
+			{
+				d:
+					figure(212, 204, 52) +
+					figure(240, 206, 60) +
+					figure(268, 204, 50) +
+					figure(292, 206, 56) +
+					limb(250, 172, 244, 124, 4.4) +
+					limb(300, 174, 310, 130, 4.4) +
+					limb(220, 176, 212, 134, 4),
+				strength: 1
 			}
-		]
+		],
+		lines: [{ d: 'M318 126l-20 30M348 124v24M378 126l20 30', strength: 0.6, motion: 'shimmer' }]
 	},
 	// Paper lanterns along the beach
 	coast: {
