@@ -7,6 +7,7 @@ import {
 	disc,
 	figure,
 	GROUND,
+	house,
 	hull,
 	limb,
 	person,
@@ -290,86 +291,72 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 		],
 		lines: [{ d: 'M314 113q4 3 8 0M313 118q5 2 10 0', strength: 0.6, motion: 'bob' }]
 	},
-	// Off the log cabin's deck: the hot tub steaming, three of them in it, the lights over the forest
+	// Three friends soaking in the big wooden hot tub, steam rising, the sauna glowing behind, the lights overhead
 	aurora: {
 		backdrop: {
 			night: true,
 			shapes: [
-				{ d: curtain(250, 400, 64, 26, 36), strength: 0.51, motion: 'shimmer' },
+				{ d: curtain(236, 400, 58, 28, 36), strength: 0.51, motion: 'shimmer' },
+				{ d: 'M190 186V170Q260 160 330 164T410 162V186Z', strength: 0.4 },
 				{
 					d:
-						pine(262, 176, 34) +
-						pine(280, 176, 46) +
-						pine(298, 176, 38) +
-						pine(318, 176, 52) +
-						pine(338, 176, 40) +
-						pine(358, 176, 54) +
-						pine(378, 176, 42) +
-						pine(398, 176, 50),
+						pine(258, 170, 30) +
+						pine(274, 170, 40) +
+						pine(290, 170, 32) +
+						pine(352, 170, 42) +
+						pine(370, 170, 34) +
+						pine(388, 170, 44) +
+						pine(402, 170, 36),
 					strength: 0.5
-				}
+				},
+				{ d: house(208, 172, 30, 20, 12, 3) + rect(228, 146, 5, 10), strength: 0.75 },
+				{ d: rect(214, 160, 8, 7), strength: 1, cut: true }
 			],
-			lines: [{ d: rays(250, 400, 64, 26, 36), strength: 0.9, motion: 'shimmer' }]
+			lines: [{ d: rays(236, 400, 58, 28, 36), strength: 0.9, motion: 'shimmer' }]
 		},
 		shapes: [
 			{
-				d: sparkle(270, 20, 9.5) + sparkle(392, 26, 9.5) + sparkle(368, 62, 6.8),
+				d: sparkle(256, 18, 8.8) + sparkle(392, 22, 8.8) + sparkle(370, 70, 6.1),
 				strength: 0.55,
 				motion: 'twinkle'
 			},
 			{
-				d: sparkle(270, 20, 7) + sparkle(392, 26, 7) + sparkle(368, 62, 5),
+				d: sparkle(256, 18, 6.5) + sparkle(392, 22, 6.5) + sparkle(370, 70, 4.5),
 				strength: 1,
 				snow: true,
 				motion: 'twinkle'
 			},
-			{ d: sparkle(330, 12, 7.4) + sparkle(300, 52, 6.8), strength: 0.55, motion: 'twinkle-late' },
+			{ d: sparkle(318, 10, 6.8) + sparkle(286, 46, 6.1), strength: 0.55, motion: 'twinkle-late' },
 			{
-				d: sparkle(330, 12, 5.5) + sparkle(300, 52, 5),
+				d: sparkle(318, 10, 5) + sparkle(286, 46, 4.5),
 				strength: 1,
 				snow: true,
 				motion: 'twinkle-late'
 			},
-			{ d: rect(196, 176, 210, 6) + rect(196, 182, 210, 18), strength: 0.75 },
-			{ d: rect(196, 188, 210, 1.4) + rect(196, 194, 210, 1.4), strength: 1, cut: true },
-			{ d: 'M196 0H244V176H196Z', strength: 0.95 },
+			{ d: GROUND.d, strength: 0.6 },
 			{
-				d:
-					rect(196, 28, 48, 1.4) +
-					rect(196, 38, 48, 1.4) +
-					rect(196, 48, 48, 1.4) +
-					rect(196, 58, 48, 1.4) +
-					rect(196, 68, 48, 1.4) +
-					rect(196, 78, 48, 1.4) +
-					rect(196, 88, 48, 1.4) +
-					rect(196, 138, 48, 1.4) +
-					rect(196, 148, 48, 1.4) +
-					rect(196, 158, 48, 1.4) +
-					rect(196, 168, 48, 1.4),
-				strength: 1,
-				cut: true
+				d: figure(290, 168, 50) + figure(324, 166, 54, { hat: 'beanie' }) + figure(358, 168, 48),
+				strength: 1
 			},
-			{ d: rect(212, 94, 24, 32), strength: 1, cut: true },
-			{ d: rect(223, 94, 2, 32) + rect(212, 109, 24, 2), strength: 0.95 },
-			{ d: disc(300, 142, 7.5) + disc(328, 139, 8.5) + disc(356, 142, 7.5), strength: 1 },
-			{ d: 'M276 150H384L379 176H281Z', strength: 0.9 },
-			{ d: rect(276, 148, 108, 5) + rect(279, 160, 102, 3), strength: 1 },
 			{
 				d:
-					rect(294, 153, 2, 23) +
-					rect(318, 153, 2, 23) +
-					rect(342, 153, 2, 23) +
-					rect(364, 153, 2, 23),
-				strength: 1,
-				cut: true
-			}
+					limb(278, 142, 264, 150, 4.4) +
+					limb(370, 142, 386, 150, 4.4) +
+					limb(334, 140, 342, 120, 4.2) +
+					rounded(338, 110, 9, 11, 2),
+				strength: 1
+			},
+			{ d: 'M262 152H388L382 196H268Z', strength: 0.85 },
+			{ d: rect(258, 148, 134, 6), strength: 1 },
+			{ d: rect(266, 168, 118, 3) + rect(268, 184, 114, 3), strength: 0.95 }
 		],
 		lines: [
 			{
-				d: steam(300, 130, 24) + steam(328, 126, 28) + steam(356, 130, 24),
+				d: steam(306, 140, 24) + steam(344, 138, 26) + steam(372, 142, 20),
 				strength: 0.5,
 				motion: 'rise'
-			}
+			},
+			{ d: steam(230, 142, 22), strength: 0.4, motion: 'rise' }
 		]
 	},
 	// Flying a kite
