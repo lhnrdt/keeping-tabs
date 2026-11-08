@@ -8,10 +8,22 @@
 	import { rememberKey } from '#lib/crypto/keyring.ts';
 	import { syncKeys } from '#lib/crypto/vault.ts';
 	import { m } from '#lib/paraglide/messages.js';
+	import { Button } from 'konsta/svelte';
+	import { onMount } from 'svelte';
+	import Icon from '#lib/components/Icon.svelte';
+	import { continueWithPasskey, passkeysSupported } from '#lib/passkeys.ts';
 
 	let { keyId }: { keyId: string } = $props();
 
 	let wrong = $state(false);
+	let canUsePasskey = $state(false);
+	onMount(() => (canUsePasskey = passkeysSupported()));
+
+	/** Your passkey may carry the key for this device (#298) */
+	async function unlock() {
+		await continueWithPasskey().catch(() => {});
+		await invalidateAll();
+	}
 
 	async function pasted(event: Event & { currentTarget: HTMLInputElement }) {
 		const key = /key=([\w-]{43})/.exec(event.currentTarget.value)?.[1];
@@ -29,6 +41,13 @@
 	<div class="self-center"><ThemeMotif moment="locked" /></div>
 	<p class="font-medium">{m.locked_title()}</p>
 	<p class="text-sm text-muted">{m.locked_intro()}</p>
+	<p class="text-sm text-muted">{m.locked_other_device()}</p>
+	{#if canUsePasskey}
+		<Button rounded tonal small inline type="button" class="gap-1.5 self-start" onclick={unlock}>
+			<Icon name="passkey" size={16} />
+			{m.locked_passkey()}
+		</Button>
+	{/if}
 	<PlainField label={m.locked_paste()}>
 		{#snippet children(id)}
 			<input {id} autocomplete="off" oninput={pasted} />
