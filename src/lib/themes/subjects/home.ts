@@ -10,6 +10,7 @@ import {
 	rect,
 	rounded,
 	seated,
+	sparkle,
 	steam,
 	WATER,
 	waves
@@ -408,20 +409,61 @@ export const HOME: Record<ThemeId, Scene> = {
 			shapes: [
 				{ d: curtain(220, 400, 40, 14, 44), strength: 0.32, motion: 'shimmer' },
 				{ d: curtain(260, 380, 92, 10, 18), strength: 0.2, motion: 'shimmer' },
-				{ d: 'M190 186V168Q230 150 270 160Q320 140 360 156Q390 150 410 160V186Z', strength: 0.3 }
+				{
+					d:
+						pine(200, 186, 40) +
+						pine(214, 186, 64) +
+						pine(228, 186, 48) +
+						pine(244, 186, 58) +
+						pine(290, 186, 46) +
+						pine(304, 186, 56) +
+						pine(372, 186, 52) +
+						pine(386, 186, 62) +
+						pine(400, 186, 50),
+					strength: 0.45
+				}
 			],
 			lines: [
 				{ d: rays(220, 400, 40, 14, 44), strength: 0.6, motion: 'shimmer' },
 				{ d: rays(260, 380, 92, 10, 18), strength: 0.4, motion: 'shimmer' }
-			],
-			dots: [
-				[214, 18, 1.4, 0.8],
-				[390, 40, 1.2, 0.8]
 			]
 		},
 		shapes: [
+			{
+				d: sparkle(214, 22, 9.5) + sparkle(300, 10, 7.4) + sparkle(352, 104, 6.8),
+				strength: 0.55,
+				motion: 'twinkle'
+			},
+			{
+				d: sparkle(214, 22, 7) + sparkle(300, 10, 5.5) + sparkle(352, 104, 5),
+				strength: 1,
+				snow: true,
+				motion: 'twinkle'
+			},
+			{ d: sparkle(250, 90, 6.8) + sparkle(390, 44, 8.8), strength: 0.55, motion: 'twinkle-late' },
+			{
+				d: sparkle(250, 90, 5) + sparkle(390, 44, 6.5),
+				strength: 1,
+				snow: true,
+				motion: 'twinkle-late'
+			},
 			{ d: GROUND.d, strength: 0.6 },
-			{ d: 'M227 186a9 9 0 0 1 18 0Z' + 'M254 186a14 14 0 0 1 28 0Z', strength: 0.7 },
+			{ d: 'M225 186a11 11 0 0 1 22 0Z' + 'M252 186a16 16 0 0 1 32 0Z', strength: 0.75 },
+			{
+				d: 'M227 186a9 9 0 0 1 18 0Z' + 'M254.5 186a13.5 13.5 0 0 1 27.0 0Z',
+				strength: 1,
+				cut: true
+			},
+			{
+				d:
+					limb(236, 175, 236, 186, 1) +
+					limb(268, 170, 268, 186, 1.2) +
+					rect(256, 179, 24, 1.2) +
+					disc(232, 182, 2) +
+					disc(264, 180, 2.4) +
+					disc(273, 181, 2.2),
+				strength: 0.75
+			},
 			{ d: 'M296 186a34 34 0 0 1 68 0Z', strength: 0.95 },
 			{ d: 'M300 186a30 30 0 0 1 60 0Z', strength: 1, cut: true },
 			{
