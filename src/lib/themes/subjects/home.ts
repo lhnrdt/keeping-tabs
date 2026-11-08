@@ -9,6 +9,7 @@ import {
 	pine,
 	rect,
 	rounded,
+	roundTree,
 	seated,
 	sparkle,
 	steam,
@@ -292,8 +293,20 @@ export const HOME: Record<ThemeId, Scene> = {
 	meadow: {
 		backdrop: {
 			shapes: [
-				{ d: 'M60 186Q220 136 460 148V186Z', strength: 0.22 },
-				{ d: 'M150 186Q300 158 470 166V186Z', strength: 0.34 }
+				{ d: 'M150 186Q210 132 290 140T420 140V186Z', strength: 0.28 },
+				{
+					d:
+						house(196, 140, 12, 8, 6, 2) +
+						house(212, 138, 14, 9, 7, 2) +
+						'M230 138V112L234 102L238 112V138Z' +
+						rect(228, 120, 12, 18) +
+						house(244, 140, 12, 8, 6, 2),
+					strength: 0.6
+				},
+				{
+					d: roundTree(296, 146, 22) + roundTree(310, 144, 26) + roundTree(394, 146, 28),
+					strength: 0.5
+				}
 			]
 		},
 		shapes: [
