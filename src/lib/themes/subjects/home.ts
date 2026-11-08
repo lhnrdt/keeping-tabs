@@ -187,32 +187,49 @@ export const HOME: Record<ThemeId, Scene> = {
 	birch: {
 		backdrop: {
 			shapes: [
+				{ d: 'M190 156Q250 120 320 132T410 122V160H190Z', strength: 0.3 },
+				{ d: 'M190 156H410V166H190Z', strength: 0.2 },
 				{
 					d:
-						disc(227, 114, 9) +
-						disc(221, 125, 8) +
-						disc(233, 126, 8) +
-						disc(227, 135, 7) +
-						disc(273, 108, 9) +
-						disc(267, 119, 8) +
-						disc(279, 120, 8) +
-						disc(273, 129, 7) +
-						disc(307, 116, 9) +
-						disc(301, 127, 8) +
-						disc(313, 128, 8) +
-						disc(307, 137, 7) +
-						disc(353, 112, 9) +
-						disc(347, 123, 8) +
-						disc(359, 124, 8) +
-						disc(353, 133, 7),
-					strength: 0.7
-				},
-				{
-					d: rect(226, 110, 2, 76),
+						rect(236, 106, 2, 44) +
+						rect(248, 112, 2, 38) +
+						rect(258, 116, 2, 34) +
+						rect(380, 95, 2, 51) +
+						rect(392, 101, 2, 45) +
+						rect(402, 95, 2, 51),
 					strength: 1,
 					snow: true
+				},
+				{
+					d:
+						disc(239, 116, 9) +
+						disc(239, 118, 6) +
+						disc(236, 119, 8) +
+						disc(241, 102, 7) +
+						disc(249, 118, 6) +
+						disc(245, 112, 9) +
+						disc(251, 109, 8) +
+						disc(244, 118, 6) +
+						disc(262, 114, 7) +
+						disc(264, 127, 7) +
+						disc(264, 121, 8) +
+						disc(254, 129, 8) +
+						disc(384, 99, 7) +
+						disc(374, 103, 7) +
+						disc(383, 97, 8) +
+						disc(377, 105, 8) +
+						disc(392, 109, 7) +
+						disc(393, 111, 7) +
+						disc(396, 109, 9) +
+						disc(390, 97, 8) +
+						disc(401, 91, 7) +
+						disc(404, 95, 9) +
+						disc(403, 93, 8) +
+						disc(400, 108, 9),
+					strength: 0.6
 				}
-			]
+			],
+			lines: [{ d: 'M262 160h22M300 161h30M344 160h18', strength: 0.5, motion: 'shimmer' }]
 		},
 		shapes: [
 			{ d: GROUND.d, strength: 0.55 },
