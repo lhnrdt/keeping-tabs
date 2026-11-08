@@ -37,7 +37,7 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 		],
 		lines: [
 			{ d: 'M328 70L264 140M332 70L290 140', strength: 1, motion: 'sway' },
-			{ d: 'M258 116Q262 152 300 164M250 124Q256 156 290 172', strength: 0.5 }
+			{ d: 'M294 152Q308 160 324 162M292 162Q306 170 322 172', strength: 0.5 }
 		]
 	},
 	// Friends out on a rock tongue high above the fjord, one sitting at the tip, legs over the drop

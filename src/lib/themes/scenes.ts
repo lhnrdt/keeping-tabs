@@ -32,6 +32,8 @@ export type Shape = {
 	mirror?: number;
 	/** Drawn upside down around this y, like a reflection in water (see `reflected`) */
 	reflect?: number;
+	/** Turned by this many degrees around a point, e.g. someone leaning into a slope */
+	rotate?: { deg: number; x: number; y: number };
 	/** The sun, which the moon takes the place of at night (time-of-day.ts) */
 	sun?: { x: number; y: number; r: number };
 };
@@ -54,7 +56,17 @@ export type Scene = {
 };
 
 /** The transform for a shape drawn mirrored or reflected, if it is: [a, b, c, d, e, f] */
-export function flipOf(shape: { mirror?: number; reflect?: number }) {
+export function flipOf(shape: {
+	mirror?: number;
+	reflect?: number;
+	rotate?: { deg: number; x: number; y: number };
+}) {
+	if (shape.rotate) {
+		const a = (shape.rotate.deg * Math.PI) / 180;
+		const [cos, sin] = [Math.cos(a), Math.sin(a)];
+		const { x, y } = shape.rotate;
+		return [cos, sin, -sin, cos, x - x * cos + y * sin, y - x * sin - y * cos] as const;
+	}
 	if (shape.mirror === undefined && shape.reflect === undefined) return undefined;
 	const x = shape.mirror === undefined ? 1 : -1;
 	const y = shape.reflect === undefined ? 1 : -1;
@@ -62,7 +74,7 @@ export function flipOf(shape: { mirror?: number; reflect?: number }) {
 }
 
 /** The SVG transform for a shape drawn mirrored or reflected, if it is */
-export const mirrorOf = (shape: { mirror?: number; reflect?: number }) => {
+export const mirrorOf = (shape: Parameters<typeof flipOf>[0]) => {
 	const flip = flipOf(shape);
 	return flip ? `matrix(${flip.join(' ')})` : undefined;
 };

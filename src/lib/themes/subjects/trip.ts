@@ -80,16 +80,37 @@ export const TRIP: Record<ThemeId, Scene> = {
 			{ d: bird(300, 96) + bird(326, 82, 4), strength: 0.6, motion: 'fly' }
 		]
 	},
-	// A ski tourer skinning up the slope, the track zig-zagging below
+	// Two ski tourers skinning up the slope, their zig-zag track behind them in the snow
 	mountains: {
+		backdrop: {
+			shapes: [
+				{ d: 'M230 150L300 76L370 150Z', strength: 0.28 },
+				{ d: 'M300 76L316 94L306 90L300 98L294 90L284 94Z', strength: 1, snow: true },
+				{ d: 'M362 52a12 12 0 1 1 24 0a12 12 0 1 1 -24 0Z', strength: 0.35 }
+			]
+		},
 		shapes: [
 			{ d: 'M214 200L400 108V200Z', strength: 1, snow: true },
-			{ d: 'M360 128l6-4 8 2-2 6ZM252 186l6-3 6 3Z', strength: 0.7 },
-			{ d: figure(320, 148, 52, { hat: 'helmet', pack: 'left' }), strength: 1 },
-			{ d: limb(294, 161, 348, 134, 3), strength: 1 },
-			{ d: limb(306, 120, 300, 154, 1.6) + limb(334, 116, 340, 146, 1.6), strength: 0.9 }
+			{ d: 'M362 129l6-6 9 2-1 5ZM344 140l5-4 7 2-1 3Z', strength: 0.8 },
+			{ d: limb(250, 183, 280, 168, 2.2) + limb(280, 168, 286, 162, 2.2), strength: 0.85 },
+			{
+				d:
+					figure(266, 175, 32, { hat: 'beanie', pack: 'left' }) +
+					limb(258, 154, 254, 178, 1.8) +
+					limb(274, 152, 274, 170, 1.8),
+				strength: 0.85
+			},
+			{ d: limb(298, 159, 348, 134, 3) + limb(348, 134, 356, 125, 3), strength: 1 },
+			{
+				d:
+					figure(324, 146, 52, { hat: 'helmet', pack: 'left' }) +
+					limb(310, 118, 304, 152, 2.4) +
+					limb(334, 116, 334, 142, 2.4),
+				strength: 1
+			},
+			{ d: 'M196 200Q232 180 270 192Q290 196 300 200Z', strength: 1, snow: true }
 		],
-		lines: [{ d: 'M236 197L280 175L262 184L298 166', strength: 0.5 }]
+		lines: [{ d: 'M240 199L300 184L272 180L332 164L306 160', strength: 1 }]
 	},
 	// A walker on the moor path, heading for the cairn, the wind in their scarf
 	heather: {

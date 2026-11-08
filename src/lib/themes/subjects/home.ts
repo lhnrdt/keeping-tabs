@@ -88,6 +88,17 @@ export const HOME: Record<ThemeId, Scene> = {
 	},
 	// A hut on the ridge, skis in the rack, smoke rising
 	mountains: {
+		backdrop: {
+			shapes: [
+				{ d: 'M200 150L250 80L300 140L340 74L400 150Z', strength: 0.3 },
+				{
+					d: 'M250 80L264 98L256 94L250 102L244 94L236 98ZM340 74L356 94L346 90L340 98L334 90L324 94Z',
+					strength: 1,
+					snow: true
+				},
+				{ d: 'M282 150Q300 122 318 150Z', strength: 1, snow: true }
+			]
+		},
 		shapes: [
 			{ d: 'M214 200L296 152L348 160L400 138V200Z', strength: 0.95 },
 			{ d: rect(336, 112, 10, 30), strength: 1 },

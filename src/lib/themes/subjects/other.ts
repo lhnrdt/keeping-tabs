@@ -69,23 +69,33 @@ export const OTHER: Record<ThemeId, Scene> = {
 			{ d: waves(226, 197, 2) + waves(330, 197, 2), strength: 0.5, motion: 'flow' }
 		]
 	},
-	// A summit cross, prayer flags in the wind
+	// A summit cross with prayer flags on the top of a peak, a climber just arriving
 	mountains: {
+		backdrop: {
+			shapes: [
+				{ d: 'M200 186L240 136L266 158L292 126L330 186Z', strength: 0.4 },
+				{ d: 'M300 186L362 120L400 146V186Z', strength: 0.32 }
+			]
+		},
 		shapes: [
-			{ d: 'M214 200L318 126L400 164V200Z', strength: 0.95 },
-			{ d: 'M296 142L318 126L340 142L330 138L322 146L314 138L306 144Z', strength: 1, snow: true },
-			{ d: rect(315, 72, 6, 56) + rect(302, 84, 32, 5), strength: 1 },
+			{ d: 'M214 200L318 98L400 160V200Z', strength: 0.95 },
+			{ d: 'M290 126L318 98L346 120L332 116L324 126L316 116L304 124Z', strength: 1, snow: true },
+			{ d: 'M258 168l8-6 8 2-2 6ZM336 150l8-5 7 3-3 5ZM360 172l7-4 6 2-2 4Z', strength: 1 },
+			{ d: rect(316, 62, 5, 38) + rect(306, 72, 25, 4), strength: 1 },
 			{
 				d:
-					tri(326, 78, 336, 82, 330, 92) +
-					tri(342, 86, 352, 90, 345, 100) +
-					tri(358, 94, 368, 98, 361, 108) +
-					tri(374, 102, 384, 106, 377, 116),
+					tri(333, 78, 344, 85, 335, 93) +
+					tri(351, 98, 361, 106, 351, 112) +
+					tri(369, 121, 378, 130, 367, 134),
 				strength: 0.85,
 				motion: 'flutter'
-			}
+			},
+			{ d: figure(282, 132, 36, { hat: 'helmet', pack: 'left' }), strength: 1 }
 		],
-		lines: [{ d: 'M321 76Q350 92 392 108', strength: 0.8 }]
+		lines: [
+			{ d: 'M321 64Q356 96 392 152', strength: 0.8 },
+			{ d: 'M294 112L297 132', strength: 0.9 }
+		]
 	},
 	// Someone climbing over the gate instead of opening it
 	heather: {
