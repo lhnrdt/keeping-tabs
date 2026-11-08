@@ -347,21 +347,45 @@ export const HOME: Record<ThemeId, Scene> = {
 			}
 		]
 	},
-	// A row of beach huts
+	// The row of striped beach huts on the sand, the sea beyond, dune grass up close
 	coast: {
+		backdrop: {
+			shapes: [{ d: 'M-200 186V166H400V186Z', strength: 0.36 }],
+			lines: [{ d: waves(220, 176, 4), strength: 0.45, motion: 'flow' }]
+		},
 		shapes: [
-			GROUND,
+			{ d: 'M-200 200V184H400V200Z', strength: 0.4 },
 			{
 				d:
-					house(256, 182, 36, 44, 18, 4) +
-					house(302, 182, 36, 48, 18, 4) +
-					house(348, 182, 36, 44, 18, 4),
-				strength: 1
+					house(236, 188, 30, 36, 16, 4) +
+					house(272, 188, 30, 36, 16, 4) +
+					house(308, 188, 30, 36, 16, 4) +
+					house(344, 188, 30, 36, 16, 4),
+				strength: 0.9
 			},
 			{
-				d: rect(266, 152, 16, 30) + rect(312, 148, 16, 34) + rect(358, 152, 16, 30),
+				d:
+					rect(277, 158, 4, 30) +
+					rect(285, 158, 4, 30) +
+					rect(293, 158, 4, 30) +
+					rect(349, 158, 4, 30) +
+					rect(357, 158, 4, 30) +
+					rect(365, 158, 4, 30) +
+					'M245 188V166h12V188Z' +
+					'M317 188V166h12V188Z',
 				strength: 1,
 				cut: true
+			},
+			{
+				d: 'M196 200Q236 182 280 194Q296 198 300 200Z' + 'M352 200Q380 186 400 188V200Z',
+				strength: 0.85
+			}
+		],
+		lines: [
+			{
+				d: 'M222 192l-5-16M228 191l-1-18M234 192l4-15M372 194l-3-15M378 193l1-17M386 194l3-14',
+				strength: 0.9,
+				motion: 'sway'
 			}
 		]
 	},

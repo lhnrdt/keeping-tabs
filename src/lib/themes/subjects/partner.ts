@@ -13,10 +13,9 @@ import {
 	rect,
 	rounded,
 	seated,
-	sitting,
 	star,
 	tri,
-	WATER
+	waves
 } from '../draw';
 
 /** Two in a boat, on the water at y 160 */
@@ -256,14 +255,34 @@ export const PARTNER: Record<ThemeId, Scene> = {
 			}
 		]
 	},
-	// Two on a jetty, watching the sea
+	// At the end of the jetty, the sun going down into the sea, the two of them side by side
 	coast: {
+		backdrop: {
+			shapes: [{ d: 'M-200 186V166H400V186Z', strength: 0.36 }],
+			lines: [{ d: 'M342 172h40M350 178h24M356 184h12', strength: 0.5, motion: 'shimmer' }]
+		},
 		shapes: [
-			WATER,
-			{ d: rect(270, 170, 130, 8), strength: 1 },
-			{ d: sitting(320, 170, 48, -1) + sitting(352, 170, 48, -1), strength: 1 }
+			{ d: 'M338 166a24 24 0 0 1 48 0Z', strength: 0.5 },
+			{
+				d:
+					rect(196, 172, 140, 5) +
+					rect(214, 177, 4, 23) +
+					rect(260, 177, 4, 23) +
+					rect(306, 177, 4, 23),
+				strength: 1
+			},
+			{ d: seated(290, 172, 44) + seated(310, 172, 40), strength: 1 },
+			{
+				d:
+					limb(287, 170, 293, 186, 3) +
+					limb(293, 170, 298, 186, 3) +
+					limb(307, 170, 312, 185, 3) +
+					limb(313, 170, 318, 185, 3),
+				strength: 1
+			},
+			{ d: heart(300, 116, 7), strength: 1, motion: 'pulse' }
 		],
-		lines: [{ d: 'M282 178V198M330 178V200M378 178V200', strength: 0.9 }]
+		lines: [{ d: waves(340, 192, 2, 14), strength: 0.5, motion: 'flow' }]
 	},
 	// Under one blanket, a shooting star above
 	aurora: {

@@ -254,20 +254,40 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 		],
 		lines: [{ d: 'M314 164q8-10 14-14M312 156q8-6 14-8', strength: 0.5 }]
 	},
-	// Beach volleyball over the net
+	// Beach volleyball: the spike going over the net, the block going up
 	coast: {
+		backdrop: {
+			shapes: [{ d: 'M-200 186V166H400V186Z', strength: 0.36 }],
+			lines: [{ d: waves(220, 176, 4), strength: 0.45, motion: 'flow' }]
+		},
 		shapes: [
-			GROUND,
-			{ d: rect(296, 116, 4, 70) + rect(336, 116, 4, 70), strength: 1 },
-			{ d: rect(300, 120, 36, 22), strength: 0.45 },
+			{ d: 'M-200 200V184H400V200Z', strength: 0.45 },
+			{ d: rect(318, 128, 2.4, 58) + rect(318, 128, 2.4, 2), strength: 1 },
+			{ d: rect(310, 130, 18, 24), strength: 0.75 },
 			{
-				d: 'M306 120v22h2v-22ZM314 120v22h2v-22ZM322 120v22h2v-22ZM330 120v22h2v-22ZM300 130h36v2h-36Z',
+				d:
+					rect(310, 134, 18, 1) +
+					rect(310, 138, 18, 1) +
+					rect(310, 142, 18, 1) +
+					rect(310, 146, 18, 1) +
+					rect(310, 150, 18, 1) +
+					rect(312, 130, 1, 24) +
+					rect(316, 130, 1, 24) +
+					rect(320, 130, 1, 24) +
+					rect(324, 130, 1, 24),
 				strength: 1,
 				cut: true
 			},
-			{ d: person(262, 186, 60) + person(374, 186, 58), strength: 1 },
-			{ d: disc(318, 90, 9), strength: 1, motion: 'bob' }
-		]
+			{ d: rect(308, 128, 22, 3), strength: 1 },
+			{ d: figure(296, 180, 54, { hat: 'cap' }) + limb(302, 150, 312, 124, 3.4), strength: 1 },
+			{
+				d: figure(344, 184, 50) + limb(338, 156, 328, 130, 3.2) + limb(348, 156, 338, 128, 3.2),
+				strength: 0.85
+			},
+			{ d: figure(256, 186, 46), strength: 0.7 },
+			{ d: disc(318, 116, 6.5), strength: 1, motion: 'bob' }
+		],
+		lines: [{ d: 'M314 113q4 3 8 0M313 118q5 2 10 0', strength: 0.6, motion: 'bob' }]
 	},
 	// A hot tub under the stars, steam rising
 	aurora: {

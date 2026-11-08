@@ -13,7 +13,6 @@ import {
 	rounded,
 	sitting,
 	steam,
-	tri,
 	WATER
 } from '../draw';
 
@@ -514,13 +513,59 @@ export const FOOD: Record<ThemeId, Scene> = {
 			}
 		]
 	},
-	// Ice cream on the beach
+	// The ice-cream kiosk on the promenade, a queue in front, the sea behind the railing
 	coast: {
+		backdrop: {
+			shapes: [{ d: 'M-200 186V166H400V186Z', strength: 0.36 }]
+		},
 		shapes: [
-			GROUND,
-			{ d: tri(282, 186, 270, 140, 294, 140) + tri(346, 186, 334, 136, 358, 136), strength: 0.85 },
-			{ d: disc(282, 132, 13) + disc(282, 114, 10) + disc(346, 126, 13), strength: 1 },
-			{ d: 'M274 146l16 0M338 142l16 0', strength: 1, cut: true }
+			{ d: 'M-200 200V184H400V200Z', strength: 0.45 },
+			{
+				d:
+					rect(200, 168, 200, 2) +
+					rect(204, 168, 2, 16) +
+					rect(220, 168, 2, 16) +
+					rect(236, 168, 2, 16) +
+					rect(252, 168, 2, 16) +
+					rect(268, 168, 2, 16) +
+					rect(284, 168, 2, 16) +
+					rect(300, 168, 2, 16) +
+					rect(316, 168, 2, 16) +
+					rect(332, 168, 2, 16) +
+					rect(348, 168, 2, 16) +
+					rect(364, 168, 2, 16) +
+					rect(380, 168, 2, 16) +
+					rect(396, 168, 2, 16),
+				strength: 0.6
+			},
+			{ d: rect(330, 130, 60, 56) + 'M322 132L332 116H388L398 132Z', strength: 0.9 },
+			{ d: rect(336, 140, 48, 18), strength: 1, cut: true },
+			{ d: 'M322 132L332 116H388L398 132Z', strength: 1 },
+			{
+				d:
+					rect(334, 117, 4, 15) +
+					rect(344, 117, 4, 15) +
+					rect(354, 117, 4, 15) +
+					rect(364, 117, 4, 15) +
+					rect(374, 117, 4, 15) +
+					rect(384, 117, 4, 15),
+				strength: 1,
+				cut: true
+			},
+			{
+				d: figure(354, 158, 22) + 'M366 102l5 12h-10Z' + disc(366, 100, 6) + disc(366, 92, 4.5),
+				strength: 1
+			},
+			{
+				d:
+					figure(310, 186, 50) +
+					limb(316, 160, 326, 152, 3) +
+					'M326 152l-3-9 6 0Z' +
+					disc(326, 141, 3.5),
+				strength: 1
+			},
+			{ d: figure(286, 186, 44, { hat: 'cap' }), strength: 0.8 },
+			{ d: figure(266, 186, 38), strength: 0.65 }
 		]
 	},
 	// Hot chocolate in the cold

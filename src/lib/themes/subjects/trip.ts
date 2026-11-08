@@ -378,22 +378,37 @@ export const TRIP: Record<ThemeId, Scene> = {
 			[395, 180, 2.4, 1]
 		]
 	},
-	// A sailboat passing the lighthouse, the crew at the helm
+	// A sailboat rounding the lighthouse on its rocky point
 	coast: {
+		backdrop: {
+			shapes: [{ d: 'M-200 186V168H400V186Z', strength: 0.3 }]
+		},
 		shapes: [
-			WATER,
-			{ d: hull(240, 186, 116, 18), strength: 1, motion: 'rock' },
-			{ d: rect(246, 172, 104, 3), strength: 1, cut: true, motion: 'rock' },
-			{ d: disc(336, 178, 5), strength: 1, cut: true, motion: 'rock' },
-			{ d: rect(296, 66, 4, 102), strength: 1, motion: 'rock' },
-			{ d: tri(302, 72, 302, 160, 352, 160), strength: 0.9, motion: 'rock' },
-			{ d: tri(294, 86, 294, 160, 252, 160), strength: 0.65, motion: 'rock' },
-			{ d: 'M300 66l14 4-14 4Z', strength: 1, motion: 'flutter' },
-			{ d: figure(268, 168, 22, { hat: 'cap' }), strength: 1, motion: 'rock' }
+			{ d: WATER.d, strength: 0.4 },
+			{ d: 'M340 186Q346 168 362 164Q384 158 400 162V186Z', strength: 0.9 },
+			{
+				d: 'M364 164L368 112H380L384 164Z' + rect(364, 104, 20, 8) + 'M366 104L374 94L382 104Z',
+				strength: 1
+			},
+			{
+				d: rect(366.5, 126, 15, 5) + rect(365.5, 144, 17, 5) + rect(368, 106, 12, 4),
+				strength: 1,
+				cut: true
+			},
+			{ d: hull(246, 182, 70, 9), strength: 1, motion: 'rock' },
+			{
+				d:
+					rect(280, 110, 2.6, 64) +
+					tri(284, 114, 284, 168, 316, 168) +
+					tri(278, 122, 278, 168, 252, 168),
+				strength: 0.9,
+				motion: 'rock'
+			},
+			{ d: figure(262, 174, 18, { hat: 'cap' }), strength: 1, motion: 'rock' }
 		],
 		lines: [
-			{ d: waves(220, 194, 4), strength: 0.6, motion: 'flow' },
-			{ d: bird(370, 96), strength: 0.6, motion: 'fly' }
+			{ d: waves(212, 190, 2) + waves(300, 194, 2), strength: 0.6, motion: 'flow' },
+			{ d: 'M384 110l18-6M384 112l18 4', strength: 0.4, motion: 'shimmer' }
 		]
 	},
 	// A camper van under the lights, windows warm, someone stepping out to look up

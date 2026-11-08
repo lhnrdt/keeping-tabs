@@ -7,6 +7,7 @@ import {
 	flag,
 	flame,
 	GROUND,
+	hull,
 	limb,
 	logs,
 	pine,
@@ -287,31 +288,53 @@ export const EVENT: Record<ThemeId, Scene> = {
 		],
 		lines: [{ d: 'M318 126l-20 30M348 124v24M378 126l20 30', strength: 0.6, motion: 'shimmer' }]
 	},
-	// Paper lanterns along the beach
+	// Fireworks over the harbour, the crowd on the pier watching
 	coast: {
+		backdrop: {
+			shapes: [
+				{ d: 'M-200 186V170H400V186Z', strength: 0.36 },
+				{ d: hull(330, 172, 40, 6) + rect(348, 150, 2, 18), strength: 0.5 }
+			]
+		},
 		shapes: [
-			GROUND,
 			{
 				d:
-					rounded(262, 92, 18, 24, 8) +
-					rounded(300, 104, 18, 24, 8) +
-					rounded(338, 104, 18, 24, 8) +
-					rounded(372, 92, 18, 24, 8),
-				strength: 1,
-				motion: 'sway'
+					rect(196, 178, 204, 6) +
+					rect(206, 184, 4, 16) +
+					rect(246, 184, 4, 16) +
+					rect(286, 184, 4, 16) +
+					rect(326, 184, 4, 16) +
+					rect(366, 184, 4, 16),
+				strength: 1
 			},
 			{
 				d:
-					rect(262, 102, 18, 3) +
-					rect(300, 114, 18, 3) +
-					rect(338, 114, 18, 3) +
-					rect(372, 102, 18, 3),
-				strength: 1,
-				cut: true,
-				motion: 'sway'
+					figure(226, 178, 40) +
+					figure(248, 178, 46, { hat: 'cap' }) +
+					figure(270, 178, 38) +
+					figure(292, 178, 44) +
+					limb(254, 150, 262, 132, 3.4),
+				strength: 1
 			}
 		],
-		lines: [{ d: 'M240 84Q320 118 398 84', strength: 0.8 }]
+		lines: [
+			{
+				d: 'M307.7 60.0L322.0 60.0M306.7 63.8L319.1 71.0M303.9 66.7L311.0 79.1M300.0 67.7L300.0 82.0M296.2 66.7L289.0 79.1M293.3 63.8L280.9 71.0M292.3 60.0L278.0 60.0M293.3 56.2L280.9 49.0M296.1 53.3L289.0 40.9M300.0 52.3L300.0 38.0M303.9 53.3L311.0 40.9M306.7 56.1L319.1 49.0',
+				strength: 0.9,
+				motion: 'pulse'
+			},
+			{
+				d: 'M357.6 84.0L368.0 84.0M356.5 87.3L364.9 93.4M353.7 89.3L356.9 99.2M350.3 89.3L347.1 99.2M347.5 87.3L339.1 93.4M346.4 84.0L336.0 84.0M347.5 80.7L339.1 74.6M350.3 78.7L347.1 68.8M353.7 78.7L356.9 68.8M356.5 80.7L364.9 74.6',
+				strength: 0.75,
+				motion: 'pulse'
+			},
+			{
+				d: 'M258.5 92.0L267.0 92.0M257.2 95.2L263.2 101.2M254.0 96.5L254.0 105.0M250.8 95.2L244.8 101.2M249.5 92.0L241.0 92.0M250.8 88.8L244.8 82.8M254.0 87.5L254.0 79.0M257.2 88.8L263.2 82.8',
+				strength: 0.6,
+				motion: 'pulse'
+			},
+			{ d: 'M300 160V86M352 160V102', strength: 0.3 }
+		]
 	},
 	// Sky lanterns rising into the night
 	aurora: {

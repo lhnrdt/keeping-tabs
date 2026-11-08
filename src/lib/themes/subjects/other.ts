@@ -2,14 +2,12 @@
 import type { ThemeId } from '../palettes';
 import type { Scene } from '../scenes';
 import {
-	bird,
 	disc,
 	figure,
 	flag,
 	GROUND,
 	hull,
 	limb,
-	person,
 	pine,
 	rect,
 	rounded,
@@ -271,18 +269,36 @@ export const OTHER: Record<ThemeId, Scene> = {
 			}
 		]
 	},
-	// Someone paddleboarding past the buoy
+	// Paddleboarding past the buoy, a little island out on the horizon
 	coast: {
+		backdrop: {
+			shapes: [{ d: 'M330 166Q350 152 372 154Q390 156 400 166Z', strength: 0.3 }]
+		},
 		shapes: [
-			WATER,
-			{ d: 'M346 180l6-32h18l6 32Z', strength: 0.85, motion: 'rock' },
-			{ d: rect(348, 160, 26, 6), strength: 1, cut: true, motion: 'rock' },
-			{ d: rounded(250, 180, 76, 6, 3), strength: 1, motion: 'rock' },
-			{ d: person(288, 180, 54), strength: 1, motion: 'rock' }
+			{ d: 'M-200 200V170H400V200Z', strength: 0.4 },
+			{ d: 'M262 174h76q-4 5-12 5h-52q-8 0-12-5Z', strength: 1, motion: 'rock' },
+			{
+				d:
+					figure(300, 174, 52, { hat: 'cap' }) +
+					limb(306, 146, 322, 136, 3) +
+					limb(322, 130, 330, 182, 2) +
+					'M327 178l6 0 0 10-6 0Z',
+				strength: 1,
+				motion: 'rock'
+			},
+			{
+				d: 'M370 174l6-18 6 18Z' + rect(375, 150, 2, 6) + disc(376, 149, 2.6),
+				strength: 0.85,
+				motion: 'bob'
+			},
+			{ d: rect(369, 166, 14, 3), strength: 1, cut: true, motion: 'bob' }
 		],
 		lines: [
-			{ d: 'M300 140L312 192', strength: 0.9, motion: 'rock' },
-			{ d: waves(230, 194, 4) + bird(380, 80), strength: 0.6, motion: 'flow' }
+			{
+				d: waves(214, 186, 2) + waves(318, 192, 2) + waves(240, 194, 1),
+				strength: 0.6,
+				motion: 'flow'
+			}
 		]
 	},
 	// A telescope pointed at the sky
