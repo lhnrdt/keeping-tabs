@@ -263,9 +263,21 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 	meadow: {
 		backdrop: {
 			shapes: [
-				{ d: 'M60 186Q220 136 460 148V186Z', strength: 0.22 },
-				{ d: 'M150 186Q300 158 470 166V186Z', strength: 0.34 },
-				{ d: roundTree(220, 170, 40) + roundTree(248, 172, 30), strength: 0.4 }
+				{
+					d:
+						roundTree(214, 170, 44) +
+						roundTree(234, 170, 56) +
+						roundTree(254, 170, 48) +
+						roundTree(276, 170, 60) +
+						roundTree(298, 170, 50) +
+						roundTree(320, 170, 58) +
+						roundTree(344, 170, 46) +
+						roundTree(366, 170, 56) +
+						roundTree(388, 170, 50) +
+						roundTree(406, 170, 44),
+					strength: 0.4
+				},
+				{ d: 'M170 186Q260 166 420 170V186Z', strength: 0.35 }
 			]
 		},
 		shapes: [
