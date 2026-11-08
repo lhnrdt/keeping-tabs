@@ -173,21 +173,79 @@ export const EVENT: Record<ThemeId, Scene> = {
 		],
 		lines: [{ d: 'M210 106Q256 116 302 100', strength: 0.6 }]
 	},
-	// Balloons and bunting
+	// The crayfish party: paper hats round the long table, the moon lanterns hanging low from the birches
 	birch: {
+		backdrop: {
+			shapes: [
+				{
+					d:
+						disc(210.8, 0, 10.5) +
+						disc(216.7, 11, 10.2) +
+						disc(214.6, 22, 11.1) +
+						disc(206.0, 33, 11.5) +
+						disc(205.7, 44, 11.3) +
+						disc(206.3, 55, 10.3) +
+						disc(212.6, 66, 12.5) +
+						disc(387.1, 0, 12.9) +
+						disc(385.3, 11, 12.1) +
+						disc(384.5, 22, 10.7) +
+						disc(401.0, 33, 10.6) +
+						disc(394.6, 44, 11.4) +
+						disc(391.2, 55, 11.5) +
+						disc(386.5, 66, 12.5),
+					strength: 0.7
+				},
+				{ d: rect(210, 0, 6, 186) + rect(390, 0, 6, 186), strength: 1, snow: true }
+			]
+		},
 		shapes: [
-			GROUND,
-			{ d: disc(292, 100, 20), strength: 1, motion: 'bob' },
-			{ d: disc(334, 88, 23), strength: 0.85, motion: 'bob-slow' },
+			{ d: GROUND.d, strength: 0.55 },
 			{
-				d: 'M250 62l12 18 8-23Z M284 52l10 20 11-19Z M320 44l9 21 13-17Z M358 42l6 22 14-14Z',
-				strength: 0.9
+				d:
+					seated(236, 170, 46) +
+					seated(262, 170, 46) +
+					seated(288, 170, 46) +
+					seated(330, 170, 46) +
+					seated(356, 170, 46),
+				strength: 0.85
+			},
+			{
+				d:
+					tri(231, 136, 236, 122, 241, 136) +
+					tri(283, 136, 288, 122, 293, 136) +
+					tri(351, 136, 356, 122, 361, 136),
+				strength: 1
+			},
+			{ d: rect(220, 164, 156, 6) + rect(228, 170, 4, 16) + rect(364, 170, 4, 16), strength: 1 },
+			{
+				d:
+					limb(268, 152, 273, 132, 2.6) +
+					rect(270.5, 124, 5, 8) +
+					limb(282, 152, 278, 132, 2.6) +
+					rect(275.5, 125, 5, 8) +
+					limb(350, 152, 346, 132, 2.6) +
+					rect(343.5, 124, 5, 8),
+				strength: 1
+			},
+			{ d: disc(250, 86, 10) + disc(306, 98, 12) + disc(362, 84, 10), strength: 1, motion: 'sway' },
+			{
+				d:
+					disc(247, 84, 1.4) +
+					disc(253, 84, 1.4) +
+					disc(303, 96, 1.6) +
+					disc(309, 96, 1.6) +
+					disc(359, 82, 1.4) +
+					disc(365, 82, 1.4),
+				strength: 1,
+				cut: true,
+				motion: 'sway'
 			}
 		],
 		lines: [
-			{ d: 'M230 66Q310 36 396 40', strength: 0.8 },
-			{ d: 'M292 120q6 30-2 66', strength: 0.8, motion: 'bob' },
-			{ d: 'M334 111q-6 34 2 75', strength: 0.8, motion: 'bob-slow' }
+			{ d: 'M213 56Q300 92 393 56', strength: 0.7 },
+			{ d: 'M250 66V76M306 76V86M362 64V74', strength: 0.7 },
+			{ d: 'M247 89q3 3 6 0M302 102q4 3 8 0M359 87q3 3 6 0', strength: 1, motion: 'sway' },
+			{ d: 'M271 120l-3-4M280 120l3-4M345 120l-3-4', strength: 0.8 }
 		]
 	},
 	// A cake on the table, candles lit
