@@ -35,15 +35,22 @@
 	});
 
 	onMount(refreshOnReturn);
-	// No browser menu on a long press or right click, except where text can be typed or copied
+	// No browser menu on a long press or right click, except where text can be typed or copied, and
+	// no pinching to zoom
 	onMount(() => {
 		const menu = (event: Event) => {
 			if (!(event.target as Element).closest('input, textarea, [contenteditable], .selectable')) {
 				event.preventDefault();
 			}
 		};
+		// Safari pinches to zoom whatever the page says, unless the gesture is stopped
+		const pinch = (event: Event) => event.preventDefault();
 		document.addEventListener('contextmenu', menu);
-		return () => document.removeEventListener('contextmenu', menu);
+		document.addEventListener('gesturestart', pinch);
+		return () => {
+			document.removeEventListener('contextmenu', menu);
+			document.removeEventListener('gesturestart', pinch);
+		};
 	});
 	// Expenses kept while offline go out when the connection is back (#55)
 	onMount(startSync);

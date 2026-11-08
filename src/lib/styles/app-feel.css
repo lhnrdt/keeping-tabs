@@ -1,9 +1,11 @@
 /*
- * An app, not a web page (#321): no text selection, link previews or the browser's own menu when
- * pressing and holding. Holding an entry opens its own menu instead (EntryMenu). What's typed, and
+ * An app, not a web page (#321): no zooming, no text selection, link previews or the browser's own
+ * menu when pressing and holding. Holding an entry opens its own menu instead (EntryMenu). What's typed, and
  * text marked `selectable`, can still be selected and copied.
  */
 html {
+	/* Scrolling, but no pinching or double tapping to zoom */
+	touch-action: pan-x pan-y;
 	-webkit-user-select: none;
 	user-select: none;
 	-webkit-touch-callout: none;
@@ -22,4 +24,13 @@ textarea,
 img,
 a {
 	-webkit-user-drag: none;
+}
+
+/* iPhones zoom into a field with text smaller than 16px when it's focused: not in this app */
+@media (pointer: coarse) {
+	input,
+	select,
+	textarea {
+		font-size: max(16px, 1em);
+	}
 }
