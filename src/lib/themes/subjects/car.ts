@@ -11,6 +11,7 @@ import {
 	rect,
 	rounded,
 	roundTree,
+	sparkle,
 	steam,
 	WATER,
 	waves
@@ -622,21 +623,35 @@ export const CAR: Record<ThemeId, Scene> = {
 		backdrop: {
 			night: true,
 			shapes: [
-				{ d: curtain(206, 400, 64, 30, 34), strength: 0.28, motion: 'shimmer' },
-				{ d: curtain(236, 400, 104, 22, 24), strength: 0.22, motion: 'shimmer' },
-				{ d: 'M150 186C220 160 270 150 320 156C350 160 372 146 410 150V186Z', strength: 0.35 },
-				{ d: pine(224, 186, 34) + pine(240, 186, 44), strength: 0.7 }
+				{
+					d: sparkle(226, 20, 8.8) + sparkle(386, 18, 8.8) + sparkle(360, 78, 6.1),
+					strength: 0.55,
+					motion: 'twinkle'
+				},
+				{
+					d: sparkle(226, 20, 6.5) + sparkle(386, 18, 6.5) + sparkle(360, 78, 4.5),
+					strength: 1,
+					snow: true,
+					motion: 'twinkle'
+				},
+				{
+					d: sparkle(300, 10, 6.8) + sparkle(254, 70, 6.1),
+					strength: 0.55,
+					motion: 'twinkle-late'
+				},
+				{
+					d: sparkle(300, 10, 5) + sparkle(254, 70, 4.5),
+					strength: 1,
+					snow: true,
+					motion: 'twinkle-late'
+				},
+				{ d: curtain(214, 400, 46, 34, 34), strength: 0.51, motion: 'shimmer' },
+				{ d: curtain(250, 400, 96, 16, 16), strength: 0.34, motion: 'shimmer' },
+				{ d: 'M190 186L226 160L250 168L290 140L330 162L362 148L410 166V186Z', strength: 0.42 }
 			],
 			lines: [
-				{ d: rays(206, 400, 64, 30, 34), strength: 0.55, motion: 'shimmer' },
-				{ d: rays(236, 400, 104, 22, 24), strength: 0.42, motion: 'shimmer' }
-			],
-			dots: [
-				[226, 22, 1.6, 0.8],
-				[262, 12, 1.2, 0.7],
-				[338, 16, 1.4, 0.8],
-				[384, 28, 1.2, 0.7],
-				[214, 96, 1.3, 0.7]
+				{ d: rays(214, 400, 46, 34, 34), strength: 0.9, motion: 'shimmer' },
+				{ d: rays(250, 400, 96, 16, 16), strength: 0.6, motion: 'shimmer' }
 			]
 		},
 		shapes: [
