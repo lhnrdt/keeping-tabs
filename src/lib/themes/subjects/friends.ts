@@ -151,14 +151,65 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 		],
 		lines: [{ d: 'M336 110Q356 90 354 44', strength: 0.6 }]
 	},
-	// Throwing a frisbee
+	// Sauna evening by the lake: the hut smoking on the shore, two on the jetty, one just jumped in
 	birch: {
+		backdrop: {
+			shapes: [
+				{ d: 'M250 172Q330 150 460 156V172Z', strength: 0.28 },
+				{
+					d:
+						disc(209.9, 52, 11.5) +
+						disc(218.7, 63, 9.8) +
+						disc(214.9, 74, 10.3) +
+						disc(217.1, 85, 11.4) +
+						disc(209.3, 96, 9.1) +
+						disc(219.7, 107, 10.3) +
+						disc(218.7, 118, 9.0) +
+						disc(245.4, 40, 11.8) +
+						disc(232.8, 51, 9.3) +
+						disc(243.7, 62, 11.2) +
+						disc(241.4, 73, 9.9) +
+						disc(240.5, 84, 10.8) +
+						disc(240.1, 95, 9.5) +
+						disc(238.0, 106, 10.2) +
+						disc(242.1, 117, 12.0),
+					strength: 0.7
+				},
+				{ d: rect(214, 0, 2, 172) + rect(238, 0, 2.5, 172), strength: 1, snow: true }
+			]
+		},
 		shapes: [
-			GROUND,
-			{ d: person(262, 186, 60) + person(378, 186, 56), strength: 1 },
-			{ d: 'M308 112q12-6 24 0q-12 6-24 0Z', strength: 1, motion: 'bob' }
+			{ d: 'M-200 200V176H400V200Z', strength: 0.4 },
+			{ d: 'M196 200V178Q210 172 250 172L262 178V200Z', strength: 0.75 },
+			{ d: rect(224, 140, 36, 34), strength: 0.9 },
+			{ d: 'M218 142L242 124L266 142Z' + rect(250, 122, 5, 12), strength: 1 },
+			{ d: rect(232, 150, 9, 8) + 'M244 174V156h9V174Z', strength: 1, cut: true },
+			{
+				d:
+					rect(258, 170, 92, 4) +
+					rect(270, 174, 3, 14) +
+					rect(306, 174, 3, 14) +
+					rect(344, 174, 3, 14),
+				strength: 1
+			},
+			{
+				d:
+					seated(306, 170, 40, { hat: 'beanie' }) +
+					limb(302, 168, 308, 184, 3) +
+					limb(310, 168, 315, 184, 3),
+				strength: 0.85
+			},
+			{
+				d: seated(330, 170, 42) + limb(326, 168, 331, 185, 3) + limb(334, 168, 339, 185, 3),
+				strength: 1
+			},
+			{ d: disc(374, 179, 4.5) + limb(378, 180, 382, 168, 2.6), strength: 1, motion: 'rock' },
+			{ d: 'M364 183l-6-9 5 3ZM385 183l5-9-5 3ZM368 179l-3-11 5 6Z', strength: 0.8, motion: 'rise' }
 		],
-		lines: [{ d: 'M282 118h18M286 124h12', strength: 0.6 }]
+		lines: [
+			{ d: steam(252, 116, 22) + steam(246, 108, 18), strength: 0.5, motion: 'rise' },
+			{ d: 'M362 186q14 4 28 0M358 191q18 5 36 0', strength: 0.6, motion: 'flow' }
+		]
 	},
 	// A kickabout in front of the goal
 	meadow: {

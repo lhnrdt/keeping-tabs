@@ -190,7 +190,7 @@ export const TRIP: Record<ThemeId, Scene> = {
 						disc(390, 104, 7) +
 						disc(400, 106, 7) +
 						disc(395, 114, 6),
-					strength: 0.42
+					strength: 0.7
 				},
 				{
 					d:

@@ -192,7 +192,7 @@ export const HOME: Record<ThemeId, Scene> = {
 						disc(347, 123, 8) +
 						disc(359, 124, 8) +
 						disc(353, 133, 7),
-					strength: 0.32
+					strength: 0.7
 				},
 				{
 					d: rect(226, 110, 2, 76),

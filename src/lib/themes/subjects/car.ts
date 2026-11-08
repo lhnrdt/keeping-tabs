@@ -340,7 +340,7 @@ export const CAR: Record<ThemeId, Scene> = {
 						roundTree(276, 162, 26) +
 						roundTree(330, 158, 28) +
 						roundTree(372, 160, 24),
-					strength: 0.36
+					strength: 0.7
 				}
 			],
 			lines: [
