@@ -95,9 +95,9 @@ export const house = (x: number, y: number, w: number, h: number, roof: number, 
 /** Where everything stands: flat from x 226, so things line up on it and nothing floats */
 export const GROUND_Y = 186;
 export const GROUND: Shape = { d: 'M196 200C208 190 216 186 226 186H400V200Z', strength: 0.95 };
-/** Where everything floats: the water line */
+/** Where everything floats: the water line, across the whole header */
 export const WATER_Y = 182;
-export const WATER: Shape = { d: 'M196 200C208 186 216 182 226 182H400V200Z', strength: 0.4 };
+export const WATER: Shape = { d: 'M-200 200V182H400V200Z', strength: 0.4 };
 
 /** A limb from one point to another, w wide, its end rounded; always wound like `disc`, so overlaps fill */
 export function limb(x1: number, y1: number, x2: number, y2: number, w: number) {

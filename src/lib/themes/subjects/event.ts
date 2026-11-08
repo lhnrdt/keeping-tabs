@@ -8,7 +8,6 @@ import {
 	flame,
 	GROUND,
 	logs,
-	person,
 	pine,
 	rect,
 	rounded,
@@ -112,19 +111,31 @@ export const EVENT: Record<ThemeId, Scene> = {
 		],
 		lines: [{ d: 'M264 164l12 0M366 164l12 0', strength: 0.9 }]
 	},
-	// Everyone on the summit together, flags out
+	// Everyone together on a summit above a sea of clouds, flags planted in the snow
 	mountains: {
+		backdrop: {
+			shapes: [
+				{ d: 'M190 166L230 120L266 166ZM360 166L388 128L416 166Z', strength: 0.35 },
+				{ d: 'M-200 200V164' + 'q12-10 24 0'.repeat(25) + 'V200Z', strength: 1, snow: true }
+			]
+		},
 		shapes: [
-			{ d: 'M214 200L318 132L400 170V200Z', strength: 0.95 },
-			{ d: 'M290 150L318 132L346 150L334 146L326 154L318 146L306 152Z', strength: 1, snow: true },
+			{ d: 'M236 200L304 140Q320 128 336 140L400 200Z', strength: 0.95 },
+			{
+				d: 'M284 158L304 140Q320 128 336 140L356 158L348 155L342 162L334 154L324 160L316 153L306 161L298 154Z',
+				strength: 1,
+				snow: true
+			},
+			{ d: 'M-200 200V184' + 'q14-12 28 0'.repeat(22) + 'V200Z', strength: 1, snow: true },
 			{
 				d:
-					person(290, 156, 34) + person(310, 140, 36) + person(332, 142, 36) + person(352, 156, 34),
+					figure(306, 139, 30) +
+					figure(320, 133, 32, { hat: 'beanie' }) +
+					figure(334, 139, 30, { hat: 'helmet' }),
 				strength: 1
 			},
-			{ d: flag(300, 108, 30, 14) + flag(344, 112, 28, 13), strength: 1, motion: 'flutter' }
-		],
-		lines: [{ d: 'M296 128l-10-14M346 132l12-14', strength: 0.9 }]
+			{ d: flag(294, 148, 30, 13) + flag(348, 148, 30, 13), strength: 1, motion: 'flutter' }
+		]
 	},
 	// A festival marquee, its flags flying
 	heather: {

@@ -64,14 +64,40 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 			{ d: waves(230, 196, 3) + bird(250, 122) + bird(266, 132, 4), strength: 0.5, motion: 'flow' }
 		]
 	},
-	// A rope team crossing the glacier
+	// A rope team of three crossing the glacier, a crevasse gaping in front of them
 	mountains: {
+		backdrop: {
+			shapes: [
+				{ d: 'M150 200L240 84L290 130L344 70L430 200Z', strength: 0.3 },
+				{
+					d: 'M240 84L256 104L248 100L242 108L234 100L226 104ZM344 70L362 92L350 88L344 96L336 88L328 92Z',
+					strength: 1,
+					snow: true
+				}
+			]
+		},
 		shapes: [
-			{ d: 'M214 200C260 176 340 168 400 170V200Z', strength: 1, snow: true },
-			{ d: 'M290 196l14-10h20l-8 10Z', strength: 0.9 },
-			{ d: person(258, 182, 42) + person(316, 178, 42) + person(372, 176, 42), strength: 1 }
+			{ d: 'M-200 200V166Q240 160 300 166T400 162V200Z', strength: 1, snow: true },
+			{
+				d: 'M212 184L224 180L236 182L250 177L266 180L282 176L298 179L320 178L312 186L296 192L278 194L258 196L238 194L222 190Z',
+				strength: 0.5
+			},
+			{ d: 'M228 186Q264 180 306 182Q266 190 228 186Z', strength: 1 },
+			{
+				d: 'M236 182l3 6 2-6ZM256 178l3 7 2-7ZM284 177l3 6 2-6ZM300 179l2 5 2-5Z',
+				strength: 1,
+				snow: true
+			},
+			{ d: 'M372 164l4-14 8-2 6 6 2 10ZM230 168l3-8 7 1 3 7Z', strength: 0.6 },
+			{
+				d:
+					figure(262, 166, 40, { hat: 'helmet', pack: 'left' }) +
+					figure(310, 165, 40, { hat: 'helmet', pack: 'left' }) +
+					figure(352, 164, 40, { hat: 'helmet', pack: 'left' }),
+				strength: 1
+			}
 		],
-		lines: [{ d: 'M264 164Q288 176 312 160Q344 174 368 158', strength: 0.9 }]
+		lines: [{ d: 'M268 146Q288 152 304 145M316 145Q332 150 346 144', strength: 1 }]
 	},
 	// Three on a stone wall
 	heather: {
