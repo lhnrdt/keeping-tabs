@@ -263,8 +263,18 @@ export const OTHER: Record<ThemeId, Scene> = {
 	meadow: {
 		backdrop: {
 			shapes: [
-				{ d: 'M60 186Q220 136 460 148V186Z', strength: 0.22 },
-				{ d: 'M150 186Q300 158 470 166V186Z', strength: 0.34 }
+				{ d: 'M180 186Q240 118 320 126T420 132V186Z', strength: 0.3 },
+				{ d: 'M350 126L352 96H360L362 126Z' + 'M348 98L356 88L364 98Z', strength: 0.75 },
+				{
+					d:
+						limb(356, 96, 356, 72, 2.4) +
+						limb(356, 96, 380, 96, 2.4) +
+						limb(356, 96, 356, 120, 2.4) +
+						limb(356, 96, 332, 96, 2.4),
+					strength: 0.75,
+					rotate: { deg: 20, x: 356, y: 96 }
+				},
+				{ d: 'M150 186Q260 150 420 164V186Z', strength: 0.45 }
 			]
 		},
 		shapes: [
