@@ -43,7 +43,7 @@ const hatchback = (x: number, ground: number): Shape[] => {
 };
 
 export const CAR: Record<ThemeId, Scene> = {
-	// Off-road: a 4×4 on a rough forest track, facing into the header, mud flying behind
+	// Off-road: a classic double-cab 4×4, its white roof and spare wheel, mud flying behind
 	forest: {
 		backdrop: {
 			shapes: [
@@ -58,30 +58,50 @@ export const CAR: Record<ThemeId, Scene> = {
 			GROUND,
 			{ d: pine(232, 186, 66), strength: 0.5 },
 			{ d: 'M240 186l6-8 10 2 4 6Z', strength: 0.85 },
-			...mirrored(318, [
-				{ d: 'M274 148v-32q0-6 6-6h64q6 0 6 6v32Z', strength: 1, motion: 'idle' },
-				{ d: 'M350 148v-16h24q8 0 8 8v8Z', strength: 1, motion: 'idle' },
-				{ d: rounded(270, 146, 112, 18, 4), strength: 1, motion: 'idle' },
-				{
-					d: rect(284, 118, 26, 20) + 'M316 118h20l10 20h-30Z',
-					strength: 1,
-					cut: true,
-					motion: 'idle'
-				},
-				{ d: rect(374, 141, 6, 4), strength: 1, cut: true, motion: 'idle' },
-				{ d: rect(276, 102, 72, 3) + rect(282, 105, 3, 5) + rect(339, 105, 3, 5), strength: 1 },
-				{ d: rect(286, 90, 24, 12) + rect(316, 94, 26, 8), strength: 0.9 },
-				{ d: rounded(264, 120, 10, 30, 4), strength: 1, motion: 'idle' },
-				{ d: knobbyTyre(298, 169, 17) + knobbyTyre(358, 169, 17), strength: 1 },
-				{ d: disc(298, 169, 8) + disc(358, 169, 8), strength: 1, cut: true },
-				{ d: disc(298, 169, 4) + disc(358, 169, 4), strength: 1 },
-				{
-					d: disc(272, 178, 3.5) + disc(262, 170, 3) + disc(256, 180, 2.5) + disc(266, 160, 2.2),
-					strength: 0.8,
-					motion: 'rise'
-				}
-			]),
-			{ d: pine(404, 186, 118), strength: 0.75 }
+			{
+				d: 'M251.03 168.31 V149.53 Q251.39 146.64 254.64 146.64 L290.03 145.56 L296.53 127.86 H349.97 V145.56 H393.31 V167.94ZM246.69 165.06 H251.75 V168.67 H246.69Z',
+				strength: 1,
+				motion: 'idle'
+			},
+			{
+				d:
+					'M294.36 122.44 H355.75 V127.14 H294.36Z' +
+					limb(289.31, 149.53, 295.81, 124.97, 1.81) +
+					limb(351.78, 125.69, 351.78, 145.92, 1.81) +
+					limb(355.03, 124.97, 392.22, 146.28, 1.81),
+				strength: 0.55,
+				motion: 'idle'
+			},
+			{
+				d: 'M291.47 143.75 L297.25 130.03 H298.69 V143.75ZM299.78 130.03 H318.56 V143.75 H299.78ZM325.42 130.03 H346.36 V143.75 H325.42Z',
+				strength: 1,
+				cut: true,
+				motion: 'idle'
+			},
+			{
+				d:
+					knobbyTyre(268.0, 173.0, 13.0) +
+					knobbyTyre(362.61, 173.0, 13.0) +
+					knobbyTyre(361.53, 139.42, 4.51),
+				strength: 1,
+				motion: 'idle'
+			},
+			{
+				d: disc(268.0, 173.0, 7.15) + disc(362.61, 173.0, 7.15) + disc(361.53, 139.42, 2.48),
+				strength: 1,
+				cut: true
+			},
+			{
+				d: disc(268.0, 173.0, 2.86) + disc(362.61, 173.0, 2.86) + disc(361.53, 139.42, 0.99),
+				strength: 1,
+				motion: 'idle'
+			},
+			{
+				d: disc(398, 180, 3.5) + disc(404, 171, 3) + disc(396, 166, 2.5) + disc(402, 160, 2.2),
+				strength: 0.8,
+				motion: 'rise'
+			},
+			{ d: pine(422, 186, 118), strength: 0.75 }
 		]
 	},
 	// Crossing on the ferry: the car on the open deck, the bridge and funnel behind, foam at the stern
@@ -144,7 +164,7 @@ export const CAR: Record<ThemeId, Scene> = {
 			{ d: waves(236, 196, 4), strength: 0.5, motion: 'flow' }
 		]
 	},
-	// Over the pass between high snow walls, skis on the roof, the pass sign by the road
+	// Over the pass between high snow walls: the station wagon, its roof box packed, the pass sign by the road
 	mountains: {
 		backdrop: {
 			shapes: [
@@ -163,24 +183,50 @@ export const CAR: Record<ThemeId, Scene> = {
 				strength: 1,
 				snow: true
 			},
-			{ d: rect(374, 128, 3, 30) + rounded(362, 116, 28, 14, 3), strength: 1 },
-			{ d: rect(366, 120, 20, 2) + rect(370, 125, 12, 2), strength: 1, cut: true },
+			{ d: rect(382, 128, 3, 30) + rounded(370, 116, 28, 14, 3), strength: 1 },
+			{ d: rect(374, 120, 20, 2) + rect(378, 125, 12, 2), strength: 1, cut: true },
 			{ d: rect(238, 136, 4, 50), strength: 0.9 },
 			{ d: rect(238, 142, 4, 6) + rect(238, 154, 4, 6), strength: 1, cut: true },
 			...mirrored(318, [
 				{
-					d: 'M262 177v-12q0-6 7-7l16-3 13-14q3-3 8-3h26q6 0 8 4l11 13 7 2q6 1 6 7v13Z',
+					d: 'M257.58 177 L257 167.71 Q257 161.9 259.32 159 L267.45 150.29 Q268.61 149.13 270.94 149.13 L281.39 147.39 L298.81 147.74 Q313.32 147.97 322.03 149.71 L327.26 150.29 Q333.64 154.94 342.94 160.16 L356.87 161.32 Q365.58 162.48 369.64 163.65 Q375.45 165.39 377.77 167.71 Q378.94 170.03 378.94 177 L374.29 178.74 H263.97ZM272.1 146.81 H322.03 V147.97 H272.1ZM274.42 146.81 H276.74 V149.13 H274.42ZM317.39 146.81 H319.71 V149.13 H317.39Z',
 					strength: 1,
 					motion: 'idle'
 				},
-				{ d: 'M300 153l12-12h10v12ZM326 141h14l9 12h-23Z', strength: 1, cut: true, motion: 'idle' },
-				{ d: rect(296, 129, 46, 3) + 'M298 129q2-12 16-12h18q10 0 12 12Z', strength: 0.9 },
-				{ d: disc(282, 177, 9) + disc(352, 177, 9), strength: 1, motion: 'idle' },
-				{ d: disc(282, 177, 4) + disc(352, 177, 4), strength: 1, cut: true }
+				{
+					d: 'M269.77 146.23 Q269.77 138.1 277.9 138.1 L305.77 138.1 Q317.39 138.1 322.03 142.16 Q324.94 146.23 319.71 146.23Z',
+					strength: 0.85,
+					motion: 'idle'
+				},
+				{
+					d: 'M272.1 151.45 L290.68 150.87 V160.16 H269.77ZM293.58 150.87 H311 V160.16 H293.58ZM313.32 150.87 H326.1 L339.45 159.58 H313.32ZM368.48 164.81 L376.03 166.55 L375.45 168.29 L368.48 166.55ZM257.58 159 H262.23 V163.06 H257.58Z',
+					strength: 1,
+					cut: true,
+					motion: 'idle'
+				},
+				{ d: disc(284.29, 177.0, 9.0) + disc(361.52, 177.0, 9.0), strength: 1, motion: 'idle' },
+				{ d: disc(284.29, 177.0, 5.58) + disc(361.52, 177.0, 5.58), strength: 1, cut: true },
+				{
+					d:
+						limb(284.29, 177.0, 284.29, 171.42, 1.17) +
+						limb(284.29, 177.0, 289.6, 175.28, 1.17) +
+						limb(284.29, 177.0, 287.57, 181.51, 1.17) +
+						limb(284.29, 177.0, 281.01, 181.51, 1.17) +
+						limb(284.29, 177.0, 278.98, 175.28, 1.17) +
+						limb(361.52, 177.0, 361.52, 171.42, 1.17) +
+						limb(361.52, 177.0, 366.83, 175.28, 1.17) +
+						limb(361.52, 177.0, 364.8, 181.51, 1.17) +
+						limb(361.52, 177.0, 358.24, 181.51, 1.17) +
+						limb(361.52, 177.0, 356.21, 175.28, 1.17) +
+						disc(284.29, 177.0, 1.8) +
+						disc(361.52, 177.0, 1.8),
+					strength: 1,
+					motion: 'idle'
+				}
 			])
 		]
 	},
-	// Over the old humpback bridge, the burn running under its arch
+	// A little open-top sports car over the old humpback bridge, a scarf flying, the burn under its arch
 	heather: {
 		backdrop: {
 			shapes: [
@@ -207,10 +253,52 @@ export const CAR: Record<ThemeId, Scene> = {
 				strength: 1,
 				cut: true
 			},
-			{ d: 'M296 148v-8q0-4 4-5l8-2 6-10h22l8 10 6 2q4 1 4 5v8Z', strength: 1, motion: 'idle' },
-			{ d: 'M316 132l4-6h7v6ZM331 132v-6h4l4 6Z', strength: 1, cut: true, motion: 'idle' },
-			{ d: disc(306, 150, 6) + disc(340, 150, 6), strength: 1, motion: 'idle' },
-			{ d: disc(306, 150, 2.4) + disc(340, 150, 2.4), strength: 1, cut: true },
+			{
+				d: 'M317.71 137.07 Q313.14 134.79 308.86 136.21 Q304.57 137.64 298.86 134.5 L298.29 136.79 Q304.29 140.21 309.14 138.79 Q313.43 137.36 317.43 139.64Z',
+				strength: 0.8,
+				motion: 'flutter'
+			},
+			{
+				d: 'M316.71 135.21 A2.14286 2.14286 0 1 1 321 135.21 A2.14286 2.14286 0 1 1 316.71 135.21ZM317.14 136.21 H320.57 V140.21 H317.14ZM323.14 135.64 A2.14286 2.14286 0 1 1 327.43 135.64 A2.14286 2.14286 0 1 1 323.14 135.64ZM323.57 136.64 H327 V140.21 H323.57Z',
+				strength: 0.85,
+				motion: 'idle'
+			},
+			{
+				d: 'M271.71 155.93 Q270 154.79 269.86 152.36 L269.57 143.07 Q269.71 139.5 270.29 137.36 L275.29 138.36 Q282.43 137.07 288.86 135.5 Q293.14 134.21 296 133.07 Q297.71 131.36 300.29 131.07 L304.57 130.93 Q306 131.07 306.43 131.93 L306.86 139.07 L336 141.07 L338.86 140.5 Q344.57 139.79 349.57 139.79 Q355.29 139.79 359.57 141.36 Q364.57 143.36 368.14 145.93 Q370.57 148.79 371 153.07 L371 155.93Z',
+				strength: 0.85,
+				motion: 'idle'
+			},
+			{
+				d: 'M297.14 142.07 Q297.71 148.07 307.71 151.07 Q301.71 147.36 301 141.93Z',
+				strength: 1,
+				motion: 'idle'
+			},
+			{ d: limb(339.57, 140.5, 324.86, 131.93, 1.6), strength: 1, motion: 'idle' },
+			{
+				d: 'M360.57 141.64 L364 143.36 L363.71 144.07 L360.29 142.36ZM300.71 136.21 A1 1 0 1 1 302.71 136.21 A1 1 0 1 1 300.71 136.21Z',
+				strength: 1,
+				cut: true,
+				motion: 'idle'
+			},
+			{ d: disc(286.0, 151.5, 9.0) + disc(352.0, 151.5, 9.0), strength: 1, motion: 'idle' },
+			{ d: disc(286.0, 151.5, 5.58) + disc(352.0, 151.5, 5.58), strength: 1, cut: true },
+			{
+				d:
+					limb(286.0, 151.5, 286.0, 145.92, 1.17) +
+					limb(286.0, 151.5, 291.31, 149.78, 1.17) +
+					limb(286.0, 151.5, 289.28, 156.01, 1.17) +
+					limb(286.0, 151.5, 282.72, 156.01, 1.17) +
+					limb(286.0, 151.5, 280.69, 149.78, 1.17) +
+					limb(352.0, 151.5, 352.0, 145.92, 1.17) +
+					limb(352.0, 151.5, 357.31, 149.78, 1.17) +
+					limb(352.0, 151.5, 355.28, 156.01, 1.17) +
+					limb(352.0, 151.5, 348.72, 156.01, 1.17) +
+					limb(352.0, 151.5, 346.69, 149.78, 1.17) +
+					disc(286.0, 151.5, 1.8) +
+					disc(352.0, 151.5, 1.8),
+				strength: 1,
+				motion: 'idle'
+			},
 			{
 				d:
 					disc(232, 198, 9) +

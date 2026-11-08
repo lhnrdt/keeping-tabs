@@ -151,22 +151,92 @@ export const TRIP: Record<ThemeId, Scene> = {
 		],
 		lines: [{ d: 'M374 168Q360 158 368 148T356 127', strength: 0.5 }]
 	},
-	// Lazy in a hammock between two birches, shoes left below
+	// The little train through the birch wood, faces at the windows, white trunks close by
 	birch: {
+		backdrop: {
+			shapes: [
+				{ d: 'M120 186Q260 136 460 146V186Z', strength: 0.25 },
+				{
+					d:
+						roundTree(220, 150, 26) +
+						roundTree(250, 150, 34) +
+						roundTree(286, 150, 28) +
+						roundTree(322, 150, 36) +
+						roundTree(360, 150, 30) +
+						roundTree(392, 150, 34),
+					strength: 0.35
+				}
+			]
+		},
 		shapes: [
-			GROUND,
-			{ d: 'M256 0h12v186h-12ZM372 0h12v186h-12Z', strength: 0.75 },
+			{ d: 'M-200 200V188H400V200Z', strength: 0.6 },
 			{
-				d: 'M256 60l8 3-8 3ZM384 90l-8 3 8 3ZM256 140l8 3-8 3ZM384 30l-8 3 8 3Z',
-				strength: 1,
-				cut: true
+				d:
+					rect(204, 186, 6, 3) +
+					rect(216, 186, 6, 3) +
+					rect(228, 186, 6, 3) +
+					rect(240, 186, 6, 3) +
+					rect(252, 186, 6, 3) +
+					rect(264, 186, 6, 3) +
+					rect(276, 186, 6, 3) +
+					rect(288, 186, 6, 3) +
+					rect(300, 186, 6, 3) +
+					rect(312, 186, 6, 3) +
+					rect(324, 186, 6, 3) +
+					rect(336, 186, 6, 3) +
+					rect(348, 186, 6, 3) +
+					rect(360, 186, 6, 3) +
+					rect(372, 186, 6, 3) +
+					rect(384, 186, 6, 3) +
+					rect(396, 186, 6, 3),
+				strength: 0.9
 			},
-			{ d: 'M268 118Q320 164 372 118L372 126Q320 176 268 126Z', strength: 1, motion: 'sway' },
-			{ d: disc(294, 126, 8) + rounded(300, 130, 44, 11, 5), strength: 1, motion: 'sway' },
-			{ d: rect(326, 116, 14, 10), strength: 0.8, motion: 'sway' },
-			{ d: rounded(300, 180, 12, 6, 3) + rounded(316, 180, 12, 6, 3), strength: 0.8 },
-			{ d: rounded(352, 176, 8, 10, 2), strength: 0.7 }
-		]
+			{ d: rounded(214, 140, 108, 38, 5), strength: 0.9, motion: 'idle' },
+			{
+				d: 'M326 178v-34q0-6 6-6h36q16 0 22 14l6 12v14Z' + rect(338, 126, 8, 12),
+				strength: 1,
+				motion: 'idle'
+			},
+			{
+				d:
+					rect(226, 146, 20, 14) +
+					rect(252, 146, 20, 14) +
+					rect(290, 146, 20, 14) +
+					'M370 146h8l10 14h-18Z',
+				strength: 1,
+				cut: true,
+				motion: 'idle'
+			},
+			{
+				d:
+					disc(236, 152, 4) +
+					rect(232, 155, 8, 5) +
+					disc(262, 152, 4) +
+					rect(258, 155, 8, 5) +
+					disc(300, 152, 4) +
+					rect(296, 155, 8, 5),
+				strength: 0.9,
+				motion: 'idle'
+			},
+			{ d: rect(214, 166, 182, 2), strength: 1, cut: true, motion: 'idle' },
+			{
+				d:
+					disc(232, 182, 5) +
+					disc(250, 182, 5) +
+					disc(286, 182, 5) +
+					disc(304, 182, 5) +
+					disc(344, 182, 6) +
+					disc(372, 182, 6),
+				strength: 1,
+				motion: 'idle'
+			},
+			{ d: rect(258, 0, 10, 200) + rect(378, 0, 8, 200), strength: 1, snow: true },
+			{
+				d: 'M258 14.1l5.5 1.75l-5.5 1.75ZM268 31.1l-6.6 1.5l6.6 1.5ZM258 50.0l6.5 1.3l-6.5 1.3ZM268 72.0l-5.2 1.3l5.2 1.3ZM258 90.9l7.5 1.35l-7.5 1.35ZM268 108.3l-6.9 1.95l6.9 1.95ZM258 130.1l6.2 2.0l-6.2 2.0ZM268 144.9l-7.6 1.45l7.6 1.45ZM258 164.7l5.4 1.5l-5.4 1.5ZM268 189.0l-5.5 1.7l5.5 1.7ZM378 18.1l6.3 1.35l-6.3 1.35ZM386 42.6l-4.2 1.45l4.2 1.45ZM378 65.7l4.5 1.75l-4.5 1.75ZM386 82.0l-5.1 1.6l5.1 1.6ZM378 100.5l6.0 1.3l-6.0 1.3ZM386 121.5l-4.0 1.45l4.0 1.45ZM378 143.6l6.2 1.55l-6.2 1.55ZM386 161.9l-4.6 2.0l4.6 2.0ZM378 182.2l5.5 1.55l-5.5 1.55Z',
+				strength: 1
+			}
+		],
+		lines: [{ d: steam(342, 120, 22) + steam(330, 112, 18), strength: 0.5, motion: 'rise' }]
 	},
 	// A loaded bike leaning on its stand by the field path, flowers in its basket
 	meadow: {
