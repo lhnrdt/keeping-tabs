@@ -13,17 +13,8 @@ import {
 	rect,
 	rounded,
 	seated,
-	tri,
-	wheel
+	tri
 } from '../draw';
-
-const BULBS: [number, number][] = [
-	[270, 92],
-	[292, 104],
-	[316, 110],
-	[340, 106],
-	[362, 96]
-];
 
 export const EVENT: Record<ThemeId, Scene> = {
 	// A wide clearing at night: friends round the campfire, lights strung high between the pines

@@ -1,6 +1,6 @@
 // A car shared (#327): on the road, in each theme its own way.
 import type { ThemeId } from '../palettes';
-import { mirrored, type Scene, type Shape } from '../scenes';
+import { mirrored, type Scene } from '../scenes';
 import {
 	disc,
 	figure,
@@ -12,36 +12,9 @@ import {
 	rounded,
 	roundTree,
 	steam,
-	tri,
 	WATER,
-	waves,
-	wheel
+	waves
 } from '../draw';
-
-const IDLE = 'idle' as const;
-
-/** The everyday car, its front to the right, its wheels on the ground at `ground` */
-const hatchback = (x: number, ground: number): Shape[] => {
-	const y = ground - 13;
-	return [
-		{
-			d: `M${x} ${y}v-14q0-7 8-9l22-5 20-22q4-4 10-4h36q7 0 11 6l14 20 10 3q7 2 7 9v16Z`,
-			strength: 1,
-			motion: IDLE
-		},
-		{
-			d:
-				`M${x + 40} ${y - 30}l14-15q2-2 6-2h10v17ZM${x + 78} ${y - 47}h16q3 0 5 3l10 14h-31Z` +
-				rect(x + 74, y - 28, 2, 24) +
-				rect(x + 132, y - 18, 6, 4),
-			strength: 1,
-			cut: true,
-			motion: IDLE
-		},
-		...wheel(x + 32, y, 13),
-		...wheel(x + 106, y, 13)
-	];
-};
 
 export const CAR: Record<ThemeId, Scene> = {
 	// Off-road: a classic double-cab 4×4, its white roof and spare wheel, mud flying behind
@@ -617,18 +590,43 @@ export const CAR: Record<ThemeId, Scene> = {
 			{ d: 'M214 192l-5-14M220 191l-1-16M226 192l4-13M290 197l-3-12M296 197l2-12', strength: 0.9 }
 		]
 	},
-	// Headlights on, through the snowy night
+	// Camping under the lights: the old SUV, its rooftop tent open, a ladder down
 	aurora: {
 		shapes: [
-			GROUND,
-			{ d: tri(372, 150, 400, 132, 400, 176), strength: 0.25, motion: 'breathe' },
-			...hatchback(238, 186)
-		],
-		dots: [
-			[268, 120, 2, 0.8],
-			[300, 104, 1.6, 0.7],
-			[340, 116, 2, 0.8],
-			[388, 98, 1.6, 0.7]
+			{ d: 'M-200 200V186H400V200Z', strength: 0.55 },
+			{
+				d: 'M329.06 140.9 L341.17 140.9 L345.21 141.29 L356.56 141.48 L362.13 142.06 L365.79 143.21 L361.75 143.4 L347.33 142.63 L334.44 142.63 L333.67 143.21 L333.1 144.75 L333.29 145.52 L332.71 148.21 L332.71 150.33 L331.94 151.67 L331.75 155.33 L332.52 156.1 L374.25 155.9 L375.6 157.06 L376.17 159.17 L375.98 160.71 L374.83 161.29 L373.29 161.29 L372.52 162.63 L372.33 166.48 L373.1 167.25 L374.83 167.25 L375.21 168.02 L375.02 169.94 L373.29 171.48 L372.13 171.48 L368.29 172.63 L366.17 172.63 L364.83 173.21 L360.98 173.6 L359.06 171.67 L357.9 169.75 L355.21 167.25 L352.9 165.71 L349.63 164.94 L346.37 164.94 L345.79 165.33 L344.25 165.33 L341.56 166.48 L339.44 168.98 L337.13 174.17 L293.67 173.98 L293.1 173.6 L292.13 171.87 L291.94 170.71 L291.17 170.13 L289.44 167.63 L286.75 165.9 L284.25 165.33 L279.83 165.33 L276.94 166.29 L273.67 169.75 L273.48 171.29 L272.9 171.67 L272.52 172.63 L269.63 172.25 L268.29 170.9 L267.52 168.98 L269.44 167.83 L270.02 165.9 L269.63 164.94 L269.63 162.63 L269.25 162.06 L268.29 161.87 L268.1 161.29 L269.25 159.17 L270.02 158.6 L275.79 158.02 L276.75 157.63 L280.98 157.44 L281.56 157.06 L292.52 156.48 L293.87 156.1 L294.63 155.33 L295.98 156.29 L299.44 156.48 L300.02 156.1 L300.21 155.33 L301.37 154.56 L302.71 152.25 L304.63 150.52 L306.37 147.83 L309.06 145.13 L310.21 143.4 L310.21 142.44 L310.6 142.63 L312.9 141.48 L314.63 141.67 L316.75 141.29 L325.02 141.29Z',
+				strength: 1,
+				motion: 'idle'
+			},
+			{
+				d: 'M303.19 156.19 L307.81 143.12 Q308.58 141.38 311.65 141.19 L365.5 141.38 Q369.73 142.35 373.96 155.81Z',
+				strength: 1,
+				motion: 'idle'
+			},
+			{ d: 'M306.65 139.46 H367.42 V140.81 H306.65Z', strength: 1, motion: 'idle' },
+			{
+				d:
+					'M307.81 139.46 L319.73 128.5 L365.12 129.65 L369.73 139.46Z' +
+					limb(367.42, 140.04, 374.73, 185.04, 1.6) +
+					limb(370.5, 140.04, 377.81, 185.04, 1.6) +
+					limb(368.77, 149.65, 372.23, 149.65, 1.6) +
+					limb(370.31, 159.27, 373.77, 159.27, 1.6) +
+					limb(372.04, 168.88, 375.5, 168.88, 1.6) +
+					limb(373.58, 178.5, 377.04, 178.5, 1.6),
+				strength: 0.75,
+				motion: 'idle'
+			},
+			{
+				d: 'M303.96 155.04 L308.38 144.46 H330.5 V155.23ZM333.77 144.46 H343.96 V155.23 H333.77ZM347.62 144.46 H357.42 Q363.19 144.85 365.12 149.65 L366.08 155.23 H347.62Z',
+				strength: 1,
+				cut: true,
+				motion: 'idle'
+			},
+			{ d: disc(283.0, 176.0, 10.0) + disc(348.0, 176.0, 10.0), strength: 1, motion: 'idle' },
+			{ d: disc(283.0, 176.0, 6.2) + disc(348.0, 176.0, 6.2), strength: 1, cut: true },
+			{ d: disc(283.0, 176.0, 3.0) + disc(348.0, 176.0, 3.0), strength: 1, motion: 'idle' },
+			{ d: disc(240, 186, 9) + disc(252, 188, 7) + disc(396, 188, 8), strength: 0.8 }
 		]
 	},
 	// A weekend drive in the little hatchback down the avenue, leaves falling round it

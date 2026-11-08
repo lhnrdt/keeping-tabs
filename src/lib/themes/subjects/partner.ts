@@ -4,7 +4,6 @@ import { reflected, type Scene, type Shape } from '../scenes';
 import {
 	disc,
 	figure,
-	fire,
 	GROUND,
 	heart,
 	hull,
