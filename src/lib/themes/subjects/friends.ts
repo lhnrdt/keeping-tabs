@@ -16,6 +16,7 @@ import {
 	roundTree,
 	seated,
 	sitting,
+	sparkle,
 	steam,
 	WATER,
 	waves
@@ -289,57 +290,83 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 		],
 		lines: [{ d: 'M314 113q4 3 8 0M313 118q5 2 10 0', strength: 0.6, motion: 'bob' }]
 	},
-	// Off the cabin's deck: the hot tub steaming, three of them in it, the lights over the forest
+	// Off the log cabin's deck: the hot tub steaming, three of them in it, the lights over the forest
 	aurora: {
 		backdrop: {
 			night: true,
 			shapes: [
-				{ d: curtain(250, 400, 70, 26, 36), strength: 0.3, motion: 'shimmer' },
+				{ d: curtain(250, 400, 64, 26, 36), strength: 0.51, motion: 'shimmer' },
 				{
 					d:
-						pine(270, 176, 40) +
-						pine(296, 176, 52) +
-						pine(330, 176, 44) +
-						pine(360, 176, 56) +
-						pine(392, 176, 46),
-					strength: 0.45
+						pine(262, 176, 34) +
+						pine(280, 176, 46) +
+						pine(298, 176, 38) +
+						pine(318, 176, 52) +
+						pine(338, 176, 40) +
+						pine(358, 176, 54) +
+						pine(378, 176, 42) +
+						pine(398, 176, 50),
+					strength: 0.5
 				}
 			],
-			lines: [{ d: rays(250, 400, 70, 26, 36), strength: 0.6, motion: 'shimmer' }],
-			dots: [
-				[262, 22, 1.4, 0.8],
-				[330, 14, 1.2, 0.8],
-				[388, 30, 1.6, 0.8]
-			]
+			lines: [{ d: rays(250, 400, 64, 26, 36), strength: 0.9, motion: 'shimmer' }]
 		},
 		shapes: [
-			{ d: rect(196, 176, 210, 6) + rect(196, 182, 210, 18), strength: 0.75 },
-			{ d: 'M196 0H244V176H196Z', strength: 0.95 },
-			{ d: rect(214, 96, 22, 30), strength: 1, cut: true },
-			{ d: rect(224, 96, 2, 30) + rect(214, 110, 22, 2), strength: 0.95 },
 			{
-				d:
-					disc(306, 148, 6) +
-					disc(328, 146, 6.5) +
-					disc(350, 148, 6) +
-					limb(360, 150, 368, 134, 2.6),
-				strength: 1
+				d: sparkle(270, 20, 9.5) + sparkle(392, 26, 9.5) + sparkle(368, 62, 6.8),
+				strength: 0.55,
+				motion: 'twinkle'
 			},
-			{ d: 'M286 154H370L366 176H290Z', strength: 0.9 },
-			{ d: rect(286, 152, 84, 4) + rect(288, 162, 80, 2.4), strength: 1 },
+			{
+				d: sparkle(270, 20, 7) + sparkle(392, 26, 7) + sparkle(368, 62, 5),
+				strength: 1,
+				snow: true,
+				motion: 'twinkle'
+			},
+			{ d: sparkle(330, 12, 7.4) + sparkle(300, 52, 6.8), strength: 0.55, motion: 'twinkle-late' },
+			{
+				d: sparkle(330, 12, 5.5) + sparkle(300, 52, 5),
+				strength: 1,
+				snow: true,
+				motion: 'twinkle-late'
+			},
+			{ d: rect(196, 176, 210, 6) + rect(196, 182, 210, 18), strength: 0.75 },
+			{ d: rect(196, 188, 210, 1.4) + rect(196, 194, 210, 1.4), strength: 1, cut: true },
+			{ d: 'M196 0H244V176H196Z', strength: 0.95 },
 			{
 				d:
-					rect(300, 154, 1.6, 22) +
-					rect(320, 154, 1.6, 22) +
-					rect(340, 154, 1.6, 22) +
-					rect(356, 154, 1.6, 22),
+					rect(196, 28, 48, 1.4) +
+					rect(196, 38, 48, 1.4) +
+					rect(196, 48, 48, 1.4) +
+					rect(196, 58, 48, 1.4) +
+					rect(196, 68, 48, 1.4) +
+					rect(196, 78, 48, 1.4) +
+					rect(196, 88, 48, 1.4) +
+					rect(196, 138, 48, 1.4) +
+					rect(196, 148, 48, 1.4) +
+					rect(196, 158, 48, 1.4) +
+					rect(196, 168, 48, 1.4),
+				strength: 1,
+				cut: true
+			},
+			{ d: rect(212, 94, 24, 32), strength: 1, cut: true },
+			{ d: rect(223, 94, 2, 32) + rect(212, 109, 24, 2), strength: 0.95 },
+			{ d: disc(300, 142, 7.5) + disc(328, 139, 8.5) + disc(356, 142, 7.5), strength: 1 },
+			{ d: 'M276 150H384L379 176H281Z', strength: 0.9 },
+			{ d: rect(276, 148, 108, 5) + rect(279, 160, 102, 3), strength: 1 },
+			{
+				d:
+					rect(294, 153, 2, 23) +
+					rect(318, 153, 2, 23) +
+					rect(342, 153, 2, 23) +
+					rect(364, 153, 2, 23),
 				strength: 1,
 				cut: true
 			}
 		],
 		lines: [
 			{
-				d: steam(306, 138, 22) + steam(328, 136, 26) + steam(352, 138, 22),
+				d: steam(300, 130, 24) + steam(328, 126, 28) + steam(356, 130, 24),
 				strength: 0.5,
 				motion: 'rise'
 			}
