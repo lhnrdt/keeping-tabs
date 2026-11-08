@@ -72,7 +72,7 @@ export const GROUP_SETTLED: Record<GroupKind, Scene> = {
 };
 
 /** The landscape stays behind, so the subject is what you see */
-export const LANDSCAPE_STRENGTH = 0.45;
+export const LANDSCAPE_STRENGTH = 0.75;
 
 /** What a group's scene is about stands out from the landscape: drawn in the text's color, this strong */
 export const SUBJECT_INK = 0.3;
