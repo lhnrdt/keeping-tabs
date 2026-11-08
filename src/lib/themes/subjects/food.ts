@@ -87,30 +87,47 @@ export const FOOD: Record<ThemeId, Scene> = {
 			{ d: steam(300, 120, 18) + steam(326, 116, 18), strength: 0.6, motion: 'rise' }
 		]
 	},
-	// High camp at dusk: the tent behind its snow wall, the stove roaring, someone sitting by it
+	// Lunch on the hut's sunny terrace: mugs steaming, skis stuck in the snow in a row behind
 	mountains: {
 		backdrop: {
 			shapes: [
-				{ d: 'M180 200L300 64L420 200Z', strength: 0.3 },
-				{ d: 'M300 64L322 90L310 86L300 96L290 86L278 90Z', strength: 1, snow: true }
+				{ d: 'M170 200L262 74L330 146L372 100L440 200Z', strength: 0.3 },
+				{ d: 'M262 74L280 96L270 92L262 102L254 92L244 96Z', strength: 1, snow: true }
 			]
 		},
 		shapes: [
-			{ d: 'M-200 200V180Q280 174 400 178V200Z', strength: 1, snow: true },
-			{ d: tri(320, 180, 352, 130, 384, 180), strength: 1 },
-			{ d: tri(352, 154, 342, 180, 362, 180), strength: 1, cut: true },
-			{ d: rounded(378, 168, 14, 12, 3) + rounded(386, 158, 12, 10, 3), strength: 1, snow: true },
-			{ d: rounded(378, 168, 14, 12, 3) + rounded(386, 158, 12, 10, 3), strength: 0.45 },
-			{ d: rounded(232, 164, 20, 15, 4), strength: 0.9 },
-			{ d: sitting(244, 164, 44, 1), strength: 1 },
-			{ d: rect(286, 174, 22, 4) + rect(295, 178, 4, 3), strength: 1 },
-			{ d: flame(297, 174, 9), strength: 0.7, motion: 'flicker' },
-			{ d: 'M284 150h26v12q0 6-6 6h-14q-6 0-6-6Z', strength: 1 },
-			{ d: rect(282, 147, 30, 4) + rect(294, 143, 6, 4), strength: 1 }
+			{ d: 'M-200 200V170Q100 164 400 168V200Z', strength: 1, snow: true },
+			{
+				d: [234, 244, 254, 264, 274, 352, 362, 372, 382, 392]
+					.map((x) => limb(x, 170, x + 1, 112, 3) + limb(x + 1, 112, x - 2, 106, 3))
+					.join(''),
+				strength: 0.75
+			},
+			{ d: rect(290, 92, 3, 66) + 'M262 96q30-22 60 0Z', strength: 0.85 },
+			{ d: rect(268, 148, 76, 5) + rect(274, 153, 4, 17) + rect(334, 153, 4, 17), strength: 1 },
+			{
+				d:
+					rounded(282, 138, 10, 10, 2) +
+					rounded(302, 138, 10, 10, 2) +
+					rounded(322, 138, 10, 10, 2),
+				strength: 1
+			},
+			{
+				d:
+					rect(250, 156, 18, 4) +
+					rect(256, 160, 3, 10) +
+					rect(344, 156, 18, 4) +
+					rect(353, 160, 3, 10),
+				strength: 0.9
+			},
+			{ d: sitting(260, 156, 44, 1) + sitting(352, 156, 44, -1), strength: 1 }
 		],
 		lines: [
-			{ d: steam(292, 132, 16) + steam(302, 130, 16), strength: 0.8, motion: 'rise' },
-			{ d: 'M320 180L312 182M384 180L392 182', strength: 0.8 }
+			{
+				d: steam(287, 126, 12) + steam(307, 124, 12) + steam(327, 126, 12),
+				strength: 0.7,
+				motion: 'rise'
+			}
 		]
 	},
 	// Tea for two: the pot, and a cup each

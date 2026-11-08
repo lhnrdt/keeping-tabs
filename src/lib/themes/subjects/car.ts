@@ -6,6 +6,7 @@ import {
 	figure,
 	GROUND,
 	knobbyTyre,
+	limb,
 	pine,
 	rect,
 	rounded,
@@ -143,13 +144,38 @@ export const CAR: Record<ThemeId, Scene> = {
 			{ d: waves(236, 196, 4), strength: 0.5, motion: 'flow' }
 		]
 	},
-	// At the trailhead, skis on the roof
+	// Over the pass between high snow walls, skis on the roof, the pass sign by the road
 	mountains: {
+		backdrop: {
+			shapes: [
+				{ d: 'M170 200L250 86L310 150L356 92L430 200Z', strength: 0.3 },
+				{
+					d: 'M250 86L266 106L256 102L250 110L244 102L234 106ZM356 92L370 110L362 106L356 114L350 106L342 110Z',
+					strength: 1,
+					snow: true
+				}
+			]
+		},
 		shapes: [
-			{ d: 'M214 200C262 186 340 180 400 184V200Z', strength: 1, snow: true },
-			{ d: rect(270, 120, 92, 6), strength: 1 },
-			{ d: rounded(268, 110, 100, 6, 3) + rounded(272, 102, 92, 6, 3), strength: 0.9 },
-			...hatchback(246, 186)
+			{ d: 'M-200 200V186H400V200Z', strength: 0.95 },
+			{
+				d: 'M-200 186V164Q-100 156 0 162T160 158Q204 154 224 162Q238 170 244 186ZM400 186V158Q384 150 372 156Q362 164 358 186Z',
+				strength: 1,
+				snow: true
+			},
+			{ d: rect(374, 128, 3, 30) + rounded(362, 116, 28, 14, 3), strength: 1 },
+			...mirrored(318, [
+				{
+					d: 'M262 177v-12q0-6 7-7l16-3 13-14q3-3 8-3h26q6 0 8 4l11 13 7 2q6 1 6 7v13Z',
+					strength: 1,
+					motion: 'idle'
+				},
+				{ d: 'M300 153l12-12h10v12ZM326 141h14l9 12h-23Z', strength: 1, cut: true, motion: 'idle' },
+				{ d: rect(296, 129, 46, 3) + rounded(300, 119, 38, 10, 4), strength: 0.9 },
+				{ d: limb(296, 117, 342, 117, 2.2) + limb(296, 114, 342, 114, 2.2), strength: 0.85 },
+				{ d: disc(282, 177, 9) + disc(352, 177, 9), strength: 1, motion: 'idle' },
+				{ d: disc(282, 177, 4) + disc(352, 177, 4), strength: 1, cut: true }
+			])
 		]
 	},
 	// A sturdy four-by-four, spare wheel on the back
