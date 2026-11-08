@@ -333,19 +333,34 @@ export const CAR: Record<ThemeId, Scene> = {
 	birch: {
 		backdrop: {
 			shapes: [
-				{ d: 'M-200 186V168H400V186Z', strength: 0.34 },
-				{ d: 'M190 168Q300 150 430 156V168Z', strength: 0.3 },
+				{ d: 'M190 118Q260 100 330 108T410 102V128H190Z', strength: 0.25 },
+				{ d: 'M-200 186V126H400V186Z', strength: 0.22 },
+				{ d: 'M-200 186V170Q100 166 400 168V186Z', strength: 0.45 },
+				{ d: 'M288 130Q310 122 336 130Z', strength: 0.5 },
+				{
+					d: rect(300, 102, 1.6, 26) + rect(312, 94, 1.8, 34) + rect(324, 106, 1.6, 22),
+					strength: 1,
+					snow: true
+				},
 				{
 					d:
-						roundTree(250, 166, 22) +
-						roundTree(276, 162, 26) +
-						roundTree(330, 158, 28) +
-						roundTree(372, 160, 24),
-					strength: 0.7
+						disc(299, 102, 7) +
+						disc(297, 107, 8) +
+						disc(298, 112, 7) +
+						disc(307, 117, 7) +
+						disc(317, 94, 8) +
+						disc(313, 100, 7) +
+						disc(314, 106, 7) +
+						disc(320, 113, 7) +
+						disc(329, 106, 8) +
+						disc(320, 110, 6) +
+						disc(325, 114, 8) +
+						disc(320, 119, 7),
+					strength: 0.55
 				}
 			],
 			lines: [
-				{ d: waves(206, 178, 2, 16) + waves(300, 176, 2, 16), strength: 0.45, motion: 'flow' }
+				{ d: waves(236, 138, 2, 16) + waves(340, 136, 2, 16), strength: 0.45, motion: 'flow' }
 			]
 		},
 		shapes: [
