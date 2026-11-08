@@ -6,15 +6,35 @@
 	import FormError from '#lib/components/FormError.svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import { m } from '#lib/paraglide/messages.js';
-	import { passkeysSupported, savePasskey } from '#lib/passkeys.ts';
+	import { passkeysSupported, savePasskey, sealVaultWithPasskey } from '#lib/passkeys.ts';
+	import { vaultKey } from '#lib/crypto/keyring.ts';
 
-	let { count }: { count: number } = $props();
+	/** `withoutVault`: saved before they could bring the groups along (#298) */
+	let { count, withoutVault = 0 }: { count: number; withoutVault?: number } = $props();
 
 	let supported = $state(false);
 	let pending = $state(false);
 	let failed = $state(false);
+	/** Only a device holding the vault can hand it to a passkey */
+	let hasVault = $state(false);
 
-	onMount(() => (supported = passkeysSupported()));
+	onMount(async () => {
+		supported = passkeysSupported();
+		hasVault = Boolean(await vaultKey());
+	});
+
+	async function bringAlong() {
+		pending = true;
+		failed = false;
+		try {
+			failed = !(await sealVaultWithPasskey());
+			await invalidateAll();
+		} catch {
+			failed = true;
+		} finally {
+			pending = false;
+		}
+	}
 
 	async function save() {
 		pending = true;
@@ -36,6 +56,16 @@
 		<Block class="flex items-center gap-2 tone-positive" role="status">
 			<Icon name="passkey" />
 			{m.passkey_saved({ count })}
+		</Block>
+	{/if}
+	{#if withoutVault > 0 && hasVault}
+		<!-- One confirmation, and the passkey opens your groups on your other devices too -->
+		<Block class="flex flex-col gap-2">
+			<p class="text-sm">{m.passkey_bring_groups_hint()}</p>
+			<Button large rounded type="button" class="gap-2" disabled={pending} onclick={bringAlong}>
+				<Icon name="passkey" />
+				{m.passkey_bring_groups()}
+			</Button>
 		</Block>
 	{/if}
 	<Block>

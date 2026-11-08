@@ -8,7 +8,7 @@ import {
 	type RegistrationResponseJSON
 } from '@simplewebauthn/server';
 import { isoBase64URL } from '@simplewebauthn/server/helpers';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, isNull } from 'drizzle-orm';
 import type { Db } from './db';
 import { passkeys } from './db/schema';
 import type { Person } from './people';
@@ -120,5 +120,14 @@ export async function countPasskeys(db: Db, personId: string) {
 		.select({ id: passkeys.id })
 		.from(passkeys)
 		.where(eq(passkeys.personId, personId));
+	return rows.length;
+}
+
+/** Passkeys that don't carry the person's vault yet (#298): saved where the secret wasn't offered */
+export async function countPasskeysWithoutVault(db: Db, personId: string) {
+	const rows = await db
+		.select({ id: passkeys.id })
+		.from(passkeys)
+		.where(and(eq(passkeys.personId, personId), isNull(passkeys.sealedVault)));
 	return rows.length;
 }

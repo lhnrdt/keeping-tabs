@@ -7,7 +7,7 @@ import {
 	startAuthentication,
 	startRegistration
 } from '@simplewebauthn/browser';
-import { openVaultWithSecret, sealVaultWithSecret } from '#lib/crypto/vault.ts';
+import { openVaultWithSecret, sealVaultWithSecret, syncKeys } from '#lib/crypto/vault.ts';
 
 export const passkeysSupported = () => browserSupportsWebAuthn();
 
@@ -51,27 +51,42 @@ export async function savePasskey() {
 	);
 }
 
-/** Many passkeys only produce their secret when used, not when made: then it's used once now */
-async function sealVaultForPasskey(id: string, rpId: string | undefined, made: unknown) {
-	if (!(made as WithPrf).prf?.enabled && !prfSecret(made)) return;
-	let secret = prfSecret(made);
-	if (!secret) {
-		const used = await startAuthentication({
-			optionsJSON: {
-				challenge: btoa(crypto.randomUUID()).replace(/=+$/, ''),
-				rpId,
-				allowCredentials: [{ id, type: 'public-key' }],
-				userVerification: 'preferred',
-				extensions: PRF as never
-			}
-		});
-		secret = prfSecret(used.clientExtensionResults);
-	}
-	if (!secret) return;
-	await post(resolve('/device/passkey/vault'), {
-		id,
-		sealedVault: await sealVaultWithSecret(secret)
+/** A passkey used only for its secret, the one given or whichever the person picks */
+async function secretFrom(rpId: string | undefined, id?: string) {
+	const used = await startAuthentication({
+		optionsJSON: {
+			challenge: btoa(crypto.randomUUID()).replace(/=+$/, ''),
+			rpId,
+			allowCredentials: id ? [{ id, type: 'public-key' }] : [],
+			userVerification: 'preferred',
+			extensions: PRF as never
+		}
 	});
+	return { id: used.id, secret: prfSecret(used.clientExtensionResults) };
+}
+
+const storeSealedVault = async (id: string, secret: Uint8Array) =>
+	post(resolve('/device/passkey/vault'), { id, sealedVault: await sealVaultWithSecret(secret) });
+
+/**
+ * Many passkeys only produce their secret when used, not when made: then it's used once now. Only
+ * one that says it can't is left out; Safari doesn't always say it can.
+ */
+async function sealVaultForPasskey(id: string, rpId: string | undefined, made: unknown) {
+	if ((made as WithPrf).prf?.enabled === false && !prfSecret(made)) return;
+	const secret = prfSecret(made) ?? (await secretFrom(rpId, id)).secret;
+	if (secret) await storeSealedVault(id, secret);
+}
+
+/**
+ * Lets a passkey saved before it could bring the vault along do so now (#298), from a device that
+ * has the vault. False when the passkey can't.
+ */
+export async function sealVaultWithPasskey() {
+	const { id, secret } = await secretFrom(location.hostname);
+	if (!secret) return false;
+	await storeSealedVault(id, secret);
+	return true;
 }
 
 /** Signs in with a passkey, making this device that person; throws if cancelled or unknown. */
@@ -87,5 +102,9 @@ export async function continueWithPasskey() {
 		withoutSecret(response)
 	);
 	const secret = prfSecret(response.clientExtensionResults);
-	if (secret && sealedVault) await openVaultWithSecret(secret, sealedVault).catch(() => {});
+	if (!secret) return;
+	if (sealedVault) await openVaultWithSecret(secret, sealedVault).catch(() => {});
+	// A passkey that has never carried the vault: from now on it carries this device's (#298)
+	else await storeSealedVault(response.id, secret).catch(() => {});
+	await syncKeys().catch(() => {});
 }
