@@ -14,6 +14,7 @@ import {
 	rect,
 	rounded,
 	seated,
+	sparkle,
 	tri
 } from '../draw';
 
@@ -341,49 +342,77 @@ export const EVENT: Record<ThemeId, Scene> = {
 		backdrop: {
 			night: true,
 			shapes: [
-				{ d: curtain(206, 400, 40, 20, 22), strength: 0.26, motion: 'shimmer' },
-				{ d: curtain(220, 400, 76, 24, 22), strength: 0.22, motion: 'shimmer' },
-				{ d: curtain(240, 400, 110, 18, 18), strength: 0.18, motion: 'shimmer' },
-				{ d: 'M190 164Q260 152 330 158T410 154V168H190Z', strength: 0.3 }
+				{ d: curtain(206, 400, 40, 20, 22), strength: 0.44, motion: 'shimmer' },
+				{ d: curtain(220, 400, 76, 24, 22), strength: 0.37, motion: 'shimmer' },
+				{ d: curtain(240, 400, 110, 18, 18), strength: 0.31, motion: 'shimmer' },
+				{ d: 'M190 164Q260 152 330 158T410 154V168H190Z', strength: 0.4 }
 			],
 			lines: [
-				{ d: rays(206, 400, 40, 20, 22), strength: 0.52, motion: 'shimmer' },
-				{ d: rays(220, 400, 76, 24, 22), strength: 0.44, motion: 'shimmer' },
-				{ d: rays(240, 400, 110, 18, 18), strength: 0.36, motion: 'shimmer' }
-			],
-			dots: [
-				[214, 16, 1.4, 0.8],
-				[392, 12, 1.2, 0.8]
+				{ d: rays(206, 400, 40, 20, 22), strength: 0.78, motion: 'shimmer' },
+				{ d: rays(220, 400, 76, 24, 22), strength: 0.66, motion: 'shimmer' },
+				{ d: rays(240, 400, 110, 18, 18), strength: 0.54, motion: 'shimmer' }
 			]
 		},
 		shapes: [
+			{ d: sparkle(226, 16, 8.1) + sparkle(386, 14, 8.8), strength: 0.55, motion: 'twinkle' },
+			{
+				d: sparkle(226, 16, 6) + sparkle(386, 14, 6.5),
+				strength: 1,
+				snow: true,
+				motion: 'twinkle'
+			},
+			{ d: sparkle(300, 8, 6.8) + sparkle(350, 94, 6.1), strength: 0.55, motion: 'twinkle-late' },
+			{
+				d: sparkle(300, 8, 5) + sparkle(350, 94, 4.5),
+				strength: 1,
+				snow: true,
+				motion: 'twinkle-late'
+			},
 			{ d: 'M190 168H410V200H190Z', strength: 0.18 },
 			{ d: figure(352, 168, 14, { hat: 'beanie' }) + figure(326, 170, 18), strength: 0.6 },
 			{
-				d: figure(290, 178, 30) + limb(284, 164, 274, 168, 2.4) + 'M282 178h14v1.6h-14Z',
+				d: figure(296, 178, 30) + limb(290, 164, 280, 168, 2.4) + rect(287, 178, 18, 1.6),
 				strength: 0.8
 			},
 			{
 				d:
-					figure(232, 206, 70, { hat: 'beanie' }) +
-					limb(244, 160, 266, 150, 5) +
-					'M216 204h32v3h-32Z',
+					figure(240, 190, 58, { hat: 'beanie' }) +
+					limb(250, 158, 268, 150, 4.4) +
+					limb(230, 158, 214, 166, 4.4) +
+					rect(226, 190, 30, 2.4) +
+					rect(232, 186, 3, 4) +
+					rect(246, 186, 3, 4),
 				strength: 1
 			},
-			{ d: rect(396, 100, 3, 68), strength: 1 }
+			{ d: rect(396, 100, 3, 68) + rect(204, 104, 3, 96), strength: 1 },
+			{
+				d:
+					disc(214, 118, 4) +
+					disc(240, 127, 4) +
+					disc(268, 134, 4) +
+					disc(296, 137, 4) +
+					disc(324, 135, 4) +
+					disc(352, 128, 4) +
+					disc(378, 116, 4),
+				strength: 0.6
+			},
+			{
+				d:
+					disc(214, 118, 2.8) +
+					disc(240, 127, 2.8) +
+					disc(268, 134, 2.8) +
+					disc(296, 137, 2.8) +
+					disc(324, 135, 2.8) +
+					disc(352, 128, 2.8) +
+					disc(378, 116, 2.8),
+				strength: 1,
+				snow: true,
+				motion: 'twinkle'
+			}
 		],
 		lines: [
-			{ d: 'M190 112Q300 150 398 102', strength: 0.7 },
-			{ d: 'M300 184q22 4 44 0M330 176q14 3 28 0', strength: 0.4 }
-		],
-		dots: [
-			[214, 118, 2.6, 1],
-			[240, 127, 2.6, 1],
-			[268, 134, 2.6, 1],
-			[296, 137, 2.6, 1],
-			[324, 135, 2.6, 1],
-			[352, 128, 2.6, 1],
-			[378, 116, 2.6, 1]
+			{ d: 'M206 106Q300 150 398 102', strength: 0.7 },
+			{ d: 'M262 194q30 5 60 -2M300 184q22 4 44 0M330 176q14 3 28 0', strength: 0.4 }
 		]
 	},
 	// A Ferris wheel at the fair
