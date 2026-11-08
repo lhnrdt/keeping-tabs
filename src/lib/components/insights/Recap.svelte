@@ -12,7 +12,7 @@
 	import type { GroupKind } from '#lib/group/kinds.ts';
 	import { recapPoster } from '#lib/insights/recap-poster.ts';
 	import { useTheme } from '#lib/themes/current.svelte.ts';
-	import { GROUP_SUBJECTS, LANDSCAPE_STRENGTH } from '#lib/themes/group-subjects.ts';
+	import { LANDSCAPE_STRENGTH, subjectOf } from '#lib/themes/group-subjects.ts';
 	import { SCENES } from '#lib/themes/scenes.ts';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import type { Recap } from '#lib/insights/recap.ts';
@@ -64,7 +64,7 @@
 			kind
 				? [
 						{ scene: SCENES[theme.id], strength: LANDSCAPE_STRENGTH },
-						{ scene: GROUP_SUBJECTS[kind], strength: 1 }
+						{ scene: subjectOf(kind, theme.id), strength: 1 }
 					]
 				: [{ scene: SCENES[theme.id], strength: 1 }],
 			{

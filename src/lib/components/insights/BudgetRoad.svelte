@@ -2,12 +2,13 @@
 	// The budget as a road (#168): the car has come as far as the money has gone, and the flag is
 	// where it runs out. For the eye: the numbers are right next to it.
 	import { onMount } from 'svelte';
-	import { GROUP_SUBJECTS } from '#lib/themes/group-subjects.ts';
+	import { subjectOf } from '#lib/themes/group-subjects.ts';
 
 	let { spent, budget }: { spent: number; budget: number } = $props();
 
 	// The car's own 400×200 canvas, without the ground it stands on
-	const car = GROUP_SUBJECTS.car.shapes.slice(1);
+	// The everyday car, as in the forest theme
+	const car = subjectOf('car', 'forest').shapes.slice(1);
 	const over = $derived(spent > budget);
 	const WIDTH = 320;
 	const FLAG_AT = WIDTH - 22;

@@ -6,7 +6,19 @@ import type { ThemeId } from './palettes';
 
 /** How it moves, if it does (styles/scene-motion.css) */
 export type SceneMotion =
-	'rise' | 'bob' | 'bob-slow' | 'flutter' | 'pulse' | 'idle' | 'drift' | 'breathe' | 'flicker';
+	| 'rise'
+	| 'bob'
+	| 'bob-slow'
+	| 'flutter'
+	| 'pulse'
+	| 'idle'
+	| 'drift'
+	| 'breathe'
+	| 'flicker'
+	| 'sway'
+	| 'rock'
+	| 'flow'
+	| 'fly';
 
 export type Shape = {
 	d: string;

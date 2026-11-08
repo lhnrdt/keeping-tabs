@@ -4,7 +4,7 @@
 	import type { GroupKind } from '#lib/group/kinds.ts';
 	import { MOTIFS } from '#lib/themes/art.ts';
 	import { MOMENTS, type Moment } from '#lib/themes/moments.ts';
-	import { GROUP_SUBJECTS } from '#lib/themes/group-subjects.ts';
+	import { subjectOf } from '#lib/themes/group-subjects.ts';
 	import { useTheme } from '#lib/themes/current.svelte.ts';
 
 	/** Something's off (#291): its own scene instead of the theme's or the group's */
@@ -13,7 +13,9 @@
 	const theme = useTheme();
 	// In a group: what it's about, in the same round window
 	const kind: GroupKind | undefined = $derived(moment ? undefined : page.data.group?.kind);
-	const art = $derived(moment ? MOMENTS[moment] : kind ? GROUP_SUBJECTS[kind] : MOTIFS[theme.id]);
+	const art = $derived(
+		moment ? MOMENTS[moment] : kind ? subjectOf(kind, theme.id) : MOTIFS[theme.id]
+	);
 	const cx = $derived(kind ? 310 : 60);
 	const cy = $derived(kind ? 136 : 60);
 	const radius = $derived(kind ? 77 : 58);

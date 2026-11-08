@@ -1,7 +1,7 @@
 <!-- The nature theme's header scene (#60, #274), with the group's type in front if there is one: flat, in the header's own colors, behind the content -->
 <script lang="ts">
 	import type { GroupKind } from '#lib/group/kinds.ts';
-	import { GROUP_SETTLED, GROUP_SUBJECTS, LANDSCAPE_STRENGTH } from '#lib/themes/group-subjects.ts';
+	import { GROUP_SETTLED, LANDSCAPE_STRENGTH, subjectOf } from '#lib/themes/group-subjects.ts';
 	import { SCENES, type Scene } from '#lib/themes/scenes.ts';
 	import { useTheme } from '#lib/themes/current.svelte.ts';
 	import { atNight, hasSun, isNight, moonForSun } from '#lib/themes/time-of-day.ts';
@@ -48,7 +48,7 @@
 		kind
 			? [
 					{ scene: landscape, strength: LANDSCAPE_STRENGTH },
-					{ scene: GROUP_SUBJECTS[kind], strength: 1 },
+					{ scene: subjectOf(kind, theme.id), strength: 1 },
 					...(moment
 						? [{ scene: night ? moonForSun(moment) : moment, strength: 1, moment: true }]
 						: [])
