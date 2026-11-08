@@ -16,6 +16,7 @@ import {
 	rounded,
 	roundTree,
 	seated,
+	sparkle,
 	steam,
 	tri,
 	WATER,
@@ -411,34 +412,86 @@ export const TRIP: Record<ThemeId, Scene> = {
 			{ d: 'M384 110l18-6M384 112l18 4', strength: 0.4, motion: 'shimmer' }
 		]
 	},
-	// A snowmobile far out on the frozen lake, its track curving back to the shore, the lights mirrored in the ice
+	// A snowmobile out on the frozen lake, its track curving back to the shore, the lights mirrored in the ice
 	aurora: {
 		backdrop: {
 			night: true,
 			shapes: [
-				{ d: curtain(236, 400, 80, 18, 30), strength: 0.3, motion: 'shimmer' },
-				{ d: 'M200 160L250 150L300 156L360 146L410 152V164H200Z', strength: 0.3 },
-				{ d: 'M200 164H410V200H200Z', strength: 0.12 },
-				{ d: curtain(236, 400, 176, 10, 10), strength: 0.14, motion: 'shimmer' }
+				{ d: curtain(236, 400, 72, 18, 30), strength: 0.3, motion: 'shimmer' },
+				{
+					d:
+						pine(212, 160, 16) +
+						pine(224, 160, 22) +
+						pine(236, 160, 14) +
+						pine(254, 160, 20) +
+						pine(270, 160, 26) +
+						pine(286, 160, 18) +
+						pine(304, 160, 22) +
+						pine(322, 160, 16) +
+						pine(338, 160, 24) +
+						pine(356, 160, 18) +
+						pine(372, 160, 22) +
+						pine(388, 160, 16) +
+						pine(400, 160, 20),
+					strength: 0.45
+				},
+				{ d: 'M200 160H410V200H200Z', strength: 0.12 },
+				{ d: curtain(236, 400, 176, 8, 10), strength: 0.16, motion: 'shimmer' }
 			],
-			lines: [{ d: rays(236, 400, 80, 18, 30), strength: 0.6, motion: 'shimmer' }],
-			dots: [
-				[220, 30, 1.4, 0.8],
-				[300, 14, 1.2, 0.8],
-				[380, 24, 1.6, 0.8]
-			]
+			lines: [{ d: rays(236, 400, 72, 18, 30), strength: 0.6, motion: 'shimmer' }]
 		},
 		shapes: [
-			{ d: 'M196 200Q240 190 300 186T400 190V200Z', strength: 0.55 },
 			{
-				d: rounded(320, 160, 22, 6, 2) + rect(330, 156, 9, 5) + limb(320, 167, 344, 167, 1.2),
-				strength: 1
+				d: sparkle(246, 22, 9.5) + sparkle(380, 20, 9.5) + sparkle(350, 46, 7.4),
+				strength: 0.55,
+				motion: 'twinkle'
 			},
-			{ d: figure(332, 158, 12, { hat: 'helmet' }), strength: 1 },
-			{ d: 'M344 162L400 154V170Z', strength: 0.3, motion: 'shimmer' },
+			{
+				d: sparkle(246, 22, 7) + sparkle(380, 20, 7) + sparkle(350, 46, 5.5),
+				strength: 1,
+				snow: true,
+				motion: 'twinkle'
+			},
+			{ d: sparkle(300, 12, 7.4) + sparkle(268, 52, 6.8), strength: 0.55, motion: 'twinkle-late' },
+			{
+				d: sparkle(300, 12, 5.5) + sparkle(268, 52, 5),
+				strength: 1,
+				snow: true,
+				motion: 'twinkle-late'
+			},
+			{ d: 'M196 200Q240 190 300 186T400 190V200Z', strength: 0.55 },
+			{ d: 'M362 176L400 166V188Z', strength: 0.3, motion: 'shimmer' },
+			{ d: rounded(306, 178, 32, 7, 3.5), strength: 1, motion: 'idle' },
+			{
+				d: disc(312, 181.5, 2) + disc(322, 181.5, 2) + disc(332, 181.5, 2),
+				strength: 1,
+				cut: true,
+				motion: 'idle'
+			},
+			{
+				d:
+					'M308 178L312 168H330L346 162L362 170L360 178Z' +
+					'M346 162l6 -9 3 1 -4 9Z' +
+					rect(312, 164, 18, 4),
+				strength: 1,
+				motion: 'idle'
+			},
+			{
+				d:
+					limb(334, 186, 362, 186, 2) +
+					'M362 184q5 0 5 -5h2q0 7 -7 7Z' +
+					limb(348, 178, 352, 186, 2),
+				strength: 1,
+				motion: 'idle'
+			},
+			{
+				d: figure(322, 168, 26, { hat: 'helmet' }) + limb(326, 154, 344, 160, 2.6),
+				strength: 1,
+				motion: 'idle'
+			},
 			{ d: pine(210, 206, 70) + pine(228, 204, 40), strength: 0.95 }
 		],
-		lines: [{ d: 'M318 167Q290 172 270 180T230 196', strength: 0.5 }]
+		lines: [{ d: 'M306 184Q280 188 262 192T230 200', strength: 0.5 }]
 	},
 	// Two hikers on a path of fallen leaves, under red trees, a trail sign ahead
 	autumn: {
