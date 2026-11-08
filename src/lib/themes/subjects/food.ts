@@ -12,6 +12,7 @@ import {
 	rect,
 	rounded,
 	sitting,
+	sparkle,
 	steam,
 	WATER
 } from '../draw';
@@ -573,31 +574,51 @@ export const FOOD: Record<ThemeId, Scene> = {
 		backdrop: {
 			night: true,
 			shapes: [
-				{ d: curtain(230, 380, 60, 24, 30), strength: 0.3, motion: 'shimmer' },
-				{ d: curtain(240, 380, 100, 16, 20), strength: 0.22, motion: 'shimmer' },
-				{ d: 'M230 152C270 140 320 136 380 142V160H230Z', strength: 0.4 }
+				{ d: curtain(230, 380, 60, 24, 30), strength: 0.51, motion: 'shimmer' },
+				{ d: curtain(240, 380, 100, 16, 20), strength: 0.37, motion: 'shimmer' },
+				{ d: 'M230 152C270 140 320 136 380 142V160H230Z', strength: 0.45 }
 			],
 			lines: [
-				{ d: rays(230, 380, 60, 24, 30), strength: 0.6, motion: 'shimmer' },
-				{ d: rays(240, 380, 100, 16, 20), strength: 0.44, motion: 'shimmer' }
-			],
-			dots: [
-				[250, 30, 1.4, 0.8],
-				[352, 26, 1.2, 0.8]
+				{ d: rays(230, 380, 60, 24, 30), strength: 0.9, motion: 'shimmer' },
+				{ d: rays(240, 380, 100, 16, 20), strength: 0.66, motion: 'shimmer' }
 			]
 		},
 		shapes: [
+			{
+				d: sparkle(250, 34, 8.1) + sparkle(332, 30, 7.4) + sparkle(260, 112, 5.4),
+				strength: 0.55,
+				motion: 'twinkle'
+			},
+			{
+				d: sparkle(250, 34, 6) + sparkle(332, 30, 5.5) + sparkle(260, 112, 4),
+				strength: 1,
+				snow: true,
+				motion: 'twinkle'
+			},
+			{ d: sparkle(286, 50, 6.1) + sparkle(364, 66, 6.1), strength: 0.55, motion: 'twinkle-late' },
+			{
+				d: sparkle(286, 50, 4.5) + sparkle(364, 66, 4.5),
+				strength: 1,
+				snow: true,
+				motion: 'twinkle-late'
+			},
 			{
 				d: 'M196 0H230V200H196ZM380 0H400V200H380ZM230 0H380V20H230ZM230 160H380V200H230Z',
 				strength: 0.95
 			},
 			{ d: rect(303, 20, 4, 140) + rect(230, 88, 150, 4), strength: 0.95 },
-			{ d: rect(222, 158, 166, 5), strength: 1 },
-			{ d: 'M300 158q0 -12 16 -12h12q16 0 16 12Z' + rect(292, 144, 60, 3), strength: 1, cut: true },
-			{ d: 'M302 158q0-11 14-11h12q14 0 14 11Z', strength: 1 },
-			{ d: rect(258, 136, 8, 22) + 'M262 128q-4 5 0 8q4-3 0-8Z', strength: 1 }
+			{
+				d:
+					'M230 20H250Q246 60 252 100Q244 130 246 160H230Z' +
+					'M380 20H360Q364 60 358 100Q366 130 364 160H380Z',
+				strength: 0.8
+			},
+			{ d: rect(216, 160, 178, 6) + rect(222, 166, 166, 3), strength: 1 },
+			{ d: 'M296 160q-4-14 10-16h20q14 2 10 16Z' + limb(330, 146, 342, 132, 2.2), strength: 1 },
+			{ d: rect(266, 138, 8, 22), strength: 1 },
+			{ d: 'M270 126q-6 7 0 12q6-5 0-12Z', strength: 1, motion: 'flicker' }
 		],
-		lines: [{ d: steam(314, 140, 20) + steam(326, 138, 22), strength: 0.5, motion: 'rise' }]
+		lines: [{ d: steam(310, 138, 20) + steam(322, 136, 22), strength: 0.5, motion: 'rise' }]
 	},
 	// A pie cooling on the windowsill
 	autumn: {
