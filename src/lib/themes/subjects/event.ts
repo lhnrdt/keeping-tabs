@@ -292,8 +292,23 @@ export const EVENT: Record<ThemeId, Scene> = {
 	meadow: {
 		backdrop: {
 			shapes: [
-				{ d: 'M60 186Q220 136 460 148V186Z', strength: 0.22 },
-				{ d: 'M150 186Q300 158 470 166V186Z', strength: 0.34 }
+				{ d: 'M170 186Q230 130 300 136T420 128V186Z', strength: 0.28 },
+				{
+					d:
+						'M218 140L228 126L238 140Z' + 'M244 140L254 126L264 140Z' + 'M270 140L280 126L290 140Z',
+					strength: 0.6
+				},
+				{
+					d:
+						rect(236, 108, 1.6, 32) +
+						'M237.6 108l10 3-10 3Z' +
+						rect(262, 108, 1.6, 32) +
+						'M263.6 108l10 3-10 3Z' +
+						rect(288, 108, 1.6, 32) +
+						'M289.6 108l10 3-10 3Z',
+					strength: 0.6,
+					motion: 'flutter'
+				}
 			]
 		},
 		shapes: [
