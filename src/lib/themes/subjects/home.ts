@@ -1,7 +1,7 @@
 // A shared home (#327): where you live together, in each theme its own way.
 import type { ThemeId } from '../palettes';
 import type { Scene } from '../scenes';
-import { disc, GROUND, house, pine, rect, rounded, steam, WATER, waves } from '../draw';
+import { disc, GROUND, house, limb, pine, rect, rounded, steam, WATER, waves } from '../draw';
 
 export const HOME: Record<ThemeId, Scene> = {
 	// A log cabin built from the forest's own timber, a woodpile by the door, smoke rising
@@ -86,32 +86,39 @@ export const HOME: Record<ThemeId, Scene> = {
 		],
 		lines: [{ d: waves(280, 194, 1) + waves(334, 197, 1), strength: 0.5, motion: 'flow' }]
 	},
-	// A hut on the ridge, skis in the rack, smoke rising
+	// A mountain hut on the ridge on its stone base, skis leaning by the door, smoke rising
 	mountains: {
 		backdrop: {
 			shapes: [
-				{ d: 'M200 150L250 80L300 140L340 74L400 150Z', strength: 0.3 },
+				{ d: 'M184 200L250 80L300 140L340 74L412 200Z', strength: 0.3 },
 				{
 					d: 'M250 80L264 98L256 94L250 102L244 94L236 98ZM340 74L356 94L346 90L340 98L334 90L324 94Z',
 					strength: 1,
 					snow: true
-				},
-				{ d: 'M282 150Q300 122 318 150Z', strength: 1, snow: true }
+				}
 			]
 		},
 		shapes: [
-			{ d: 'M214 200L296 152L348 160L400 138V200Z', strength: 0.95 },
-			{ d: rect(336, 112, 10, 30), strength: 1 },
-			{ d: house(294, 162, 64, 34, 24, 8), strength: 1 },
-			{ d: 'M286 130L326 104L366 130L360 132L326 110L292 132Z', strength: 1, snow: true },
+			{ d: 'M214 200L284 168H368L400 156V200Z', strength: 0.95 },
+			{ d: rect(318, 168, 16, 4), strength: 0.8 },
+			{ d: rect(336, 118, 10, 30), strength: 1 },
+			{ d: house(294, 168, 64, 34, 24, 8), strength: 1 },
+			{ d: 'M286 136L326 110L366 136L360 139L326 116L292 139Z', strength: 1, snow: true },
 			{
-				d: rect(318, 142, 16, 20) + rect(302, 136, 10, 10) + rect(342, 136, 10, 10),
+				d: rect(318, 148, 16, 20) + rect(302, 142, 10, 10) + rect(342, 142, 10, 10),
 				strength: 1,
 				cut: true
 			},
-			{ d: rect(370, 118, 3, 38) + rect(376, 116, 3, 40) + rect(384, 120, 3, 34), strength: 0.9 }
+			{
+				d:
+					limb(366, 168, 380, 122, 3) +
+					limb(380, 122, 384, 117, 3) +
+					limb(382, 168, 368, 122, 3) +
+					limb(368, 122, 364, 117, 3),
+				strength: 1
+			}
 		],
-		lines: [{ d: steam(341, 104), strength: 0.8, motion: 'rise' }]
+		lines: [{ d: steam(341, 110), strength: 0.8, motion: 'rise' }]
 	},
 	// A stone cottage with a thatched roof and a round door
 	heather: {

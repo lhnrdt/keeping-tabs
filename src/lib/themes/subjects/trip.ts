@@ -84,7 +84,7 @@ export const TRIP: Record<ThemeId, Scene> = {
 	mountains: {
 		backdrop: {
 			shapes: [
-				{ d: 'M230 150L300 76L370 150Z', strength: 0.28 },
+				{ d: 'M224 200L300 76L376 200Z', strength: 0.28 },
 				{ d: 'M300 76L316 94L306 90L300 98L294 90L284 94Z', strength: 1, snow: true },
 				{ d: 'M362 52a12 12 0 1 1 24 0a12 12 0 1 1 -24 0Z', strength: 0.35 }
 			]

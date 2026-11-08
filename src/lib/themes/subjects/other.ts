@@ -73,8 +73,8 @@ export const OTHER: Record<ThemeId, Scene> = {
 	mountains: {
 		backdrop: {
 			shapes: [
-				{ d: 'M200 186L240 136L266 158L292 126L330 186Z', strength: 0.4 },
-				{ d: 'M300 186L362 120L400 146V186Z', strength: 0.32 }
+				{ d: 'M200 200L240 136L266 158L292 126L330 200Z', strength: 0.4 },
+				{ d: 'M300 200L362 120L400 146V200Z', strength: 0.32 }
 			]
 		},
 		shapes: [

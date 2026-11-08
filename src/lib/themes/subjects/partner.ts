@@ -68,14 +68,14 @@ export const PARTNER: Record<ThemeId, Scene> = {
 	fjord: {
 		backdrop: {
 			shapes: [
-				{ d: 'M200 160V58L272 160Z', strength: 0.45 },
-				{ d: 'M400 160V54L334 160Z', strength: 0.45 },
+				{ d: 'M150 160L204 58L272 160Z', strength: 0.45 },
+				{ d: 'M450 160L398 54L334 160Z', strength: 0.45 },
 				{ d: 'M268 160L302 112L336 160Z', strength: 0.28 },
 				{ d: 'M292 100a10 10 0 1 1 20 0a10 10 0 1 1 -20 0Z', strength: 0.3 }
 			]
 		},
 		shapes: [
-			{ d: 'M200 200V160H400V200Z', strength: 0.4 },
+			{ d: 'M-200 200V160H400V200Z', strength: 0.4 },
 			...reflected(160, BOAT_FOR_TWO, 0.6),
 			{ d: rect(262, 176, 116, 1.5) + rect(280, 186, 80, 1.5), strength: 1, cut: true },
 			...BOAT_FOR_TWO,
@@ -84,15 +84,31 @@ export const PARTNER: Record<ThemeId, Scene> = {
 		],
 		lines: [{ d: 'M214 172h22M384 176h14M222 188h30', strength: 0.4, motion: 'flow' }]
 	},
-	// Two roped together on a snowy ridge, the summit glowing
+	// Two roped together on a snowy knife-edge ridge, against the big low sun
 	mountains: {
+		backdrop: {
+			shapes: [
+				{ d: 'M262 168a52 52 0 0 1 104 0Z', strength: 0.7 },
+				{ d: 'M200 200L250 150L290 170L340 140L400 168V200Z', strength: 0.3 }
+			]
+		},
 		shapes: [
-			{ d: 'M214 200L284 158L330 142L400 170V200Z', strength: 0.95 },
-			{ d: 'M260 174L284 158L330 142L366 156L344 152L330 158L300 158Z', strength: 1, snow: true },
-			{ d: person(296, 160, 44) + person(334, 146, 44), strength: 1 },
-			{ d: disc(380, 70, 16), strength: 0.35, motion: 'pulse' }
+			{ d: 'M214 200L280 162L330 134L400 176V200Z', strength: 0.95 },
+			{
+				d: 'M262 172L280 162L330 134L360 152L350 150L344 156L334 150L322 156L308 152L296 162L288 160Z',
+				strength: 1,
+				snow: true
+			},
+			{
+				d:
+					figure(296, 156, 40, { hat: 'helmet', pack: 'left' }) +
+					figure(332, 136, 42, { hat: 'beanie', pack: 'left' }),
+				strength: 1
+			},
+			{ d: heart(314, 96, 6), strength: 1, motion: 'pulse' },
+			{ d: 'M372 200l6-12 10-2 8 14ZM230 200l5-8 8 1 4 7Z', strength: 1 }
 		],
-		lines: [{ d: 'M300 140Q316 150 330 126', strength: 0.9 }]
+		lines: [{ d: 'M302 140Q316 140 328 122', strength: 1 }]
 	},
 	// Two walking hand in hand
 	heather: {

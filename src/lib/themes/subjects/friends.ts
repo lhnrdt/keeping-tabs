@@ -44,7 +44,7 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 	fjord: {
 		backdrop: {
 			shapes: [
-				{ d: 'M200 182V88L236 96L258 182Z', strength: 0.4 },
+				{ d: 'M110 200L210 88L236 96L286 200Z', strength: 0.4 },
 				{ d: 'M236 182L276 124L306 182Z', strength: 0.22 }
 			]
 		},
