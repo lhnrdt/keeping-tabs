@@ -164,6 +164,9 @@ export const CAR: Record<ThemeId, Scene> = {
 				snow: true
 			},
 			{ d: rect(374, 128, 3, 30) + rounded(362, 116, 28, 14, 3), strength: 1 },
+			{ d: rect(366, 120, 20, 2) + rect(370, 125, 12, 2), strength: 1, cut: true },
+			{ d: rect(238, 136, 4, 50), strength: 0.9 },
+			{ d: rect(238, 142, 4, 6) + rect(238, 154, 4, 6), strength: 1, cut: true },
 			...mirrored(318, [
 				{
 					d: 'M262 177v-12q0-6 7-7l16-3 13-14q3-3 8-3h26q6 0 8 4l11 13 7 2q6 1 6 7v13Z',
@@ -171,8 +174,7 @@ export const CAR: Record<ThemeId, Scene> = {
 					motion: 'idle'
 				},
 				{ d: 'M300 153l12-12h10v12ZM326 141h14l9 12h-23Z', strength: 1, cut: true, motion: 'idle' },
-				{ d: rect(296, 129, 46, 3) + rounded(300, 119, 38, 10, 4), strength: 0.9 },
-				{ d: limb(296, 117, 342, 117, 2.2) + limb(296, 114, 342, 114, 2.2), strength: 0.85 },
+				{ d: rect(296, 129, 46, 3) + 'M298 129q2-12 16-12h18q10 0 12 12Z', strength: 0.9 },
 				{ d: disc(282, 177, 9) + disc(352, 177, 9), strength: 1, motion: 'idle' },
 				{ d: disc(282, 177, 4) + disc(352, 177, 4), strength: 1, cut: true }
 			])

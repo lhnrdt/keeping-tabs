@@ -87,45 +87,33 @@ export const FOOD: Record<ThemeId, Scene> = {
 			{ d: steam(300, 120, 18) + steam(326, 116, 18), strength: 0.6, motion: 'rise' }
 		]
 	},
-	// Lunch on the hut's sunny terrace: mugs steaming, skis stuck in the snow in a row behind
+	// Close up: a steaming mug held up in a mittened hand, the snowy peaks beyond
 	mountains: {
 		backdrop: {
 			shapes: [
-				{ d: 'M170 200L262 74L330 146L372 100L440 200Z', strength: 0.3 },
-				{ d: 'M262 74L280 96L270 92L262 102L254 92L244 96Z', strength: 1, snow: true }
+				{ d: 'M120 200L210 98L258 146L280 128L330 200ZM330 200L392 92L460 200Z', strength: 0.35 },
+				{
+					d: 'M210 98L228 120L218 116L210 124L202 116L192 120ZM392 92L404 108L396 105L392 112L388 105L380 108Z',
+					strength: 1,
+					snow: true
+				},
+				{ d: 'M-200 200V176Q100 170 400 174V200Z', strength: 1, snow: true }
 			]
 		},
 		shapes: [
-			{ d: 'M-200 200V170Q100 164 400 168V200Z', strength: 1, snow: true },
-			{
-				d: [234, 244, 254, 264, 274, 352, 362, 372, 382, 392]
-					.map((x) => limb(x, 170, x + 1, 112, 3) + limb(x + 1, 112, x - 2, 106, 3))
-					.join(''),
-				strength: 0.75
-			},
-			{ d: rect(290, 92, 3, 66) + 'M262 96q30-22 60 0Z', strength: 0.85 },
-			{ d: rect(268, 148, 76, 5) + rect(274, 153, 4, 17) + rect(334, 153, 4, 17), strength: 1 },
-			{
-				d:
-					rounded(282, 138, 10, 10, 2) +
-					rounded(302, 138, 10, 10, 2) +
-					rounded(322, 138, 10, 10, 2),
-				strength: 1
-			},
-			{
-				d:
-					rect(250, 156, 18, 4) +
-					rect(256, 160, 3, 10) +
-					rect(344, 156, 18, 4) +
-					rect(353, 160, 3, 10),
-				strength: 0.9
-			},
-			{ d: sitting(260, 156, 44, 1) + sitting(352, 156, 44, -1), strength: 1 }
+			{ d: 'M300 112h52v58q0 14-14 14h-24q-14 0-14-14Z', strength: 0.7 },
+			{ d: 'M352 124q22 0 22 20t-22 20v-8q12 0 12-12t-12-12Z', strength: 0.7 },
+			{ d: 'M302 113a24 6 0 1 0 48 0a24 6 0 1 0 -48 0Z', strength: 1, cut: true },
+			{ d: 'M306 114a20 4 0 1 0 40 0a20 4 0 1 0 -40 0Z', strength: 0.5 },
+			{ d: limb(226, 230, 274, 186, 36), strength: 0.55 },
+			{ d: limb(268, 192, 282, 178, 34), strength: 0.75 },
+			{ d: rounded(282, 144, 48, 38, 15), strength: 1 },
+			{ d: limb(290, 150, 324, 140, 12), strength: 1 }
 		],
 		lines: [
 			{
-				d: steam(287, 126, 12) + steam(307, 124, 12) + steam(327, 126, 12),
-				strength: 0.7,
+				d: steam(316, 98, 26) + steam(330, 94, 30) + steam(342, 98, 24),
+				strength: 0.8,
 				motion: 'rise'
 			}
 		]
