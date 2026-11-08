@@ -63,7 +63,8 @@ export const CAR: Record<ThemeId, Scene> = {
 			{
 				d: disc(268.0, 173.0, 7.15) + disc(362.61, 173.0, 7.15) + disc(361.53, 139.42, 2.48),
 				strength: 1,
-				cut: true
+				cut: true,
+				motion: 'idle'
 			},
 			{
 				d: disc(268.0, 173.0, 2.86) + disc(362.61, 173.0, 2.86) + disc(361.53, 139.42, 0.99),
@@ -122,7 +123,12 @@ export const CAR: Record<ThemeId, Scene> = {
 				motion: 'rock'
 			},
 			{ d: disc(279.69, 157.0, 7.0) + disc(334.16, 157.0, 7.0), strength: 1, motion: 'rock' },
-			{ d: disc(279.69, 157.0, 4.34) + disc(334.16, 157.0, 4.34), strength: 1, cut: true },
+			{
+				d: disc(279.69, 157.0, 4.34) + disc(334.16, 157.0, 4.34),
+				strength: 1,
+				cut: true,
+				motion: 'rock'
+			},
 			{
 				d:
 					limb(279.69, 157.0, 279.69, 152.66, 0.91) +
@@ -196,7 +202,12 @@ export const CAR: Record<ThemeId, Scene> = {
 					motion: 'idle'
 				},
 				{ d: disc(284.64, 177.0, 9.0) + disc(355.2, 177.0, 9.0), strength: 1, motion: 'idle' },
-				{ d: disc(284.64, 177.0, 5.58) + disc(355.2, 177.0, 5.58), strength: 1, cut: true },
+				{
+					d: disc(284.64, 177.0, 5.58) + disc(355.2, 177.0, 5.58),
+					strength: 1,
+					cut: true,
+					motion: 'idle'
+				},
 				{
 					d:
 						limb(284.64, 177.0, 284.64, 171.42, 1.17) +
@@ -272,7 +283,12 @@ export const CAR: Record<ThemeId, Scene> = {
 				motion: 'idle'
 			},
 			{ d: disc(286.0, 151.5, 9.0) + disc(352.0, 151.5, 9.0), strength: 1, motion: 'idle' },
-			{ d: disc(286.0, 151.5, 5.58) + disc(352.0, 151.5, 5.58), strength: 1, cut: true },
+			{
+				d: disc(286.0, 151.5, 5.58) + disc(352.0, 151.5, 5.58),
+				strength: 1,
+				cut: true,
+				motion: 'idle'
+			},
 			{
 				d:
 					limb(286.0, 151.5, 286.0, 145.92, 1.17) +
@@ -433,7 +449,12 @@ export const CAR: Record<ThemeId, Scene> = {
 				motion: 'idle'
 			},
 			{ d: disc(284.32, 176.0, 10.0) + disc(375.3, 176.0, 10.0), strength: 1, motion: 'idle' },
-			{ d: disc(284.32, 176.0, 6.2) + disc(375.3, 176.0, 6.2), strength: 1, cut: true },
+			{
+				d: disc(284.32, 176.0, 6.2) + disc(375.3, 176.0, 6.2),
+				strength: 1,
+				cut: true,
+				motion: 'idle'
+			},
 			{
 				d:
 					limb(284.32, 176.0, 290.52, 176.0, 0.5) +
@@ -508,7 +529,8 @@ export const CAR: Record<ThemeId, Scene> = {
 			{
 				d: disc(276.67, 176.19, 6.2) + disc(359.82, 176.0, 6.43) + disc(339.45, 162.3, 5.97),
 				strength: 1,
-				cut: true
+				cut: true,
+				motion: 'idle'
 			},
 			{
 				d: disc(276.67, 176.19, 3.0) + disc(359.82, 176.0, 3.11) + disc(339.45, 162.3, 2.89),
@@ -577,7 +599,12 @@ export const CAR: Record<ThemeId, Scene> = {
 				motion: 'idle'
 			},
 			{ d: disc(288.2, 169.74, 16.0) + disc(371.09, 173.15, 12.85), strength: 1, motion: 'idle' },
-			{ d: disc(288.2, 169.74, 9.92) + disc(371.09, 173.15, 7.97), strength: 1, cut: true },
+			{
+				d: disc(288.2, 169.74, 9.92) + disc(371.09, 173.15, 7.97),
+				strength: 1,
+				cut: true,
+				motion: 'idle'
+			},
 			{ d: disc(288.2, 169.74, 4.8) + disc(371.09, 173.15, 3.85), strength: 1, motion: 'idle' },
 			{
 				d: disc(246, 182, 3.5) + disc(240, 175, 3) + disc(233, 182, 2.4) + disc(242, 167, 2),
@@ -624,7 +651,12 @@ export const CAR: Record<ThemeId, Scene> = {
 				motion: 'idle'
 			},
 			{ d: disc(283.0, 176.0, 10.0) + disc(348.0, 176.0, 10.0), strength: 1, motion: 'idle' },
-			{ d: disc(283.0, 176.0, 6.2) + disc(348.0, 176.0, 6.2), strength: 1, cut: true },
+			{
+				d: disc(283.0, 176.0, 6.2) + disc(348.0, 176.0, 6.2),
+				strength: 1,
+				cut: true,
+				motion: 'idle'
+			},
 			{ d: disc(283.0, 176.0, 3.0) + disc(348.0, 176.0, 3.0), strength: 1, motion: 'idle' },
 			{ d: disc(240, 186, 9) + disc(252, 188, 7) + disc(396, 188, 8), strength: 0.8 }
 		]
@@ -659,7 +691,12 @@ export const CAR: Record<ThemeId, Scene> = {
 				motion: 'idle'
 			},
 			{ d: disc(282.65, 178.0, 8.0) + disc(359.04, 178.0, 8.0), strength: 1, motion: 'idle' },
-			{ d: disc(282.65, 178.0, 4.96) + disc(359.04, 178.0, 4.96), strength: 1, cut: true },
+			{
+				d: disc(282.65, 178.0, 4.96) + disc(359.04, 178.0, 4.96),
+				strength: 1,
+				cut: true,
+				motion: 'idle'
+			},
 			{ d: disc(282.65, 178.0, 2.4) + disc(359.04, 178.0, 2.4), strength: 1, motion: 'idle' },
 			{
 				d: 'M214 188q3 -4 6 0q-3 4 -6 0ZM222 186q3 -4 6 0q-3 4 -6 0ZM230 189q3 -4 6 0q-3 4 -6 0ZM240 187q3 -4 6 0q-3 4 -6 0ZM226 191q3 -4 6 0q-3 4 -6 0ZM386 188q3 -4 6 0q-3 4 -6 0ZM394 190q3 -4 6 0q-3 4 -6 0Z',
