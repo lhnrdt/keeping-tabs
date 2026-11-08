@@ -3,6 +3,7 @@
 	import { page } from '$app/state';
 	import type { GroupKind } from '#lib/group/kinds.ts';
 	import { MOTIFS } from '#lib/themes/art.ts';
+	import { mirrorOf } from '#lib/themes/scenes.ts';
 	import { MOMENTS, type Moment } from '#lib/themes/moments.ts';
 	import { subjectOf } from '#lib/themes/group-subjects.ts';
 	import { useTheme } from '#lib/themes/current.svelte.ts';
@@ -34,22 +35,24 @@
 	<g clip-path={`url(#${clip})`} fill="currentColor">
 		<circle {cx} {cy} r={radius} opacity="0.12" />
 		{#each art.shapes as shape, i (i)}
-			{#if shape.snow}
-				<path d={shape.d} fill="#fff" />
-			{:else if shape.cut}
-				<path d={shape.d} class="text-canvas dark:text-canvas-night" />
-			{:else}
-				<!-- Solid: whatever's behind a shape shouldn't show through it -->
-				<path
-					d={shape.d}
-					class="text-canvas dark:text-canvas-night {shape.motion ? `scene-${shape.motion}` : ''}"
-				/>
-				<path
-					d={shape.d}
-					opacity={shape.strength}
-					class={shape.motion ? `scene-${shape.motion}` : undefined}
-				/>
-			{/if}
+			<g transform={mirrorOf(shape)}>
+				{#if shape.snow}
+					<path d={shape.d} fill="#fff" />
+				{:else if shape.cut}
+					<path d={shape.d} class="text-canvas dark:text-canvas-night" />
+				{:else}
+					<!-- Solid: whatever's behind a shape shouldn't show through it -->
+					<path
+						d={shape.d}
+						class="text-canvas dark:text-canvas-night {shape.motion ? `scene-${shape.motion}` : ''}"
+					/>
+					<path
+						d={shape.d}
+						opacity={shape.strength}
+						class={shape.motion ? `scene-${shape.motion}` : undefined}
+					/>
+				{/if}
+			</g>
 		{/each}
 		{#each art.lines ?? [] as line, i (i)}
 			<path

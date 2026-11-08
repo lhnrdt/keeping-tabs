@@ -1,47 +1,103 @@
 // Eating together (#327): food and drink, in each theme its own way.
 import type { ThemeId } from '../palettes';
 import type { Scene } from '../scenes';
-import { disc, GROUND, rect, rounded, sitting, steam, tri, WATER } from '../draw';
+import {
+	disc,
+	flame,
+	GROUND,
+	limb,
+	logs,
+	pine,
+	rect,
+	rounded,
+	sitting,
+	steam,
+	tri,
+	WATER
+} from '../draw';
 
 export const FOOD: Record<ThemeId, Scene> = {
-	// A pot on the table, steaming
+	// Close up: wild mushrooms sizzling in a big pan, flames licking up its sides
 	forest: {
+		backdrop: {
+			shapes: [
+				{
+					d: 'M214 30h10v156h-10ZM244 20h14v166h-14ZM372 26h12v160h-12ZM396 16h8v170h-8Z',
+					strength: 0.35
+				}
+			]
+		},
 		shapes: [
 			GROUND,
-			{ d: rect(256, 158, 108, 7), strength: 1 },
-			{ d: rect(270, 165, 7, 21) + rect(343, 165, 7, 21), strength: 0.9 },
-			{ d: 'M282 118h56v30q0 10-10 10h-36q-10 0-10-10Z', strength: 1 },
-			{ d: rect(276, 110, 68, 7), strength: 1 },
-			{ d: rect(272, 126, 10, 7) + rect(338, 126, 10, 7), strength: 1 },
-			{ d: rect(298, 130, 24, 5), strength: 1, cut: true }
-		],
-		lines: [{ d: steam(294, 100) + steam(326, 100), strength: 0.8, motion: 'rise' }]
-	},
-	// Fishing from the jetty, a fish on the line
-	fjord: {
-		shapes: [
-			WATER,
-			{ d: rect(224, 170, 120, 8), strength: 1 },
-			{ d: sitting(300, 170, 50), strength: 1 },
-			{ d: 'M360 132q14-10 26 0q-12 10-26 0ZM386 132l8-7v14Z', strength: 1, motion: 'bob' }
+			{ d: pine(240, 186, 64), strength: 0.45 },
+			{ d: disc(270, 184, 6) + disc(372, 184, 6), strength: 0.8 },
+			{ d: logs(320, 186, 90), strength: 0.9 },
+			{ d: 'M276 157h88q-6 20-26 20h-36q-20 0-26-20Z', strength: 1 },
+			{ d: limb(364, 161, 396, 145, 6), strength: 1 },
+			{
+				d: 'M280 157a9 7 0 0 1 18 0ZM302 157a12 10 0 0 1 24 0ZM330 157a10 8 0 0 1 20 0ZM350 157a8 6 0 0 1 16 0Z',
+				strength: 1
+			},
+			{ d: 'M287 153h4v4h-4ZM312 151h4v6h-4ZM338 153h4v4h-4Z', strength: 1, cut: true },
+			{ d: flame(266, 178, 36) + flame(374, 178, 38), strength: 0.55, motion: 'flicker' },
+			{ d: flame(266, 178, 16) + flame(374, 178, 18), strength: 1, cut: true, motion: 'flicker' }
 		],
 		lines: [
-			{ d: 'M312 140Q350 80 374 96', strength: 0.9 },
-			{ d: 'M374 96V128', strength: 0.6 }
+			{
+				d: steam(298, 135, 22) + steam(322, 131, 24) + steam(346, 135, 22),
+				strength: 0.6,
+				motion: 'rise'
+			}
 		]
 	},
-	// Fondue in a mountain hut
+	// The day's catch grilling on the jetty, someone waiting with a plate, the rod still out
+	fjord: {
+		backdrop: {
+			shapes: [
+				{ d: 'M314 116a16 16 0 1 1 32 0a16 16 0 1 1 -32 0Z', strength: 0.3 },
+				{ d: 'M200 182Q260 146 320 166T400 156V182Z', strength: 0.35 }
+			]
+		},
+		shapes: [
+			WATER,
+			{ d: rect(250, 170, 150, 10), strength: 1 },
+			{
+				d:
+					rect(280, 170, 1.5, 10) +
+					rect(310, 170, 1.5, 10) +
+					rect(340, 170, 1.5, 10) +
+					rect(370, 170, 1.5, 10),
+				strength: 1,
+				cut: true
+			},
+			{ d: rect(262, 180, 5, 16) + rect(320, 180, 5, 18) + rect(378, 180, 5, 18), strength: 0.9 },
+			{ d: rect(280, 138, 64, 16) + rect(284, 154, 4, 16) + rect(336, 154, 4, 16), strength: 1 },
+			{ d: rect(282, 140, 60, 4), strength: 1, cut: true },
+			{
+				d: 'M286 136q12-10 26 0q-12 8-26 0ZM312 136l7-6v12ZM318 136q12-10 24 0q-12 8-24 0ZM342 136l7-6v12Z',
+				strength: 1
+			},
+			{ d: sitting(380, 170, 52, -1), strength: 1 },
+			{ d: rect(354, 160, 16, 3), strength: 1 },
+			{ d: limb(258, 170, 280, 72, 2.5) + rounded(258, 150, 8, 8, 3), strength: 1 },
+			{ d: disc(236, 184, 3), strength: 1 }
+		],
+		lines: [
+			{ d: 'M280 72Q246 96 236 182', strength: 0.6 },
+			{ d: steam(300, 120, 18) + steam(326, 116, 18), strength: 0.6, motion: 'rise' }
+		]
+	},
+	// A stove roaring in front of the tent in the snow
 	mountains: {
 		shapes: [
-			GROUND,
-			{ d: rect(250, 160, 140, 7), strength: 1 },
-			{ d: rect(262, 167, 7, 19) + rect(371, 167, 7, 19), strength: 0.9 },
-			{ d: 'M290 120h52v20q0 16-26 16t-26-16Z', strength: 1 },
-			{ d: tri(306, 160, 316, 142, 326, 160), strength: 0.8, motion: 'flicker' },
-			{ d: disc(366, 146, 14), strength: 0.85 },
-			{ d: disc(362, 142, 3) + disc(370, 150, 2.5), strength: 1, cut: true }
+			{ d: 'M214 200C262 186 340 180 400 184V200Z', strength: 1, snow: true },
+			{ d: tri(332, 186, 364, 130, 396, 186), strength: 1 },
+			{ d: tri(358, 186, 364, 158, 376, 186), strength: 1, cut: true },
+			{ d: rect(270, 172, 30, 8) + rect(282, 180, 6, 6), strength: 1 },
+			{ d: 'M268 150h34v14q0 8-8 8h-18q-8 0-8-8Z', strength: 1 },
+			{ d: tri(278, 172, 285, 162, 292, 172), strength: 0.8, motion: 'flicker' }
 		],
-		lines: [{ d: 'M272 98L304 128M360 96L330 128', strength: 0.9 }]
+		lines: [{ d: steam(278, 142) + steam(292, 142), strength: 0.8, motion: 'rise' }]
 	},
 	// Tea for two: the pot, and a cup each
 	heather: {
@@ -104,24 +160,23 @@ export const FOOD: Record<ThemeId, Scene> = {
 		],
 		lines: [{ d: steam(286, 126) + steam(344, 130), strength: 0.8, motion: 'rise' }]
 	},
-	// An apple pie, apples around it
+	// A pie cooling on the windowsill
 	autumn: {
 		shapes: [
-			GROUND,
-			{ d: 'M258 186l6-14h108l6 14Z', strength: 0.85 },
-			{ d: 'M266 172q4-28 52-28t52 28Z', strength: 1 },
+			{ d: rect(262, 70, 112, 116), strength: 0.85 },
 			{
-				d:
-					rect(270, 160, 96, 4) +
-					rect(284, 150, 70, 4) +
-					rect(294, 146, 4, 26) +
-					rect(316, 144, 4, 28) +
-					rect(338, 146, 4, 26),
+				d: rect(274, 82, 40, 44) + rect(322, 82, 40, 44) + rect(274, 132, 88, 20),
 				strength: 1,
 				cut: true
 			},
-			{ d: disc(254, 178, 9) + disc(384, 176, 10), strength: 0.85 }
+			{ d: rect(254, 152, 128, 8), strength: 1 },
+			{ d: 'M282 152q2-20 36-20t36 20Z', strength: 1 },
+			{
+				d: rect(296, 140, 44, 3) + rect(306, 134, 3, 18) + rect(326, 134, 3, 18),
+				strength: 1,
+				cut: true
+			}
 		],
-		lines: [{ d: steam(306, 140) + steam(330, 140), strength: 0.8, motion: 'rise' }]
+		lines: [{ d: steam(306, 124) + steam(330, 124), strength: 0.8, motion: 'rise' }]
 	}
 };

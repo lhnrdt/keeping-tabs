@@ -40,9 +40,13 @@ export const person = (x: number, y: number, h: number) =>
 	`${disc(x, y - h + h * 0.16, h * 0.16)}M${r2(x - h * 0.2)} ${r2(y)}v${r2(-h * 0.42)}q0 ${r2(-h * 0.2)} ${r2(h * 0.2)} ${r2(-h * 0.2)}t${r2(h * 0.2)} ${r2(h * 0.2)}v${r2(h * 0.42)}Z`;
 
 /** Someone sitting, seen from the side, their seat at y, facing right (or left with -1) */
+/** Someone sitting in side view, their seat at y, facing right (1) or left (-1): slim legs bent at the knee */
 export const sitting = (x: number, y: number, h: number, facing = 1) => {
 	const f = facing;
-	return `${disc(x, y - h * 0.82, h * 0.15)}M${r2(x - h * 0.17)} ${r2(y)}v${r2(-h * 0.45)}q0 ${r2(-h * 0.2)} ${r2(h * 0.17)} ${r2(-h * 0.2)}t${r2(h * 0.17)} ${r2(h * 0.2)}v${r2(h * 0.45)}Z${rect(f > 0 ? x : x - h * 0.42, y - h * 0.12, h * 0.42, h * 0.12)}${rect(f > 0 ? x + h * 0.3 : x - h * 0.42, y - h * 0.12, h * 0.12, h * 0.4)}`;
+	const thick = h * 0.11;
+	const hip = y - thick / 2;
+	const knee = x + f * h * 0.34;
+	return `${disc(x, y - h * 0.82, h * 0.15)}M${r2(x - h * 0.17)} ${r2(y)}v${r2(-h * 0.45)}q0 ${r2(-h * 0.2)} ${r2(h * 0.17)} ${r2(-h * 0.2)}t${r2(h * 0.17)} ${r2(h * 0.2)}v${r2(h * 0.45)}Z${limb(x, hip, knee, hip, thick)}${limb(knee, hip, knee + f * h * 0.04, y + h * 0.32, thick * 0.9)}`;
 };
 
 export const heart = (x: number, y: number, s: number) =>
@@ -88,7 +92,100 @@ export const flag = (x: number, y: number, h: number, w = h * 0.4) =>
 export const house = (x: number, y: number, w: number, h: number, roof: number, eave = 8) =>
 	`${rect(x, y - h, w, h)}${tri(x - eave, y - h + 2, x + w / 2, y - h - roof, x + w + eave, y - h + 2)}`;
 
-/** The ground the subject stands on */
-export const GROUND: Shape = { d: 'M214 200C262 186 340 180 400 184V200Z', strength: 0.95 };
-/** Water in front, for what floats */
-export const WATER: Shape = { d: 'M210 200C250 190 330 186 400 188V200Z', strength: 0.4 };
+/** Where everything stands: flat from x 226, so things line up on it and nothing floats */
+export const GROUND_Y = 186;
+export const GROUND: Shape = { d: 'M196 200C208 190 216 186 226 186H400V200Z', strength: 0.95 };
+/** Where everything floats: the water line */
+export const WATER_Y = 182;
+export const WATER: Shape = { d: 'M196 200C208 186 216 182 226 182H400V200Z', strength: 0.4 };
+
+/** A limb from one point to another, w wide, its end rounded; always wound like `disc`, so overlaps fill */
+export function limb(x1: number, y1: number, x2: number, y2: number, w: number) {
+	const length = Math.hypot(x2 - x1, y2 - y1) || 1;
+	const [nx, ny] = [(-(y2 - y1) / length) * (w / 2), ((x2 - x1) / length) * (w / 2)];
+	const corners = [
+		[x1 + nx, y1 + ny],
+		[x2 + nx, y2 + ny],
+		[x2 - nx, y2 - ny],
+		[x1 - nx, y1 - ny]
+	];
+	const area = corners.reduce((sum, [ax, ay], i) => {
+		const [bx, by] = corners[(i + 1) % 4];
+		return sum + (ax * by - bx * ay);
+	}, 0);
+	const ordered = area < 0 ? corners.toReversed() : corners;
+	return `M${ordered.map(([x, y]) => `${r2(x)} ${r2(y)}`).join('L')}Z${disc(x2, y2, w / 2)}${disc(x1, y1, w / 2)}`;
+}
+
+/** What someone wears or carries; people stay simple silhouettes */
+export type Pose = {
+	hat?: 'beanie' | 'helmet' | 'cap';
+	/** A rucksack on their back, on this side */
+	pack?: 'left' | 'right';
+};
+
+function headWear(x: number, top: number, r: number, hat: Pose['hat']) {
+	if (hat === 'beanie')
+		return `M${r2(x - r)} ${r2(top + r)}a${r2(r)} ${r2(r)} 0 0 1 ${r2(r * 2)} 0Z${disc(x, top - r * 0.15, r * 0.3)}`;
+	if (hat === 'helmet')
+		return `M${r2(x - r * 1.15)} ${r2(top + r * 1.05)}a${r2(r * 1.15)} ${r2(r * 1.15)} 0 0 1 ${r2(r * 2.3)} 0Z`;
+	if (hat === 'cap')
+		return `M${r2(x - r)} ${r2(top + r)}a${r2(r)} ${r2(r)} 0 0 1 ${r2(r * 2)} 0Z${rect(x, top + r * 0.8, r * 1.5, r * 0.35)}`;
+	return '';
+}
+
+/** Someone standing on y, h tall: a simple silhouette, with a hat or rucksack if given */
+export function figure(x: number, y: number, h: number, pose: Pose = {}) {
+	const r = h * 0.16;
+	const top = y - h;
+	const pack = pose.pack
+		? rounded(
+				pose.pack === 'left' ? x - h * 0.32 : x + h * 0.14,
+				y - h * 0.62,
+				h * 0.18,
+				h * 0.3,
+				h * 0.05
+			)
+		: '';
+	return `${pack}${person(x, y, h)}${headWear(x, top, r, pose.hat)}`;
+}
+
+/** Someone sitting on a seat at seatY, h tall when standing: the same silhouette, shorter */
+export function seated(x: number, seatY: number, h: number, pose: Pose = {}) {
+	return figure(x, seatY, h * 0.72, pose);
+}
+
+/** A filled cloud */
+export const cloud = (x: number, y: number, w: number) =>
+	`${disc(x, y, w * 0.18)}${disc(x + w * 0.22, y - w * 0.08, w * 0.24)}${disc(x + w * 0.46, y, w * 0.2)}${rect(x, y, w * 0.46, w * 0.18)}`;
+
+/** Flames on x, y, h tall */
+export const flame = (x: number, y: number, h: number) =>
+	`M${x} ${y}c${-h * 0.4} ${-h * 0.3} ${-h * 0.25} ${-h * 0.65} 0 ${-h}c${h * 0.25} ${h * 0.35} ${h * 0.4} ${h * 0.7} 0 ${h}Z`;
+
+/** Logs crossed under a fire on y */
+export const logs = (x: number, y: number, w: number) =>
+	`${limb(x - w / 2, y - 2, x + w / 2, y - 7, 5)}${limb(x - w / 2, y - 7, x + w / 2, y - 2, 5)}`;
+
+/** A wide fire from x0 to x1 on y: flames of changing height, one shape */
+export function fire(x0: number, x1: number, y: number, h: number) {
+	const n = Math.max(3, Math.round((x1 - x0) / 10));
+	const step = (x1 - x0) / n;
+	let d = `M${x0} ${y}`;
+	for (let i = 0; i < n; i++) {
+		const tip = h * (0.55 + 0.45 * Math.abs(Math.sin(i * 1.7 + 0.6)));
+		d += `Q${r2(x0 + step * i)} ${r2(y - tip * 0.5)} ${r2(x0 + step * (i + 0.5))} ${r2(y - tip)}Q${r2(x0 + step * (i + 1))} ${r2(y - tip * 0.45)} ${r2(x0 + step * (i + 1))} ${r2(y - tip * 0.2)}`;
+	}
+	return `${d}L${x1} ${y}Z`;
+}
+
+/** An off-road tyre around x, y: knobbly tread blocks round its edge, r to the tread's tips */
+export function knobbyTyre(x: number, y: number, r: number, blocks = 12) {
+	const points = Array.from({ length: blocks * 4 }, (_, i) => {
+		const outer = Math.floor(i / 2) % 2 === 0;
+		const radius = outer ? r : r * 0.92;
+		const angle = (i / (blocks * 4)) * Math.PI * 2;
+		return `${r2(x + radius * Math.cos(angle))} ${r2(y + radius * Math.sin(angle))}`;
+	});
+	return `M${points.join('L')}Z`;
+}

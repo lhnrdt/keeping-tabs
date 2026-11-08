@@ -1,39 +1,77 @@
 // Friends (#327): a few of you together, in each theme its own way.
 import type { ThemeId } from '../palettes';
 import type { Scene } from '../scenes';
-import { disc, GROUND, hull, person, rect, rounded, sitting, steam, WATER } from '../draw';
+import {
+	bird,
+	cloud,
+	disc,
+	figure,
+	GROUND,
+	hull,
+	person,
+	pine,
+	rect,
+	rounded,
+	sitting,
+	steam,
+	WATER,
+	waves
+} from '../draw';
 
 export const FRIENDS: Record<ThemeId, Scene> = {
-	// Friends side by side, tall and small
+	// Friends at a rope swing on a big old pine: one swinging out high, two watching
 	forest: {
+		backdrop: {
+			shapes: [
+				{ d: 'M200 186C240 130 300 116 400 124V186Z', strength: 0.18 },
+				{ d: 'M200 186C250 150 320 140 400 146V186Z', strength: 0.3 }
+			]
+		},
 		shapes: [
 			GROUND,
-			{ d: person(262, 186, 54) + person(360, 186, 56), strength: 0.8, motion: 'bob-slow' },
-			{ d: person(296, 186, 66) + person(330, 186, 62), strength: 1 }
-		]
-	},
-	// Three paddling one canoe
-	fjord: {
-		shapes: [
-			WATER,
-			{ d: hull(244, 180, 144, 14), strength: 1, motion: 'rock' },
-			{
-				d: `${disc(278, 146, 7)}${disc(316, 144, 7)}${disc(354, 146, 7)}M268 166v-8q0-8 10-8t10 8v8ZM306 166v-8q0-8 10-8t10 8v8ZM344 166v-8q0-8 10-8t10 8v8Z`,
-				strength: 1,
-				motion: 'rock'
-			}
+			{ d: pine(380, 92, 76), strength: 0.75 },
+			{ d: rect(372, 70, 16, 116) + 'M372 82L326 72L326 66L376 74Z', strength: 0.9 },
+			{ d: sitting(276, 138, 46, -1), strength: 1, motion: 'sway' },
+			{ d: rounded(262, 138, 30, 5, 2), strength: 1, motion: 'sway' },
+			{ d: figure(322, 186, 54) + figure(348, 186, 48, { hat: 'beanie' }), strength: 1 }
 		],
 		lines: [
-			{ d: 'M296 150L268 190M334 150L306 190M372 150L344 190', strength: 0.9, motion: 'rock' }
+			{ d: 'M328 70L264 140M332 70L290 140', strength: 1, motion: 'sway' },
+			{ d: 'M258 116Q262 152 300 164M250 124Q256 156 290 172', strength: 0.5 }
 		]
 	},
-	// A rope team on the way up
+	// Friends out on a rock tongue high above the fjord, one sitting at the tip, legs over the drop
+	fjord: {
+		backdrop: {
+			shapes: [
+				{ d: 'M200 182V88L236 96L258 182Z', strength: 0.4 },
+				{ d: 'M236 182L276 124L306 182Z', strength: 0.22 }
+			]
+		},
+		shapes: [
+			WATER,
+			{ d: hull(258, 186, 18, 5), strength: 0.7 },
+			{ d: 'M356 98L400 90V182H350L360 152L352 128L366 116Z', strength: 0.65 },
+			{ d: 'M276 112L290 107L372 100L366 114L340 118L298 116Z', strength: 1 },
+			{ d: sitting(284, 110, 42, -1), strength: 1 },
+			{
+				d: sitting(320, 107, 40, -1) + figure(350, 104, 44, { hat: 'beanie', pack: 'right' }),
+				strength: 0.9
+			},
+			{ d: cloud(236, 140, 50) + cloud(292, 150, 40), strength: 0.25, motion: 'drift' }
+		],
+		lines: [
+			{ d: waves(230, 196, 3) + bird(250, 122) + bird(266, 132, 4), strength: 0.5, motion: 'flow' }
+		]
+	},
+	// A rope team crossing the glacier
 	mountains: {
 		shapes: [
-			{ d: 'M214 200L400 120V200Z', strength: 0.95 },
-			{ d: person(268, 178, 40) + person(314, 158, 40) + person(360, 139, 40), strength: 1 }
+			{ d: 'M214 200C260 176 340 168 400 170V200Z', strength: 1, snow: true },
+			{ d: 'M290 196l14-10h20l-8 10Z', strength: 0.9 },
+			{ d: person(258, 182, 42) + person(316, 178, 42) + person(372, 176, 42), strength: 1 }
 		],
-		lines: [{ d: 'M276 160Q296 158 306 140Q336 136 352 120', strength: 0.9 }]
+		lines: [{ d: 'M264 164Q288 176 312 160Q344 174 368 158', strength: 0.9 }]
 	},
 	// Three on a stone wall
 	heather: {

@@ -18,7 +18,8 @@ export type SceneMotion =
 	| 'sway'
 	| 'rock'
 	| 'flow'
-	| 'fly';
+	| 'fly'
+	| 'shimmer';
 
 export type Shape = {
 	d: string;
@@ -27,6 +28,10 @@ export type Shape = {
 	/** Soft white, in light and dark */
 	snow?: boolean;
 	motion?: SceneMotion;
+	/** Drawn mirrored around this x (see `mirrored`) */
+	mirror?: number;
+	/** Drawn upside down around this y, like a reflection in water (see `reflected`) */
+	reflect?: number;
 	/** The sun, which the moon takes the place of at night (time-of-day.ts) */
 	sun?: { x: number; y: number; r: number };
 };
@@ -44,7 +49,36 @@ export type Scene = {
 	dots?: Dot[];
 	/** Already a night sky, at any time of day */
 	night?: boolean;
+	/** A group's scene with its own background, instead of the theme's one landscape (#327) */
+	backdrop?: Scene;
 };
+
+/** The transform for a shape drawn mirrored or reflected, if it is: [a, b, c, d, e, f] */
+export function flipOf(shape: { mirror?: number; reflect?: number }) {
+	if (shape.mirror === undefined && shape.reflect === undefined) return undefined;
+	const x = shape.mirror === undefined ? 1 : -1;
+	const y = shape.reflect === undefined ? 1 : -1;
+	return [x, 0, 0, y, (shape.mirror ?? 0) * 2, (shape.reflect ?? 0) * 2] as const;
+}
+
+/** The SVG transform for a shape drawn mirrored or reflected, if it is */
+export const mirrorOf = (shape: { mirror?: number; reflect?: number }) => {
+	const flip = flipOf(shape);
+	return flip ? `matrix(${flip.join(' ')})` : undefined;
+};
+
+/** These shapes reflected in water whose surface is at y, faint */
+export const reflected = (y: number, shapes: Shape[], strength = 0.3): Shape[] =>
+	shapes.map((shape) => ({
+		...shape,
+		reflect: y,
+		strength: shape.strength * strength,
+		motion: undefined
+	}));
+
+/** These shapes drawn mirrored around x, e.g. so a car faces into the header */
+export const mirrored = (x: number, shapes: Shape[]): Shape[] =>
+	shapes.map((shape) => ({ ...shape, mirror: x }));
 
 /** A round sun at x, y */
 const sun = (x: number, y: number, r: number, strength: number): Shape => ({
@@ -77,6 +111,28 @@ const roundTree = (x: number, y: number, h: number) => {
 /** A small wave line from x, n crests long */
 const waves = (x: number, y: number, n: number, w = 22) =>
 	`M${x} ${y}` + `q${w / 2} -5 ${w} 0t${w} 0`.repeat(n);
+
+/** The aurora's wavy bottom edge at x, around y, rising and falling by `wave` */
+const auroraEdge = (x: number, y: number, wave: number) =>
+	y + Math.sin(x / 26) * wave * 0.5 + Math.sin(x / 11 + 1) * wave * 0.15;
+
+/** An aurora curtain from x0 to x1: a soft band above its wavy edge, `height` tall */
+function curtain(x0: number, x1: number, y: number, wave: number, height: number) {
+	const xs = Array.from({ length: Math.floor((x1 - x0) / 6) + 1 }, (_, i) => x0 + i * 6);
+	const bottom = xs.map((x) => `${x} ${Math.round(auroraEdge(x, y, wave))}`);
+	const top = xs.toReversed().map((x) => `${x} ${Math.round(auroraEdge(x, y, wave) - height)}`);
+	return `M${bottom.join('L')}L${top.join('L')}Z`;
+}
+
+/** The rays the aurora is made of: thin streaks rising from its edge, of changing length */
+function rays(x0: number, x1: number, y: number, wave: number, height: number) {
+	return Array.from({ length: Math.floor((x1 - x0) / 5) + 1 }, (_, i) => {
+		const x = x0 + i * 5;
+		const edge = Math.round(auroraEdge(x, y, wave));
+		const length = Math.round(height * (0.7 + 0.5 * Math.abs(Math.sin(x / 9))));
+		return `M${x} ${edge}v${-length}`;
+	}).join('');
+}
 
 /** A flower on a stem from the ground at x, y */
 const stem = (x: number, y: number, h: number) => `M${x} ${y}q2 ${-h / 2} 0 ${-h}`;
@@ -190,25 +246,24 @@ export const SCENES: Record<ThemeId, Scene> = {
 	aurora: {
 		night: true,
 		shapes: [
-			{
-				d: 'M250 0C262 40 244 80 262 124L292 110C278 72 296 36 284 0Z',
-				strength: 0.25,
-				motion: 'breathe'
-			},
-			{
-				d: 'M300 0C314 44 296 84 314 116L348 104C332 66 350 34 338 0Z',
-				strength: 0.35,
-				motion: 'breathe'
-			},
-			{ d: 'M356 0C366 36 352 70 368 100L400 92V0Z', strength: 0.25 },
-			{ d: 'M195 200L262 134L306 166L352 122L400 158V200Z', strength: 0.5 },
-			{ d: pine(286, 192, 38) + pine(322, 196, 48) + pine(372, 194, 42), strength: 0.9 }
+			{ d: curtain(222, 400, 64, 30, 34), strength: 0.22, motion: 'shimmer' },
+			{ d: curtain(250, 400, 104, 22, 24), strength: 0.18, motion: 'shimmer' },
+			{ d: 'M195 200C240 168 280 150 320 158C350 164 372 146 400 150V200Z', strength: 0.4 },
+			{ d: 'M230 200C280 178 340 172 400 178V200Z', strength: 0.6 },
+			{ d: pine(288, 190, 36) + pine(316, 192, 46) + pine(370, 190, 40), strength: 0.9 }
+		],
+		lines: [
+			{ d: rays(222, 400, 64, 30, 34), strength: 0.45, motion: 'shimmer' },
+			{ d: rays(250, 400, 104, 22, 24), strength: 0.35, motion: 'shimmer' }
 		],
 		dots: [
-			[232, 36, 1.6, 0.8],
-			[222, 84, 1.3, 0.7],
-			[244, 110, 1.3, 0.7],
-			[392, 112, 1.6, 0.7]
+			[232, 22, 1.6, 0.8],
+			[262, 14, 1.2, 0.7],
+			[214, 92, 1.3, 0.7],
+			[338, 18, 1.4, 0.8],
+			[384, 30, 1.2, 0.7],
+			[240, 134, 1.2, 0.6],
+			[396, 120, 1.4, 0.7]
 		]
 	},
 	autumn: {

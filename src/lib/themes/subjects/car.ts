@@ -1,65 +1,155 @@
 // A car shared (#327): on the road, in each theme its own way.
 import type { ThemeId } from '../palettes';
-import type { Scene, Shape } from '../scenes';
-import { GROUND, hull, rect, rounded, tri, WATER, wheel } from '../draw';
+import { mirrored, type Scene, type Shape } from '../scenes';
+import {
+	disc,
+	figure,
+	GROUND,
+	knobbyTyre,
+	pine,
+	rect,
+	rounded,
+	steam,
+	tri,
+	WATER,
+	waves,
+	wheel
+} from '../draw';
 
 const IDLE = 'idle' as const;
 
-/** The everyday car, its front to the right, standing on y */
-const hatchback = (x: number, y: number): Shape[] => [
-	{
-		d: `M${x} ${y}v-14q0-7 8-9l22-5 20-22q4-4 10-4h36q7 0 11 6l14 20 10 3q7 2 7 9v16Z`,
-		strength: 1,
-		motion: IDLE
-	},
-	{
-		d: `M${x + 40} ${y - 30}l14-15q2-2 6-2h10v17ZM${x + 78} ${y - 47}h16q3 0 5 3l10 14h-31Z`,
-		strength: 1,
-		cut: true,
-		motion: IDLE
-	},
-	...wheel(x + 32, y, 13),
-	...wheel(x + 106, y, 13)
-];
+/** The everyday car, its front to the right, its wheels on the ground at `ground` */
+const hatchback = (x: number, ground: number): Shape[] => {
+	const y = ground - 13;
+	return [
+		{
+			d: `M${x} ${y}v-14q0-7 8-9l22-5 20-22q4-4 10-4h36q7 0 11 6l14 20 10 3q7 2 7 9v16Z`,
+			strength: 1,
+			motion: IDLE
+		},
+		{
+			d:
+				`M${x + 40} ${y - 30}l14-15q2-2 6-2h10v17ZM${x + 78} ${y - 47}h16q3 0 5 3l10 14h-31Z` +
+				rect(x + 74, y - 28, 2, 24) +
+				rect(x + 132, y - 18, 6, 4),
+			strength: 1,
+			cut: true,
+			motion: IDLE
+		},
+		...wheel(x + 32, y, 13),
+		...wheel(x + 106, y, 13)
+	];
+};
 
 export const CAR: Record<ThemeId, Scene> = {
-	// A little car on the road through the trees
+	// Off-road: a 4×4 on a rough forest track, facing into the header, mud flying behind
 	forest: {
-		shapes: [GROUND, ...hatchback(246, 176)],
-		lines: [{ d: 'M226 194h24M264 192h24M340 191h24', strength: 0.8, motion: 'flow' }]
+		backdrop: {
+			shapes: [
+				{ d: 'M200 186L400 120V186Z', strength: 0.3 },
+				{
+					d: 'M300 114L308.93 130.8H291.07ZM300 123.6L311.81 141.2H288.19ZM300 134.0L314.4 150.8H285.6ZM298.4 150.0h3.2V154h-3.2ZM340 96L349.82 114.48H330.18ZM340 106.56L352.99 125.92H327.01ZM340 118.0L355.84 136.48H324.16ZM338.24 135.6h3.52V140h-3.52ZM380 80L390.27 99.32H369.73ZM380 91.04L393.58 111.28H366.42ZM380 103.0L396.56 122.32H363.44ZM378.16 121.4h3.68V126h-3.68Z',
+					strength: 0.4
+				}
+			]
+		},
+		shapes: [
+			GROUND,
+			{ d: pine(232, 186, 66), strength: 0.5 },
+			{ d: 'M240 186l6-8 10 2 4 6Z', strength: 0.85 },
+			...mirrored(318, [
+				{ d: 'M274 148v-32q0-6 6-6h64q6 0 6 6v32Z', strength: 1, motion: 'idle' },
+				{ d: 'M350 148v-16h24q8 0 8 8v8Z', strength: 1, motion: 'idle' },
+				{ d: rounded(270, 146, 112, 18, 4), strength: 1, motion: 'idle' },
+				{
+					d: rect(284, 118, 26, 20) + 'M316 118h20l10 20h-30Z',
+					strength: 1,
+					cut: true,
+					motion: 'idle'
+				},
+				{ d: rect(374, 141, 6, 4), strength: 1, cut: true, motion: 'idle' },
+				{ d: rect(276, 102, 72, 3) + rect(282, 105, 3, 5) + rect(339, 105, 3, 5), strength: 1 },
+				{ d: rect(286, 90, 24, 12) + rect(316, 94, 26, 8), strength: 0.9 },
+				{ d: rounded(264, 120, 10, 30, 4), strength: 1, motion: 'idle' },
+				{ d: knobbyTyre(298, 169, 17) + knobbyTyre(358, 169, 17), strength: 1 },
+				{ d: disc(298, 169, 8) + disc(358, 169, 8), strength: 1, cut: true },
+				{ d: disc(298, 169, 4) + disc(358, 169, 4), strength: 1 },
+				{
+					d: disc(272, 178, 3.5) + disc(262, 170, 3) + disc(256, 180, 2.5) + disc(266, 160, 2.2),
+					strength: 0.8,
+					motion: 'rise'
+				}
+			]),
+			{ d: pine(404, 186, 118), strength: 0.75 }
+		]
 	},
-	// On the ferry across the fjord
+	// Crossing on the ferry: the car on the open deck, the bridge and funnel behind, foam at the stern
 	fjord: {
+		backdrop: {
+			shapes: [
+				{ d: 'M200 182L250 110L320 182Z', strength: 0.32 },
+				{ d: 'M250 110L262 124L254 121L248 128L242 121L238 124Z', strength: 1, snow: true },
+				{ d: 'M200 182V176Q300 172 400 176V182Z', strength: 0.45 }
+			]
+		},
 		shapes: [
 			WATER,
-			{ d: hull(232, 186, 168, 16), strength: 1, motion: 'rock' },
-			{ d: rect(360, 140, 30, 30), strength: 0.9, motion: 'rock' },
-			{ d: rect(366, 146, 18, 8), strength: 1, cut: true, motion: 'rock' },
+			{ d: 'M236 168h164v8l-8 12H250Z', strength: 0.75, motion: 'rock' },
+			{ d: rect(236, 164, 164, 4), strength: 0.7, motion: 'rock' },
+			{ d: 'M236 164l-12-24 8-3 12 24Z', strength: 0.7, motion: 'rock' },
 			{
-				d: 'M262 170v-10q0-5 6-6l14-3 12-13q3-3 7-3h22q5 0 7 4l9 12 6 2q5 1 5 6v11Z',
+				d: rect(248, 150, 2, 14) + rect(340, 150, 2, 14) + rect(248, 150, 94, 2),
+				strength: 0.7,
+				motion: 'rock'
+			},
+			{ d: figure(252, 164, 28, { hat: 'cap' }), strength: 1, motion: 'rock' },
+			{ d: rect(352, 124, 40, 40) + rect(358, 108, 26, 16), strength: 0.75, motion: 'rock' },
+			{
+				d:
+					rect(358, 130, 8, 8) +
+					rect(370, 130, 8, 8) +
+					rect(382, 130, 6, 8) +
+					rect(362, 112, 18, 6),
+				strength: 1,
+				cut: true,
+				motion: 'rock'
+			},
+			{ d: rect(368, 92, 10, 16), strength: 0.7, motion: 'rock' },
+			{
+				d: 'M262 158v-8q0-5 6-6l14-3 12-12q3-3 7-3h22q5 0 7 4l9 12 6 2q5 1 5 6v8Z',
 				strength: 1,
 				motion: 'rock'
 			},
-			...wheel(278, 170, 8).map((s) => ({ ...s, motion: 'rock' as const })),
-			...wheel(328, 170, 8).map((s) => ({ ...s, motion: 'rock' as const }))
+			{
+				d: rect(296, 132, 12, 10) + rect(314, 132, 12, 10),
+				strength: 1,
+				cut: true,
+				motion: 'rock'
+			},
+			{ d: disc(278, 158, 6) + disc(330, 158, 6), strength: 1, motion: 'rock' },
+			{ d: disc(278, 158, 2.5) + disc(330, 158, 2.5), strength: 1, cut: true, motion: 'rock' },
+			{
+				d: disc(396, 186, 6) + disc(388, 190, 5) + disc(380, 186, 4),
+				strength: 1,
+				cut: true,
+				motion: 'flow'
+			},
+			{ d: rect(214, 146, 7, 48), strength: 0.9 },
+			{ d: rect(214, 156, 7, 6) + rect(214, 170, 7, 6), strength: 1, cut: true },
+			{ d: disc(217.5, 142, 4), strength: 1 }
+		],
+		lines: [
+			{ d: steam(373, 84, 18), strength: 0.5, motion: 'rise' },
+			{ d: waves(236, 196, 4), strength: 0.5, motion: 'flow' }
 		]
 	},
-	// Up the winding mountain road
+	// At the trailhead, skis on the roof
 	mountains: {
 		shapes: [
-			{ d: 'M214 200L400 110V200Z', strength: 0.95 },
-			{
-				d: 'M220 200Q300 186 260 170T330 140T400 122V130Q340 146 342 158T276 180Q320 194 236 200Z',
-				strength: 1,
-				cut: true
-			},
-			{
-				d: 'M300 152v-9q0-4 5-5l11-3 10-11q2-2 6-2h16q4 0 6 3l7 10 5 2q4 1 4 5v10Z',
-				strength: 1,
-				motion: IDLE
-			},
-			...wheel(314, 152, 6),
-			...wheel(352, 152, 6)
+			{ d: 'M214 200C262 186 340 180 400 184V200Z', strength: 1, snow: true },
+			{ d: rect(270, 120, 92, 6), strength: 1 },
+			{ d: rounded(268, 110, 100, 6, 3) + rounded(272, 102, 92, 6, 3), strength: 0.9 },
+			...hatchback(246, 186)
 		]
 	},
 	// A sturdy four-by-four, spare wheel on the back
@@ -131,7 +221,7 @@ export const CAR: Record<ThemeId, Scene> = {
 		shapes: [
 			GROUND,
 			{ d: tri(372, 150, 400, 132, 400, 176), strength: 0.25, motion: 'breathe' },
-			...hatchback(238, 176)
+			...hatchback(238, 186)
 		],
 		dots: [
 			[268, 120, 2, 0.8],
@@ -146,7 +236,7 @@ export const CAR: Record<ThemeId, Scene> = {
 			GROUND,
 			{ d: rect(276, 112, 84, 6), strength: 1 },
 			{ d: rounded(282, 92, 34, 20, 4) + rounded(320, 98, 30, 14, 4), strength: 0.9 },
-			...hatchback(246, 176)
+			...hatchback(246, 186)
 		]
 	}
 };
