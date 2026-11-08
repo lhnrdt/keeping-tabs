@@ -1,7 +1,7 @@
 // A trip (#327): travelling the way you do in each place. Everything stands on GROUND_Y or floats
 // on WATER_Y, the main subject in the free space on the right, more around it.
 import type { ThemeId } from '../palettes';
-import type { Scene } from '../scenes';
+import { type Scene, curtain, rays } from '../scenes';
 import {
 	bird,
 	disc,
@@ -411,22 +411,34 @@ export const TRIP: Record<ThemeId, Scene> = {
 			{ d: 'M384 110l18-6M384 112l18 4', strength: 0.4, motion: 'shimmer' }
 		]
 	},
-	// A camper van under the lights, windows warm, someone stepping out to look up
+	// A snowmobile far out on the frozen lake, its track curving back to the shore, the lights mirrored in the ice
 	aurora: {
+		backdrop: {
+			night: true,
+			shapes: [
+				{ d: curtain(236, 400, 80, 18, 30), strength: 0.3, motion: 'shimmer' },
+				{ d: 'M200 160L250 150L300 156L360 146L410 152V164H200Z', strength: 0.3 },
+				{ d: 'M200 164H410V200H200Z', strength: 0.12 },
+				{ d: curtain(236, 400, 176, 10, 10), strength: 0.14, motion: 'shimmer' }
+			],
+			lines: [{ d: rays(236, 400, 80, 18, 30), strength: 0.6, motion: 'shimmer' }],
+			dots: [
+				[220, 30, 1.4, 0.8],
+				[300, 14, 1.2, 0.8],
+				[380, 24, 1.6, 0.8]
+			]
+		},
 		shapes: [
-			GROUND,
-			{ d: rounded(268, 124, 124, 50, 14), strength: 1 },
-			{ d: 'M272 130q4-8 14-8h92q10 0 12 8Z', strength: 1, snow: true },
+			{ d: 'M196 200Q240 190 300 186T400 190V200Z', strength: 0.55 },
 			{
-				d: rect(282, 138, 22, 16) + rect(312, 138, 22, 16) + 'M348 138h26q8 0 10 16h-36Z',
-				strength: 1,
-				snow: true
+				d: rounded(320, 160, 22, 6, 2) + rect(330, 156, 9, 5) + limb(320, 167, 344, 167, 1.2),
+				strength: 1
 			},
-			{ d: rect(272, 160, 116, 3), strength: 1, cut: true },
-			{ d: disc(298, 174, 12) + disc(362, 174, 12), strength: 1 },
-			{ d: disc(298, 174, 5) + disc(362, 174, 5), strength: 1, cut: true },
-			{ d: figure(242, 186, 52, { hat: 'beanie' }), strength: 1 }
-		]
+			{ d: figure(332, 158, 12, { hat: 'helmet' }), strength: 1 },
+			{ d: 'M344 162L400 154V170Z', strength: 0.3, motion: 'shimmer' },
+			{ d: pine(210, 206, 70) + pine(228, 204, 40), strength: 0.95 }
+		],
+		lines: [{ d: 'M318 167Q290 172 270 180T230 196', strength: 0.5 }]
 	},
 	// Two hikers on a path of fallen leaves, under red trees, a trail sign ahead
 	autumn: {

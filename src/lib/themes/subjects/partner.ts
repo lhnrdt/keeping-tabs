@@ -1,6 +1,6 @@
 // Two people (#327): a couple, in each theme its own way.
 import type { ThemeId } from '../palettes';
-import { reflected, type Scene, type Shape } from '../scenes';
+import { reflected, type Scene, type Shape, curtain, rays } from '../scenes';
 import {
 	disc,
 	figure,
@@ -13,7 +13,6 @@ import {
 	rect,
 	rounded,
 	seated,
-	star,
 	tri,
 	waves
 } from '../draw';
@@ -284,15 +283,37 @@ export const PARTNER: Record<ThemeId, Scene> = {
 		],
 		lines: [{ d: waves(340, 192, 2, 14), strength: 0.5, motion: 'flow' }]
 	},
-	// Under one blanket, a shooting star above
+	// From behind them on the bench, one blanket round both, the lights low over the far shore and its reflection
 	aurora: {
+		backdrop: {
+			night: true,
+			shapes: [
+				{ d: curtain(200, 400, 96, 20, 30), strength: 0.3, motion: 'shimmer' },
+				{ d: 'M190 150Q250 136 300 144T410 140V154H190Z', strength: 0.32 },
+				{ d: 'M190 154H410V200H190Z', strength: 0.1 },
+				{ d: curtain(200, 400, 172, 8, 12), strength: 0.14, motion: 'shimmer' }
+			],
+			lines: [{ d: rays(200, 400, 96, 20, 30), strength: 0.6, motion: 'shimmer' }],
+			dots: [
+				[226, 30, 1.6, 0.8],
+				[300, 18, 1.2, 0.8],
+				[386, 26, 1.4, 0.8],
+				[246, 70, 1.2, 0.8]
+			]
+		},
 		shapes: [
-			GROUND,
-			{ d: disc(298, 150, 10) + disc(334, 150, 10), strength: 1 },
-			{ d: 'M252 186Q260 156 316 156Q376 156 384 186Z', strength: 0.95 },
-			{ d: star(364, 70, 7), strength: 1, motion: 'pulse' }
-		],
-		lines: [{ d: 'M358 74L300 100', strength: 0.6 }]
+			{ d: disc(282, 134, 12) + disc(326, 136, 11), strength: 1 },
+			{ d: 'M254 186Q254 150 282 146L304 156L326 148Q356 150 356 186Z', strength: 0.85 },
+			{
+				d:
+					rect(236, 170, 140, 6) +
+					rect(236, 182, 140, 6) +
+					rect(246, 188, 6, 12) +
+					rect(360, 188, 6, 12),
+				strength: 1
+			},
+			{ d: heart(304, 112, 7), strength: 1, motion: 'pulse' }
+		]
 	},
 	// Two under one umbrella
 	autumn: {

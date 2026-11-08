@@ -1,6 +1,6 @@
 // Friends (#327): a few of you together, in each theme its own way.
 import type { ThemeId } from '../palettes';
-import type { Scene } from '../scenes';
+import { type Scene, curtain, rays } from '../scenes';
 import {
 	bird,
 	cloud,
@@ -289,16 +289,60 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 		],
 		lines: [{ d: 'M314 113q4 3 8 0M313 118q5 2 10 0', strength: 0.6, motion: 'bob' }]
 	},
-	// A hot tub under the stars, steam rising
+	// Off the cabin's deck: the hot tub steaming, three of them in it, the lights over the forest
 	aurora: {
+		backdrop: {
+			night: true,
+			shapes: [
+				{ d: curtain(250, 400, 70, 26, 36), strength: 0.3, motion: 'shimmer' },
+				{
+					d:
+						pine(270, 176, 40) +
+						pine(296, 176, 52) +
+						pine(330, 176, 44) +
+						pine(360, 176, 56) +
+						pine(392, 176, 46),
+					strength: 0.45
+				}
+			],
+			lines: [{ d: rays(250, 400, 70, 26, 36), strength: 0.6, motion: 'shimmer' }],
+			dots: [
+				[262, 22, 1.4, 0.8],
+				[330, 14, 1.2, 0.8],
+				[388, 30, 1.6, 0.8]
+			]
+		},
 		shapes: [
-			GROUND,
-			{ d: disc(280, 150, 9) + disc(314, 146, 10) + disc(350, 150, 9), strength: 1 },
-			{ d: rounded(250, 156, 136, 30, 6), strength: 1 }
+			{ d: rect(196, 176, 210, 6) + rect(196, 182, 210, 18), strength: 0.75 },
+			{ d: 'M196 0H244V176H196Z', strength: 0.95 },
+			{ d: rect(214, 96, 22, 30), strength: 1, cut: true },
+			{ d: rect(224, 96, 2, 30) + rect(214, 110, 22, 2), strength: 0.95 },
+			{
+				d:
+					disc(306, 148, 6) +
+					disc(328, 146, 6.5) +
+					disc(350, 148, 6) +
+					limb(360, 150, 368, 134, 2.6),
+				strength: 1
+			},
+			{ d: 'M286 154H370L366 176H290Z', strength: 0.9 },
+			{ d: rect(286, 152, 84, 4) + rect(288, 162, 80, 2.4), strength: 1 },
+			{
+				d:
+					rect(300, 154, 1.6, 22) +
+					rect(320, 154, 1.6, 22) +
+					rect(340, 154, 1.6, 22) +
+					rect(356, 154, 1.6, 22),
+				strength: 1,
+				cut: true
+			}
 		],
 		lines: [
-			{ d: steam(268, 140) + steam(334, 136), strength: 0.7, motion: 'rise' },
-			{ d: 'M250 168h136', strength: 0.4 }
+			{
+				d: steam(306, 138, 22) + steam(328, 136, 26) + steam(352, 138, 22),
+				strength: 0.5,
+				motion: 'rise'
+			}
 		]
 	},
 	// Flying a kite

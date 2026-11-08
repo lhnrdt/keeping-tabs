@@ -62,6 +62,10 @@ export const star = (x: number, y: number, r: number) => {
 	return `M${points.join('L')}Z`;
 };
 
+/** A four-pointed sparkle around x, y: a star that twinkles */
+export const sparkle = (x: number, y: number, r: number) =>
+	`M${x} ${y - r}Q${x} ${y} ${x + r} ${y}Q${x} ${y} ${x} ${y + r}Q${x} ${y} ${x - r} ${y}Q${x} ${y} ${x} ${y - r}Z`;
+
 /** A small wave line from x, n crests long */
 export const waves = (x: number, y: number, n: number, w = 22) =>
 	`M${x} ${y}` + `q${w / 2} -5 ${w} 0t${w} 0`.repeat(n);

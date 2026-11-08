@@ -19,7 +19,9 @@ export type SceneMotion =
 	| 'rock'
 	| 'flow'
 	| 'fly'
-	| 'shimmer';
+	| 'shimmer'
+	| 'twinkle'
+	| 'twinkle-late';
 
 export type Shape = {
 	d: string;
@@ -129,7 +131,7 @@ const auroraEdge = (x: number, y: number, wave: number) =>
 	y + Math.sin(x / 26) * wave * 0.5 + Math.sin(x / 11 + 1) * wave * 0.15;
 
 /** An aurora curtain from x0 to x1: a soft band above its wavy edge, `height` tall */
-function curtain(x0: number, x1: number, y: number, wave: number, height: number) {
+export function curtain(x0: number, x1: number, y: number, wave: number, height: number) {
 	const xs = Array.from({ length: Math.floor((x1 - x0) / 6) + 1 }, (_, i) => x0 + i * 6);
 	const bottom = xs.map((x) => `${x} ${Math.round(auroraEdge(x, y, wave))}`);
 	const top = xs.toReversed().map((x) => `${x} ${Math.round(auroraEdge(x, y, wave) - height)}`);
@@ -137,7 +139,7 @@ function curtain(x0: number, x1: number, y: number, wave: number, height: number
 }
 
 /** The rays the aurora is made of: thin streaks rising from its edge, of changing length */
-function rays(x0: number, x1: number, y: number, wave: number, height: number) {
+export function rays(x0: number, x1: number, y: number, wave: number, height: number) {
 	return Array.from({ length: Math.floor((x1 - x0) / 5) + 1 }, (_, i) => {
 		const x = x0 + i * 5;
 		const edge = Math.round(auroraEdge(x, y, wave));

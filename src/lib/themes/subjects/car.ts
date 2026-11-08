@@ -1,6 +1,6 @@
 // A car shared (#327): on the road, in each theme its own way.
 import type { ThemeId } from '../palettes';
-import { mirrored, type Scene } from '../scenes';
+import { mirrored, type Scene, curtain, rays } from '../scenes';
 import {
 	disc,
 	figure,
@@ -619,6 +619,26 @@ export const CAR: Record<ThemeId, Scene> = {
 	},
 	// Camping under the lights: the old SUV, its rooftop tent open, a ladder down
 	aurora: {
+		backdrop: {
+			night: true,
+			shapes: [
+				{ d: curtain(206, 400, 64, 30, 34), strength: 0.28, motion: 'shimmer' },
+				{ d: curtain(236, 400, 104, 22, 24), strength: 0.22, motion: 'shimmer' },
+				{ d: 'M150 186C220 160 270 150 320 156C350 160 372 146 410 150V186Z', strength: 0.35 },
+				{ d: pine(224, 186, 34) + pine(240, 186, 44), strength: 0.7 }
+			],
+			lines: [
+				{ d: rays(206, 400, 64, 30, 34), strength: 0.55, motion: 'shimmer' },
+				{ d: rays(236, 400, 104, 22, 24), strength: 0.42, motion: 'shimmer' }
+			],
+			dots: [
+				[226, 22, 1.6, 0.8],
+				[262, 12, 1.2, 0.7],
+				[338, 16, 1.4, 0.8],
+				[384, 28, 1.2, 0.7],
+				[214, 96, 1.3, 0.7]
+			]
+		},
 		shapes: [
 			{ d: 'M-200 200V186H400V200Z', strength: 0.55 },
 			{

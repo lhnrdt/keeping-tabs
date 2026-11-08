@@ -1,7 +1,19 @@
 // A shared home (#327): where you live together, in each theme its own way.
 import type { ThemeId } from '../palettes';
-import type { Scene } from '../scenes';
-import { disc, GROUND, house, limb, pine, rect, rounded, steam, WATER, waves } from '../draw';
+import { type Scene, curtain, rays } from '../scenes';
+import {
+	disc,
+	GROUND,
+	house,
+	limb,
+	pine,
+	rect,
+	rounded,
+	seated,
+	steam,
+	WATER,
+	waves
+} from '../draw';
 
 export const HOME: Record<ThemeId, Scene> = {
 	// A log cabin built from the forest's own timber, a woodpile by the door, smoke rising
@@ -389,19 +401,39 @@ export const HOME: Record<ThemeId, Scene> = {
 			}
 		]
 	},
-	// Someone crawling out of the igloo into the night
+	// Glass igloos in a row along the forest edge, the nearest lit up, the aurora's crown right overhead
 	aurora: {
+		backdrop: {
+			night: true,
+			shapes: [
+				{ d: curtain(220, 400, 40, 14, 44), strength: 0.32, motion: 'shimmer' },
+				{ d: curtain(260, 380, 92, 10, 18), strength: 0.2, motion: 'shimmer' },
+				{ d: 'M190 186V168Q230 150 270 160Q320 140 360 156Q390 150 410 160V186Z', strength: 0.3 }
+			],
+			lines: [
+				{ d: rays(220, 400, 40, 14, 44), strength: 0.6, motion: 'shimmer' },
+				{ d: rays(260, 380, 92, 10, 18), strength: 0.4, motion: 'shimmer' }
+			],
+			dots: [
+				[214, 18, 1.4, 0.8],
+				[390, 40, 1.2, 0.8]
+			]
+		},
 		shapes: [
-			GROUND,
-			{ d: 'M258 186a60 60 0 0 1 120 0Z', strength: 0.95 },
-			{ d: 'M300 186v-14a18 18 0 0 1 36 0v14Z', strength: 1, cut: true },
-			{ d: disc(318, 172, 8) + 'M306 186q0-8 12-8t12 8Z', strength: 1 }
-		],
-		lines: [
+			{ d: GROUND.d, strength: 0.6 },
+			{ d: 'M227 186a9 9 0 0 1 18 0Z' + 'M254 186a14 14 0 0 1 28 0Z', strength: 0.7 },
+			{ d: 'M296 186a34 34 0 0 1 68 0Z', strength: 0.95 },
+			{ d: 'M300 186a30 30 0 0 1 60 0Z', strength: 1, cut: true },
 			{
-				d: 'M270 160h96M262 172h34M340 172h34M286 146h64M318 128v18M296 146v14M340 146v14',
-				strength: 0.35
-			}
+				d:
+					limb(330, 152, 330, 186, 1.6) +
+					limb(308, 162, 308, 186, 1.6) +
+					limb(352, 162, 352, 186, 1.6) +
+					rect(300, 172, 60, 1.6),
+				strength: 0.9
+			},
+			{ d: seated(318, 182, 32) + seated(342, 182, 30), strength: 0.85 },
+			{ d: 'M376 200Q384 168 400 166V200Z' + pine(396, 200, 90), strength: 1 }
 		]
 	},
 	// A house with a porch, pumpkins on the steps

@@ -10,7 +10,9 @@
 .scene-idle,
 .scene-drift,
 .scene-breathe,
-.scene-flicker {
+.scene-flicker,
+.scene-twinkle,
+.scene-twinkle-late {
 	transform-box: fill-box;
 	transform-origin: center bottom;
 }
@@ -42,6 +44,15 @@
 }
 .scene-flicker {
 	animation: scene-flicker 1.4s ease-in-out infinite;
+}
+/* Stars: a sparkle that swells and fades, the late ones out of step */
+.scene-twinkle,
+.scene-twinkle-late {
+	transform-origin: center;
+	animation: scene-twinkle 2.6s ease-in-out infinite;
+}
+.scene-twinkle-late {
+	animation-delay: -1.3s;
 }
 @keyframes scene-rise {
 	0% {
@@ -84,6 +95,12 @@
 @keyframes scene-breathe {
 	50% {
 		opacity: 0.55;
+	}
+}
+@keyframes scene-twinkle {
+	50% {
+		opacity: 0.35;
+		transform: scale(0.55);
 	}
 }
 @keyframes scene-flicker {
@@ -141,6 +158,8 @@
 	.scene-drift,
 	.scene-breathe,
 	.scene-flicker,
+	.scene-twinkle,
+	.scene-twinkle-late,
 	.scene-celebrate {
 		animation: none;
 	}

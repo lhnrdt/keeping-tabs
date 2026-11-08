@@ -1,6 +1,6 @@
 // Eating together (#327): food and drink, in each theme its own way.
 import type { ThemeId } from '../palettes';
-import type { Scene } from '../scenes';
+import { type Scene, curtain, rays } from '../scenes';
 import {
 	disc,
 	figure,
@@ -568,18 +568,36 @@ export const FOOD: Record<ThemeId, Scene> = {
 			{ d: figure(266, 186, 38), strength: 0.65 }
 		]
 	},
-	// Hot chocolate in the cold
+	// Inside the cabin: soup steaming on the sill, a candle, the lights in the window
 	aurora: {
+		backdrop: {
+			night: true,
+			shapes: [
+				{ d: curtain(230, 380, 60, 24, 30), strength: 0.3, motion: 'shimmer' },
+				{ d: curtain(240, 380, 100, 16, 20), strength: 0.22, motion: 'shimmer' },
+				{ d: 'M230 152C270 140 320 136 380 142V160H230Z', strength: 0.4 }
+			],
+			lines: [
+				{ d: rays(230, 380, 60, 24, 30), strength: 0.6, motion: 'shimmer' },
+				{ d: rays(240, 380, 100, 16, 20), strength: 0.44, motion: 'shimmer' }
+			],
+			dots: [
+				[250, 30, 1.4, 0.8],
+				[352, 26, 1.2, 0.8]
+			]
+		},
 		shapes: [
-			GROUND,
-			{ d: rounded(266, 136, 40, 50, 6) + rounded(326, 140, 36, 46, 6), strength: 1 },
 			{
-				d: 'M306 148q14 0 14 12t-14 12v-6q8 0 8-6t-8-6ZM362 152q12 0 12 11t-12 11v-6q6 0 6-5t-6-5Z',
-				strength: 1
+				d: 'M196 0H230V200H196ZM380 0H400V200H380ZM230 0H380V20H230ZM230 160H380V200H230Z',
+				strength: 0.95
 			},
-			{ d: rect(274, 144, 24, 8), strength: 1, cut: true }
+			{ d: rect(303, 20, 4, 140) + rect(230, 88, 150, 4), strength: 0.95 },
+			{ d: rect(222, 158, 166, 5), strength: 1 },
+			{ d: 'M300 158q0 -12 16 -12h12q16 0 16 12Z' + rect(292, 144, 60, 3), strength: 1, cut: true },
+			{ d: 'M302 158q0-11 14-11h12q14 0 14 11Z', strength: 1 },
+			{ d: rect(258, 136, 8, 22) + 'M262 128q-4 5 0 8q4-3 0-8Z', strength: 1 }
 		],
-		lines: [{ d: steam(286, 126) + steam(344, 130), strength: 0.8, motion: 'rise' }]
+		lines: [{ d: steam(314, 140, 20) + steam(326, 138, 22), strength: 0.5, motion: 'rise' }]
 	},
 	// A pie cooling on the windowsill
 	autumn: {

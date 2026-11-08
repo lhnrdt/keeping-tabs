@@ -1,6 +1,6 @@
 // Something's on (#327): a party or an event, in each theme its own way.
 import type { ThemeId } from '../palettes';
-import type { Scene } from '../scenes';
+import { type Scene, curtain, rays } from '../scenes';
 import {
 	disc,
 	figure,
@@ -336,18 +336,54 @@ export const EVENT: Record<ThemeId, Scene> = {
 			{ d: 'M300 160V86M352 160V102', strength: 0.3 }
 		]
 	},
-	// Sky lanterns rising into the night
+	// Skating on the frozen lake: skaters near and far under a string of lights, the aurora in bands
 	aurora: {
+		backdrop: {
+			night: true,
+			shapes: [
+				{ d: curtain(206, 400, 40, 20, 22), strength: 0.26, motion: 'shimmer' },
+				{ d: curtain(220, 400, 76, 24, 22), strength: 0.22, motion: 'shimmer' },
+				{ d: curtain(240, 400, 110, 18, 18), strength: 0.18, motion: 'shimmer' },
+				{ d: 'M190 164Q260 152 330 158T410 154V168H190Z', strength: 0.3 }
+			],
+			lines: [
+				{ d: rays(206, 400, 40, 20, 22), strength: 0.52, motion: 'shimmer' },
+				{ d: rays(220, 400, 76, 24, 22), strength: 0.44, motion: 'shimmer' },
+				{ d: rays(240, 400, 110, 18, 18), strength: 0.36, motion: 'shimmer' }
+			],
+			dots: [
+				[214, 16, 1.4, 0.8],
+				[392, 12, 1.2, 0.8]
+			]
+		},
 		shapes: [
-			GROUND,
-			{ d: 'M272 120h20l-3 22h-14Z', strength: 1, motion: 'rise' },
-			{ d: 'M316 80h24l-4 26h-16Z', strength: 0.9, motion: 'bob' },
-			{ d: 'M360 108h18l-3 20h-12Z', strength: 0.8, motion: 'bob-slow' },
+			{ d: 'M190 168H410V200H190Z', strength: 0.18 },
+			{ d: figure(352, 168, 14, { hat: 'beanie' }) + figure(326, 170, 18), strength: 0.6 },
 			{
-				d: rect(278, 136, 8, 4) + rect(324, 100, 8, 4) + rect(366, 122, 6, 4),
-				strength: 1,
-				cut: true
-			}
+				d: figure(290, 178, 30) + limb(284, 164, 274, 168, 2.4) + 'M282 178h14v1.6h-14Z',
+				strength: 0.8
+			},
+			{
+				d:
+					figure(232, 206, 70, { hat: 'beanie' }) +
+					limb(244, 160, 266, 150, 5) +
+					'M216 204h32v3h-32Z',
+				strength: 1
+			},
+			{ d: rect(396, 100, 3, 68), strength: 1 }
+		],
+		lines: [
+			{ d: 'M190 112Q300 150 398 102', strength: 0.7 },
+			{ d: 'M300 184q22 4 44 0M330 176q14 3 28 0', strength: 0.4 }
+		],
+		dots: [
+			[214, 118, 2.6, 1],
+			[240, 127, 2.6, 1],
+			[268, 134, 2.6, 1],
+			[296, 137, 2.6, 1],
+			[324, 135, 2.6, 1],
+			[352, 128, 2.6, 1],
+			[378, 116, 2.6, 1]
 		]
 	},
 	// A Ferris wheel at the fair

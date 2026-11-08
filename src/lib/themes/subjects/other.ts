@@ -1,6 +1,6 @@
 // Any other group (#327): somewhere to go, in each theme its own way.
 import type { ThemeId } from '../palettes';
-import type { Scene } from '../scenes';
+import { type Scene, curtain, rays } from '../scenes';
 import {
 	disc,
 	figure,
@@ -12,6 +12,7 @@ import {
 	rect,
 	rounded,
 	seated,
+	sparkle,
 	tri,
 	WATER,
 	waves
@@ -301,14 +302,60 @@ export const OTHER: Record<ThemeId, Scene> = {
 			}
 		]
 	},
-	// A telescope pointed at the sky
+	// Close behind the photographer at the tripod, the camera tilted up at the aurora arching over the fells
 	aurora: {
+		backdrop: {
+			night: true,
+			shapes: [
+				{ d: curtain(200, 400, 52, 40, 40), strength: 0.3, motion: 'shimmer' },
+				{ d: 'M190 178L232 156L262 166L300 146L340 162L372 150L410 162V178Z', strength: 0.38 },
+				{ d: 'M190 178H410V186H190Z', strength: 0.16 }
+			],
+			lines: [{ d: rays(200, 400, 52, 40, 40), strength: 0.6, motion: 'shimmer' }]
+		},
 		shapes: [
-			GROUND,
-			{ d: 'M282 128l70-34 8 14-70 34Z', strength: 1 },
-			{ d: rounded(272, 128, 20, 18, 4), strength: 1 }
-		],
-		lines: [{ d: 'M318 124L292 186M318 124L344 186M318 124V186', strength: 0.9 }]
+			{
+				d:
+					sparkle(222, 24, 10.8) +
+					sparkle(392, 22, 10.1) +
+					sparkle(300, 124, 7.4) +
+					sparkle(240, 62, 6.8),
+				strength: 0.55,
+				motion: 'twinkle'
+			},
+			{
+				d:
+					sparkle(222, 24, 8) +
+					sparkle(392, 22, 7.5) +
+					sparkle(300, 124, 5.5) +
+					sparkle(240, 62, 5),
+				strength: 1,
+				snow: true,
+				motion: 'twinkle'
+			},
+			{
+				d: sparkle(262, 12, 8.1) + sparkle(214, 112, 8.1) + sparkle(356, 116, 8.8),
+				strength: 0.55,
+				motion: 'twinkle-late'
+			},
+			{
+				d: sparkle(262, 12, 6) + sparkle(214, 112, 6) + sparkle(356, 116, 6.5),
+				strength: 1,
+				snow: true,
+				motion: 'twinkle-late'
+			},
+			{ d: 'M196 200Q260 184 330 188T410 186V200Z', strength: 0.6 },
+			{
+				d: limb(318, 134, 296, 200, 3) + limb(318, 134, 340, 200, 3) + limb(318, 134, 318, 200, 3),
+				strength: 1
+			},
+			{
+				d: rounded(304, 120, 26, 15, 4) + rect(296, 123, 9, 9) + rect(312, 116, 8, 5),
+				strength: 1,
+				rotate: { deg: 24, x: 317, y: 128 }
+			},
+			{ d: figure(372, 214, 96, { hat: 'beanie' }) + limb(360, 160, 332, 136, 5), strength: 1 }
+		]
 	},
 	// A mailbox, leaves blowing past
 	autumn: {
