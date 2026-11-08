@@ -7,6 +7,7 @@ import {
 	flag,
 	flame,
 	GROUND,
+	limb,
 	logs,
 	pine,
 	rect,
@@ -137,14 +138,49 @@ export const EVENT: Record<ThemeId, Scene> = {
 			{ d: flag(294, 148, 30, 13) + flag(348, 148, 30, 13), strength: 1, motion: 'flutter' }
 		]
 	},
-	// A festival marquee, its flags flying
+	// Highland games: tossing the caber, the crowd watching over the hay bales, bunting above
 	heather: {
+		backdrop: {
+			shapes: [{ d: 'M80 200Q240 120 420 136T560 150V200Z', strength: 0.26 }]
+		},
 		shapes: [
+			{
+				d:
+					figure(226, 178, 30) +
+					figure(244, 178, 34, { hat: 'cap' }) +
+					figure(262, 178, 28) +
+					figure(280, 178, 32) +
+					figure(298, 178, 30, { hat: 'cap' }),
+				strength: 0.5
+			},
+			{ d: rect(208, 102, 3, 84) + rect(300, 96, 3, 90), strength: 0.5 },
+			{
+				d:
+					rounded(214, 166, 30, 20, 4) +
+					rounded(246, 166, 30, 20, 4) +
+					rounded(278, 166, 30, 20, 4),
+				strength: 0.75
+			},
+			{
+				d: rect(214, 175, 94, 1.6) + rect(244, 166, 2, 20) + rect(276, 166, 2, 20),
+				strength: 1,
+				cut: true
+			},
+			{
+				d: 'M217.5 108.1l4 9 4-9ZM229.0 109.4l4 9 4-9ZM240.5 109.8l4 9 4-9ZM252.0 109.5l4 9 4-9ZM263.5 108.3l4 9 4-9ZM275.0 106.4l4 9 4-9ZM286.5 103.6l4 9 4-9Z',
+				strength: 0.7,
+				motion: 'flutter'
+			},
 			GROUND,
-			{ d: 'M248 186V146L288 116L318 136L348 116L388 146V186Z', strength: 1 },
-			{ d: 'M302 186v-28h32v28Z', strength: 1, cut: true },
-			{ d: 'M288 116V92l14 5-14 5ZM348 116V92l14 5-14 5Z', strength: 1, motion: 'flutter' }
-		]
+			{ d: figure(320, 186, 64), strength: 1 },
+			{ d: 'M306 186l2-22h24l2 22Z', strength: 0.7 },
+			{ d: rect(307, 164, 26, 2), strength: 1, cut: true },
+			{
+				d: 'M333 166l9 2 30-136-7-1Z' + limb(326, 142, 338, 160, 4) + limb(332, 148, 340, 164, 4),
+				strength: 1
+			}
+		],
+		lines: [{ d: 'M210 106Q256 116 302 100', strength: 0.6 }]
 	},
 	// Balloons and bunting
 	birch: {

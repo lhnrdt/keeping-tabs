@@ -3,6 +3,7 @@ import type { ThemeId } from '../palettes';
 import type { Scene } from '../scenes';
 import {
 	disc,
+	figure,
 	flame,
 	GROUND,
 	limb,
@@ -118,18 +119,97 @@ export const FOOD: Record<ThemeId, Scene> = {
 			}
 		]
 	},
-	// Tea for two: the pot, and a cup each
+	// Bilberry picking: a brimming basket close up, a picker among the heather behind
 	heather: {
+		backdrop: {
+			shapes: [
+				{ d: 'M80 200Q220 128 400 140T560 150V200Z', strength: 0.24 },
+				{ d: 'M140 200Q260 160 420 170V200Z', strength: 0.38 }
+			]
+		},
 		shapes: [
-			GROUND,
-			{ d: 'M286 186q-10-46 32-46t32 46Z', strength: 1 },
-			{ d: rounded(296, 128, 44, 12, 5) + disc(318, 124, 5), strength: 1 },
-			{ d: 'M290 164q-18 0-24-22l7-2q5 16 17 16Z', strength: 1 },
-			{ d: 'M350 150a14 14 0 1 1 0 26v-6a8 8 0 1 0 0-14Z', strength: 1 },
-			{ d: rect(296, 160, 44, 5), strength: 1, cut: true },
-			{ d: rounded(240, 168, 24, 18, 4) + rounded(374, 168, 22, 18, 4), strength: 0.85 }
-		],
-		lines: [{ d: steam(252, 160, 16) + steam(266, 136, 18), strength: 0.7, motion: 'rise' }]
+			{ d: GROUND.d, strength: 0.6 },
+			{
+				d: figure(258, 186, 44, { hat: 'beanie' }) + limb(264, 160, 270, 168, 3.2),
+				strength: 0.75
+			},
+			{ d: 'M266 172h12l-1 10h-10Z' + 'M267 172q5-8 10 0h-1.6q-3.4-5.5-6.8 0Z', strength: 0.75 },
+			{
+				d:
+					disc(221.0, 188.0, 3) +
+					disc(227.0, 181.7, 4) +
+					disc(233.0, 177.7, 4) +
+					disc(239.0, 177.7, 4) +
+					disc(245.0, 181.7, 4) +
+					disc(251.0, 188.0, 3) +
+					'M221.0 188Q236 171.2 251.0 188Z' +
+					disc(273.0, 188.0, 3) +
+					disc(279.8, 180.6, 4) +
+					disc(286.6, 176.0, 4) +
+					disc(293.4, 176.0, 4) +
+					disc(300.2, 180.6, 4) +
+					disc(307.0, 188.0, 3) +
+					'M273.0 188Q290 168.4 307.0 188Z',
+				strength: 0.85
+			},
+			{
+				d:
+					disc(226, 180, 1.4) +
+					disc(236, 177, 1.4) +
+					disc(246, 180, 1.4) +
+					disc(280, 179, 1.4) +
+					disc(290, 175, 1.4) +
+					disc(300, 179, 1.4),
+				strength: 1,
+				cut: true
+			},
+			{ d: 'M306 160q42-80 84 0h-6q-36-68-72 0Z', strength: 0.85 },
+			{
+				d:
+					disc(312, 154, 7.0) +
+					disc(323, 155, 6.4) +
+					disc(334, 154, 5.8) +
+					disc(345, 155, 7.0) +
+					disc(356, 154, 6.4) +
+					disc(367, 155, 5.8) +
+					disc(378, 154, 7.0) +
+					disc(389, 155, 6.4) +
+					disc(324, 144, 7.0) +
+					disc(336, 146, 6.2) +
+					disc(348, 144, 7.0) +
+					disc(360, 146, 6.2) +
+					disc(372, 144, 7.0) +
+					disc(342, 135, 6.5) +
+					disc(357, 136, 6) +
+					disc(290, 197, 4.5) +
+					disc(280, 199, 4),
+				strength: 1
+			},
+			{
+				d:
+					disc(309.5, 151.5, 1.4) +
+					disc(325, 152.5, 1.4) +
+					disc(332.5, 151, 1.4) +
+					disc(347.5, 153, 1.4) +
+					disc(353, 152.5, 1.4) +
+					disc(364.5, 152.5, 1.4) +
+					disc(380, 151.5, 1.4) +
+					disc(387.5, 152, 1.4) +
+					disc(326.5, 142, 1.4) +
+					disc(333, 144.5, 1.4) +
+					disc(345.5, 141.5, 1.4) +
+					disc(362, 143.5, 1.4) +
+					disc(370.5, 141, 1.4) +
+					disc(344.5, 133, 1.4) +
+					disc(354, 134.5, 1.4) +
+					disc(287.5, 194.5, 1.4) +
+					disc(282, 196.5, 1.4),
+				strength: 1,
+				cut: true
+			},
+			{ d: 'M300 156h96l-9 50h-78Z', strength: 0.7 },
+			{ d: rect(304, 170, 88, 2) + rect(306, 184, 84, 2), strength: 1, cut: true }
+		]
 	},
 	// A basket of berries and a jar of jam
 	birch: {

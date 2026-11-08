@@ -112,32 +112,44 @@ export const TRIP: Record<ThemeId, Scene> = {
 		],
 		lines: [{ d: 'M240 199L300 184L272 180L332 164L306 160', strength: 1 }]
 	},
-	// A walker on the moor path, heading for the cairn, the wind in their scarf
+	// The long walk: the path winding over the moor to the cairn on the far hill, a fingerpost in front
 	heather: {
+		backdrop: {
+			shapes: [
+				{ d: 'M120 200Q240 112 460 124V200Z', strength: 0.3 },
+				{ d: 'M160 200Q290 146 460 152V200Z', strength: 0.36 }
+			]
+		},
 		shapes: [
-			GROUND,
-			{ d: rect(226, 172, 44, 14), strength: 0.5 },
+			{
+				d: rounded(347, 118, 18, 9, 3) + rounded(350, 110, 12, 9, 3) + rounded(353, 103, 7, 8, 3),
+				strength: 0.7
+			},
+			{ d: 'M150 200Q240 172 330 168T440 164V200Z', strength: 0.6 },
+			{ d: 'M258 200C290 188 330 178 370 168h6C352 180 334 190 322 200Z', strength: 1, cut: true },
+			{ d: figure(318, 189, 38, { hat: 'cap', pack: 'left' }), strength: 1 },
+			{ d: rect(232, 126, 5, 76) + 'M237 132h28l6 6-6 6h-28Z', strength: 1 },
 			{
 				d:
-					rounded(366, 174, 24, 12, 5) +
-					rounded(369, 163, 18, 11, 5) +
-					rounded(372, 153, 12, 10, 4),
-				strength: 0.75
+					disc(376, 198, 10) +
+					disc(390, 194, 12) +
+					disc(402, 198, 9) +
+					disc(208, 199, 8) +
+					disc(220, 197, 9),
+				strength: 1
 			},
-			{ d: figure(310, 186, 62, { hat: 'beanie', pack: 'left' }), strength: 1 },
-			{ d: 'M316 140h14l6 10-4 2-6-8h-10Z', strength: 1, motion: 'flutter' },
-			{ d: limb(326, 150, 330, 186, 2), strength: 0.9 }
+			{
+				d:
+					disc(382, 190, 1.6) +
+					disc(392, 186, 1.6) +
+					disc(398, 192, 1.6) +
+					disc(214, 192, 1.4) +
+					disc(224, 191, 1.4),
+				strength: 1,
+				cut: true
+			}
 		],
-		lines: [
-			{ d: 'M270 186Q320 184 366 186', strength: 0.4 },
-			{ d: 'M236 116h22M248 128h28M232 140h18', strength: 0.5, motion: 'flow' }
-		],
-		dots: [
-			[282, 182, 2, 0.8],
-			[290, 180, 2, 0.8],
-			[348, 181, 2, 0.8],
-			[356, 182, 2, 0.8]
-		]
+		lines: [{ d: 'M374 168Q360 158 368 148T356 127', strength: 0.5 }]
 	},
 	// Lazy in a hammock between two birches, shoes left below
 	birch: {

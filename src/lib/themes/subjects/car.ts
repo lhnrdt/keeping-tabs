@@ -180,22 +180,58 @@ export const CAR: Record<ThemeId, Scene> = {
 			])
 		]
 	},
-	// A sturdy four-by-four, spare wheel on the back
+	// Over the old humpback bridge, the burn running under its arch
 	heather: {
+		backdrop: {
+			shapes: [
+				{ d: 'M60 200Q200 120 360 130T560 140V200Z', strength: 0.22 },
+				{ d: 'M120 200Q260 150 440 160V200Z', strength: 0.34 }
+			]
+		},
 		shapes: [
-			GROUND,
-			{ d: rounded(250, 124, 124, 50, 6) + rect(250, 150, 136, 24), strength: 1, motion: IDLE },
+			{ d: 'M-200 200V190H230V200ZM410 200V190H600V200Z', strength: 0.6 },
+			{ d: 'M214 200V188Q320 132 426 188V200Z', strength: 0.75 },
+			{ d: 'M282 200V192a38 30 0 0 1 76 0V200Z', strength: 1, cut: true },
+			{ d: rect(282, 192, 76, 8), strength: 0.4 },
+			{ d: 'M276 200V192a44 36 0 0 1 88 0V200h-6V192a38 30 0 0 0 -76 0V200Z', strength: 1 },
+			{ d: 'M214 184Q320 126 426 184v5Q320 133 214 189Z', strength: 1 },
 			{
-				d: rect(262, 132, 30, 18) + rect(300, 132, 30, 18) + rect(338, 132, 26, 18),
+				d:
+					limb(360.7, 178.2, 355.1, 180.5, 1.4) +
+					limb(351.1, 166.5, 346.9, 170.8, 1.4) +
+					limb(336.8, 158.7, 334.5, 164.3, 1.4) +
+					limb(320.0, 156.0, 320.0, 162.0, 1.4) +
+					limb(303.2, 158.7, 305.5, 164.3, 1.4) +
+					limb(288.9, 166.5, 293.1, 170.8, 1.4) +
+					limb(279.3, 178.2, 284.9, 180.5, 1.4),
 				strength: 1,
-				cut: true,
-				motion: IDLE
+				cut: true
 			},
-			{ d: rect(270, 112, 84, 8), strength: 0.85 },
-			{ d: rounded(236, 134, 14, 30, 6), strength: 0.9 },
-			...wheel(282, 176, 13),
-			...wheel(358, 176, 13)
-		]
+			{ d: 'M296 148v-8q0-4 4-5l8-2 6-10h22l8 10 6 2q4 1 4 5v8Z', strength: 1, motion: 'idle' },
+			{ d: 'M316 132l4-6h7v6ZM331 132v-6h4l4 6Z', strength: 1, cut: true, motion: 'idle' },
+			{ d: disc(306, 150, 6) + disc(340, 150, 6), strength: 1, motion: 'idle' },
+			{ d: disc(306, 150, 2.4) + disc(340, 150, 2.4), strength: 1, cut: true },
+			{
+				d:
+					disc(232, 198, 9) +
+					disc(246, 194, 11) +
+					disc(260, 199, 8) +
+					disc(388, 197, 10) +
+					disc(400, 193, 11),
+				strength: 1
+			},
+			{
+				d:
+					disc(238, 190, 1.6) +
+					disc(248, 186, 1.6) +
+					disc(254, 192, 1.6) +
+					disc(392, 189, 1.6) +
+					disc(398, 186, 1.4),
+				strength: 1,
+				cut: true
+			}
+		],
+		lines: [{ d: waves(290, 197, 2, 15), strength: 0.6, motion: 'flow' }]
 	},
 	// A round little classic
 	birch: {

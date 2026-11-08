@@ -110,14 +110,60 @@ export const PARTNER: Record<ThemeId, Scene> = {
 		],
 		lines: [{ d: 'M302 140Q316 140 328 122', strength: 1 }]
 	},
-	// Two walking hand in hand
+	// Two under one umbrella in the moorland rain
 	heather: {
+		backdrop: {
+			shapes: [
+				{ d: 'M80 200Q220 120 380 132T560 150V200Z', strength: 0.22 },
+				{ d: 'M160 200Q300 156 460 166V200Z', strength: 0.34 }
+			]
+		},
 		shapes: [
-			GROUND,
-			{ d: person(296, 186, 64) + person(334, 186, 58), strength: 1 },
-			{ d: heart(316, 100, 9), strength: 1, motion: 'pulse' }
+			{ d: GROUND.d, strength: 0.6 },
+			{ d: 'M296 194a28 3 0 1 0 56 0a28 3 0 1 0 -56 0Z', strength: 1, cut: true },
+			{ d: figure(310, 186, 58) + limb(318, 166, 330, 170, 3.4), strength: 0.8 },
+			{
+				d:
+					figure(348, 186, 54, { hat: 'cap' }) +
+					limb(340, 158, 330, 146, 3.4) +
+					limb(330, 170, 340, 166, 3.4),
+				strength: 1
+			},
+			{ d: limb(328, 152, 328, 112, 2.4) + 'M328 152q0 6 5 6t5-6', strength: 1 },
+			{
+				d:
+					'M282 114q46-44 92 0q-7-5-15 0q-8-5-16 0q-8-5-15 0q-8-5-16 0q-8-5-15 0q-8-5-15 0Z' +
+					rect(327, 86, 2, 6),
+				strength: 1
+			},
+			{ d: heart(352, 70, 7), strength: 1, motion: 'pulse' },
+			{
+				d:
+					disc(376, 198, 10) +
+					disc(390, 194, 12) +
+					disc(402, 198, 9) +
+					disc(222, 199, 8) +
+					disc(236, 197, 9),
+				strength: 1
+			},
+			{
+				d:
+					disc(382, 190, 1.6) +
+					disc(392, 186, 1.6) +
+					disc(398, 192, 1.6) +
+					disc(228, 192, 1.4) +
+					disc(240, 191, 1.4),
+				strength: 1,
+				cut: true
+			}
 		],
-		lines: [{ d: 'M308 150q8 6 14 0', strength: 1 }]
+		lines: [
+			{
+				d: 'M240 70l-4 10M262 96l-4 10M226 128l-4 10M282 60l-4 10M386 90l-4 10M392 136l-4 10M250 152l-4 10M370 50l-4 10',
+				strength: 0.45,
+				motion: 'flow'
+			}
+		]
 	},
 	// Two carving a heart into a birch
 	birch: {

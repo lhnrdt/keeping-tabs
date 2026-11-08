@@ -120,14 +120,54 @@ export const HOME: Record<ThemeId, Scene> = {
 		],
 		lines: [{ d: steam(341, 110), strength: 0.8, motion: 'rise' }]
 	},
-	// A stone cottage with a thatched roof and a round door
+	// The croft: a long low house with a chimney at each end, smoke bent by the wind, washing on the line
 	heather: {
+		backdrop: {
+			shapes: [{ d: 'M120 200Q260 104 440 118V200Z', strength: 0.3 }]
+		},
 		shapes: [
 			GROUND,
-			{ d: rounded(270, 136, 96, 50, 6), strength: 0.9 },
-			{ d: 'M258 144Q318 84 378 144Z', strength: 1 },
-			{ d: 'M306 186v-16a12 12 0 0 1 24 0v16Z', strength: 1, cut: true },
-			{ d: disc(286, 158, 7) + disc(350, 158, 7), strength: 1, cut: true }
+			{ d: rect(276, 110, 10, 20) + rect(364, 110, 10, 20), strength: 1 },
+			{ d: rect(272, 146, 106, 40), strength: 0.8 },
+			{ d: 'M266 150q2-24 22-26h74q20 2 22 26Z' + rounded(284, 120, 82, 6, 3), strength: 1 },
+			{
+				d: rect(290, 158, 12, 12) + rect(350, 158, 12, 12) + 'M318 186v-22q0-6 7-6t7 6v22Z',
+				strength: 1,
+				cut: true
+			},
+			{ d: rect(232, 150, 3, 36), strength: 0.9 },
+			{
+				d: 'M240 155h12l4 4-3 3-2-2v10h-10v-10l-2 2-3-3Z' + 'M262 157h10v15h-4v-9h-2v9h-4Z',
+				strength: 0.85,
+				motion: 'flutter'
+			},
+			{
+				d:
+					rect(198, 188, 204, 16) +
+					'M198 189l2 -8h5l-1 8ZM205 189l3 -9h5l-2 9ZM212 189l2 -10h5l-1 10ZM219 189l3 -8h5l-2 8ZM226 189l2 -9h5l-1 9ZM233 189l3 -10h5l-2 10ZM240 189l2 -8h5l-1 8ZM247 189l3 -9h5l-2 9ZM254 189l2 -10h5l-1 10ZM261 189l3 -8h5l-2 8ZM268 189l2 -9h5l-1 9ZM275 189l3 -10h5l-2 10ZM282 189l2 -8h5l-1 8ZM289 189l3 -9h5l-2 9ZM296 189l2 -10h5l-1 10ZM303 189l3 -8h5l-2 8ZM310 189l2 -9h5l-1 9ZM317 189l3 -10h5l-2 10ZM324 189l2 -8h5l-1 8ZM331 189l3 -9h5l-2 9ZM338 189l2 -10h5l-1 10ZM345 189l3 -8h5l-2 8ZM352 189l2 -9h5l-1 9ZM359 189l3 -10h5l-2 10ZM366 189l2 -8h5l-1 8ZM373 189l3 -9h5l-2 9ZM380 189l2 -10h5l-1 10ZM387 189l3 -8h5l-2 8ZM394 189l2 -9h5l-1 9ZM401 189l3 -10h5l-2 10Z',
+				strength: 1
+			},
+			{
+				d:
+					rect(198, 195, 204, 1.4) +
+					rect(214, 188, 1.6, 6) +
+					rect(246, 188, 1.6, 6) +
+					rect(280, 188, 1.6, 6) +
+					rect(312, 188, 1.6, 6) +
+					rect(348, 188, 1.6, 6) +
+					rect(382, 188, 1.6, 6) +
+					rect(230, 196, 1.6, 6) +
+					rect(264, 196, 1.6, 6) +
+					rect(296, 196, 1.6, 6) +
+					rect(330, 196, 1.6, 6) +
+					rect(364, 196, 1.6, 6),
+				strength: 1,
+				cut: true
+			}
+		],
+		lines: [
+			{ d: 'M235 153L272 157', strength: 0.6 },
+			{ d: 'M369 108q-6-8-18-9t-24-8M281 108q-6-8-16-9t-20-7', strength: 0.5, motion: 'rise' }
 		]
 	},
 	// A treehouse up in a birch, a ladder to it

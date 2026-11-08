@@ -8,10 +8,12 @@ import {
 	figure,
 	GROUND,
 	hull,
+	limb,
 	person,
 	pine,
 	rect,
 	rounded,
+	seated,
 	sitting,
 	steam,
 	WATER,
@@ -99,18 +101,55 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 		],
 		lines: [{ d: 'M268 146Q288 152 304 145M316 145Q332 150 346 144', strength: 1 }]
 	},
-	// Three on a stone wall
+	// Flying a kite together on the windy hilltop, the kite high above the moor
 	heather: {
+		backdrop: {
+			shapes: [{ d: 'M60 200Q180 160 300 172T540 176V200Z', strength: 0.26 }]
+		},
 		shapes: [
-			GROUND,
-			{ d: rect(248, 156, 148, 30), strength: 0.85 },
+			{ d: 'M200 200Q280 150 400 156V200Z', strength: 0.7 },
+			{ d: seated(294, 166, 42, { hat: 'beanie' }), strength: 0.85 },
+			{ d: figure(322, 161, 50) + limb(328, 134, 336, 110, 3.6), strength: 1 },
+			{ d: figure(352, 157, 30, { hat: 'cap' }) + limb(356, 140, 364, 128, 2.6), strength: 0.85 },
 			{
-				d: 'M256 164h22v8h-22ZM288 164h26v8h-26ZM326 164h24v8h-24ZM360 164h28v8h-28ZM270 176h26v6h-26ZM308 176h30v6h-30ZM350 176h26v6h-26Z',
+				d:
+					'M354 26l13 18-13 24-13-24Z' +
+					limb(354, 68, 348, 80, 1.4) +
+					limb(348, 80, 356, 92, 1.4) +
+					limb(356, 92, 350, 104, 1.4) +
+					'M348 80l-5-3v6ZM348 80l5-3v6ZM356 92l-5-3v6ZM356 92l5-3v6Z',
+				strength: 1,
+				rotate: { deg: -24, x: 354, y: 44 },
+				motion: 'sway'
+			},
+			{
+				d: rect(341, 43, 26, 1.6) + rect(353, 27, 1.6, 40),
+				strength: 1,
+				cut: true,
+				rotate: { deg: -24, x: 354, y: 44 },
+				motion: 'sway'
+			},
+			{
+				d:
+					disc(214, 198, 10) +
+					disc(228, 194, 12) +
+					disc(242, 199, 9) +
+					disc(384, 196, 10) +
+					disc(398, 193, 11),
+				strength: 1
+			},
+			{
+				d:
+					disc(220, 190, 1.6) +
+					disc(230, 186, 1.6) +
+					disc(236, 192, 1.6) +
+					disc(390, 188, 1.6) +
+					disc(396, 184, 1.4),
 				strength: 1,
 				cut: true
-			},
-			{ d: sitting(276, 156, 46) + sitting(320, 156, 50) + sitting(364, 156, 44), strength: 1 }
-		]
+			}
+		],
+		lines: [{ d: 'M336 110Q356 90 354 44', strength: 0.6 }]
 	},
 	// Throwing a frisbee
 	birch: {

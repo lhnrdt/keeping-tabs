@@ -97,16 +97,44 @@ export const OTHER: Record<ThemeId, Scene> = {
 			{ d: 'M294 112L297 132', strength: 0.9 }
 		]
 	},
-	// Someone climbing over the gate instead of opening it
+	// A stone circle on the knoll, a walker standing in the gateway of its tallest stones
 	heather: {
+		backdrop: {
+			shapes: [
+				{ d: 'M100 200Q260 120 460 150V200Z', strength: 0.2 },
+				{ d: 'M60 200Q200 150 320 162T520 170V200Z', strength: 0.32 }
+			]
+		},
 		shapes: [
-			GROUND,
-			{ d: rect(236, 150, 70, 36) + rect(350, 150, 50, 36), strength: 0.85 },
-			{ d: 'M244 160h20v6h-20ZM272 172h24v6h-24ZM358 160h22v6h-22Z', strength: 1, cut: true },
-			{ d: rect(306, 140, 6, 46) + rect(344, 140, 6, 46), strength: 1 },
-			{ d: person(328, 148, 48), strength: 1 }
-		],
-		lines: [{ d: 'M312 148h32M312 162h32M312 176h32M312 176L344 148', strength: 1 }]
+			{ d: 'M226 188l2-12l4-4l5 2l1 14Z', strength: 0.32 },
+			{ d: 'M246 184l1-18l5-6l6 2l2 22Z', strength: 0.4 },
+			{ d: 'M270 178l1-26l6-8l8 2l3 6l1 26Z', strength: 0.48 },
+			{ d: 'M298 172l2-34l7-8l9 3l3 8l1 31Z', strength: 0.56 },
+			{ d: 'M332 174l3-76l7-4l9 2l2 78ZM372 174l1-80l9-2l8 4l2 78Z', strength: 0.66 },
+			{ d: 'M326 98l4-9l64-3l5 8l-3 9l-66 3Z', strength: 0.75 },
+			{ d: figure(362, 170, 34, { hat: 'beanie' }), strength: 1 },
+			{ d: 'M150 200Q250 160 330 166T420 172V200Z', strength: 0.7 },
+			{ d: 'M282 202l2-24l8-8l11 3l4 29Z', strength: 0.9 },
+			{
+				d:
+					disc(372, 198, 10) +
+					disc(386, 193, 12) +
+					disc(400, 197, 9) +
+					disc(204, 199, 8) +
+					disc(217, 197, 9),
+				strength: 1
+			},
+			{
+				d:
+					disc(378, 190, 1.6) +
+					disc(388, 185, 1.6) +
+					disc(394, 191, 1.6) +
+					disc(210, 192, 1.4) +
+					disc(220, 191, 1.4),
+				strength: 1,
+				cut: true
+			}
+		]
 	},
 	// Hanging a birdhouse on a birch, from a ladder
 	birch: {
