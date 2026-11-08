@@ -2,6 +2,7 @@
 import type { ThemeId } from '../palettes';
 import { reflected, type Scene, type Shape, curtain, rays } from '../scenes';
 import {
+	cloud,
 	disc,
 	figure,
 	GROUND,
@@ -12,6 +13,7 @@ import {
 	pine,
 	rect,
 	rounded,
+	roundTree,
 	seated,
 	sparkle,
 	tri,
@@ -218,15 +220,20 @@ export const PARTNER: Record<ThemeId, Scene> = {
 	meadow: {
 		backdrop: {
 			shapes: [
-				{ d: 'M60 186Q220 136 460 148V186Z', strength: 0.22 },
-				{ d: 'M150 186Q300 158 470 166V186Z', strength: 0.34 }
+				{
+					d: cloud(224, 60, 40) + cloud(350, 40, 34) + cloud(380, 110, 26),
+					strength: 0.35,
+					motion: 'drift'
+				},
+				{ d: 'M170 186Q260 168 420 172V186Z', strength: 0.35 },
+				{ d: roundTree(250, 176, 40), strength: 0.6 }
 			]
 		},
 		shapes: [
 			{ d: GROUND.d, strength: 0.5 },
 			{ d: heart(306, 90, 20), strength: 0.45, motion: 'drift' },
-			{ d: rounded(232.4, 172.5, 62.1, 13.5, 6.8) + disc(302.6, 176.6, 10), strength: 1 },
-			{ d: rounded(321.5, 172.5, 62.1, 13.5, 6.8) + disc(316.1, 171.2, 10), strength: 0.8 },
+			{ d: rounded(262, 172, 34, 13, 6.5) + disc(302.6, 176.6, 10) + limb(266, 180, 248, 164, 6) + limb(248, 164, 234, 182, 6), strength: 1 },
+			{ d: rounded(322, 172, 34, 13, 6.5) + disc(316.1, 171.2, 10) + limb(352, 180, 370, 164, 6) + limb(370, 164, 384, 182, 6), strength: 0.8 },
 			{
 				d: limb(291.8, 175.2, 302.6, 164.4, 4.1) + limb(324.2, 175.2, 313.4, 161.7, 4.1),
 				strength: 0.9
