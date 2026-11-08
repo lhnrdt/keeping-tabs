@@ -164,14 +164,52 @@ export const PARTNER: Record<ThemeId, Scene> = {
 			}
 		]
 	},
-	// Two carving a heart into a birch
+	// Their initials in a heart, carved into the big birch, the two of them close by
 	birch: {
+		backdrop: {
+			shapes: [
+				{
+					d:
+						disc(227, 30, 10) +
+						disc(220, 52, 9) +
+						disc(234, 70, 9) +
+						disc(222, 92, 8) +
+						disc(232, 110, 7) +
+						disc(263, 30, 10) +
+						disc(256, 52, 9) +
+						disc(270, 70, 9) +
+						disc(258, 92, 8) +
+						disc(268, 110, 7) +
+						disc(293, 30, 10) +
+						disc(286, 52, 9) +
+						disc(300, 70, 9) +
+						disc(288, 92, 8) +
+						disc(298, 110, 7),
+					strength: 0.3
+				},
+				{
+					d: rect(226, 0, 2.5, 186) + rect(262, 0, 2, 186) + rect(292, 0, 2.5, 186),
+					strength: 1,
+					snow: true
+				}
+			]
+		},
 		shapes: [
-			GROUND,
-			{ d: 'M318 0h40l4 200h-48Z', strength: 0.9 },
-			{ d: heart(338, 104, 12), strength: 1, cut: true, motion: 'pulse' },
-			{ d: 'M318 40l10 3-10 3ZM362 70l-12 3 12 3ZM316 160l12 3-12 3Z', strength: 1, cut: true },
-			{ d: person(272, 186, 62) + person(300, 186, 58), strength: 1 }
+			{ d: GROUND.d, strength: 0.6 },
+			{ d: 'M334 0H376V186L382 192H328L334 186Z', strength: 1, snow: true },
+			{
+				d: 'M334 11.3l12.0 1.1l-12.0 1.1ZM376 28.0l-14.1 1.4l14.1 1.4ZM334 37.5l12.9 1.45l-12.9 1.45ZM376 50.1l-15.4 1.4l15.4 1.4ZM334 64.6l13.3 1.1l-13.3 1.1ZM376 71.6l-15.1 1.1l15.1 1.1ZM334 88.0l14.4 1.05l-14.4 1.05ZM376 101.5l-10.7 1.5l10.7 1.5ZM334 114.4l11.9 1.45l-11.9 1.45ZM376 125.9l-11.3 1.4l11.3 1.4ZM334 133.5l16.3 1.4l-16.3 1.4ZM376 152.8l-10.8 1.2l10.8 1.2ZM334 162.3l14.3 1.1l-14.3 1.1ZM376 176.9l-15.8 1.2l15.8 1.2Z',
+				strength: 0.75
+			},
+			{
+				d: 'M326 192l2-8 2 8ZM330 192l3-10 1 10ZM378 192l2-9 2 9ZM382 192l3-7 1 7Z',
+				strength: 0.9
+			},
+			{ d: heart(354, 132, 11), strength: 1 },
+			{ d: heart(354, 132, 7.5), strength: 1, snow: true },
+			{ d: figure(320, 186, 56, { hat: 'cap' }) + limb(326, 152, 338, 136, 3.4), strength: 1 },
+			{ d: figure(288, 186, 50), strength: 0.8 },
+			{ d: heart(304, 112, 5), strength: 0.8, motion: 'pulse' }
 		]
 	},
 	// A picnic for two on a blanket
