@@ -555,7 +555,21 @@ export const FOOD: Record<ThemeId, Scene> = {
 	// The ice-cream kiosk on the promenade, a queue in front, the sea behind the railing
 	coast: {
 		backdrop: {
-			shapes: [{ d: 'M-200 186V166H400V186Z', strength: 0.36 }]
+			shapes: [
+				{ d: 'M-200 186V160H400V186Z', strength: 0.36 },
+				{
+					d:
+						rect(224, 112, 1.4, 48) +
+						'M225.4 116L236 156H225.4Z' +
+						rect(250, 120, 1.4, 40) +
+						'M251.4 124L262 156H251.4Z' +
+						rect(282, 108, 1.4, 52) +
+						'M283.4 112L294 156H283.4Z',
+					strength: 0.5,
+					motion: 'rock'
+				},
+				{ d: 'M196 160H300V150H306V160Z' + rect(196, 150, 104, 6), strength: 0.55 }
+			]
 		},
 		shapes: [
 			{ d: 'M-200 200V184H400V200Z', strength: 0.45 },
