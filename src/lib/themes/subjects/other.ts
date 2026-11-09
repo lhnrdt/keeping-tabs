@@ -34,16 +34,16 @@ export const OTHER: Record<ThemeId, Scene> = {
 		},
 		shapes: [
 			GROUND,
-			{ d: pine(396, 186, 84) + pine(236, 186, 58), strength: 0.5 },
+			{ d: pine(396, 186, 84) + pine(236, 186, 58), strength: 0.5, motion: 'sway' },
 			{ d: 'M300 200L316 186H326L304 200ZM336 200L330 186H340L366 200Z', strength: 1, cut: true },
 			{ d: rect(324, 98, 6, 88), strength: 1 },
 			{ d: 'M330 104h36l9 8-9 8h-36Z', strength: 1, tap: 'wave' },
 			{ d: 'M324 126h-30l-9 8 9 8h30Z', strength: 0.85, tap: 'wave' },
 			{ d: rect(336, 110, 22, 3) + rect(298, 132, 20, 3), strength: 1, cut: true },
-			{ d: figure(262, 186, 56, { pack: 'left' }), strength: 1, tap: 'hop' },
-			{ d: 'M266 146l12 4 12-4v16l-12 4-12-4Z', strength: 0.8 },
+			{ d: figure(262, 186, 56, { pack: 'left' }), strength: 1, tap: 'hop', motion: 'nod' },
+			{ d: 'M266 146l12 4 12-4v16l-12 4-12-4Z', strength: 0.8, motion: 'nod' },
 			{ d: 'M278 150v16', strength: 1, cut: true },
-			{ d: figure(372, 186, 60, { hat: 'cap' }), strength: 0.9, tap: 'hop' }
+			{ d: figure(372, 186, 60, { hat: 'cap' }), strength: 0.9, tap: 'hop', motion: 'nod' }
 		],
 		lines: [{ d: 'M278 150v16', strength: 0.9 }]
 	},
@@ -60,9 +60,9 @@ export const OTHER: Record<ThemeId, Scene> = {
 			{ d: hull(234, 190, 56, 12), strength: 0.85, motion: 'rock', tap: 'sail' },
 			{ d: rect(300, 168, 100, 8), strength: 1 },
 			{ d: rect(304, 176, 4, 18) + rect(340, 176, 4, 20) + rect(376, 176, 4, 20), strength: 0.9 },
-			{ d: seated(318, 168, 54, { hat: 'cap' }), strength: 1 },
+			{ d: seated(318, 168, 54, { hat: 'cap' }), strength: 1, motion: 'nod' },
 			{ d: rect(311, 168, 4, 18) + rect(319, 168, 4, 16), strength: 1 },
-			{ d: figure(362, 168, 46), strength: 0.9, tap: 'hop' },
+			{ d: figure(362, 168, 46), strength: 0.9, tap: 'hop', motion: 'nod' },
 			{ d: rounded(380, 138, 12, 60, 4), strength: 0.95 }
 		],
 		lines: [
@@ -89,10 +89,15 @@ export const OTHER: Record<ThemeId, Scene> = {
 					tri(351, 98, 361, 106, 351, 112) +
 					tri(369, 121, 378, 130, 367, 134),
 				strength: 0.85,
-				motion: 'flutter',
-				tap: 'swing'
+				tap: 'swing',
+				motion: 'flutter'
 			},
-			{ d: figure(282, 132, 36, { hat: 'helmet', pack: 'left' }), strength: 1, tap: 'hop' }
+			{
+				d: figure(282, 132, 36, { hat: 'helmet', pack: 'left' }),
+				strength: 1,
+				tap: 'hop',
+				motion: 'walk'
+			}
 		],
 		lines: [
 			{ d: 'M321 64Q356 96 392 152', strength: 0.8 },
@@ -114,7 +119,7 @@ export const OTHER: Record<ThemeId, Scene> = {
 			{ d: 'M298 172l2-34l7-8l9 3l3 8l1 31Z', strength: 0.56 },
 			{ d: 'M332 174l3-76l7-4l9 2l2 78ZM372 174l1-80l9-2l8 4l2 78Z', strength: 0.66 },
 			{ d: 'M326 98l4-9l64-3l5 8l-3 9l-66 3Z', strength: 0.75 },
-			{ d: figure(362, 170, 34, { hat: 'beanie' }), strength: 1, tap: 'hop' },
+			{ d: figure(362, 170, 34, { hat: 'beanie' }), strength: 1, tap: 'hop', motion: 'nod' },
 			{ d: 'M150 200Q250 160 330 166T420 172V200Z', strength: 0.7 },
 			{ d: 'M282 202l2-24l8-8l11 3l4 29Z', strength: 0.9 },
 			{
@@ -124,7 +129,8 @@ export const OTHER: Record<ThemeId, Scene> = {
 					disc(400, 197, 9) +
 					disc(204, 199, 8) +
 					disc(217, 197, 9),
-				strength: 1
+				strength: 1,
+				motion: 'sway'
 			},
 			{
 				d:
@@ -248,7 +254,11 @@ export const OTHER: Record<ThemeId, Scene> = {
 				strength: 1
 			},
 			{ d: rect(338, 138, 4, 48), strength: 0.9 },
-			{ d: 'M330 187l2-7 2 7ZM334 187l3-9 1 9ZM342 187l2-8 3 8ZM346 187l3-6 1 6Z', strength: 0.9 },
+			{
+				d: 'M330 187l2-7 2 7ZM334 187l3-9 1 9ZM342 187l2-8 3 8ZM346 187l3-6 1 6Z',
+				strength: 0.9,
+				motion: 'sway'
+			},
 			{ d: 'M326 140v-12q0-8 8-8h12q8 0 8 8v12Z', strength: 1 },
 			{
 				d: rect(354, 122, 2, 14) + 'M356 122h8v5h-8Z',
@@ -257,8 +267,12 @@ export const OTHER: Record<ThemeId, Scene> = {
 				tap: 'wave'
 			},
 			{ d: rect(328, 136, 24, 1.6), strength: 1, cut: true },
-			{ d: figure(300, 186, 52, { hat: 'cap' }) + limb(306, 160, 316, 146, 3.6), strength: 1 },
-			{ d: 'M312 134h16v11h-16Z', strength: 1, snow: true, tap: 'float' },
+			{
+				d: figure(300, 186, 52, { hat: 'cap' }) + limb(306, 160, 316, 146, 3.6),
+				strength: 1,
+				motion: 'nod'
+			},
+			{ d: 'M312 134h16v11h-16Z', strength: 1, snow: true, tap: 'float', motion: 'flutter' },
 			{ d: rect(212, 0, 18, 200), strength: 1, snow: true },
 			{
 				d: 'M212 13.4l11.9 1.8l-11.9 1.8ZM230 35.3l-12.4 1.55l12.4 1.55ZM212 49.6l13.5 1.7l-13.5 1.7ZM230 70.4l-14.4 1.85l14.4 1.85ZM212 94.2l11.6 2.0l-11.6 2.0ZM230 107.7l-12.4 2.15l12.4 2.15ZM212 129.7l13.0 2.0l-13.0 2.0ZM230 145.0l-13.1 1.95l13.1 1.95ZM212 165.9l9.2 2.15l-9.2 2.15ZM230 186.3l-12.9 2.15l12.9 2.15Z',
@@ -287,7 +301,11 @@ export const OTHER: Record<ThemeId, Scene> = {
 		},
 		shapes: [
 			{ d: GROUND.d, strength: 0.5 },
-			{ d: figure(300, 186, 54, { hat: 'cap' }) + limb(306, 156, 318, 146, 3.2), strength: 1 },
+			{
+				d: figure(300, 186, 54, { hat: 'cap' }) + limb(306, 156, 318, 146, 3.2),
+				strength: 1,
+				motion: 'nod'
+			},
 			{
 				d:
 					limb(318, 146, 324, 122, 1.4) +
@@ -297,7 +315,8 @@ export const OTHER: Record<ThemeId, Scene> = {
 					disc(313, 118, 5) +
 					disc(331, 126, 4.5),
 				strength: 1,
-				tap: 'wave'
+				tap: 'wave',
+				motion: 'sway'
 			},
 			{
 				d:
@@ -308,7 +327,8 @@ export const OTHER: Record<ThemeId, Scene> = {
 					limb(384, 200, 386, 134, 1.6) +
 					limb(396, 200, 398, 152, 1.6),
 				strength: 0.9,
-				tap: 'wave'
+				tap: 'wave',
+				motion: 'sway'
 			},
 			{
 				d:
@@ -340,7 +360,8 @@ export const OTHER: Record<ThemeId, Scene> = {
 					disc(389.54, 130.46, 2.25) +
 					disc(398, 152, 7),
 				strength: 1,
-				tap: 'wave'
+				tap: 'wave',
+				motion: 'sway'
 			},
 			{
 				d:
@@ -352,7 +373,8 @@ export const OTHER: Record<ThemeId, Scene> = {
 					disc(398, 152, 2.6),
 				strength: 1,
 				cut: true,
-				tap: 'wave'
+				tap: 'wave',
+				motion: 'sway'
 			}
 		],
 		lines: [
@@ -453,7 +475,11 @@ export const OTHER: Record<ThemeId, Scene> = {
 				strength: 1,
 				rotate: { deg: 24, x: 317, y: 128 }
 			},
-			{ d: figure(372, 214, 96, { hat: 'beanie' }) + limb(360, 160, 332, 136, 5), strength: 1 }
+			{
+				d: figure(372, 214, 96, { hat: 'beanie' }) + limb(360, 160, 332, 136, 5),
+				strength: 1,
+				motion: 'nod'
+			}
 		]
 	},
 	// Raking the leaves into a big pile under the maple, the wheelbarrow waiting, the street beyond
@@ -494,7 +520,8 @@ export const OTHER: Record<ThemeId, Scene> = {
 					limb(286, 140, 322, 182, 2) +
 					'M318 180l10 4-1 3-10-3Z',
 				strength: 1,
-				tap: 'hop'
+				tap: 'hop',
+				motion: 'nod'
 			},
 			{
 				d: 'M236 176h30l-4 10h-22Z' + limb(266, 178, 280, 170, 2) + disc(240, 188, 5),
@@ -508,7 +535,8 @@ export const OTHER: Record<ThemeId, Scene> = {
 					disc(360, 14, 22) +
 					disc(328, 4, 18) +
 					disc(376, 34, 16),
-				strength: 0.95
+				strength: 0.95,
+				motion: 'sway'
 			},
 			{
 				d: leaf(372, 12, 8) + leaf(340, 18, 8) + leaf(392, 30, 8) + leaf(356, 2, 8),
@@ -523,8 +551,8 @@ export const OTHER: Record<ThemeId, Scene> = {
 					leaf(352, 86, 9) +
 					leaf(234, 130, 9),
 				strength: 0.85,
-				motion: 'drift',
-				tap: 'float'
+				tap: 'float',
+				motion: 'fall'
 			}
 		]
 	}

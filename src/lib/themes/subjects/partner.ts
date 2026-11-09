@@ -46,7 +46,7 @@ export const PARTNER: Record<ThemeId, Scene> = {
 		shapes: [
 			GROUND,
 			{ d: disc(254, 96, 16), strength: 0.35 },
-			{ d: pine(244, 186, 62) + pine(398, 186, 80), strength: 0.5 },
+			{ d: pine(244, 186, 62) + pine(398, 186, 80), strength: 0.5, motion: 'sway' },
 			{ d: limb(302, 186, 314, 106, 4) + limb(358, 186, 346, 106, 4), strength: 1 },
 			{
 				d:
@@ -56,7 +56,7 @@ export const PARTNER: Record<ThemeId, Scene> = {
 					rect(309, 136, 42, 3),
 				strength: 0.9
 			},
-			{ d: figure(320, 104, 30) + figure(338, 104, 28), strength: 1 },
+			{ d: figure(320, 104, 30) + figure(338, 104, 28), strength: 1, motion: 'nod' },
 			{ d: rect(306, 92, 48, 14) + rect(302, 104, 56, 4), strength: 1 },
 			{
 				d: tri(298, 66, 330, 50, 362, 66) + rect(308, 66, 3, 26) + rect(349, 66, 3, 26),
@@ -104,7 +104,8 @@ export const PARTNER: Record<ThemeId, Scene> = {
 				d:
 					figure(296, 156, 40, { hat: 'helmet', pack: 'left' }) +
 					figure(332, 136, 42, { hat: 'beanie', pack: 'left' }),
-				strength: 1
+				strength: 1,
+				motion: 'walk'
 			},
 			{ d: heart(314, 96, 6), strength: 1, motion: 'pulse', tap: 'burst' },
 			{ d: 'M372 200l6-12 10-2 8 14ZM230 200l5-8 8 1 4 7Z', strength: 1 }
@@ -122,13 +123,14 @@ export const PARTNER: Record<ThemeId, Scene> = {
 		shapes: [
 			{ d: GROUND.d, strength: 0.6 },
 			{ d: 'M296 194a28 3 0 1 0 56 0a28 3 0 1 0 -56 0Z', strength: 1, cut: true },
-			{ d: figure(310, 186, 58) + limb(318, 166, 330, 170, 3.4), strength: 0.8 },
+			{ d: figure(310, 186, 58) + limb(318, 166, 330, 170, 3.4), strength: 0.8, motion: 'nod' },
 			{
 				d:
 					figure(348, 186, 54, { hat: 'cap' }) +
 					limb(340, 158, 330, 146, 3.4) +
 					limb(330, 170, 340, 166, 3.4),
-				strength: 1
+				strength: 1,
+				motion: 'nod'
 			},
 			{ d: limb(328, 152, 328, 112, 2.4) + 'M328 152q0 6 5 6t5-6', strength: 1 },
 			{
@@ -211,8 +213,12 @@ export const PARTNER: Record<ThemeId, Scene> = {
 			},
 			{ d: heart(354, 132, 11), strength: 1, tap: 'flash' },
 			{ d: heart(354, 132, 7.5), strength: 1, snow: true, tap: 'flash' },
-			{ d: figure(320, 186, 56, { hat: 'cap' }) + limb(326, 152, 338, 136, 3.4), strength: 1 },
-			{ d: figure(288, 186, 50), strength: 0.8 },
+			{
+				d: figure(320, 186, 56, { hat: 'cap' }) + limb(326, 152, 338, 136, 3.4),
+				strength: 1,
+				motion: 'nod'
+			},
+			{ d: figure(288, 186, 50), strength: 0.8, motion: 'nod' },
 			{ d: heart(304, 112, 5), strength: 0.8, motion: 'pulse', tap: 'burst' }
 		]
 	},
@@ -273,7 +279,7 @@ export const PARTNER: Record<ThemeId, Scene> = {
 			lines: [{ d: 'M342 172h40M350 178h24M356 184h12', strength: 0.5, motion: 'shimmer' }]
 		},
 		shapes: [
-			{ d: 'M338 166a24 24 0 0 1 48 0Z', strength: 0.5 },
+			{ d: 'M338 166a24 24 0 0 1 48 0Z', strength: 0.5, motion: 'breathe' },
 			{
 				d:
 					rect(196, 172, 140, 5) +
@@ -282,14 +288,15 @@ export const PARTNER: Record<ThemeId, Scene> = {
 					rect(306, 177, 4, 23),
 				strength: 1
 			},
-			{ d: seated(290, 172, 44) + seated(310, 172, 40), strength: 1 },
+			{ d: seated(290, 172, 44) + seated(310, 172, 40), strength: 1, motion: 'nod' },
 			{
 				d:
 					limb(287, 170, 293, 186, 3) +
 					limb(293, 170, 298, 186, 3) +
 					limb(307, 170, 312, 185, 3) +
 					limb(313, 170, 318, 185, 3),
-				strength: 1
+				strength: 1,
+				motion: 'nod'
 			},
 			{ d: heart(300, 116, 7), strength: 1, motion: 'pulse', tap: 'burst' }
 		],
@@ -334,8 +341,12 @@ export const PARTNER: Record<ThemeId, Scene> = {
 				motion: 'twinkle-late',
 				tap: 'flash'
 			},
-			{ d: disc(290, 134, 12) + disc(316, 140, 11), strength: 1 },
-			{ d: 'M256 186Q256 150 288 146L304 152L318 150Q354 152 354 186Z', strength: 0.85 },
+			{ d: disc(290, 134, 12) + disc(316, 140, 11), strength: 1, motion: 'nod' },
+			{
+				d: 'M256 186Q256 150 288 146L304 152L318 150Q354 152 354 186Z',
+				strength: 0.85,
+				motion: 'nod'
+			},
 			{
 				d:
 					rect(236, 170, 140, 6) +
@@ -386,13 +397,7 @@ export const PARTNER: Record<ThemeId, Scene> = {
 					rect(272, 40, 1.6, 104) +
 					rect(338, 40, 1.6, 104) +
 					rect(266, 142, 80, 4) +
-					rect(266, 120, 80, 3),
-				strength: 0.95,
-				motion: 'sway',
-				tap: 'sail'
-			},
-			{
-				d:
+					rect(266, 120, 80, 3) +
 					seated(292, 142, 46) +
 					seated(318, 142, 42, { hat: 'beanie' }) +
 					limb(288, 140, 292, 158, 3) +
@@ -400,15 +405,15 @@ export const PARTNER: Record<ThemeId, Scene> = {
 					limb(314, 140, 318, 157, 3) +
 					limb(322, 140, 326, 157, 3),
 				strength: 1,
-				motion: 'sway',
+				motion: 'swing',
 				tap: 'sail'
 			},
 			{ d: heart(306, 90, 7), strength: 1, motion: 'pulse', tap: 'burst' },
 			{
 				d: leaf(240, 100, 9) + leaf(268, 140, 9) + leaf(344, 150, 9) + leaf(230, 60, 9),
 				strength: 0.85,
-				motion: 'drift',
-				tap: 'float'
+				tap: 'float',
+				motion: 'fall'
 			}
 		]
 	}

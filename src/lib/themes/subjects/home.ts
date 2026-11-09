@@ -31,7 +31,7 @@ export const HOME: Record<ThemeId, Scene> = {
 		},
 		shapes: [
 			GROUND,
-			{ d: pine(240, 186, 64) + pine(398, 186, 80), strength: 0.5 },
+			{ d: pine(240, 186, 64) + pine(398, 186, 80), strength: 0.5, motion: 'sway' },
 			{ d: rect(348, 104, 11, 30), strength: 1 },
 			{ d: house(282, 186, 92, 52, 40, 10), strength: 1 },
 			{
@@ -94,10 +94,14 @@ export const HOME: Record<ThemeId, Scene> = {
 			{ d: 'M294 176v-34q0-8 8-8h20q8 0 8 8v34Z', strength: 1, cut: true },
 			{ d: rect(305, 102, 14, 12), strength: 1, cut: true },
 			{ d: rect(268, 176, 4, 18) + rect(348, 176, 4, 18), strength: 0.9 },
-			{ d: 'M290 186l8-10h28l4 10q-8 6-20 6t-20-6Z', strength: 0.85, motion: 'rock', tap: 'sail' },
+			{ d: 'M290 186l8-10h28l4 10q-8 6-20 6t-20-6Z', strength: 0.85, tap: 'sail', motion: 'rock' },
 			{ d: rect(358, 168, 42, 6), strength: 1 },
 			{ d: rect(372, 174, 3, 22) + rect(394, 174, 3, 22), strength: 0.9 },
-			{ d: 'M230 200q2-16 16-18q14 0 18 18ZM250 200q4-10 14-10t12 10Z', strength: 0.95 }
+			{
+				d: 'M230 200q2-16 16-18q14 0 18 18ZM250 200q4-10 14-10t12 10Z',
+				strength: 0.95,
+				motion: 'sway'
+			}
 		],
 		lines: [{ d: waves(280, 194, 1) + waves(334, 197, 1), strength: 0.5, motion: 'flow' }]
 	},
@@ -356,7 +360,8 @@ export const HOME: Record<ThemeId, Scene> = {
 					limb(262, 190, 262, 148, 2) +
 					limb(280, 190, 280, 138, 2),
 				strength: 0.9,
-				tap: 'wave'
+				tap: 'wave',
+				motion: 'sway'
 			},
 			{
 				d:
@@ -393,12 +398,14 @@ export const HOME: Record<ThemeId, Scene> = {
 					disc(280.0, 131.5, 2.9250000000000003) +
 					disc(284.6, 133.4, 2.9250000000000003),
 				strength: 0.8,
-				tap: 'wave'
+				tap: 'wave',
+				motion: 'sway'
 			},
 			{
 				d: disc(226, 150, 4) + disc(244, 140, 4) + disc(262, 148, 4) + disc(280, 138, 4),
 				strength: 1,
-				tap: 'wave'
+				tap: 'wave',
+				motion: 'sway'
 			}
 		]
 	},
@@ -542,8 +549,8 @@ export const HOME: Record<ThemeId, Scene> = {
 					rect(300, 172, 60, 1.6),
 				strength: 0.9
 			},
-			{ d: seated(318, 182, 32) + seated(342, 182, 30), strength: 0.85, tap: 'hop' },
-			{ d: 'M376 200Q384 168 400 166V200Z' + pine(396, 200, 90), strength: 1 }
+			{ d: seated(318, 182, 32) + seated(342, 182, 30), strength: 0.85, tap: 'hop', motion: 'nod' },
+			{ d: 'M376 200Q384 168 400 166V200Z' + pine(396, 200, 90), strength: 1, motion: 'sway' }
 		]
 	},
 	// The front porch close up: pumpkins on the steps, a lantern by the door, the rocking chair waiting
@@ -604,8 +611,8 @@ export const HOME: Record<ThemeId, Scene> = {
 			{
 				d: leaf(220, 80, 9) + leaf(250, 60, 9) + leaf(232, 124, 9),
 				strength: 0.85,
-				motion: 'drift',
-				tap: 'float'
+				tap: 'float',
+				motion: 'fall'
 			}
 		]
 	}

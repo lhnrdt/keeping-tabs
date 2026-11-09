@@ -38,18 +38,18 @@ export const TRIP: Record<ThemeId, Scene> = {
 		},
 		shapes: [
 			GROUND,
-			{ d: pine(398, 186, 86), strength: 0.5 },
+			{ d: pine(398, 186, 86), strength: 0.5, motion: 'sway' },
 			{ d: 'M314 186L346 120L378 186Z', strength: 1 },
 			{ d: tri(346, 148, 335, 186, 357, 186), strength: 1, cut: true },
 			{ d: tri(346, 148, 357, 186, 366, 186), strength: 0.7 },
 			{
 				d: rect(345, 106, 2, 16) + 'M347 106l11 4-11 4Z',
 				strength: 1,
-				motion: 'flutter',
-				tap: 'wave'
+				tap: 'wave',
+				motion: 'flutter'
 			},
 			{ d: rounded(230, 176, 34, 10, 5), strength: 0.85 },
-			{ d: seated(246, 176, 60, { hat: 'beanie' }), strength: 1, tap: 'hop' },
+			{ d: seated(246, 176, 60, { hat: 'beanie' }), strength: 1, tap: 'hop', motion: 'nod' },
 			{
 				d: disc(270, 184, 3) + disc(278, 186, 3) + disc(298, 186, 3) + disc(306, 184, 3),
 				strength: 0.8
@@ -72,7 +72,7 @@ export const TRIP: Record<ThemeId, Scene> = {
 				d: 'M336 182L344 152L340 132L352 104L348 84L362 60L374 44L400 38V182Z',
 				strength: 0.75
 			},
-			{ d: pine(390, 40, 22) + pine(376, 46, 16), strength: 0.75 },
+			{ d: pine(390, 40, 22) + pine(376, 46, 16), strength: 0.75, motion: 'sway' },
 			{ d: 'M362 54h14q-2 64-8 128h-12q6-66 6-128Z', strength: 1, cut: true, motion: 'flow' },
 			WATER,
 			{ d: 'M232 180h18q-2 3-8 3h-4q-4 0-6-3Z' + disc(241, 176, 2.5), strength: 0.5 },
@@ -102,7 +102,8 @@ export const TRIP: Record<ThemeId, Scene> = {
 			{
 				d: limb(250, 183, 280, 168, 2.2) + limb(280, 168, 286, 162, 2.2),
 				strength: 0.85,
-				tap: 'sail'
+				tap: 'sail',
+				motion: 'walk'
 			},
 			{
 				d:
@@ -110,16 +111,23 @@ export const TRIP: Record<ThemeId, Scene> = {
 					limb(258, 154, 254, 178, 1.8) +
 					limb(274, 152, 274, 170, 1.8),
 				strength: 0.85,
-				tap: 'sail'
+				tap: 'sail',
+				motion: 'walk'
 			},
-			{ d: limb(298, 159, 348, 134, 3) + limb(348, 134, 356, 125, 3), strength: 1, tap: 'sail' },
+			{
+				d: limb(298, 159, 348, 134, 3) + limb(348, 134, 356, 125, 3),
+				strength: 1,
+				tap: 'sail',
+				motion: 'walk'
+			},
 			{
 				d:
 					figure(324, 146, 52, { hat: 'helmet', pack: 'left' }) +
 					limb(310, 118, 304, 152, 2.4) +
 					limb(334, 116, 334, 142, 2.4),
 				strength: 1,
-				tap: 'sail'
+				tap: 'sail',
+				motion: 'walk'
 			},
 			{ d: 'M196 200Q232 180 270 192Q290 196 300 200Z', strength: 1, snow: true }
 		],
@@ -140,7 +148,12 @@ export const TRIP: Record<ThemeId, Scene> = {
 			},
 			{ d: 'M150 200Q240 172 330 168T440 164V200Z', strength: 0.6 },
 			{ d: 'M258 200C290 188 330 178 370 168h6C352 180 334 190 322 200Z', strength: 1, cut: true },
-			{ d: figure(318, 189, 38, { hat: 'cap', pack: 'left' }), strength: 1, tap: 'sail' },
+			{
+				d: figure(318, 189, 38, { hat: 'cap', pack: 'left' }),
+				strength: 1,
+				tap: 'sail',
+				motion: 'walk'
+			},
 			{ d: rect(232, 126, 5, 76) + 'M237 132h28l6 6-6 6h-28Z', strength: 1 },
 			{
 				d:
@@ -149,7 +162,8 @@ export const TRIP: Record<ThemeId, Scene> = {
 					disc(402, 198, 9) +
 					disc(208, 199, 8) +
 					disc(220, 197, 9),
-				strength: 1
+				strength: 1,
+				motion: 'sway'
 			},
 			{
 				d:
@@ -389,12 +403,18 @@ export const TRIP: Record<ThemeId, Scene> = {
 		},
 		shapes: [
 			{ d: 'M-200 200V186H400V200Z', strength: 0.45 },
-			{ d: disc(274.2, 171.7, 14.3) + disc(341.8, 171.7, 14.3), strength: 1, tap: 'drive' },
+			{
+				d: disc(274.2, 171.7, 14.3) + disc(341.8, 171.7, 14.3),
+				strength: 1,
+				tap: 'drive',
+				motion: 'walk'
+			},
 			{
 				d: disc(274.2, 171.7, 11.7) + disc(341.8, 171.7, 11.7),
 				strength: 1,
 				cut: true,
-				tap: 'drive'
+				tap: 'drive',
+				motion: 'walk'
 			},
 			{
 				d:
@@ -407,13 +427,15 @@ export const TRIP: Record<ThemeId, Scene> = {
 					limb(321.0, 132.7, 334.0, 132.7, 3.1) +
 					rounded(283.3, 136.6, 15.6, 5.2, 2.6),
 				strength: 1,
-				tap: 'drive'
+				tap: 'drive',
+				motion: 'walk'
 			},
-			{ d: rounded(331.4, 119.7, 18.2, 13.0, 2.6), strength: 0.85, tap: 'drive' },
+			{ d: rounded(331.4, 119.7, 18.2, 13.0, 2.6), strength: 0.85, tap: 'drive', motion: 'walk' },
 			{
 				d: disc(336.6, 117.1, 3.4) + disc(344.4, 115.8, 3.4) + disc(340.5, 111.9, 3.1),
 				strength: 1,
-				tap: 'drive'
+				tap: 'drive',
+				motion: 'walk'
 			},
 			{
 				d:
@@ -423,7 +445,8 @@ export const TRIP: Record<ThemeId, Scene> = {
 					limb(297.6, 139.2, 305.4, 156.1, 4.7) +
 					limb(305.4, 156.1, 297.6, 171.7, 4.4),
 				strength: 1,
-				tap: 'drive'
+				tap: 'drive',
+				motion: 'walk'
 			}
 		],
 		lines: [
@@ -564,7 +587,7 @@ export const TRIP: Record<ThemeId, Scene> = {
 				motion: 'idle',
 				tap: 'drive'
 			},
-			{ d: pine(210, 206, 70) + pine(228, 204, 40), strength: 0.95 }
+			{ d: pine(210, 206, 70) + pine(228, 204, 40), strength: 0.95, motion: 'sway' }
 		],
 		lines: [{ d: 'M306 184Q280 188 262 192T230 200', strength: 0.5 }]
 	},
@@ -601,7 +624,8 @@ export const TRIP: Record<ThemeId, Scene> = {
 			{
 				d: figure(294, 176, 32, { pack: 'left', hat: 'cap' }) + figure(312, 176, 28),
 				strength: 1,
-				tap: 'sail'
+				tap: 'sail',
+				motion: 'walk'
 			},
 			{
 				d:
@@ -633,8 +657,8 @@ export const TRIP: Record<ThemeId, Scene> = {
 			{
 				d: leaf(262, 120, 9) + leaf(330, 104, 9) + leaf(286, 92, 9) + leaf(344, 140, 9),
 				strength: 0.85,
-				motion: 'drift',
-				tap: 'float'
+				tap: 'float',
+				motion: 'fall'
 			}
 		]
 	}

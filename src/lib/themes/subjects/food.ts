@@ -31,7 +31,7 @@ export const FOOD: Record<ThemeId, Scene> = {
 		},
 		shapes: [
 			GROUND,
-			{ d: pine(240, 186, 64), strength: 0.45 },
+			{ d: pine(240, 186, 64), strength: 0.45, motion: 'sway' },
 			{ d: disc(270, 184, 6) + disc(372, 184, 6), strength: 0.8 },
 			{ d: logs(320, 186, 90), strength: 0.9 },
 			{ d: 'M276 157h88q-6 20-26 20h-36q-20 0-26-20Z', strength: 1 },
@@ -93,13 +93,13 @@ export const FOOD: Record<ThemeId, Scene> = {
 				strength: 1,
 				tap: 'hop'
 			},
-			{ d: sitting(380, 170, 52, -1), strength: 1 },
+			{ d: sitting(380, 170, 52, -1), strength: 1, motion: 'nod' },
 			{ d: rect(354, 160, 16, 3), strength: 1 },
 			{ d: limb(258, 170, 280, 72, 2.5) + rounded(258, 150, 8, 8, 3), strength: 1 },
 			{ d: disc(236, 184, 3), strength: 1 }
 		],
 		lines: [
-			{ d: 'M280 72Q246 96 236 182', strength: 0.6 },
+			{ d: 'M280 72Q246 96 236 182', strength: 0.6, motion: 'sway' },
 			{ d: steam(300, 120, 18) + steam(326, 116, 18), strength: 0.6, motion: 'rise', tap: 'puff' }
 		]
 	},
@@ -117,14 +117,35 @@ export const FOOD: Record<ThemeId, Scene> = {
 			]
 		},
 		shapes: [
-			{ d: 'M300 112h52v58q0 14-14 14h-24q-14 0-14-14Z', strength: 0.7, tap: 'hop' },
-			{ d: 'M352 124q22 0 22 20t-22 20v-8q12 0 12-12t-12-12Z', strength: 0.7, tap: 'hop' },
-			{ d: 'M302 113a24 6 0 1 0 48 0a24 6 0 1 0 -48 0Z', strength: 1, cut: true, tap: 'hop' },
-			{ d: 'M306 114a20 4 0 1 0 40 0a20 4 0 1 0 -40 0Z', strength: 0.5, tap: 'hop' },
-			{ d: limb(226, 230, 274, 186, 36), strength: 0.55 },
-			{ d: limb(268, 192, 282, 178, 34), strength: 0.75 },
-			{ d: rounded(282, 144, 48, 38, 15), strength: 1, tap: 'hop' },
-			{ d: limb(290, 150, 324, 140, 12), strength: 1, tap: 'hop' }
+			{
+				d: 'M300 112h52v58q0 14-14 14h-24q-14 0-14-14Z',
+				strength: 0.7,
+				tap: 'hop',
+				motion: 'bob-slow'
+			},
+			{
+				d: 'M352 124q22 0 22 20t-22 20v-8q12 0 12-12t-12-12Z',
+				strength: 0.7,
+				tap: 'hop',
+				motion: 'bob-slow'
+			},
+			{
+				d: 'M302 113a24 6 0 1 0 48 0a24 6 0 1 0 -48 0Z',
+				strength: 1,
+				cut: true,
+				tap: 'hop',
+				motion: 'bob-slow'
+			},
+			{
+				d: 'M306 114a20 4 0 1 0 40 0a20 4 0 1 0 -40 0Z',
+				strength: 0.5,
+				tap: 'hop',
+				motion: 'bob-slow'
+			},
+			{ d: limb(226, 230, 274, 186, 36), strength: 0.55, motion: 'bob-slow' },
+			{ d: limb(268, 192, 282, 178, 34), strength: 0.75, motion: 'bob-slow' },
+			{ d: rounded(282, 144, 48, 38, 15), strength: 1, tap: 'hop', motion: 'bob-slow' },
+			{ d: limb(290, 150, 324, 140, 12), strength: 1, tap: 'hop', motion: 'bob-slow' }
 		],
 		lines: [
 			{
@@ -147,7 +168,8 @@ export const FOOD: Record<ThemeId, Scene> = {
 			{ d: GROUND.d, strength: 0.6 },
 			{
 				d: figure(258, 186, 44, { hat: 'beanie' }) + limb(264, 160, 270, 168, 3.2),
-				strength: 0.75
+				strength: 0.75,
+				motion: 'nod'
 			},
 			{ d: 'M266 172h12l-1 10h-10Z' + 'M267 172q5-8 10 0h-1.6q-3.4-5.5-6.8 0Z', strength: 0.75 },
 			{
@@ -166,7 +188,8 @@ export const FOOD: Record<ThemeId, Scene> = {
 					disc(300.2, 180.6, 4) +
 					disc(307.0, 188.0, 3) +
 					'M273.0 188Q290 168.4 307.0 188Z',
-				strength: 0.85
+				strength: 0.85,
+				motion: 'sway'
 			},
 			{
 				d:
@@ -533,7 +556,8 @@ export const FOOD: Record<ThemeId, Scene> = {
 			{
 				d: figure(262, 186, 46, { hat: 'cap' }) + rounded(266, 166, 12, 9, 2),
 				strength: 0.7,
-				tap: 'hop'
+				tap: 'hop',
+				motion: 'nod'
 			},
 			{
 				d:
@@ -545,7 +569,8 @@ export const FOOD: Record<ThemeId, Scene> = {
 					'M310 196l-8-9 5 1 3-7 3 7 5-1Z' +
 					'M320 196l-9-10 6 1 3-8 3 8 6-1Z' +
 					'M334 196l-8-9 5 1 3-7 3 7 5-1Z',
-				strength: 0.9
+				strength: 0.9,
+				motion: 'sway'
 			},
 			{
 				d:
@@ -643,10 +668,11 @@ export const FOOD: Record<ThemeId, Scene> = {
 					'M326 152l-3-9 6 0Z' +
 					disc(326, 141, 3.5),
 				strength: 1,
-				tap: 'hop'
+				tap: 'hop',
+				motion: 'nod'
 			},
-			{ d: figure(286, 186, 44, { hat: 'cap' }), strength: 0.8 },
-			{ d: figure(266, 186, 38), strength: 0.65 }
+			{ d: figure(286, 186, 44, { hat: 'cap' }), strength: 0.8, motion: 'nod' },
+			{ d: figure(266, 186, 38), strength: 0.65, motion: 'nod' }
 		]
 	},
 	// Inside the cabin: soup steaming on the sill, a candle, the lights in the window
@@ -730,7 +756,8 @@ export const FOOD: Record<ThemeId, Scene> = {
 			{ d: GROUND.d, strength: 0.55 },
 			{
 				d: rect(344, 110, 12, 90) + disc(346, 70, 40) + disc(310, 82, 28) + disc(384, 84, 30),
-				strength: 0.75
+				strength: 0.75,
+				motion: 'sway'
 			},
 			{
 				d:
@@ -756,7 +783,8 @@ export const FOOD: Record<ThemeId, Scene> = {
 			{
 				d: figure(318, 155, 44, { hat: 'cap' }) + limb(324, 127, 334, 106, 3.2),
 				strength: 1,
-				tap: 'hop'
+				tap: 'hop',
+				motion: 'nod'
 			},
 			{
 				d:

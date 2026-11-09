@@ -34,11 +34,16 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 		},
 		shapes: [
 			GROUND,
-			{ d: pine(380, 92, 76), strength: 0.75 },
+			{ d: pine(380, 92, 76), strength: 0.75, motion: 'sway' },
 			{ d: rect(372, 70, 16, 116) + 'M372 82L326 72L326 66L376 74Z', strength: 0.9 },
 			{ d: sitting(276, 138, 46, -1), strength: 1, motion: 'sway' },
 			{ d: rounded(262, 138, 30, 5, 2), strength: 1, motion: 'sway' },
-			{ d: figure(322, 186, 54) + figure(348, 186, 48, { hat: 'beanie' }), strength: 1, tap: 'hop' }
+			{
+				d: figure(322, 186, 54) + figure(348, 186, 48, { hat: 'beanie' }),
+				strength: 1,
+				tap: 'hop',
+				motion: 'nod'
+			}
 		],
 		lines: [
 			{ d: 'M328 70L264 140M332 70L290 140', strength: 1, motion: 'sway' },
@@ -58,11 +63,12 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 			{ d: hull(258, 186, 18, 5), strength: 0.7 },
 			{ d: 'M356 98L400 90V182H350L360 152L352 128L366 116Z', strength: 0.65 },
 			{ d: 'M276 112L290 107L372 100L366 114L340 118L298 116Z', strength: 1 },
-			{ d: sitting(284, 110, 42, -1), strength: 1 },
+			{ d: sitting(284, 110, 42, -1), strength: 1, motion: 'nod' },
 			{
 				d: sitting(320, 107, 40, -1) + figure(350, 104, 44, { hat: 'beanie', pack: 'right' }),
 				strength: 0.9,
-				tap: 'hop'
+				tap: 'hop',
+				motion: 'nod'
 			},
 			{ d: cloud(236, 140, 50) + cloud(292, 150, 40), strength: 0.25, motion: 'drift' }
 		],
@@ -101,10 +107,18 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 					figure(310, 165, 40, { hat: 'helmet', pack: 'left' }) +
 					figure(352, 164, 40, { hat: 'helmet', pack: 'left' }),
 				strength: 1,
-				tap: 'sail'
+				tap: 'sail',
+				motion: 'walk'
 			}
 		],
-		lines: [{ d: 'M268 146Q288 152 304 145M316 145Q332 150 346 144', strength: 1, tap: 'sail' }]
+		lines: [
+			{
+				d: 'M268 146Q288 152 304 145M316 145Q332 150 346 144',
+				strength: 1,
+				tap: 'sail',
+				motion: 'walk'
+			}
+		]
 	},
 	// Flying a kite together on the windy hilltop, the kite high above the moor
 	heather: {
@@ -114,7 +128,7 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 		shapes: [
 			{ d: 'M200 200Q280 150 400 156V200Z', strength: 0.7 },
 			{ d: seated(294, 166, 42, { hat: 'beanie' }), strength: 0.85 },
-			{ d: figure(322, 161, 50) + limb(328, 134, 336, 110, 3.6), strength: 1 },
+			{ d: figure(322, 161, 50) + limb(328, 134, 336, 110, 3.6), strength: 1, motion: 'nod' },
 			{
 				d: figure(352, 157, 30, { hat: 'cap' }) + limb(356, 140, 364, 128, 2.6),
 				strength: 0.85,
@@ -147,7 +161,8 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 					disc(242, 199, 9) +
 					disc(384, 196, 10) +
 					disc(398, 193, 11),
-				strength: 1
+				strength: 1,
+				motion: 'sway'
 			},
 			{
 				d:
@@ -253,11 +268,13 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 					seated(306, 170, 40, { hat: 'beanie' }) +
 					limb(302, 168, 308, 184, 3) +
 					limb(310, 168, 315, 184, 3),
-				strength: 0.85
+				strength: 0.85,
+				motion: 'nod'
 			},
 			{
 				d: seated(330, 170, 42) + limb(326, 168, 331, 185, 3) + limb(334, 168, 339, 185, 3),
-				strength: 1
+				strength: 1,
+				motion: 'nod'
 			},
 			{
 				d: disc(374, 179, 4.5) + limb(378, 180, 382, 168, 2.6),
@@ -318,17 +335,22 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 			{
 				d: figure(372, 186, 48) + limb(366, 158, 352, 146, 3.4) + limb(376, 158, 364, 142, 3.4),
 				strength: 0.85,
-				tap: 'hop'
+				tap: 'hop',
+				motion: 'nod'
 			},
 
-			{ d: figure(290, 186, 56, { hat: 'cap' }) + limb(296, 178, 312, 168, 3.6), strength: 1 },
-			{ d: disc(336, 146, 8.5), strength: 1, motion: 'fly', tap: 'sail' },
+			{
+				d: figure(290, 186, 56, { hat: 'cap' }) + limb(296, 178, 312, 168, 3.6),
+				strength: 1,
+				motion: 'nod'
+			},
+			{ d: disc(336, 146, 8.5), strength: 1, tap: 'sail', motion: 'bob' },
 			{
 				d: 'M334 142l3 1-1 3-3-1ZM340 149l2 2-2 2-2-2ZM331 150l2 1-1 2-2-1Z',
 				strength: 1,
 				cut: true,
-				motion: 'fly',
-				tap: 'sail'
+				tap: 'sail',
+				motion: 'bob'
 			}
 		],
 		lines: [{ d: 'M314 164q8-10 14-14M312 156q8-6 14-8', strength: 0.5 }]
@@ -374,14 +396,16 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 			{
 				d: figure(296, 180, 54, { hat: 'cap' }) + limb(302, 150, 312, 124, 3.4),
 				strength: 1,
-				tap: 'hop'
+				tap: 'hop',
+				motion: 'nod'
 			},
 			{
 				d: figure(344, 184, 50) + limb(338, 156, 328, 130, 3.2) + limb(348, 156, 338, 128, 3.2),
 				strength: 0.85,
-				tap: 'hop'
+				tap: 'hop',
+				motion: 'nod'
 			},
-			{ d: figure(256, 186, 46), strength: 0.7 },
+			{ d: figure(256, 186, 46), strength: 0.7, motion: 'nod' },
 			{ d: disc(318, 116, 6.5), strength: 1, motion: 'bob', tap: 'float' }
 		],
 		lines: [{ d: 'M314 113q4 3 8 0M313 118q5 2 10 0', strength: 0.6, motion: 'bob', tap: 'float' }]
@@ -440,7 +464,8 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 			{
 				d: figure(290, 168, 50) + figure(324, 166, 54, { hat: 'beanie' }) + figure(358, 168, 48),
 				strength: 1,
-				tap: 'hop'
+				tap: 'hop',
+				motion: 'nod'
 			},
 			{
 				d:
@@ -549,7 +574,7 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 			{
 				d: leaf(232, 110, 9) + leaf(270, 92, 9) + leaf(250, 140, 9),
 				strength: 0.85,
-				motion: 'drift'
+				motion: 'fall'
 			}
 		],
 		lines: [{ d: steam(360, 116, 18), strength: 0.5, motion: 'rise', tap: 'puff' }]

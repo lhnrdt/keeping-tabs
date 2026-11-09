@@ -28,7 +28,7 @@ export const EVENT: Record<ThemeId, Scene> = {
 		},
 		shapes: [
 			GROUND,
-			{ d: pine(230, 186, 120) + pine(400, 186, 124), strength: 0.55 },
+			{ d: pine(230, 186, 120) + pine(400, 186, 124), strength: 0.55, motion: 'sway' },
 			{
 				d:
 					seated(268, 186, 40) +
@@ -36,7 +36,8 @@ export const EVENT: Record<ThemeId, Scene> = {
 					seated(346, 186, 38, { hat: 'beanie' }) +
 					seated(368, 186, 40),
 				strength: 1,
-				tap: 'hop'
+				tap: 'hop',
+				motion: 'nod'
 			},
 			{ d: logs(318, 186, 22), strength: 0.9 },
 			{ d: flame(312, 181, 16) + flame(324, 181, 22), strength: 1, motion: 'flicker', tap: 'burst' }
@@ -72,7 +73,8 @@ export const EVENT: Record<ThemeId, Scene> = {
 							`M${i % 2 ? 322 : 316} ${y}q${i % 2 ? 9 : -9} -2 ${i % 2 ? 10 : -10} 6q${i % 2 ? -7 : 7} 2 ${i % 2 ? -10 : 10} -6Z`
 					)
 					.join(''),
-				strength: 0.9
+				strength: 0.9,
+				motion: 'swing'
 			},
 			{
 				d: [0, 1, 2, 3, 4, 5, 6, 7]
@@ -83,10 +85,10 @@ export const EVENT: Record<ThemeId, Scene> = {
 					)
 					.join(''),
 				strength: 1,
-				motion: 'sway'
+				motion: 'swing'
 			},
 			{ d: 'M294 110l-3 12 4-1 2 3ZM340 110l-3 12 4-1 2 3Z', strength: 0.8, motion: 'flutter' },
-			{ d: figure(258, 186, 38) + figure(360, 186, 46), strength: 1, tap: 'hop' },
+			{ d: figure(258, 186, 38) + figure(360, 186, 46), strength: 1, tap: 'hop', motion: 'walk' },
 			{
 				d:
 					figure(282, 186, 44) +
@@ -94,7 +96,8 @@ export const EVENT: Record<ThemeId, Scene> = {
 					figure(384, 186, 40) +
 					'M376 186l4-16h8l4 16Z',
 				strength: 0.9,
-				tap: 'hop'
+				tap: 'hop',
+				motion: 'walk'
 			},
 			{
 				d:
@@ -131,13 +134,14 @@ export const EVENT: Record<ThemeId, Scene> = {
 					figure(320, 133, 32, { hat: 'beanie' }) +
 					figure(334, 139, 30, { hat: 'helmet' }),
 				strength: 1,
-				tap: 'hop'
+				tap: 'hop',
+				motion: 'nod'
 			},
 			{
 				d: flag(294, 148, 30, 13) + flag(348, 148, 30, 13),
 				strength: 1,
-				motion: 'flutter',
-				tap: 'wave'
+				tap: 'wave',
+				motion: 'flutter'
 			}
 		]
 	},
@@ -155,7 +159,8 @@ export const EVENT: Record<ThemeId, Scene> = {
 					figure(280, 178, 32) +
 					figure(298, 178, 30, { hat: 'cap' }),
 				strength: 0.5,
-				tap: 'hop'
+				tap: 'hop',
+				motion: 'nod'
 			},
 			{ d: rect(208, 102, 3, 84) + rect(300, 96, 3, 90), strength: 0.5 },
 			{
@@ -173,11 +178,11 @@ export const EVENT: Record<ThemeId, Scene> = {
 			{
 				d: 'M217.5 108.1l4 9 4-9ZM229.0 109.4l4 9 4-9ZM240.5 109.8l4 9 4-9ZM252.0 109.5l4 9 4-9ZM263.5 108.3l4 9 4-9ZM275.0 106.4l4 9 4-9ZM286.5 103.6l4 9 4-9Z',
 				strength: 0.7,
-				motion: 'flutter',
-				tap: 'swing'
+				tap: 'swing',
+				motion: 'flutter'
 			},
 			GROUND,
-			{ d: figure(320, 186, 64), strength: 1 },
+			{ d: figure(320, 186, 64), strength: 1, motion: 'nod' },
 			{ d: 'M306 186l2-22h24l2 22Z', strength: 0.7 },
 			{ d: rect(307, 164, 26, 2), strength: 1, cut: true },
 			{
@@ -261,7 +266,8 @@ export const EVENT: Record<ThemeId, Scene> = {
 					seated(330, 170, 46) +
 					seated(356, 170, 46),
 				strength: 0.85,
-				tap: 'hop'
+				tap: 'hop',
+				motion: 'nod'
 			},
 			{
 				d:
@@ -285,8 +291,8 @@ export const EVENT: Record<ThemeId, Scene> = {
 			{
 				d: disc(250, 86, 10) + disc(306, 98, 12) + disc(362, 84, 10),
 				strength: 1,
-				motion: 'sway',
-				tap: 'hop'
+				tap: 'hop',
+				motion: 'bob-slow'
 			},
 			{
 				d:
@@ -298,18 +304,18 @@ export const EVENT: Record<ThemeId, Scene> = {
 					disc(365, 82, 1.4),
 				strength: 1,
 				cut: true,
-				motion: 'sway',
-				tap: 'hop'
+				tap: 'hop',
+				motion: 'bob-slow'
 			}
 		],
 		lines: [
 			{ d: 'M213 56Q300 92 393 56', strength: 0.7 },
-			{ d: 'M250 66V76M306 76V86M362 64V74', strength: 0.7 },
+			{ d: 'M250 66V76M306 76V86M362 64V74', strength: 0.7, motion: 'bob-slow' },
 			{
 				d: 'M247 89q3 3 6 0M302 102q4 3 8 0M359 87q3 3 6 0',
 				strength: 1,
-				motion: 'sway',
-				tap: 'hop'
+				tap: 'hop',
+				motion: 'bob-slow'
 			},
 			{ d: 'M271 120l-3-4M280 120l3-4M345 120l-3-4', strength: 0.8, tap: 'hop' }
 		]
@@ -353,7 +359,8 @@ export const EVENT: Record<ThemeId, Scene> = {
 			{
 				d: figure(348, 160, 30) + limb(352, 144, 358, 136, 2.4) + rect(356, 134, 1.4, 26),
 				strength: 1,
-				tap: 'hop'
+				tap: 'hop',
+				motion: 'nod'
 			},
 			{
 				d:
@@ -365,7 +372,8 @@ export const EVENT: Record<ThemeId, Scene> = {
 					limb(300, 174, 310, 130, 4.4) +
 					limb(220, 176, 212, 134, 4),
 				strength: 1,
-				tap: 'hop'
+				tap: 'hop',
+				motion: 'walk'
 			}
 		],
 		lines: [
@@ -426,7 +434,8 @@ export const EVENT: Record<ThemeId, Scene> = {
 					figure(292, 178, 44) +
 					limb(254, 150, 262, 132, 3.4),
 				strength: 1,
-				tap: 'hop'
+				tap: 'hop',
+				motion: 'nod'
 			}
 		],
 		lines: [
@@ -498,12 +507,14 @@ export const EVENT: Record<ThemeId, Scene> = {
 			{
 				d: figure(352, 168, 14, { hat: 'beanie' }) + figure(326, 170, 18),
 				strength: 0.6,
-				tap: 'sail'
+				tap: 'sail',
+				motion: 'drift'
 			},
 			{
 				d: figure(296, 178, 30) + limb(290, 164, 280, 168, 2.4) + rect(287, 178, 18, 1.6),
 				strength: 0.8,
-				tap: 'sail'
+				tap: 'sail',
+				motion: 'drift'
 			},
 			{
 				d:
@@ -514,7 +525,8 @@ export const EVENT: Record<ThemeId, Scene> = {
 					rect(232, 186, 3, 4) +
 					rect(246, 186, 3, 4),
 				strength: 1,
-				tap: 'sail'
+				tap: 'sail',
+				motion: 'drift'
 			},
 			{ d: rect(396, 100, 3, 68) + rect(204, 104, 3, 96), strength: 1 },
 			{
@@ -539,8 +551,8 @@ export const EVENT: Record<ThemeId, Scene> = {
 					disc(378, 116, 2.8),
 				strength: 1,
 				snow: true,
-				motion: 'twinkle',
-				tap: 'flash'
+				tap: 'flash',
+				motion: 'twinkle'
 			}
 		],
 		lines: [
@@ -566,7 +578,8 @@ export const EVENT: Record<ThemeId, Scene> = {
 					'M260 96a70 70 0 1 0 140 0a70 70 0 1 0 -140 0Z' +
 					'M263 96a67 67 0 1 1 134 0a67 67 0 1 1 -134 0Z',
 				strength: 0.8,
-				tap: 'spin'
+				tap: 'spin',
+				motion: 'turn'
 			},
 			{
 				d:
@@ -584,7 +597,8 @@ export const EVENT: Record<ThemeId, Scene> = {
 					limb(330, 96, 390.6, 61.0, 1.6) +
 					disc(330, 96, 5),
 				strength: 0.8,
-				tap: 'spin'
+				tap: 'spin',
+				motion: 'turn'
 			},
 			{
 				d:
@@ -601,7 +615,8 @@ export const EVENT: Record<ThemeId, Scene> = {
 					rounded(374.5, 48.5, 10, 8, 2) +
 					rounded(392.6, 79.9, 10, 8, 2),
 				strength: 0.95,
-				tap: 'spin'
+				tap: 'spin',
+				motion: 'turn'
 			},
 			{ d: limb(330, 96, 300, 186, 4) + limb(330, 96, 360, 186, 4), strength: 0.95 },
 			{ d: rect(262, 150, 44, 36) + 'M256 152L266 138H302L312 152Z', strength: 0.9 },
@@ -610,7 +625,12 @@ export const EVENT: Record<ThemeId, Scene> = {
 				strength: 1,
 				cut: true
 			},
-			{ d: figure(228, 204, 60, { hat: 'beanie' }) + figure(252, 206, 54), strength: 1, tap: 'hop' }
+			{
+				d: figure(228, 204, 60, { hat: 'beanie' }) + figure(252, 206, 54),
+				strength: 1,
+				tap: 'hop',
+				motion: 'nod'
+			}
 		],
 		lines: [{ d: 'M196 120Q240 140 262 140', strength: 0.6 }],
 		dots: [

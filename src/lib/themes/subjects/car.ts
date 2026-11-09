@@ -31,7 +31,7 @@ export const CAR: Record<ThemeId, Scene> = {
 		},
 		shapes: [
 			GROUND,
-			{ d: pine(232, 186, 66), strength: 0.5 },
+			{ d: pine(232, 186, 66), strength: 0.5, motion: 'sway' },
 			{ d: 'M240 186l6-8 10 2 4 6Z', strength: 0.85 },
 			{
 				d: 'M251.03 168.31 V149.53 Q251.39 146.64 254.64 146.64 L290.03 145.56 L296.53 127.86 H349.97 V145.56 H393.31 V167.94ZM246.69 165.06 H251.75 V168.67 H246.69Z',
@@ -84,7 +84,7 @@ export const CAR: Record<ThemeId, Scene> = {
 				motion: 'rise',
 				tap: 'puff'
 			},
-			{ d: pine(422, 186, 118), strength: 0.75 }
+			{ d: pine(422, 186, 118), strength: 0.75, motion: 'sway' }
 		]
 	},
 	// Crossing on the ferry: the electric car on the open deck, the bridge and funnel behind, foam at the stern
@@ -107,7 +107,7 @@ export const CAR: Record<ThemeId, Scene> = {
 				motion: 'rock',
 				tap: 'sail'
 			},
-			{ d: figure(252, 164, 28, { hat: 'cap' }), strength: 1, motion: 'rock', tap: 'sail' },
+			{ d: figure(252, 164, 28, { hat: 'cap' }), strength: 1, tap: 'sail', motion: 'rock' },
 			{
 				d: rect(352, 124, 40, 40) + rect(358, 108, 26, 16),
 				strength: 0.75,
@@ -360,7 +360,8 @@ export const CAR: Record<ThemeId, Scene> = {
 					disc(260, 199, 8) +
 					disc(388, 197, 10) +
 					disc(400, 193, 11),
-				strength: 1
+				strength: 1,
+				motion: 'sway'
 			},
 			{
 				d:
@@ -620,13 +621,15 @@ export const CAR: Record<ThemeId, Scene> = {
 					rounded(369, 142, 18, 13, 3) +
 					rounded(359, 130, 18, 12, 3),
 				strength: 0.8,
-				tap: 'drive-left'
+				tap: 'drive-left',
+				motion: 'idle'
 			},
 			{
 				d: rect(352, 148, 14, 1.4) + rect(371, 148, 14, 1.4) + rect(361, 135.5, 14, 1.4),
 				strength: 1,
 				cut: true,
-				tap: 'drive-left'
+				tap: 'drive-left',
+				motion: 'idle'
 			},
 			{
 				d:
@@ -641,7 +644,8 @@ export const CAR: Record<ThemeId, Scene> = {
 		lines: [
 			{
 				d: 'M216 200l-3-16M220 200l1-18M226 200l4-15M236 200l-2-19M240 200l3-14M386 200l-2-14M392 200l2-16M398 200l3-12',
-				strength: 0.9
+				strength: 0.9,
+				motion: 'sway'
 			}
 		]
 	},
@@ -708,7 +712,11 @@ export const CAR: Record<ThemeId, Scene> = {
 			{ d: 'M196 200Q236 184 280 194Q300 198 310 200Z', strength: 0.8 }
 		],
 		lines: [
-			{ d: 'M214 192l-5-14M220 191l-1-16M226 192l4-13M290 197l-3-12M296 197l2-12', strength: 0.9 }
+			{
+				d: 'M214 192l-5-14M220 191l-1-16M226 192l4-13M290 197l-3-12M296 197l2-12',
+				strength: 0.9,
+				motion: 'sway'
+			}
 		]
 	},
 	// Camping under the lights: the old SUV, its rooftop tent open, a ladder down
@@ -826,7 +834,7 @@ export const CAR: Record<ThemeId, Scene> = {
 		},
 		shapes: [
 			{ d: 'M-200 200V186H400V200Z', strength: 0.6 },
-			{ d: roundTree(250, 186, 92), strength: 0.5 },
+			{ d: roundTree(250, 186, 92), strength: 0.5, motion: 'sway' },
 			{
 				d: 'M327.3 143.94 L355.68 143.94 L356.2 144.45 L356.71 143.94 L357.75 143.94 L360.84 146.52 L363.94 148.06 L367.04 151.16 L367.55 150.65 L372.71 154.77 L373.75 154.77 L376.33 156.84 L377.36 158.39 L377.36 159.94 L378.39 160.97 L378.39 164.06 L378.91 164.58 L377.88 169.23 L380.97 171.29 L380.97 172.84 L379.94 175.42 L377.88 177.48 L376.33 177.48 L374.78 178.52 L372.2 178.52 L371.17 179.03 L370.65 179.55 L370.65 181.1 L369.62 182.13 L364.46 182.13 L363.42 180.58 L362.39 180.58 L361.88 181.1 L361.36 180.58 L360.84 181.1 L360.33 180.58 L358.26 182.13 L348.97 182.13 L347.94 181.1 L343.81 181.1 L343.3 180.58 L337.1 180.58 L336.59 181.1 L319.04 181.1 L298.91 181.1 L297.88 182.13 L288.07 182.13 L286 180.58 L285.49 181.1 L284.97 180.58 L284.46 181.1 L283.94 180.58 L282.91 180.58 L281.88 182.13 L276.71 182.13 L275.68 181.1 L275.68 180.06 L275.17 179.55 L271.55 179.55 L271.04 179.03 L266.91 179.03 L265.88 179.55 L262.78 175.94 L261.75 171.81 L263.81 170.77 L263.81 168.71 L265.88 166.13 L265.36 165.1 L266.39 164.06 L267.94 164.06 L268.46 163.55 L273.62 162.52 L274.13 162 L276.2 162 L276.71 161.48 L278.78 161.48 L279.3 160.97 L281.36 160.97 L281.88 160.45 L283.94 160.45 L284.46 159.94 L287.04 159.94 L289.62 158.9 L290.13 159.42 L290.65 158.9 L292.71 158.9 L296.33 157.35 L297.36 157.87 L305.62 151.68 L307.68 150.65 L309.23 149.1 L313.36 147.03 L315.94 144.97 L316.97 144.97 L317.49 144.45 L326.78 144.45Z',
 				strength: 1,
@@ -863,12 +871,12 @@ export const CAR: Record<ThemeId, Scene> = {
 				d: 'M214 188q3 -4 6 0q-3 4 -6 0ZM222 186q3 -4 6 0q-3 4 -6 0ZM230 189q3 -4 6 0q-3 4 -6 0ZM240 187q3 -4 6 0q-3 4 -6 0ZM226 191q3 -4 6 0q-3 4 -6 0ZM386 188q3 -4 6 0q-3 4 -6 0ZM394 190q3 -4 6 0q-3 4 -6 0Z',
 				strength: 0.9
 			},
-			{ d: rect(392, 30, 10, 170) + disc(400, 34, 44), strength: 0.8 },
+			{ d: rect(392, 30, 10, 170) + disc(400, 34, 44), strength: 0.8, motion: 'sway' },
 			{
 				d: 'M236 96q3 -4 6 0q-3 4 -6 0ZM262 70q3 -4 6 0q-3 4 -6 0ZM300 110q3 -4 6 0q-3 4 -6 0ZM338 84q3 -4 6 0q-3 4 -6 0ZM366 124q3 -4 6 0q-3 4 -6 0ZM250 140q3 -4 6 0q-3 4 -6 0ZM320 56q3 -4 6 0q-3 4 -6 0Z',
 				strength: 0.8,
-				motion: 'sway',
-				tap: 'float'
+				tap: 'float',
+				motion: 'fall'
 			}
 		]
 	}

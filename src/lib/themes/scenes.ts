@@ -21,7 +21,13 @@ export type SceneMotion =
 	| 'fly'
 	| 'shimmer'
 	| 'twinkle'
-	| 'twinkle-late';
+	| 'twinkle-late'
+	| 'turn'
+	| 'swing'
+	| 'walk'
+	| 'fall'
+	| 'nod'
+	| 'cloud';
 
 /** What a shape does, once, when the header is tapped (#327) */
 export type TapMove =
