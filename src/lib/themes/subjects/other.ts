@@ -37,15 +37,15 @@ export const OTHER: Record<ThemeId, Scene> = {
 			{ d: pine(396, 186, 84) + pine(236, 186, 58), strength: 0.5, motion: 'sway' },
 			{ d: 'M300 200L316 186H326L304 200ZM336 200L330 186H340L366 200Z', strength: 1, cut: true },
 			{ d: rect(324, 98, 6, 88), strength: 1 },
-			{ d: 'M330 104h36l9 8-9 8h-36Z', strength: 1, tap: 'wave' },
-			{ d: 'M324 126h-30l-9 8 9 8h30Z', strength: 0.85, tap: 'wave' },
+			{ d: 'M330 104h36l9 8-9 8h-36Z', strength: 1, tap: 'glint' },
+			{ d: 'M324 126h-30l-9 8 9 8h30Z', strength: 0.85 },
 			{ d: rect(336, 110, 22, 3) + rect(298, 132, 20, 3), strength: 1, cut: true },
 			{ d: figure(262, 186, 56, { pack: 'left' }), strength: 1, tap: 'hop', motion: 'nod' },
-			{ d: 'M266 146l12 4 12-4v16l-12 4-12-4Z', strength: 0.8, motion: 'nod' },
+			{ d: 'M266 146l12 4 12-4v16l-12 4-12-4Z', strength: 0.8, motion: 'nod', tap: 'hop' },
 			{ d: 'M278 150v16', strength: 1, cut: true },
 			{ d: figure(372, 186, 60, { hat: 'cap' }), strength: 0.9, tap: 'hop', motion: 'nod' }
 		],
-		lines: [{ d: 'M278 150v16', strength: 0.9 }]
+		lines: [{ d: 'M278 150v16', strength: 0.9, tap: 'hop' }]
 	},
 	// Someone at the end of the jetty, feet over the water, the rowing boat tied up beside it
 	fjord: {

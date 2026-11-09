@@ -96,7 +96,7 @@
 			stroke-width="1.2"
 			stroke-opacity="0.3"
 		/>
-	{:else if move === 'burst' || move === 'flash'}
+	{:else if move === 'burst' || move === 'flash' || move === 'glint'}
 		{#each around(move === 'burst' ? 10 : 8, reach) as p, i (i)}
 			{#if move === 'burst'}
 				<circle

@@ -333,6 +333,10 @@
 	transform-origin: center;
 	animation: tap-flash 1.2s var(--ease-out-back);
 }
+.scene-acting .tap-glint {
+	transform-origin: center;
+	animation: tap-glint 1s var(--ease-out-back);
+}
 .scene-acting .tap-puff {
 	animation: tap-puff 1.6s var(--ease-out-quad);
 }
@@ -426,6 +430,11 @@
 @keyframes tap-flash {
 	30% {
 		transform: scale(1.9);
+	}
+}
+@keyframes tap-glint {
+	30% {
+		transform: scale(1.08);
 	}
 }
 @keyframes tap-puff {
