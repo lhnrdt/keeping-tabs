@@ -630,8 +630,8 @@ export const TRIP: Record<ThemeId, Scene> = {
 			{
 				d: figure(294, 176, 32, { pack: 'left', hat: 'cap' }) + figure(312, 176, 28),
 				strength: 1,
-				tap: 'sail',
-				motion: 'walk'
+				motion: 'walk',
+				tap: 'away'
 			},
 			{
 				d:

@@ -356,6 +356,9 @@
 .scene-acting .tap-climb {
 	animation: tap-climb 2.2s var(--ease-in-out-sine);
 }
+.scene-acting .tap-away {
+	animation: tap-away 2.4s var(--ease-in-out-sine);
+}
 .scene-acting .tap-puff {
 	animation: tap-puff 1.6s var(--ease-out-quad);
 }
@@ -471,6 +474,12 @@
 @keyframes tap-climb {
 	50% {
 		transform: translate(18px, -9px);
+	}
+}
+/* Off into the distance, smaller and higher up the path, and back */
+@keyframes tap-away {
+	50% {
+		transform: translateY(-12px) scale(0.6);
 	}
 }
 @keyframes tap-puff {
