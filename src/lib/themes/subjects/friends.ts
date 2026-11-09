@@ -9,8 +9,8 @@ import {
 	GROUND,
 	house,
 	hull,
+	leaf,
 	limb,
-	person,
 	pine,
 	rect,
 	rounded,
@@ -429,14 +429,72 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 			{ d: steam(230, 142, 22), strength: 0.4, motion: 'rise' }
 		]
 	},
-	// Flying a kite
+	// The hayride: the little tractor pulling a trailer of hay bales, friends riding on top, leaves blowing
 	autumn: {
+		backdrop: {
+			shapes: [
+				{
+					d:
+						roundTree(214, 160, 40) +
+						roundTree(232, 160, 50) +
+						roundTree(252, 160, 42) +
+						roundTree(360, 160, 46) +
+						roundTree(380, 160, 54) +
+						roundTree(400, 160, 44),
+					strength: 0.45
+				},
+				{ d: 'M150 186Q180 158 230 156Q320 150 420 156V186Z', strength: 0.3 }
+			],
+			lines: [{ d: 'M190 176Q300 168 420 170M200 168Q300 162 420 162', strength: 0.4 }]
+		},
 		shapes: [
-			GROUND,
-			{ d: person(276, 186, 62) + person(312, 186, 52), strength: 1 },
-			{ d: 'M352 54l18 22-18 26-18-26Z', strength: 1, motion: 'sway' },
-			{ d: 'M352 62v32M340 76h24', strength: 1, cut: true }
+			{ d: GROUND.d, strength: 0.55 },
+			{ d: rect(222, 160, 84, 12) + rect(304, 166, 18, 3), strength: 0.9, motion: 'idle' },
+			{
+				d:
+					rounded(226, 146, 24, 14, 3) +
+					rounded(252, 146, 24, 14, 3) +
+					rounded(278, 146, 24, 14, 3) +
+					rounded(240, 132, 24, 14, 3),
+				strength: 0.75,
+				motion: 'idle'
+			},
+			{
+				d:
+					rect(228, 152, 20, 1.4) +
+					rect(254, 152, 20, 1.4) +
+					rect(280, 152, 20, 1.4) +
+					rect(242, 138, 20, 1.4),
+				strength: 1,
+				cut: true,
+				motion: 'idle'
+			},
+			{
+				d:
+					seated(254, 132, 40, { hat: 'beanie' }) +
+					seated(286, 146, 42) +
+					seated(232, 146, 38, { hat: 'cap' }) +
+					limb(260, 112, 268, 98, 3),
+				strength: 1,
+				motion: 'idle'
+			},
+			{ d: disc(238, 178, 8) + disc(290, 178, 8), strength: 1, motion: 'idle' },
+			{ d: disc(238, 178, 3.5) + disc(290, 178, 3.5), strength: 1, cut: true, motion: 'idle' },
+			{
+				d: rect(322, 150, 40, 18) + 'M344 150V128h20l4 22Z' + rect(358, 120, 4, 10),
+				strength: 1,
+				motion: 'idle'
+			},
+			{ d: rect(348, 132, 12, 12), strength: 1, cut: true, motion: 'idle' },
+			{ d: figure(352, 150, 22, { hat: 'cap' }), strength: 1, motion: 'idle' },
+			{ d: disc(338, 174, 12) + disc(376, 178, 8), strength: 1, motion: 'idle' },
+			{ d: disc(338, 174, 5) + disc(376, 178, 3.5), strength: 1, cut: true, motion: 'idle' },
+			{
+				d: leaf(232, 110, 9) + leaf(270, 92, 9) + leaf(250, 140, 9),
+				strength: 0.85,
+				motion: 'drift'
+			}
 		],
-		lines: [{ d: 'M286 130Q330 120 352 102M352 102q-6 10 0 18t0 18', strength: 0.8 }]
+		lines: [{ d: steam(360, 116, 18), strength: 0.5, motion: 'rise' }]
 	}
 };
