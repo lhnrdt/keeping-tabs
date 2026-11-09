@@ -316,8 +316,21 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 	// Beach volleyball: the spike going over the net, the block going up
 	coast: {
 		backdrop: {
-			shapes: [{ d: 'M-200 186V166H400V186Z', strength: 0.36 }],
-			lines: [{ d: waves(220, 176, 4), strength: 0.45, motion: 'flow' }]
+			shapes: [
+				{ d: 'M-200 186V164H400V186Z', strength: 0.36 },
+				{ d: 'M190 164Q214 142 246 144Q262 150 268 164Z', strength: 0.42 },
+				{
+					d:
+						'M226 160Q238 146 250 160Z' +
+						rect(237.2, 160, 1.6, 22) +
+						'M360 160Q372 146 384 160Z' +
+						rect(371.2, 160, 1.6, 22) +
+						'M380 160Q392 146 404 160Z' +
+						rect(391.2, 160, 1.6, 22),
+					strength: 0.6
+				}
+			],
+			lines: [{ d: waves(260, 172, 3), strength: 0.45, motion: 'flow' }]
 		},
 		shapes: [
 			{ d: 'M-200 200V184H400V200Z', strength: 0.45 },
