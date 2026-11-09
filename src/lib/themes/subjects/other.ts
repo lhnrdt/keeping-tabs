@@ -320,8 +320,9 @@ export const OTHER: Record<ThemeId, Scene> = {
 					disc(313, 118, 5) +
 					disc(331, 126, 4.5),
 				strength: 1,
-				tap: 'wave',
-				motion: 'sway'
+				motion: 'sway',
+				origin: [318, 146],
+				tap: 'wave'
 			},
 			{
 				d:
@@ -332,8 +333,9 @@ export const OTHER: Record<ThemeId, Scene> = {
 					limb(384, 200, 386, 134, 1.6) +
 					limb(396, 200, 398, 152, 1.6),
 				strength: 0.9,
-				tap: 'wave',
-				motion: 'sway'
+				tap: 'gust',
+				motion: 'breeze',
+				origin: [306, 200]
 			},
 			{
 				d:
@@ -365,8 +367,9 @@ export const OTHER: Record<ThemeId, Scene> = {
 					disc(389.54, 130.46, 2.25) +
 					disc(398, 152, 7),
 				strength: 1,
-				tap: 'wave',
-				motion: 'sway'
+				tap: 'gust',
+				motion: 'breeze',
+				origin: [306, 200]
 			},
 			{
 				d:
@@ -378,8 +381,9 @@ export const OTHER: Record<ThemeId, Scene> = {
 					disc(398, 152, 2.6),
 				strength: 1,
 				cut: true,
-				tap: 'wave',
-				motion: 'sway'
+				tap: 'gust',
+				motion: 'breeze',
+				origin: [306, 200]
 			}
 		],
 		lines: [

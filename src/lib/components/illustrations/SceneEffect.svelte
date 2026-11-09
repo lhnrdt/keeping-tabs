@@ -164,6 +164,18 @@
 				stroke="none"
 			/>
 		{/each}
+	{:else if move === 'gust'}
+		<!-- The wind blowing through -->
+		{#each [0.15, 0.4, 0.65] as at, i (at)}
+			<path
+				class="fx-wind"
+				style="animation-delay: {i * 120}ms"
+				d="M{x + w * 0.6} {y + h * at}q-14 -4 -28 0t-28 0"
+				fill="none"
+				stroke-width="1.4"
+				stroke-opacity="0.4"
+			/>
+		{/each}
 	{:else if move === 'puff'}
 		{#each [-1, 0, 1, 2] as i (i)}
 			<circle

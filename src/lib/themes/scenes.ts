@@ -27,6 +27,7 @@ export type SceneMotion =
 	| 'walk'
 	| 'fall'
 	| 'nod'
+	| 'breeze'
 	| 'cloud';
 
 /** What a shape does, once, when the header is tapped (#327) */
@@ -42,10 +43,13 @@ export type TapMove =
 	| 'sail'
 	| 'flash'
 	| 'glint'
+	| 'gust'
 	| 'puff';
 
 export type Shape = {
 	tap?: TapMove;
+	/** Where it turns round when it moves, if not its own bottom middle: so parts of one thing move as one */
+	origin?: [x: number, y: number];
 	d: string;
 	strength: number;
 	cut?: boolean;
@@ -63,6 +67,7 @@ export type Shape = {
 };
 export type Line = {
 	tap?: TapMove;
+	origin?: [x: number, y: number];
 	d: string;
 	strength: number;
 	motion?: SceneMotion;
