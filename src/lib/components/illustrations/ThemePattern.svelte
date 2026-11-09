@@ -50,22 +50,30 @@
 	/** Where each move happens, to draw its swoosh lines and particles round it */
 	type Effect = { move: string; x: number; y: number; w: number; h: number };
 	let effects: Effect[] = $state([]);
+	/** One box per thing that moves: the parts of one thing (they overlap) share it */
 	const measure = () => {
-		const boxes = new Map<string, DOMRect>();
+		const boxes: Effect[] = [];
+		const overlap = (a: Effect, b: Effect) =>
+			a.move === b.move && a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
 		for (const el of svg.querySelectorAll<SVGGraphicsElement>('[class^="tap-"]')) {
-			const move = el.getAttribute('class')!.slice(4);
-			const box = el.getBBox();
-			const seen = boxes.get(move);
-			if (!seen) boxes.set(move, box);
-			else {
-				const x = Math.min(seen.x, box.x);
-				const y = Math.min(seen.y, box.y);
-				const right = Math.max(seen.x + seen.width, box.x + box.width);
-				const bottom = Math.max(seen.y + seen.height, box.y + box.height);
-				boxes.set(move, new DOMRect(x, y, right - x, bottom - y));
+			const { x, y, width, height } = el.getBBox();
+			let box: Effect = { move: el.getAttribute('class')!.slice(4), x, y, w: width, h: height };
+			for (let i = boxes.length - 1; i >= 0; i--) {
+				if (!overlap(boxes[i], box)) continue;
+				const other = boxes.splice(i, 1)[0];
+				const left = Math.min(other.x, box.x);
+				const top = Math.min(other.y, box.y);
+				box = {
+					move: box.move,
+					x: left,
+					y: top,
+					w: Math.max(other.x + other.w, box.x + box.w) - left,
+					h: Math.max(other.y + other.h, box.y + box.h) - top
+				};
 			}
+			boxes.push(box);
 		}
-		return [...boxes].map(([move, b]) => ({ move, x: b.x, y: b.y, w: b.width, h: b.height }));
+		return boxes;
 	};
 	onMount(() => {
 		const header = svg.parentElement;
@@ -178,7 +186,7 @@
 			{/each}
 		</g>
 	{/each}
-	{#each effects as effect (effect.move)}
+	{#each effects as effect, i (i)}
 		<SceneEffect {...effect} />
 	{/each}
 </svg>
