@@ -44,6 +44,7 @@ export type TapMove =
 	| 'flash'
 	| 'glint'
 	| 'gust'
+	| 'climb'
 	| 'puff';
 
 export type Shape = {

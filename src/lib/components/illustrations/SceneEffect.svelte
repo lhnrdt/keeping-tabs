@@ -164,6 +164,19 @@
 				stroke="none"
 			/>
 		{/each}
+	{:else if move === 'climb'}
+		<!-- Snow kicked up behind -->
+		{#each [0, 1, 2, 3] as i (i)}
+			<circle
+				class="fx-dust"
+				style="--dx: {-8 - i * 5}px; --dy: {2 - i * 3}px; animation-delay: {i * 80}ms"
+				cx={x + 4}
+				cy={bottom - 2}
+				r={1.8 + (i % 2)}
+				fill-opacity="0.4"
+				stroke="none"
+			/>
+		{/each}
 	{:else if move === 'gust'}
 		<!-- The wind blowing through -->
 		{#each [0.15, 0.4, 0.65] as at, i (at)}

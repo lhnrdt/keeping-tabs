@@ -99,12 +99,12 @@ export const TRIP: Record<ThemeId, Scene> = {
 		shapes: [
 			{ d: 'M-200 200V194H300V200Z', strength: 1, snow: true },
 			{ d: 'M214 200L400 108V200Z', strength: 1, snow: true },
-			{ d: 'M362 129l6-6 9 2-1 5ZM344 140l5-4 7 2-1 3Z', strength: 0.8 },
+			{ d: 'M362 129l6-6 9 2-1 5ZM344 140l5-4 7 2-1 3Z', strength: 0.8, tap: 'climb' },
 			{
 				d: limb(250, 183, 280, 168, 2.2) + limb(280, 168, 286, 162, 2.2),
 				strength: 0.85,
-				tap: 'sail',
-				motion: 'walk'
+				motion: 'walk',
+				tap: 'climb'
 			},
 			{
 				d:
@@ -112,14 +112,14 @@ export const TRIP: Record<ThemeId, Scene> = {
 					limb(258, 154, 254, 178, 1.8) +
 					limb(274, 152, 274, 170, 1.8),
 				strength: 0.85,
-				tap: 'sail',
-				motion: 'walk'
+				motion: 'walk',
+				tap: 'climb'
 			},
 			{
 				d: limb(298, 159, 348, 134, 3) + limb(348, 134, 356, 125, 3),
 				strength: 1,
-				tap: 'sail',
-				motion: 'walk'
+				motion: 'walk',
+				tap: 'climb'
 			},
 			{
 				d:
