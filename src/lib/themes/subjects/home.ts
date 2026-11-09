@@ -118,6 +118,7 @@ export const HOME: Record<ThemeId, Scene> = {
 			]
 		},
 		shapes: [
+			{ d: 'M-200 200V194H300V200Z', strength: 0.95 },
 			{ d: 'M214 200L284 168H368L400 156V200Z', strength: 0.95 },
 			{ d: rect(318, 168, 16, 4), strength: 0.8 },
 			{ d: rect(336, 118, 10, 30), strength: 1 },

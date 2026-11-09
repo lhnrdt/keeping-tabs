@@ -121,6 +121,7 @@ export const EVENT: Record<ThemeId, Scene> = {
 			]
 		},
 		shapes: [
+			{ d: 'M-200 200V194H300V200Z', strength: 0.95 },
 			{ d: 'M236 200L304 140Q320 128 336 140L400 200Z', strength: 0.95 },
 			{
 				d: 'M284 158L304 140Q320 128 336 140L356 158L348 155L342 162L334 154L324 160L316 153L306 161L298 154Z',

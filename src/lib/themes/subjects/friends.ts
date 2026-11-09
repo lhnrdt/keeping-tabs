@@ -126,6 +126,7 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 			shapes: [{ d: 'M60 200Q180 160 300 172T540 176V200Z', strength: 0.26 }]
 		},
 		shapes: [
+			{ d: 'M-200 200V194H300V200Z', strength: 0.7 },
 			{ d: 'M200 200Q280 150 400 156V200Z', strength: 0.7 },
 			{ d: seated(294, 166, 42, { hat: 'beanie' }), strength: 0.85 },
 			{ d: figure(322, 161, 50) + limb(328, 134, 336, 110, 3.6), strength: 1, motion: 'nod' },

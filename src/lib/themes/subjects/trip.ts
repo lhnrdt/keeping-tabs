@@ -97,6 +97,7 @@ export const TRIP: Record<ThemeId, Scene> = {
 			]
 		},
 		shapes: [
+			{ d: 'M-200 200V194H300V200Z', strength: 1, snow: true },
 			{ d: 'M214 200L400 108V200Z', strength: 1, snow: true },
 			{ d: 'M362 129l6-6 9 2-1 5ZM344 140l5-4 7 2-1 3Z', strength: 0.8 },
 			{
@@ -146,6 +147,7 @@ export const TRIP: Record<ThemeId, Scene> = {
 				d: rounded(347, 118, 18, 9, 3) + rounded(350, 110, 12, 9, 3) + rounded(353, 103, 7, 8, 3),
 				strength: 0.7
 			},
+			{ d: 'M-200 200V194H300V200Z', strength: 0.6 },
 			{ d: 'M150 200Q240 172 330 168T440 164V200Z', strength: 0.6 },
 			{ d: 'M258 200C290 188 330 178 370 168h6C352 180 334 190 322 200Z', strength: 1, cut: true },
 			{
@@ -553,6 +555,7 @@ export const TRIP: Record<ThemeId, Scene> = {
 				motion: 'twinkle-late',
 				tap: 'flash'
 			},
+			{ d: 'M-200 200V194H300V200Z', strength: 0.55 },
 			{ d: 'M196 200Q240 190 300 186T400 190V200Z', strength: 0.55 },
 			{ d: 'M362 176L400 166V188Z', strength: 0.3, motion: 'shimmer', tap: 'drive' },
 			{ d: rounded(306, 178, 32, 7, 3.5), strength: 1, motion: 'idle', tap: 'drive' },

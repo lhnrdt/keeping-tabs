@@ -79,6 +79,7 @@ export const OTHER: Record<ThemeId, Scene> = {
 			]
 		},
 		shapes: [
+			{ d: 'M-200 200V194H300V200Z', strength: 0.95 },
 			{ d: 'M214 200L318 98L400 160V200Z', strength: 0.95 },
 			{ d: 'M290 126L318 98L346 120L332 116L324 126L316 116L304 124Z', strength: 1, snow: true },
 			{ d: 'M258 168l8-6 8 2-2 6ZM336 150l8-5 7 3-3 5ZM360 172l7-4 6 2-2 4Z', strength: 1 },
@@ -120,6 +121,7 @@ export const OTHER: Record<ThemeId, Scene> = {
 			{ d: 'M332 174l3-76l7-4l9 2l2 78ZM372 174l1-80l9-2l8 4l2 78Z', strength: 0.66 },
 			{ d: 'M326 98l4-9l64-3l5 8l-3 9l-66 3Z', strength: 0.75 },
 			{ d: figure(362, 170, 34, { hat: 'beanie' }), strength: 1, tap: 'hop', motion: 'nod' },
+			{ d: 'M-200 200V194H300V200Z', strength: 0.7 },
 			{ d: 'M150 200Q250 160 330 166T420 172V200Z', strength: 0.7 },
 			{ d: 'M282 202l2-24l8-8l11 3l4 29Z', strength: 0.9 },
 			{
@@ -465,6 +467,7 @@ export const OTHER: Record<ThemeId, Scene> = {
 				motion: 'twinkle-late',
 				tap: 'flash'
 			},
+			{ d: 'M-200 200V194H300V200Z', strength: 0.6 },
 			{ d: 'M196 200Q260 184 330 188T410 186V200Z', strength: 0.6 },
 			{
 				d: limb(318, 134, 296, 200, 3) + limb(318, 134, 340, 200, 3) + limb(318, 134, 318, 200, 3),
