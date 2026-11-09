@@ -153,8 +153,8 @@ export const TRIP: Record<ThemeId, Scene> = {
 			{
 				d: figure(318, 189, 38, { hat: 'cap', pack: 'left' }),
 				strength: 1,
-				tap: 'sail',
-				motion: 'walk'
+				motion: 'walk',
+				tap: 'climb'
 			},
 			{ d: rect(232, 126, 5, 76) + 'M237 132h28l6 6-6 6h-28Z', strength: 1 },
 			{
@@ -165,7 +165,8 @@ export const TRIP: Record<ThemeId, Scene> = {
 					disc(208, 199, 8) +
 					disc(220, 197, 9),
 				strength: 1,
-				motion: 'sway'
+				motion: 'breeze',
+				origin: [300, 200]
 			},
 			{
 				d:
@@ -175,7 +176,9 @@ export const TRIP: Record<ThemeId, Scene> = {
 					disc(214, 192, 1.4) +
 					disc(224, 191, 1.4),
 				strength: 1,
-				cut: true
+				cut: true,
+				motion: 'breeze',
+				origin: [300, 200]
 			}
 		],
 		lines: [{ d: 'M374 168Q360 158 368 148T356 127', strength: 0.5 }]
