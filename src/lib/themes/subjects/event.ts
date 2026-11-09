@@ -7,6 +7,7 @@ import {
 	flag,
 	flame,
 	GROUND,
+	house,
 	hull,
 	limb,
 	logs,
@@ -347,7 +348,29 @@ export const EVENT: Record<ThemeId, Scene> = {
 		backdrop: {
 			shapes: [
 				{ d: 'M-200 186V170H400V186Z', strength: 0.36 },
-				{ d: hull(330, 172, 40, 6) + rect(348, 150, 2, 18), strength: 0.5 }
+				{ d: 'M314 172Q350 126 410 120V172Z', strength: 0.35 },
+				{
+					d:
+						house(330, 170, 14, 20, 6, 1.5) +
+						house(344, 170, 12, 24, 6, 1.5) +
+						house(356, 170, 14, 30, 6, 1.5) +
+						house(370, 170, 12, 34, 6, 1.5) +
+						house(382, 170, 14, 26, 6, 1.5) +
+						house(396, 170, 12, 30, 6, 1.5),
+					strength: 0.6
+				},
+				{
+					d:
+						rect(334, 156, 3, 3) +
+						rect(348, 152, 3, 3) +
+						rect(360, 146, 3, 3) +
+						rect(374, 142, 3, 3) +
+						rect(386, 150, 3, 3) +
+						rect(400, 146, 3, 3),
+					strength: 1,
+					cut: true
+				},
+				{ d: hull(240, 174, 34, 5) + rect(254, 154, 1.4, 16), strength: 0.5 }
 			]
 		},
 		shapes: [
