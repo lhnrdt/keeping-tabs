@@ -82,8 +82,11 @@ export const OTHER: Record<ThemeId, Scene> = {
 			{ d: 'M-200 200V194H300V200Z', strength: 0.95 },
 			{ d: 'M214 200L318 98L400 160V200Z', strength: 0.95 },
 			{ d: 'M290 126L318 98L346 120L332 116L324 126L316 116L304 124Z', strength: 1, snow: true },
-			{ d: 'M258 168l8-6 8 2-2 6ZM336 150l8-5 7 3-3 5ZM360 172l7-4 6 2-2 4Z', strength: 1 },
-			{ d: rect(316, 62, 5, 38) + rect(306, 72, 25, 4), strength: 1 },
+			{
+				d: 'M258 168l8-6 8 2-2 6ZM336 150l8-5 7 3-3 5ZM360 172l7-4 6 2-2 4Z',
+				strength: 1
+			},
+			{ d: rect(316, 62, 5, 38) + rect(306, 72, 25, 4), strength: 1, tap: 'glint' },
 			{
 				d:
 					tri(333, 78, 344, 85, 335, 93) +
@@ -102,7 +105,7 @@ export const OTHER: Record<ThemeId, Scene> = {
 		],
 		lines: [
 			{ d: 'M321 64Q356 96 392 152', strength: 0.8 },
-			{ d: 'M294 112L297 132', strength: 0.9 }
+			{ d: 'M294 112L297 132', strength: 0.9, tap: 'hop' }
 		]
 	},
 	// A stone circle on the knoll, a walker standing in the gateway of its tallest stones
