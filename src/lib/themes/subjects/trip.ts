@@ -10,12 +10,12 @@ import {
 	GROUND,
 	house,
 	hull,
+	leaf,
 	limb,
 	logs,
 	pine,
 	rect,
 	rounded,
-	roundTree,
 	seated,
 	sparkle,
 	steam,
@@ -523,23 +523,68 @@ export const TRIP: Record<ThemeId, Scene> = {
 		],
 		lines: [{ d: 'M306 184Q280 188 262 192T230 200', strength: 0.5 }]
 	},
-	// Two hikers on a path of fallen leaves, under red trees, a trail sign ahead
+	// The path through a tunnel of autumn trees, two walkers deep in it, leaves coming down
 	autumn: {
+		backdrop: {
+			shapes: [
+				{ d: disc(300, 120, 30) + disc(270, 110, 22) + disc(330, 110, 22), strength: 0.35 },
+				{
+					d:
+						disc(260.0, 125.0, 15.8) +
+						disc(340.0, 125.0, 15.8) +
+						disc(240.0, 120.0, 22.5) +
+						disc(360.0, 120.0, 22.5) +
+						disc(220.0, 115.0, 29.2) +
+						disc(380.0, 115.0, 29.2),
+					strength: 0.6
+				},
+				{
+					d:
+						rect(258.4, 125.0, 3.2, 35.0) +
+						rect(338.4, 125.0, 3.2, 35.0) +
+						rect(237.8, 120.0, 4.5, 50.0) +
+						rect(357.8, 120.0, 4.5, 50.0) +
+						rect(217.1, 115.0, 5.8, 65.0) +
+						rect(377.1, 115.0, 5.8, 65.0),
+					strength: 0.75
+				}
+			]
+		},
 		shapes: [
-			GROUND,
-			{ d: roundTree(376, 186, 100) + roundTree(240, 186, 70), strength: 0.55 },
-			{ d: rect(354, 156, 4, 30) + 'M342 152h24l6 6-6 6h-24Z', strength: 0.8 },
-			{ d: figure(286, 186, 58, { pack: 'left', hat: 'cap' }), strength: 1 },
-			{ d: figure(320, 186, 50, { pack: 'left' }), strength: 0.85 },
-			{ d: limb(300, 156, 304, 186, 2), strength: 0.9 }
-		],
-		dots: [
-			[256, 120, 2.5, 0.8],
-			[310, 96, 2, 0.7],
-			[340, 128, 2.5, 0.8],
-			[270, 184, 2, 0.8],
-			[334, 184, 2, 0.8],
-			[346, 183, 2, 0.8]
+			{ d: GROUND.d, strength: 0.5 },
+			{ d: 'M290 160L310 160L366 200H234Z', strength: 0.3 },
+			{ d: figure(294, 176, 32, { pack: 'left', hat: 'cap' }) + figure(312, 176, 28), strength: 1 },
+			{
+				d:
+					rect(204, 30, 14, 170) +
+					rect(380, 30, 14, 170) +
+					disc(196, 12, 30) +
+					disc(222, -6, 28) +
+					disc(250, -14, 26) +
+					disc(280, -18, 24) +
+					disc(310, -18, 24) +
+					disc(340, -14, 26) +
+					disc(368, -6, 28) +
+					disc(398, 12, 30) +
+					disc(206, 40, 22) +
+					disc(392, 40, 22),
+				strength: 0.95
+			},
+			{
+				d:
+					leaf(214, 20, 9) +
+					leaf(244, 4, 9) +
+					leaf(300, -4, 9) +
+					leaf(360, 4, 9) +
+					leaf(392, 22, 9),
+				strength: 1,
+				cut: true
+			},
+			{
+				d: leaf(262, 120, 9) + leaf(330, 104, 9) + leaf(286, 92, 9) + leaf(344, 140, 9),
+				strength: 0.85,
+				motion: 'drift'
+			}
 		]
 	}
 };
