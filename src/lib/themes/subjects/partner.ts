@@ -62,7 +62,7 @@ export const PARTNER: Record<ThemeId, Scene> = {
 				d: tri(298, 66, 330, 50, 362, 66) + rect(308, 66, 3, 26) + rect(349, 66, 3, 26),
 				strength: 1
 			},
-			{ d: heart(330, 34, 6), strength: 1, motion: 'pulse' }
+			{ d: heart(330, 34, 6), strength: 1, motion: 'pulse', tap: 'burst' }
 		]
 	},
 	// Two in a rowing boat on mirror-calm water, mirrored in it below
@@ -81,7 +81,7 @@ export const PARTNER: Record<ThemeId, Scene> = {
 			{ d: rect(262, 176, 116, 1.5) + rect(280, 186, 80, 1.5), strength: 1, cut: true },
 			...BOAT_FOR_TWO,
 			...OARS,
-			{ d: heart(318, 92, 7), strength: 1, motion: 'pulse' }
+			{ d: heart(318, 92, 7), strength: 1, motion: 'pulse', tap: 'burst' }
 		],
 		lines: [{ d: 'M214 172h22M384 176h14M222 188h30', strength: 0.4, motion: 'flow' }]
 	},
@@ -106,7 +106,7 @@ export const PARTNER: Record<ThemeId, Scene> = {
 					figure(332, 136, 42, { hat: 'beanie', pack: 'left' }),
 				strength: 1
 			},
-			{ d: heart(314, 96, 6), strength: 1, motion: 'pulse' },
+			{ d: heart(314, 96, 6), strength: 1, motion: 'pulse', tap: 'burst' },
 			{ d: 'M372 200l6-12 10-2 8 14ZM230 200l5-8 8 1 4 7Z', strength: 1 }
 		],
 		lines: [{ d: 'M302 140Q316 140 328 122', strength: 1 }]
@@ -137,7 +137,7 @@ export const PARTNER: Record<ThemeId, Scene> = {
 					rect(327, 86, 2, 6),
 				strength: 1
 			},
-			{ d: heart(352, 70, 7), strength: 1, motion: 'pulse' },
+			{ d: heart(352, 70, 7), strength: 1, motion: 'pulse', tap: 'burst' },
 			{
 				d:
 					disc(376, 198, 10) +
@@ -209,11 +209,11 @@ export const PARTNER: Record<ThemeId, Scene> = {
 				d: 'M326 192l2-8 2 8ZM330 192l3-10 1 10ZM378 192l2-9 2 9ZM382 192l3-7 1 7Z',
 				strength: 0.9
 			},
-			{ d: heart(354, 132, 11), strength: 1 },
-			{ d: heart(354, 132, 7.5), strength: 1, snow: true },
+			{ d: heart(354, 132, 11), strength: 1, tap: 'flash' },
+			{ d: heart(354, 132, 7.5), strength: 1, snow: true, tap: 'flash' },
 			{ d: figure(320, 186, 56, { hat: 'cap' }) + limb(326, 152, 338, 136, 3.4), strength: 1 },
 			{ d: figure(288, 186, 50), strength: 0.8 },
-			{ d: heart(304, 112, 5), strength: 0.8, motion: 'pulse' }
+			{ d: heart(304, 112, 5), strength: 0.8, motion: 'pulse', tap: 'burst' }
 		]
 	},
 	// Lying in the grass, heads together, a cloud drifting by in the shape of a heart
@@ -231,7 +231,7 @@ export const PARTNER: Record<ThemeId, Scene> = {
 		},
 		shapes: [
 			{ d: GROUND.d, strength: 0.5 },
-			{ d: heart(306, 90, 20), strength: 0.45, motion: 'drift' },
+			{ d: heart(306, 90, 20), strength: 0.45, motion: 'drift', tap: 'float' },
 			{
 				d:
 					rounded(262, 172, 34, 13, 6.5) +
@@ -252,7 +252,7 @@ export const PARTNER: Record<ThemeId, Scene> = {
 				d: limb(291.8, 175.2, 302.6, 164.4, 4.1) + limb(324.2, 175.2, 313.4, 161.7, 4.1),
 				strength: 0.9
 			},
-			{ d: limb(300, 178, 296, 146, 3.4), strength: 1 },
+			{ d: limb(300, 178, 296, 146, 3.4), strength: 1, tap: 'wave' },
 			{
 				d: disc(230, 182, 2.5) + disc(240, 180, 2.5) + disc(380, 181, 2.5) + disc(392, 183, 2.5),
 				strength: 1
@@ -291,7 +291,7 @@ export const PARTNER: Record<ThemeId, Scene> = {
 					limb(313, 170, 318, 185, 3),
 				strength: 1
 			},
-			{ d: heart(300, 116, 7), strength: 1, motion: 'pulse' }
+			{ d: heart(300, 116, 7), strength: 1, motion: 'pulse', tap: 'burst' }
 		],
 		lines: [{ d: waves(340, 192, 2, 14), strength: 0.5, motion: 'flow' }]
 	},
@@ -311,20 +311,28 @@ export const PARTNER: Record<ThemeId, Scene> = {
 			{
 				d: sparkle(226, 26, 9.5) + sparkle(386, 24, 9.5) + sparkle(356, 58, 7.4),
 				strength: 0.55,
-				motion: 'twinkle'
+				motion: 'twinkle',
+				tap: 'flash'
 			},
 			{
 				d: sparkle(226, 26, 7) + sparkle(386, 24, 7) + sparkle(356, 58, 5.5),
 				strength: 1,
 				snow: true,
-				motion: 'twinkle'
+				motion: 'twinkle',
+				tap: 'flash'
 			},
-			{ d: sparkle(300, 16, 7.4) + sparkle(246, 66, 6.8), strength: 0.55, motion: 'twinkle-late' },
+			{
+				d: sparkle(300, 16, 7.4) + sparkle(246, 66, 6.8),
+				strength: 0.55,
+				motion: 'twinkle-late',
+				tap: 'flash'
+			},
 			{
 				d: sparkle(300, 16, 5.5) + sparkle(246, 66, 5),
 				strength: 1,
 				snow: true,
-				motion: 'twinkle-late'
+				motion: 'twinkle-late',
+				tap: 'flash'
 			},
 			{ d: disc(290, 134, 12) + disc(316, 140, 11), strength: 1 },
 			{ d: 'M256 186Q256 150 288 146L304 152L318 150Q354 152 354 186Z', strength: 0.85 },
@@ -336,7 +344,7 @@ export const PARTNER: Record<ThemeId, Scene> = {
 					rect(360, 188, 6, 12),
 				strength: 1
 			},
-			{ d: heart(304, 112, 7), strength: 1, motion: 'pulse' }
+			{ d: heart(304, 112, 7), strength: 1, motion: 'pulse', tap: 'burst' }
 		]
 	},
 	// The two of them on a swing seat hung from the old tree's branch, leaves drifting down round them
@@ -380,7 +388,8 @@ export const PARTNER: Record<ThemeId, Scene> = {
 					rect(266, 142, 80, 4) +
 					rect(266, 120, 80, 3),
 				strength: 0.95,
-				motion: 'sway'
+				motion: 'sway',
+				tap: 'sail'
 			},
 			{
 				d:
@@ -391,13 +400,15 @@ export const PARTNER: Record<ThemeId, Scene> = {
 					limb(314, 140, 318, 157, 3) +
 					limb(322, 140, 326, 157, 3),
 				strength: 1,
-				motion: 'sway'
+				motion: 'sway',
+				tap: 'sail'
 			},
-			{ d: heart(306, 90, 7), strength: 1, motion: 'pulse' },
+			{ d: heart(306, 90, 7), strength: 1, motion: 'pulse', tap: 'burst' },
 			{
 				d: leaf(240, 100, 9) + leaf(268, 140, 9) + leaf(344, 150, 9) + leaf(230, 60, 9),
 				strength: 0.85,
-				motion: 'drift'
+				motion: 'drift',
+				tap: 'float'
 			}
 		]
 	}

@@ -126,29 +126,162 @@
 	}
 }
 
-/* Tapped (#291): the scene hops, once, layer after layer */
-.scene-poke > g {
+/* Tapped (#327): the scene's action plays once, on the shapes that have a move */
+.scene-acting [class^='tap-'] {
 	transform-box: fill-box;
 	transform-origin: center bottom;
-	animation: scene-poke 650ms var(--ease-calm);
 }
-.scene-poke > g:nth-child(2) {
-	animation-delay: 70ms;
+.scene-acting .tap-drive {
+	animation: tap-drive 2.4s var(--ease-in-out-cubic);
 }
-.scene-poke > g:nth-child(3) {
-	animation-delay: 140ms;
+.scene-acting .tap-drive-left {
+	animation: tap-drive-left 2.4s var(--ease-in-out-cubic);
 }
-@keyframes scene-poke {
-	40% {
-		transform: translateY(-5px) scale(1.02);
+.scene-acting .tap-hop {
+	animation: tap-hop 700ms var(--ease-out-quad);
+}
+.scene-acting .tap-spin {
+	transform-origin: center;
+	animation: tap-spin 2.4s var(--ease-in-out-sine);
+}
+.scene-acting .tap-swing {
+	transform-origin: center top;
+	animation: tap-swing 2.4s var(--ease-in-out-sine);
+}
+.scene-acting .tap-float {
+	animation: tap-float 2.2s var(--ease-in-out-sine);
+}
+.scene-acting .tap-burst {
+	transform-origin: center;
+	animation: tap-burst 1.4s var(--ease-out-back);
+}
+.scene-acting .tap-wave {
+	animation: tap-wave 1.2s var(--ease-in-out-sine);
+}
+.scene-acting .tap-sail {
+	animation: tap-sail 2.4s var(--ease-in-out-sine);
+}
+.scene-acting .tap-flash {
+	transform-origin: center;
+	animation: tap-flash 1.2s var(--ease-out-back);
+}
+.scene-acting .tap-puff {
+	animation: tap-puff 1.6s var(--ease-out-quad);
+}
+/* Off to the right, round the world, back in from the left */
+@keyframes tap-drive {
+	45% {
+		transform: translateX(260px);
+		opacity: 1;
 	}
-	70% {
-		transform: translateY(1px) scale(0.995);
+	46% {
+		opacity: 0;
+	}
+	47% {
+		transform: translateX(-260px);
+		opacity: 0;
+	}
+	52% {
+		opacity: 1;
+	}
+}
+@keyframes tap-drive-left {
+	45% {
+		transform: translateX(-260px);
+		opacity: 1;
+	}
+	46% {
+		opacity: 0;
+	}
+	47% {
+		transform: translateX(260px);
+		opacity: 0;
+	}
+	52% {
+		opacity: 1;
+	}
+}
+@keyframes tap-hop {
+	40% {
+		transform: translateY(-12px);
+	}
+	75% {
+		transform: translateY(0);
+	}
+	88% {
+		transform: translateY(-3px);
+	}
+}
+@keyframes tap-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+@keyframes tap-swing {
+	15% {
+		transform: rotate(14deg);
+	}
+	40% {
+		transform: rotate(-10deg);
+	}
+	60% {
+		transform: rotate(6deg);
+	}
+	80% {
+		transform: rotate(-3deg);
+	}
+}
+@keyframes tap-float {
+	50% {
+		transform: translateY(-26px) scale(1.15);
+	}
+}
+@keyframes tap-burst {
+	0% {
+		opacity: 0;
+		transform: scale(0.2);
+	}
+	40% {
+		opacity: 1;
+		transform: scale(1.25);
+	}
+}
+@keyframes tap-wave {
+	20% {
+		transform: rotate(-14deg);
+	}
+	40% {
+		transform: rotate(10deg);
+	}
+	60% {
+		transform: rotate(-8deg);
+	}
+	80% {
+		transform: rotate(4deg);
+	}
+}
+@keyframes tap-sail {
+	50% {
+		transform: translateX(22px);
+	}
+}
+@keyframes tap-flash {
+	30% {
+		transform: scale(1.9);
+	}
+}
+@keyframes tap-puff {
+	30% {
+		transform: translateY(-6px) scale(1.5);
+	}
+	100% {
+		opacity: 0;
+		transform: translateY(-16px) scale(1.7);
 	}
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.scene-poke > g,
+	.scene-acting [class^='tap-'],
 	.scene-rise,
 	.scene-bob,
 	.scene-bob-slow,

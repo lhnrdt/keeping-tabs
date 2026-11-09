@@ -23,7 +23,22 @@ export type SceneMotion =
 	| 'twinkle'
 	| 'twinkle-late';
 
+/** What a shape does, once, when the header is tapped (#327) */
+export type TapMove =
+	| 'drive'
+	| 'drive-left'
+	| 'hop'
+	| 'spin'
+	| 'swing'
+	| 'float'
+	| 'burst'
+	| 'wave'
+	| 'sail'
+	| 'flash'
+	| 'puff';
+
 export type Shape = {
+	tap?: TapMove;
 	d: string;
 	strength: number;
 	cut?: boolean;
@@ -40,6 +55,7 @@ export type Shape = {
 	sun?: { x: number; y: number; r: number };
 };
 export type Line = {
+	tap?: TapMove;
 	d: string;
 	strength: number;
 	motion?: SceneMotion;

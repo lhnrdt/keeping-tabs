@@ -40,19 +40,29 @@
 		night ? atNight(backdrop, { ownMoon: !(moment && hasSun(moment)) }) : backdrop
 	);
 
-	// Tapping the header, anywhere but on what's in it, makes the scene hop (#291)
+	// Tapping the header, anywhere but on what's in it, plays the scene's action once (#327)
 	let svg: SVGSVGElement;
-	let poked = $state(false);
+	let acting = $state(false);
 	const INTERACTIVE = 'a, button, input, select, textarea, label, summary';
+	/** Long enough for the longest move */
+	const ACTION_MS = 2600;
 	onMount(() => {
 		const header = svg.parentElement;
-		const poke = (event: MouseEvent) => {
+		let timer: ReturnType<typeof setTimeout> | undefined;
+		const act = (event: MouseEvent) => {
 			if ((event.target as Element).closest(INTERACTIVE)) return;
-			poked = false;
-			requestAnimationFrame(() => (poked = true));
+			acting = false;
+			clearTimeout(timer);
+			requestAnimationFrame(() => {
+				acting = true;
+				timer = setTimeout(() => (acting = false), ACTION_MS);
+			});
 		};
-		header?.addEventListener('click', poke);
-		return () => header?.removeEventListener('click', poke);
+		header?.addEventListener('click', act);
+		return () => {
+			clearTimeout(timer);
+			header?.removeEventListener('click', act);
+		};
 	});
 	/** Back to front, each at its strength */
 	type Layer = { scene: Scene; strength: number; moment?: boolean; subject?: boolean };
@@ -82,11 +92,8 @@
 
 <svg
 	bind:this={svg}
-	onanimationend={(event) => {
-		if (event.animationName === 'scene-poke') poked = false;
-	}}
-	class="pointer-events-none absolute inset-0 h-full w-full overflow-visible {poked
-		? 'scene-poke'
+	class="pointer-events-none absolute inset-0 h-full w-full overflow-visible {acting
+		? 'scene-acting'
 		: ''}"
 	viewBox="0 0 400 200"
 	preserveAspectRatio="xMaxYMax meet"
@@ -99,36 +106,40 @@
 		{@const { scene, moment } = layer}
 		<g class={moment && celebrate ? 'scene-celebrate' : undefined}>
 			{#each scene.shapes as shape, i (i)}
-				<g transform={mirrorOf(shape)}>
-					<!-- Solid: the line color is see-through, so whatever's behind a shape would show -->
-					{#if !shape.cut}
+				<g class={shape.tap ? `tap-${shape.tap}` : undefined}>
+					<g transform={mirrorOf(shape)}>
+						<!-- Solid: the line color is see-through, so whatever's behind a shape would show -->
+						{#if !shape.cut}
+							<path
+								d={shape.d}
+								fill="var(--tint-bg)"
+								class={shape.motion ? `scene-${shape.motion}` : undefined}
+							/>
+						{/if}
 						<path
 							d={shape.d}
-							fill="var(--tint-bg)"
+							fill={shape.snow ? '#fff' : shape.cut ? 'var(--tint-bg)' : inkOf(layer)}
+							fill-opacity={shape.snow
+								? SNOW_STRENGTH
+								: shape.cut
+									? 1
+									: opacityOf(layer, shape.strength)}
 							class={shape.motion ? `scene-${shape.motion}` : undefined}
 						/>
-					{/if}
-					<path
-						d={shape.d}
-						fill={shape.snow ? '#fff' : shape.cut ? 'var(--tint-bg)' : inkOf(layer)}
-						fill-opacity={shape.snow
-							? SNOW_STRENGTH
-							: shape.cut
-								? 1
-								: opacityOf(layer, shape.strength)}
-						class={shape.motion ? `scene-${shape.motion}` : undefined}
-					/>
+					</g>
 				</g>
 			{/each}
 			{#each scene.lines ?? [] as line, i (i)}
-				<path
-					d={line.d}
-					stroke={inkOf(layer)}
-					stroke-opacity={opacityOf(layer, line.strength)}
-					stroke-width={layer.subject ? 2.2 : 1.5}
-					stroke-linecap="round"
-					class={line.motion ? `scene-${line.motion}` : undefined}
-				/>
+				<g class={line.tap ? `tap-${line.tap}` : undefined}>
+					<path
+						d={line.d}
+						stroke={inkOf(layer)}
+						stroke-opacity={opacityOf(layer, line.strength)}
+						stroke-width={layer.subject ? 2.2 : 1.5}
+						stroke-linecap="round"
+						class={line.motion ? `scene-${line.motion}` : undefined}
+					/>
+				</g>
 			{/each}
 			{#each scene.dots ?? [] as [cx, cy, r, dot], i (i)}
 				<circle {cx} {cy} {r} fill={inkOf(layer)} fill-opacity={opacityOf(layer, dot)} />

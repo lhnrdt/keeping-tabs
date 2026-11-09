@@ -38,17 +38,30 @@ export const FOOD: Record<ThemeId, Scene> = {
 			{ d: limb(364, 161, 396, 145, 6), strength: 1 },
 			{
 				d: 'M280 157a9 7 0 0 1 18 0ZM302 157a12 10 0 0 1 24 0ZM330 157a10 8 0 0 1 20 0ZM350 157a8 6 0 0 1 16 0Z',
-				strength: 1
+				strength: 1,
+				tap: 'hop'
 			},
-			{ d: 'M287 153h4v4h-4ZM312 151h4v6h-4ZM338 153h4v4h-4Z', strength: 1, cut: true },
-			{ d: flame(266, 178, 36) + flame(374, 178, 38), strength: 0.55, motion: 'flicker' },
-			{ d: flame(266, 178, 16) + flame(374, 178, 18), strength: 1, cut: true, motion: 'flicker' }
+			{ d: 'M287 153h4v4h-4ZM312 151h4v6h-4ZM338 153h4v4h-4Z', strength: 1, cut: true, tap: 'hop' },
+			{
+				d: flame(266, 178, 36) + flame(374, 178, 38),
+				strength: 0.55,
+				motion: 'flicker',
+				tap: 'burst'
+			},
+			{
+				d: flame(266, 178, 16) + flame(374, 178, 18),
+				strength: 1,
+				cut: true,
+				motion: 'flicker',
+				tap: 'burst'
+			}
 		],
 		lines: [
 			{
 				d: steam(298, 135, 22) + steam(322, 131, 24) + steam(346, 135, 22),
 				strength: 0.6,
-				motion: 'rise'
+				motion: 'rise',
+				tap: 'puff'
 			}
 		]
 	},
@@ -77,7 +90,8 @@ export const FOOD: Record<ThemeId, Scene> = {
 			{ d: rect(282, 140, 60, 4), strength: 1, cut: true },
 			{
 				d: 'M286 136q12-10 26 0q-12 8-26 0ZM312 136l7-6v12ZM318 136q12-10 24 0q-12 8-24 0ZM342 136l7-6v12Z',
-				strength: 1
+				strength: 1,
+				tap: 'hop'
 			},
 			{ d: sitting(380, 170, 52, -1), strength: 1 },
 			{ d: rect(354, 160, 16, 3), strength: 1 },
@@ -86,7 +100,7 @@ export const FOOD: Record<ThemeId, Scene> = {
 		],
 		lines: [
 			{ d: 'M280 72Q246 96 236 182', strength: 0.6 },
-			{ d: steam(300, 120, 18) + steam(326, 116, 18), strength: 0.6, motion: 'rise' }
+			{ d: steam(300, 120, 18) + steam(326, 116, 18), strength: 0.6, motion: 'rise', tap: 'puff' }
 		]
 	},
 	// Close up: a steaming mug held up in a mittened hand, the snowy peaks beyond
@@ -103,20 +117,21 @@ export const FOOD: Record<ThemeId, Scene> = {
 			]
 		},
 		shapes: [
-			{ d: 'M300 112h52v58q0 14-14 14h-24q-14 0-14-14Z', strength: 0.7 },
-			{ d: 'M352 124q22 0 22 20t-22 20v-8q12 0 12-12t-12-12Z', strength: 0.7 },
-			{ d: 'M302 113a24 6 0 1 0 48 0a24 6 0 1 0 -48 0Z', strength: 1, cut: true },
-			{ d: 'M306 114a20 4 0 1 0 40 0a20 4 0 1 0 -40 0Z', strength: 0.5 },
+			{ d: 'M300 112h52v58q0 14-14 14h-24q-14 0-14-14Z', strength: 0.7, tap: 'hop' },
+			{ d: 'M352 124q22 0 22 20t-22 20v-8q12 0 12-12t-12-12Z', strength: 0.7, tap: 'hop' },
+			{ d: 'M302 113a24 6 0 1 0 48 0a24 6 0 1 0 -48 0Z', strength: 1, cut: true, tap: 'hop' },
+			{ d: 'M306 114a20 4 0 1 0 40 0a20 4 0 1 0 -40 0Z', strength: 0.5, tap: 'hop' },
 			{ d: limb(226, 230, 274, 186, 36), strength: 0.55 },
 			{ d: limb(268, 192, 282, 178, 34), strength: 0.75 },
-			{ d: rounded(282, 144, 48, 38, 15), strength: 1 },
-			{ d: limb(290, 150, 324, 140, 12), strength: 1 }
+			{ d: rounded(282, 144, 48, 38, 15), strength: 1, tap: 'hop' },
+			{ d: limb(290, 150, 324, 140, 12), strength: 1, tap: 'hop' }
 		],
 		lines: [
 			{
 				d: steam(316, 98, 26) + steam(330, 94, 30) + steam(342, 98, 24),
 				strength: 0.8,
-				motion: 'rise'
+				motion: 'rise',
+				tap: 'puff'
 			}
 		]
 	},
@@ -184,7 +199,8 @@ export const FOOD: Record<ThemeId, Scene> = {
 					disc(357, 136, 6) +
 					disc(290, 197, 4.5) +
 					disc(280, 199, 4),
-				strength: 1
+				strength: 1,
+				tap: 'hop'
 			},
 			{
 				d:
@@ -206,7 +222,8 @@ export const FOOD: Record<ThemeId, Scene> = {
 					disc(287.5, 194.5, 1.4) +
 					disc(282, 196.5, 1.4),
 				strength: 1,
-				cut: true
+				cut: true,
+				tap: 'hop'
 			},
 			{ d: 'M300 156h96l-9 50h-78Z', strength: 0.7 },
 			{ d: rect(304, 170, 88, 2) + rect(306, 184, 84, 2), strength: 1, cut: true }
@@ -336,7 +353,8 @@ export const FOOD: Record<ThemeId, Scene> = {
 					disc(388, 162, 7.5) +
 					disc(367, 150, 7.5) +
 					disc(381, 150, 7.5),
-				strength: 0.85
+				strength: 0.85,
+				tap: 'hop'
 			},
 			{
 				d:
@@ -466,14 +484,16 @@ export const FOOD: Record<ThemeId, Scene> = {
 					limb(383.08, 146.23, 384.77, 147.6, 1.1) +
 					limb(384.77, 147.6, 385.62, 149.69, 1.1),
 				strength: 1,
-				cut: true
+				cut: true,
+				tap: 'hop'
 			}
 		],
 		lines: [
 			{
 				d: steam(292, 118, 22) + steam(308, 146, 18) + steam(336, 146, 18),
 				strength: 0.5,
-				motion: 'rise'
+				motion: 'rise',
+				tap: 'puff'
 			}
 		]
 	},
@@ -510,7 +530,11 @@ export const FOOD: Record<ThemeId, Scene> = {
 		},
 		shapes: [
 			{ d: GROUND.d, strength: 0.5 },
-			{ d: figure(262, 186, 46, { hat: 'cap' }) + rounded(266, 166, 12, 9, 2), strength: 0.7 },
+			{
+				d: figure(262, 186, 46, { hat: 'cap' }) + rounded(266, 166, 12, 9, 2),
+				strength: 0.7,
+				tap: 'hop'
+			},
 			{
 				d:
 					'M212 196l-9-10 6 1 3-8 3 8 6-1Z' +
@@ -540,7 +564,8 @@ export const FOOD: Record<ThemeId, Scene> = {
 					'M390 158C381.0 152 382.0 144 390 145C398.0 144 399.0 152 390 158Z' +
 					'M362 146C353.0 140 354.0 132 362 133C370.0 132 371.0 140 362 146Z' +
 					'M381 145C372.0 139 373.0 131 381 132C389.0 131 390.0 139 381 145Z',
-				strength: 1
+				strength: 1,
+				tap: 'hop'
 			},
 			{
 				d:
@@ -549,7 +574,8 @@ export const FOOD: Record<ThemeId, Scene> = {
 					'M385.0 146.0l2.5 -4.0 2.5 2.5 2.5 -2.5 2.5 4.0Z' +
 					'M357.0 134.0l2.5 -4.0 2.5 2.5 2.5 -2.5 2.5 4.0Z' +
 					'M376.0 133.0l2.5 -4.0 2.5 2.5 2.5 -2.5 2.5 4.0Z',
-				strength: 0.75
+				strength: 0.75,
+				tap: 'hop'
 			}
 		]
 	},
@@ -616,7 +642,8 @@ export const FOOD: Record<ThemeId, Scene> = {
 					limb(316, 160, 326, 152, 3) +
 					'M326 152l-3-9 6 0Z' +
 					disc(326, 141, 3.5),
-				strength: 1
+				strength: 1,
+				tap: 'hop'
 			},
 			{ d: figure(286, 186, 44, { hat: 'cap' }), strength: 0.8 },
 			{ d: figure(266, 186, 38), strength: 0.65 }
@@ -640,20 +667,28 @@ export const FOOD: Record<ThemeId, Scene> = {
 			{
 				d: sparkle(250, 34, 8.1) + sparkle(332, 30, 7.4) + sparkle(260, 112, 5.4),
 				strength: 0.55,
-				motion: 'twinkle'
+				motion: 'twinkle',
+				tap: 'flash'
 			},
 			{
 				d: sparkle(250, 34, 6) + sparkle(332, 30, 5.5) + sparkle(260, 112, 4),
 				strength: 1,
 				snow: true,
-				motion: 'twinkle'
+				motion: 'twinkle',
+				tap: 'flash'
 			},
-			{ d: sparkle(286, 50, 6.1) + sparkle(364, 66, 6.1), strength: 0.55, motion: 'twinkle-late' },
+			{
+				d: sparkle(286, 50, 6.1) + sparkle(364, 66, 6.1),
+				strength: 0.55,
+				motion: 'twinkle-late',
+				tap: 'flash'
+			},
 			{
 				d: sparkle(286, 50, 4.5) + sparkle(364, 66, 4.5),
 				strength: 1,
 				snow: true,
-				motion: 'twinkle-late'
+				motion: 'twinkle-late',
+				tap: 'flash'
 			},
 			{
 				d: 'M196 0H230V200H196ZM380 0H400V200H380ZM230 0H380V20H230ZM230 160H380V200H230Z',
@@ -669,9 +704,11 @@ export const FOOD: Record<ThemeId, Scene> = {
 			{ d: rect(216, 160, 178, 6) + rect(222, 166, 166, 3), strength: 1 },
 			{ d: 'M296 160q-4-14 10-16h20q14 2 10 16Z' + limb(330, 146, 342, 132, 2.2), strength: 1 },
 			{ d: rect(266, 138, 8, 22), strength: 1 },
-			{ d: 'M270 126q-6 7 0 12q6-5 0-12Z', strength: 1, motion: 'flicker' }
+			{ d: 'M270 126q-6 7 0 12q6-5 0-12Z', strength: 1, motion: 'flicker', tap: 'flash' }
 		],
-		lines: [{ d: steam(310, 138, 20) + steam(322, 136, 22), strength: 0.5, motion: 'rise' }]
+		lines: [
+			{ d: steam(310, 138, 20) + steam(322, 136, 22), strength: 0.5, motion: 'rise', tap: 'puff' }
+		]
 	},
 	// Apple picking: up the ladder in the big tree, reaching for one, the basket filling below
 	autumn: {
@@ -716,7 +753,11 @@ export const FOOD: Record<ThemeId, Scene> = {
 					limb(312.3, 124, 324.3, 124, 2),
 				strength: 1
 			},
-			{ d: figure(318, 155, 44, { hat: 'cap' }) + limb(324, 127, 334, 106, 3.2), strength: 1 },
+			{
+				d: figure(318, 155, 44, { hat: 'cap' }) + limb(324, 127, 334, 106, 3.2),
+				strength: 1,
+				tap: 'hop'
+			},
 			{
 				d:
 					disc(232, 176, 5) +
@@ -724,7 +765,8 @@ export const FOOD: Record<ThemeId, Scene> = {
 					disc(252, 176, 5) +
 					disc(237, 170, 5) +
 					disc(247, 169, 5),
-				strength: 1
+				strength: 1,
+				tap: 'hop'
 			},
 			{ d: 'M226 176H262L258 192H230Z' + 'M228 176q16-16 32 0h-3q-13-12-26 0Z', strength: 0.85 },
 			{ d: rect(228, 182, 32, 1.4), strength: 1, cut: true }

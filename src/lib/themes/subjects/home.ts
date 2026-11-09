@@ -77,7 +77,7 @@ export const HOME: Record<ThemeId, Scene> = {
 				cut: true
 			}
 		],
-		lines: [{ d: steam(353, 96, 22), strength: 0.7, motion: 'rise' }]
+		lines: [{ d: steam(353, 96, 22), strength: 0.7, motion: 'rise', tap: 'puff' }]
 	},
 	// The red boathouse on short stilts, a boat nosing out of its door onto the fjord
 	fjord: {
@@ -94,7 +94,7 @@ export const HOME: Record<ThemeId, Scene> = {
 			{ d: 'M294 176v-34q0-8 8-8h20q8 0 8 8v34Z', strength: 1, cut: true },
 			{ d: rect(305, 102, 14, 12), strength: 1, cut: true },
 			{ d: rect(268, 176, 4, 18) + rect(348, 176, 4, 18), strength: 0.9 },
-			{ d: 'M290 186l8-10h28l4 10q-8 6-20 6t-20-6Z', strength: 0.85, motion: 'rock' },
+			{ d: 'M290 186l8-10h28l4 10q-8 6-20 6t-20-6Z', strength: 0.85, motion: 'rock', tap: 'sail' },
 			{ d: rect(358, 168, 42, 6), strength: 1 },
 			{ d: rect(372, 174, 3, 22) + rect(394, 174, 3, 22), strength: 0.9 },
 			{ d: 'M230 200q2-16 16-18q14 0 18 18ZM250 200q4-10 14-10t12 10Z', strength: 0.95 }
@@ -130,10 +130,11 @@ export const HOME: Record<ThemeId, Scene> = {
 					limb(380, 122, 384, 117, 3) +
 					limb(382, 168, 368, 122, 3) +
 					limb(368, 122, 364, 117, 3),
-				strength: 1
+				strength: 1,
+				tap: 'swing'
 			}
 		],
-		lines: [{ d: steam(341, 110), strength: 0.8, motion: 'rise' }]
+		lines: [{ d: steam(341, 110), strength: 0.8, motion: 'rise', tap: 'puff' }]
 	},
 	// The croft: a long low house with a chimney at each end, smoke bent by the wind, washing on the line
 	heather: {
@@ -154,7 +155,8 @@ export const HOME: Record<ThemeId, Scene> = {
 			{
 				d: 'M240 155h12l4 4-3 3-2-2v10h-10v-10l-2 2-3-3Z' + 'M262 157h10v15h-4v-9h-2v9h-4Z',
 				strength: 0.85,
-				motion: 'flutter'
+				motion: 'flutter',
+				tap: 'swing'
 			},
 			{
 				d:
@@ -182,7 +184,12 @@ export const HOME: Record<ThemeId, Scene> = {
 		],
 		lines: [
 			{ d: 'M235 153L272 157', strength: 0.6 },
-			{ d: 'M369 108q-6-8-18-9t-24-8M281 108q-6-8-16-9t-20-7', strength: 0.5, motion: 'rise' }
+			{
+				d: 'M369 108q-6-8-18-9t-24-8M281 108q-6-8-16-9t-20-7',
+				strength: 0.5,
+				motion: 'rise',
+				tap: 'puff'
+			}
 		]
 	},
 	// The red summer cottage with white corners, the pennant flying from the flagpole, the picket fence
@@ -260,7 +267,7 @@ export const HOME: Record<ThemeId, Scene> = {
 				cut: true
 			},
 			{ d: disc(251.2, 91, 2.2) + rect(250, 92, 2.4, 94), strength: 1 },
-			{ d: 'M252.4 94L292 98.5L252.4 103Z', strength: 1, motion: 'flutter' },
+			{ d: 'M252.4 94L292 98.5L252.4 103Z', strength: 1, motion: 'flutter', tap: 'wave' },
 			{
 				d:
 					'M204 192V180l2-3 2 3V192ZM212 192V180l2-3 2 3V192ZM220 192V180l2-3 2 3V192ZM228 192V180l2-3 2 3V192ZM236 192V180l2-3 2 3V192ZM244 192V180l2-3 2 3V192ZM252 192V180l2-3 2 3V192ZM260 192V180l2-3 2 3V192ZM268 192V180l2-3 2 3V192ZM276 192V180l2-3 2 3V192ZM284 192V180l2-3 2 3V192ZM292 192V180l2-3 2 3V192ZM300 192V180l2-3 2 3V192ZM308 192V180l2-3 2 3V192ZM316 192V180l2-3 2 3V192ZM324 192V180l2-3 2 3V192ZM332 192V180l2-3 2 3V192ZM340 192V180l2-3 2 3V192ZM348 192V180l2-3 2 3V192ZM356 192V180l2-3 2 3V192ZM364 192V180l2-3 2 3V192ZM372 192V180l2-3 2 3V192ZM380 192V180l2-3 2 3V192Z' +
@@ -268,8 +275,8 @@ export const HOME: Record<ThemeId, Scene> = {
 					rect(200, 187, 200, 2.4),
 				strength: 1
 			},
-			{ d: disc(244, 186, 7.5) + disc(272, 186, 7.5), strength: 1 },
-			{ d: disc(244, 186, 5.8) + disc(272, 186, 5.8), strength: 1, cut: true },
+			{ d: disc(244, 186, 7.5) + disc(272, 186, 7.5), strength: 1, tap: 'drive' },
+			{ d: disc(244, 186, 5.8) + disc(272, 186, 5.8), strength: 1, cut: true, tap: 'drive' },
 			{
 				d:
 					limb(244, 186, 254, 172, 1.8) +
@@ -281,7 +288,8 @@ export const HOME: Record<ThemeId, Scene> = {
 					limb(252, 168, 256, 168, 2.4) +
 					limb(266, 166, 270, 166, 2.4) +
 					limb(268, 172, 267, 166, 1.8),
-				strength: 1
+				strength: 1,
+				tap: 'drive'
 			},
 			{ d: rect(376, 0, 11, 200) + rect(222, 0, 5, 200), strength: 1, snow: true },
 			{
@@ -324,8 +332,8 @@ export const HOME: Record<ThemeId, Scene> = {
 				strength: 1,
 				cut: true
 			},
-			{ d: disc(380, 186, 12), strength: 0.85 },
-			{ d: disc(380, 186, 7.5) + disc(380, 186, 3), strength: 1, cut: true },
+			{ d: disc(380, 186, 12), strength: 0.85, tap: 'spin' },
+			{ d: disc(380, 186, 7.5) + disc(380, 186, 3), strength: 1, cut: true, tap: 'spin' },
 			{
 				d:
 					rect(204, 178, 120, 2.4) +
@@ -347,7 +355,8 @@ export const HOME: Record<ThemeId, Scene> = {
 					limb(244, 190, 244, 140, 2) +
 					limb(262, 190, 262, 148, 2) +
 					limb(280, 190, 280, 138, 2),
-				strength: 0.9
+				strength: 0.9,
+				tap: 'wave'
 			},
 			{
 				d:
@@ -383,11 +392,13 @@ export const HOME: Record<ThemeId, Scene> = {
 					disc(275.4, 133.4, 2.9250000000000003) +
 					disc(280.0, 131.5, 2.9250000000000003) +
 					disc(284.6, 133.4, 2.9250000000000003),
-				strength: 0.8
+				strength: 0.8,
+				tap: 'wave'
 			},
 			{
 				d: disc(226, 150, 4) + disc(244, 140, 4) + disc(262, 148, 4) + disc(280, 138, 4),
-				strength: 1
+				strength: 1,
+				tap: 'wave'
 			}
 		]
 	},
@@ -446,7 +457,8 @@ export const HOME: Record<ThemeId, Scene> = {
 			{
 				d: 'M222 192l-5-16M228 191l-1-18M234 192l4-15M372 194l-3-15M378 193l1-17M386 194l3-14',
 				strength: 0.9,
-				motion: 'sway'
+				motion: 'sway',
+				tap: 'wave'
 			}
 		]
 	},
@@ -480,20 +492,28 @@ export const HOME: Record<ThemeId, Scene> = {
 			{
 				d: sparkle(214, 22, 9.5) + sparkle(300, 10, 7.4) + sparkle(352, 104, 6.8),
 				strength: 0.55,
-				motion: 'twinkle'
+				motion: 'twinkle',
+				tap: 'flash'
 			},
 			{
 				d: sparkle(214, 22, 7) + sparkle(300, 10, 5.5) + sparkle(352, 104, 5),
 				strength: 1,
 				snow: true,
-				motion: 'twinkle'
+				motion: 'twinkle',
+				tap: 'flash'
 			},
-			{ d: sparkle(250, 90, 6.8) + sparkle(390, 44, 8.8), strength: 0.55, motion: 'twinkle-late' },
+			{
+				d: sparkle(250, 90, 6.8) + sparkle(390, 44, 8.8),
+				strength: 0.55,
+				motion: 'twinkle-late',
+				tap: 'flash'
+			},
 			{
 				d: sparkle(250, 90, 5) + sparkle(390, 44, 6.5),
 				strength: 1,
 				snow: true,
-				motion: 'twinkle-late'
+				motion: 'twinkle-late',
+				tap: 'flash'
 			},
 			{ d: GROUND.d, strength: 0.6 },
 			{ d: 'M225 186a11 11 0 0 1 22 0Z' + 'M252 186a16 16 0 0 1 32 0Z', strength: 0.75 },
@@ -522,7 +542,7 @@ export const HOME: Record<ThemeId, Scene> = {
 					rect(300, 172, 60, 1.6),
 				strength: 0.9
 			},
-			{ d: seated(318, 182, 32) + seated(342, 182, 30), strength: 0.85 },
+			{ d: seated(318, 182, 32) + seated(342, 182, 30), strength: 0.85, tap: 'hop' },
 			{ d: 'M376 200Q384 168 400 166V200Z' + pine(396, 200, 90), strength: 1 }
 		]
 	},
@@ -542,7 +562,7 @@ export const HOME: Record<ThemeId, Scene> = {
 			},
 			{ d: rect(266, 60, 4, 120) + rect(394, 60, 4, 120) + rect(250, 54, 160, 7), strength: 1 },
 			{ d: rect(288, 114, 8, 12) + rect(290.5, 108, 3, 6), strength: 1 },
-			{ d: rect(289.5, 116, 5, 7), strength: 1, cut: true, motion: 'flicker' },
+			{ d: rect(289.5, 116, 5, 7), strength: 1, cut: true, motion: 'flicker', tap: 'flash' },
 			{
 				d:
 					limb(350, 180, 374, 180, 3) +
@@ -550,7 +570,8 @@ export const HOME: Record<ThemeId, Scene> = {
 					limb(354, 158, 378, 158, 3.4) +
 					limb(376, 158, 374, 180, 3) +
 					'M346 182q16 8 34 0v3q-17 8-34 0Z',
-				strength: 1
+				strength: 1,
+				tap: 'wave'
 			},
 			{
 				d:
@@ -583,7 +604,8 @@ export const HOME: Record<ThemeId, Scene> = {
 			{
 				d: leaf(220, 80, 9) + leaf(250, 60, 9) + leaf(232, 124, 9),
 				strength: 0.85,
-				motion: 'drift'
+				motion: 'drift',
+				tap: 'float'
 			}
 		]
 	}

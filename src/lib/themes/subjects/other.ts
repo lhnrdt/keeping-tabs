@@ -37,13 +37,13 @@ export const OTHER: Record<ThemeId, Scene> = {
 			{ d: pine(396, 186, 84) + pine(236, 186, 58), strength: 0.5 },
 			{ d: 'M300 200L316 186H326L304 200ZM336 200L330 186H340L366 200Z', strength: 1, cut: true },
 			{ d: rect(324, 98, 6, 88), strength: 1 },
-			{ d: 'M330 104h36l9 8-9 8h-36Z', strength: 1 },
-			{ d: 'M324 126h-30l-9 8 9 8h30Z', strength: 0.85 },
+			{ d: 'M330 104h36l9 8-9 8h-36Z', strength: 1, tap: 'wave' },
+			{ d: 'M324 126h-30l-9 8 9 8h30Z', strength: 0.85, tap: 'wave' },
 			{ d: rect(336, 110, 22, 3) + rect(298, 132, 20, 3), strength: 1, cut: true },
-			{ d: figure(262, 186, 56, { pack: 'left' }), strength: 1 },
+			{ d: figure(262, 186, 56, { pack: 'left' }), strength: 1, tap: 'hop' },
 			{ d: 'M266 146l12 4 12-4v16l-12 4-12-4Z', strength: 0.8 },
 			{ d: 'M278 150v16', strength: 1, cut: true },
-			{ d: figure(372, 186, 60, { hat: 'cap' }), strength: 0.9 }
+			{ d: figure(372, 186, 60, { hat: 'cap' }), strength: 0.9, tap: 'hop' }
 		],
 		lines: [{ d: 'M278 150v16', strength: 0.9 }]
 	},
@@ -57,12 +57,12 @@ export const OTHER: Record<ThemeId, Scene> = {
 		},
 		shapes: [
 			WATER,
-			{ d: hull(234, 190, 56, 12), strength: 0.85, motion: 'rock' },
+			{ d: hull(234, 190, 56, 12), strength: 0.85, motion: 'rock', tap: 'sail' },
 			{ d: rect(300, 168, 100, 8), strength: 1 },
 			{ d: rect(304, 176, 4, 18) + rect(340, 176, 4, 20) + rect(376, 176, 4, 20), strength: 0.9 },
 			{ d: seated(318, 168, 54, { hat: 'cap' }), strength: 1 },
 			{ d: rect(311, 168, 4, 18) + rect(319, 168, 4, 16), strength: 1 },
-			{ d: figure(362, 168, 46), strength: 0.9 },
+			{ d: figure(362, 168, 46), strength: 0.9, tap: 'hop' },
 			{ d: rounded(380, 138, 12, 60, 4), strength: 0.95 }
 		],
 		lines: [
@@ -89,9 +89,10 @@ export const OTHER: Record<ThemeId, Scene> = {
 					tri(351, 98, 361, 106, 351, 112) +
 					tri(369, 121, 378, 130, 367, 134),
 				strength: 0.85,
-				motion: 'flutter'
+				motion: 'flutter',
+				tap: 'swing'
 			},
-			{ d: figure(282, 132, 36, { hat: 'helmet', pack: 'left' }), strength: 1 }
+			{ d: figure(282, 132, 36, { hat: 'helmet', pack: 'left' }), strength: 1, tap: 'hop' }
 		],
 		lines: [
 			{ d: 'M321 64Q356 96 392 152', strength: 0.8 },
@@ -113,7 +114,7 @@ export const OTHER: Record<ThemeId, Scene> = {
 			{ d: 'M298 172l2-34l7-8l9 3l3 8l1 31Z', strength: 0.56 },
 			{ d: 'M332 174l3-76l7-4l9 2l2 78ZM372 174l1-80l9-2l8 4l2 78Z', strength: 0.66 },
 			{ d: 'M326 98l4-9l64-3l5 8l-3 9l-66 3Z', strength: 0.75 },
-			{ d: figure(362, 170, 34, { hat: 'beanie' }), strength: 1 },
+			{ d: figure(362, 170, 34, { hat: 'beanie' }), strength: 1, tap: 'hop' },
 			{ d: 'M150 200Q250 160 330 166T420 172V200Z', strength: 0.7 },
 			{ d: 'M282 202l2-24l8-8l11 3l4 29Z', strength: 0.9 },
 			{
@@ -249,17 +250,22 @@ export const OTHER: Record<ThemeId, Scene> = {
 			{ d: rect(338, 138, 4, 48), strength: 0.9 },
 			{ d: 'M330 187l2-7 2 7ZM334 187l3-9 1 9ZM342 187l2-8 3 8ZM346 187l3-6 1 6Z', strength: 0.9 },
 			{ d: 'M326 140v-12q0-8 8-8h12q8 0 8 8v12Z', strength: 1 },
-			{ d: rect(354, 122, 2, 14) + 'M356 122h8v5h-8Z', strength: 1, motion: 'flutter' },
+			{
+				d: rect(354, 122, 2, 14) + 'M356 122h8v5h-8Z',
+				strength: 1,
+				motion: 'flutter',
+				tap: 'wave'
+			},
 			{ d: rect(328, 136, 24, 1.6), strength: 1, cut: true },
 			{ d: figure(300, 186, 52, { hat: 'cap' }) + limb(306, 160, 316, 146, 3.6), strength: 1 },
-			{ d: 'M312 134h16v11h-16Z', strength: 1, snow: true },
+			{ d: 'M312 134h16v11h-16Z', strength: 1, snow: true, tap: 'float' },
 			{ d: rect(212, 0, 18, 200), strength: 1, snow: true },
 			{
 				d: 'M212 13.4l11.9 1.8l-11.9 1.8ZM230 35.3l-12.4 1.55l12.4 1.55ZM212 49.6l13.5 1.7l-13.5 1.7ZM230 70.4l-14.4 1.85l14.4 1.85ZM212 94.2l11.6 2.0l-11.6 2.0ZM230 107.7l-12.4 2.15l12.4 2.15ZM212 129.7l13.0 2.0l-13.0 2.0ZM230 145.0l-13.1 1.95l13.1 1.95ZM212 165.9l9.2 2.15l-9.2 2.15ZM230 186.3l-12.9 2.15l12.9 2.15Z',
 				strength: 1
 			}
 		],
-		lines: [{ d: 'M312 134.5l8 5.5 8-5.5', strength: 0.8 }]
+		lines: [{ d: 'M312 134.5l8 5.5 8-5.5', strength: 0.8, tap: 'float' }]
 	},
 	// Picking wildflowers in the long grass, the meadow in bloom right up close
 	meadow: {
@@ -290,7 +296,8 @@ export const OTHER: Record<ThemeId, Scene> = {
 					disc(324, 120, 5) +
 					disc(313, 118, 5) +
 					disc(331, 126, 4.5),
-				strength: 1
+				strength: 1,
+				tap: 'wave'
 			},
 			{
 				d:
@@ -300,7 +307,8 @@ export const OTHER: Record<ThemeId, Scene> = {
 					limb(370, 200, 372, 146, 1.6) +
 					limb(384, 200, 386, 134, 1.6) +
 					limb(396, 200, 398, 152, 1.6),
-				strength: 0.9
+				strength: 0.9,
+				tap: 'wave'
 			},
 			{
 				d:
@@ -331,7 +339,8 @@ export const OTHER: Record<ThemeId, Scene> = {
 					disc(386.0, 129.0, 2.25) +
 					disc(389.54, 130.46, 2.25) +
 					disc(398, 152, 7),
-				strength: 1
+				strength: 1,
+				tap: 'wave'
 			},
 			{
 				d:
@@ -342,7 +351,8 @@ export const OTHER: Record<ThemeId, Scene> = {
 					disc(386, 134, 2.2) +
 					disc(398, 152, 2.6),
 				strength: 1,
-				cut: true
+				cut: true,
+				tap: 'wave'
 			}
 		],
 		lines: [
@@ -360,7 +370,7 @@ export const OTHER: Record<ThemeId, Scene> = {
 		},
 		shapes: [
 			{ d: 'M-200 200V170H400V200Z', strength: 0.4 },
-			{ d: 'M262 174h76q-4 5-12 5h-52q-8 0-12-5Z', strength: 1, motion: 'rock' },
+			{ d: 'M262 174h76q-4 5-12 5h-52q-8 0-12-5Z', strength: 1, motion: 'rock', tap: 'sail' },
 			{
 				d:
 					figure(300, 174, 52, { hat: 'cap' }) +
@@ -368,14 +378,16 @@ export const OTHER: Record<ThemeId, Scene> = {
 					limb(322, 130, 330, 182, 2) +
 					'M327 178l6 0 0 10-6 0Z',
 				strength: 1,
-				motion: 'rock'
+				motion: 'rock',
+				tap: 'sail'
 			},
 			{
 				d: 'M370 174l6-18 6 18Z' + rect(375, 150, 2, 6) + disc(376, 149, 2.6),
 				strength: 0.85,
-				motion: 'bob'
+				motion: 'bob',
+				tap: 'hop'
 			},
-			{ d: rect(369, 166, 14, 3), strength: 1, cut: true, motion: 'bob' }
+			{ d: rect(369, 166, 14, 3), strength: 1, cut: true, motion: 'bob', tap: 'hop' }
 		],
 		lines: [
 			{
@@ -404,7 +416,8 @@ export const OTHER: Record<ThemeId, Scene> = {
 					sparkle(300, 124, 7.4) +
 					sparkle(240, 62, 6.8),
 				strength: 0.55,
-				motion: 'twinkle'
+				motion: 'twinkle',
+				tap: 'flash'
 			},
 			{
 				d:
@@ -414,18 +427,21 @@ export const OTHER: Record<ThemeId, Scene> = {
 					sparkle(240, 62, 5),
 				strength: 1,
 				snow: true,
-				motion: 'twinkle'
+				motion: 'twinkle',
+				tap: 'flash'
 			},
 			{
 				d: sparkle(262, 12, 8.1) + sparkle(214, 112, 8.1) + sparkle(356, 116, 8.8),
 				strength: 0.55,
-				motion: 'twinkle-late'
+				motion: 'twinkle-late',
+				tap: 'flash'
 			},
 			{
 				d: sparkle(262, 12, 6) + sparkle(214, 112, 6) + sparkle(356, 116, 6.5),
 				strength: 1,
 				snow: true,
-				motion: 'twinkle-late'
+				motion: 'twinkle-late',
+				tap: 'flash'
 			},
 			{ d: 'M196 200Q260 184 330 188T410 186V200Z', strength: 0.6 },
 			{
@@ -468,7 +484,8 @@ export const OTHER: Record<ThemeId, Scene> = {
 					leaf(344, 178, 7) +
 					leaf(358, 179, 7),
 				strength: 1,
-				cut: true
+				cut: true,
+				tap: 'float'
 			},
 			{
 				d:
@@ -476,7 +493,8 @@ export const OTHER: Record<ThemeId, Scene> = {
 					limb(302, 156, 322, 172, 3.2) +
 					limb(286, 140, 322, 182, 2) +
 					'M318 180l10 4-1 3-10-3Z',
-				strength: 1
+				strength: 1,
+				tap: 'hop'
 			},
 			{
 				d: 'M236 176h30l-4 10h-22Z' + limb(266, 178, 280, 170, 2) + disc(240, 188, 5),
@@ -505,7 +523,8 @@ export const OTHER: Record<ThemeId, Scene> = {
 					leaf(352, 86, 9) +
 					leaf(234, 130, 9),
 				strength: 0.85,
-				motion: 'drift'
+				motion: 'drift',
+				tap: 'float'
 			}
 		]
 	}
