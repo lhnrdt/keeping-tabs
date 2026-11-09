@@ -393,7 +393,24 @@ export const HOME: Record<ThemeId, Scene> = {
 	// The row of striped beach huts on the sand, the sea beyond, dune grass up close
 	coast: {
 		backdrop: {
-			shapes: [{ d: 'M-200 186V166H400V186Z', strength: 0.36 }],
+			shapes: [
+				{ d: 'M-200 186V166H400V186Z', strength: 0.36 },
+				{ d: 'M372 166Q380 136 400 132V166Z', strength: 0.45 },
+				{
+					d:
+						rect(166, 148, 64, 4) +
+						rect(172, 152, 1.6, 14) +
+						rect(182, 152, 1.6, 14) +
+						rect(192, 152, 1.6, 14) +
+						rect(202, 152, 1.6, 14) +
+						rect(212, 152, 1.6, 14) +
+						rect(222, 152, 1.6, 14) +
+						rect(232, 152, 1.6, 14) +
+						rect(218, 136, 12, 12) +
+						'M216 136L224 128L232 136Z',
+					strength: 0.55
+				}
+			],
 			lines: [{ d: waves(220, 176, 4), strength: 0.45, motion: 'flow' }]
 		},
 		shapes: [
