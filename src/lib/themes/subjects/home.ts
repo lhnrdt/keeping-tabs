@@ -47,7 +47,8 @@ export const HOME: Record<ThemeId, Scene> = {
 			{
 				d: rect(318, 154, 20, 32) + rect(290, 140, 16, 16) + rect(350, 140, 16, 16),
 				strength: 1,
-				cut: true
+				cut: true,
+				tap: 'glint'
 			},
 			{
 				d:
