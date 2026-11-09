@@ -522,7 +522,7 @@ export const OTHER: Record<ThemeId, Scene> = {
 					leaf(358, 179, 7),
 				strength: 1,
 				cut: true,
-				tap: 'float'
+				tap: 'burst'
 			},
 			{
 				d:
