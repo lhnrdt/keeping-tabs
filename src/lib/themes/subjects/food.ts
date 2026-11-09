@@ -11,6 +11,7 @@ import {
 	pine,
 	rect,
 	rounded,
+	roundTree,
 	sitting,
 	sparkle,
 	steam,
@@ -672,23 +673,61 @@ export const FOOD: Record<ThemeId, Scene> = {
 		],
 		lines: [{ d: steam(310, 138, 20) + steam(322, 136, 22), strength: 0.5, motion: 'rise' }]
 	},
-	// A pie cooling on the windowsill
+	// Apple picking: up the ladder in the big tree, reaching for one, the basket filling below
 	autumn: {
+		backdrop: {
+			shapes: [
+				{
+					d:
+						roundTree(214, 156, 26) +
+						roundTree(236, 156, 24) +
+						roundTree(258, 156, 26) +
+						roundTree(222, 166, 34) +
+						roundTree(250, 166, 32),
+					strength: 0.45
+				},
+				{ d: 'M150 186Q190 160 240 160H420V186Z', strength: 0.28 }
+			]
+		},
 		shapes: [
-			{ d: rect(262, 70, 112, 116), strength: 0.85 },
+			{ d: GROUND.d, strength: 0.55 },
 			{
-				d: rect(274, 82, 40, 44) + rect(322, 82, 40, 44) + rect(274, 132, 88, 20),
-				strength: 1,
-				cut: true
+				d: rect(344, 110, 12, 90) + disc(346, 70, 40) + disc(310, 82, 28) + disc(384, 84, 30),
+				strength: 0.75
 			},
-			{ d: rect(254, 152, 128, 8), strength: 1 },
-			{ d: 'M282 152q2-20 36-20t36 20Z', strength: 1 },
 			{
-				d: rect(296, 140, 44, 3) + rect(306, 134, 3, 18) + rect(326, 134, 3, 18),
-				strength: 1,
-				cut: true
-			}
-		],
-		lines: [{ d: steam(306, 124) + steam(330, 124), strength: 0.8, motion: 'rise' }]
+				d:
+					disc(302, 74, 4.5) +
+					disc(326, 62, 4.5) +
+					disc(350, 82, 4.5) +
+					disc(372, 66, 4.5) +
+					disc(316, 98, 4.5) +
+					disc(386, 94, 4.5) +
+					disc(340, 102, 4.5),
+				strength: 1
+			},
+			{
+				d:
+					limb(296, 186, 316, 110, 2.4) +
+					limb(308, 186, 328, 110, 2.4) +
+					limb(299.7, 172, 311.7, 172, 2) +
+					limb(303.9, 156, 315.9, 156, 2) +
+					limb(308.1, 140, 320.1, 140, 2) +
+					limb(312.3, 124, 324.3, 124, 2),
+				strength: 1
+			},
+			{ d: figure(318, 155, 44, { hat: 'cap' }) + limb(324, 127, 334, 106, 3.2), strength: 1 },
+			{
+				d:
+					disc(232, 176, 5) +
+					disc(242, 174, 5) +
+					disc(252, 176, 5) +
+					disc(237, 170, 5) +
+					disc(247, 169, 5),
+				strength: 1
+			},
+			{ d: 'M226 176H262L258 192H230Z' + 'M228 176q16-16 32 0h-3q-13-12-26 0Z', strength: 0.85 },
+			{ d: rect(228, 182, 32, 1.4), strength: 1, cut: true }
+		]
 	}
 };
