@@ -14,6 +14,7 @@ import {
 	pine,
 	rect,
 	rounded,
+	roundTree,
 	seated,
 	sparkle,
 	tri
@@ -491,22 +492,74 @@ export const EVENT: Record<ThemeId, Scene> = {
 			{ d: 'M262 194q30 5 60 -2M300 184q22 4 44 0M330 176q14 3 28 0', strength: 0.4 }
 		]
 	},
-	// A Ferris wheel at the fair
+	// The fair at dusk: the big wheel turning, a striped stall in front, the two of you watching close by
 	autumn: {
+		backdrop: {
+			shapes: [
+				{
+					d: roundTree(212, 170, 46) + roundTree(236, 170, 38) + roundTree(398, 170, 44),
+					strength: 0.45
+				},
+				{ d: 'M150 186Q190 168 240 170H420V186Z', strength: 0.28 }
+			]
+		},
 		shapes: [
-			GROUND,
-			{ d: disc(318, 104, 54), strength: 0.9 },
-			{ d: disc(318, 104, 48), strength: 1, cut: true },
-			{ d: tri(318, 104, 286, 186, 296, 186) + tri(318, 104, 350, 186, 340, 186), strength: 1 },
+			{ d: GROUND.d, strength: 0.55 },
 			{
 				d:
-					rect(310, 46, 16, 12) +
-					rect(358, 98, 16, 12) +
-					rect(262, 98, 16, 12) +
-					rect(310, 150, 16, 12),
-				strength: 1
-			}
+					'M260 96a70 70 0 1 0 140 0a70 70 0 1 0 -140 0Z' +
+					'M263 96a67 67 0 1 1 134 0a67 67 0 1 1 -134 0Z',
+				strength: 0.8,
+				motion: 'pulse'
+			},
+			{
+				d:
+					limb(330, 96, 400.0, 96.0, 1.6) +
+					limb(330, 96, 390.6, 131.0, 1.6) +
+					limb(330, 96, 365.0, 156.6, 1.6) +
+					limb(330, 96, 330.0, 166.0, 1.6) +
+					limb(330, 96, 295.0, 156.6, 1.6) +
+					limb(330, 96, 269.4, 131.0, 1.6) +
+					limb(330, 96, 260.0, 96.0, 1.6) +
+					limb(330, 96, 269.4, 61.0, 1.6) +
+					limb(330, 96, 295.0, 35.4, 1.6) +
+					limb(330, 96, 330.0, 26.0, 1.6) +
+					limb(330, 96, 365.0, 35.4, 1.6) +
+					limb(330, 96, 390.6, 61.0, 1.6) +
+					disc(330, 96, 5),
+				strength: 0.8
+			},
+			{
+				d:
+					rounded(392.6, 116.1, 10, 8, 2) +
+					rounded(374.5, 147.5, 10, 8, 2) +
+					rounded(343.1, 165.6, 10, 8, 2) +
+					rounded(306.9, 165.6, 10, 8, 2) +
+					rounded(275.5, 147.5, 10, 8, 2) +
+					rounded(257.4, 116.1, 10, 8, 2) +
+					rounded(257.4, 79.9, 10, 8, 2) +
+					rounded(275.5, 48.5, 10, 8, 2) +
+					rounded(306.9, 30.4, 10, 8, 2) +
+					rounded(343.1, 30.4, 10, 8, 2) +
+					rounded(374.5, 48.5, 10, 8, 2) +
+					rounded(392.6, 79.9, 10, 8, 2),
+				strength: 0.95
+			},
+			{ d: limb(330, 96, 300, 186, 4) + limb(330, 96, 360, 186, 4), strength: 0.95 },
+			{ d: rect(262, 150, 44, 36) + 'M256 152L266 138H302L312 152Z', strength: 0.9 },
+			{
+				d: rect(264, 158, 40, 14) + rect(270, 139, 6, 13) + rect(286, 139, 6, 13),
+				strength: 1,
+				cut: true
+			},
+			{ d: figure(228, 204, 60, { hat: 'beanie' }) + figure(252, 206, 54), strength: 1 }
 		],
-		lines: [{ d: 'M318 56V152M270 104H366M284 70L352 138M352 70L284 138', strength: 0.6 }]
+		lines: [{ d: 'M196 120Q240 140 262 140', strength: 0.6 }],
+		dots: [
+			[206, 126, 2.4, 1],
+			[222, 134, 2.4, 1],
+			[240, 138, 2.4, 1],
+			[256, 140, 2.4, 1]
+		]
 	}
 };

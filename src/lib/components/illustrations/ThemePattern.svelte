@@ -85,7 +85,9 @@
 	onanimationend={(event) => {
 		if (event.animationName === 'scene-poke') poked = false;
 	}}
-	class="pointer-events-none absolute inset-0 h-full w-full overflow-visible {poked ? 'scene-poke' : ''}"
+	class="pointer-events-none absolute inset-0 h-full w-full overflow-visible {poked
+		? 'scene-poke'
+		: ''}"
 	viewBox="0 0 400 200"
 	preserveAspectRatio="xMaxYMax meet"
 	aria-hidden="true"
