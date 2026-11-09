@@ -509,8 +509,7 @@ export const EVENT: Record<ThemeId, Scene> = {
 				d:
 					'M260 96a70 70 0 1 0 140 0a70 70 0 1 0 -140 0Z' +
 					'M263 96a67 67 0 1 1 134 0a67 67 0 1 1 -134 0Z',
-				strength: 0.8,
-				motion: 'pulse'
+				strength: 0.8
 			},
 			{
 				d:
