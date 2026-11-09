@@ -57,7 +57,7 @@ export const OTHER: Record<ThemeId, Scene> = {
 		},
 		shapes: [
 			WATER,
-			{ d: hull(234, 190, 56, 12), strength: 0.85, motion: 'rock', tap: 'sail' },
+			{ d: hull(234, 190, 56, 12), strength: 0.85, motion: 'rock', tap: 'hop' },
 			{ d: rect(300, 168, 100, 8), strength: 1 },
 			{ d: rect(304, 176, 4, 18) + rect(340, 176, 4, 20) + rect(376, 176, 4, 20), strength: 0.9 },
 			{ d: seated(318, 168, 54, { hat: 'cap' }), strength: 1, motion: 'nod' },
