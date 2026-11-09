@@ -66,6 +66,10 @@ export const star = (x: number, y: number, r: number) => {
 export const sparkle = (x: number, y: number, r: number) =>
 	`M${x} ${y - r}Q${x} ${y} ${x + r} ${y}Q${x} ${y} ${x} ${y + r}Q${x} ${y} ${x - r} ${y}Q${x} ${y} ${x} ${y - r}Z`;
 
+/** A falling leaf around x, y, s long */
+export const leaf = (x: number, y: number, s: number) =>
+	`M${x - s / 2} ${y}q${s / 2} ${-s / 2} ${s} 0q${-s / 2} ${s / 2} ${-s} 0Z`;
+
 /** A small wave line from x, n crests long */
 export const waves = (x: number, y: number, n: number, w = 22) =>
 	`M${x} ${y}` + `q${w / 2} -5 ${w} 0t${w} 0`.repeat(n);

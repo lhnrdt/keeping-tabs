@@ -4,13 +4,15 @@ import { type Scene, curtain, rays } from '../scenes';
 import {
 	disc,
 	figure,
-	flag,
 	GROUND,
+	house,
 	hull,
+	leaf,
 	limb,
 	pine,
 	rect,
 	rounded,
+	roundTree,
 	seated,
 	sparkle,
 	tri,
@@ -438,13 +440,73 @@ export const OTHER: Record<ThemeId, Scene> = {
 			{ d: figure(372, 214, 96, { hat: 'beanie' }) + limb(360, 160, 332, 136, 5), strength: 1 }
 		]
 	},
-	// A mailbox, leaves blowing past
+	// Raking the leaves into a big pile under the maple, the wheelbarrow waiting, the street beyond
 	autumn: {
+		backdrop: {
+			shapes: [
+				{
+					d:
+						house(214, 170, 30, 20, 14, 3) +
+						house(252, 170, 26, 18, 12, 3) +
+						house(290, 170, 30, 22, 14, 3),
+					strength: 0.45
+				},
+				{ d: roundTree(330, 170, 40) + roundTree(372, 170, 34), strength: 0.4 },
+				{ d: 'M-200 186V170H400V186Z', strength: 0.3 }
+			]
+		},
 		shapes: [
-			GROUND,
-			{ d: rect(314, 140, 8, 46), strength: 1 },
-			{ d: 'M290 140v-22q0-14 14-14h28q14 0 14 14v22Z', strength: 1 },
-			{ d: flag(346, 136, 26, 12), strength: 1, motion: 'flutter' }
+			{ d: GROUND.d, strength: 0.55 },
+			{ d: 'M320 186Q326 164 348 162Q372 162 380 186Z', strength: 0.9 },
+			{
+				d:
+					leaf(326, 176, 7) +
+					leaf(338, 172, 7) +
+					leaf(350, 170, 7) +
+					leaf(362, 173, 7) +
+					leaf(372, 177, 7) +
+					leaf(344, 178, 7) +
+					leaf(358, 179, 7),
+				strength: 1,
+				cut: true
+			},
+			{
+				d:
+					figure(296, 186, 54, { hat: 'beanie' }) +
+					limb(302, 156, 322, 172, 3.2) +
+					limb(286, 140, 322, 182, 2) +
+					'M318 180l10 4-1 3-10-3Z',
+				strength: 1
+			},
+			{
+				d: 'M236 176h30l-4 10h-22Z' + limb(266, 178, 280, 170, 2) + disc(240, 188, 5),
+				strength: 0.85
+			},
+			{
+				d:
+					'M388 30h18v170h-18Z' +
+					limb(394, 60, 352, 30, 6) +
+					disc(396, 8, 28) +
+					disc(360, 14, 22) +
+					disc(328, 4, 18) +
+					disc(376, 34, 16),
+				strength: 0.95
+			},
+			{
+				d: leaf(372, 12, 8) + leaf(340, 18, 8) + leaf(392, 30, 8) + leaf(356, 2, 8),
+				strength: 1,
+				cut: true
+			},
+			{
+				d:
+					leaf(250, 96, 10) +
+					leaf(286, 72, 9) +
+					leaf(318, 110, 10) +
+					leaf(352, 86, 9) +
+					leaf(234, 130, 9),
+				strength: 0.85,
+				motion: 'drift'
+			}
 		]
 	}
 };
