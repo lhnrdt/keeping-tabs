@@ -8,8 +8,8 @@ import {
 	GROUND,
 	heart,
 	hull,
+	leaf,
 	limb,
-	person,
 	pine,
 	rect,
 	rounded,
@@ -232,8 +232,22 @@ export const PARTNER: Record<ThemeId, Scene> = {
 		shapes: [
 			{ d: GROUND.d, strength: 0.5 },
 			{ d: heart(306, 90, 20), strength: 0.45, motion: 'drift' },
-			{ d: rounded(262, 172, 34, 13, 6.5) + disc(302.6, 176.6, 10) + limb(266, 180, 248, 164, 6) + limb(248, 164, 234, 182, 6), strength: 1 },
-			{ d: rounded(322, 172, 34, 13, 6.5) + disc(316.1, 171.2, 10) + limb(352, 180, 370, 164, 6) + limb(370, 164, 384, 182, 6), strength: 0.8 },
+			{
+				d:
+					rounded(262, 172, 34, 13, 6.5) +
+					disc(302.6, 176.6, 10) +
+					limb(266, 180, 248, 164, 6) +
+					limb(248, 164, 234, 182, 6),
+				strength: 1
+			},
+			{
+				d:
+					rounded(322, 172, 34, 13, 6.5) +
+					disc(316.1, 171.2, 10) +
+					limb(352, 180, 370, 164, 6) +
+					limb(370, 164, 384, 182, 6),
+				strength: 0.8
+			},
 			{
 				d: limb(291.8, 175.2, 302.6, 164.4, 4.1) + limb(324.2, 175.2, 313.4, 161.7, 4.1),
 				strength: 0.9
@@ -325,13 +339,66 @@ export const PARTNER: Record<ThemeId, Scene> = {
 			{ d: heart(304, 112, 7), strength: 1, motion: 'pulse' }
 		]
 	},
-	// Two under one umbrella
+	// The two of them on a swing seat hung from the old tree's branch, leaves drifting down round them
 	autumn: {
+		backdrop: {
+			shapes: [
+				{ d: 'M170 186Q250 160 330 166T420 160V186Z', strength: 0.3 },
+				{
+					d: roundTree(220, 172, 44) + roundTree(246, 170, 34) + roundTree(396, 168, 40),
+					strength: 0.4
+				}
+			]
+		},
 		shapes: [
-			GROUND,
-			{ d: person(300, 186, 62) + person(336, 186, 60), strength: 1 },
-			{ d: 'M262 112a56 34 0 0 1 112 0Z', strength: 1, motion: 'sway' }
-		],
-		lines: [{ d: 'M318 112V146', strength: 1 }]
+			{ d: GROUND.d, strength: 0.55 },
+			{
+				d:
+					rect(372, 30, 16, 170) +
+					limb(378, 46, 256, 38, 7) +
+					disc(380, 14, 34) +
+					disc(330, 10, 28) +
+					disc(280, 14, 26) +
+					disc(250, 26, 20) +
+					disc(398, 40, 22),
+				strength: 0.9
+			},
+			{
+				d:
+					leaf(360, 12, 9) +
+					leaf(320, 6, 9) +
+					leaf(282, 14, 9) +
+					leaf(392, 30, 9) +
+					leaf(252, 26, 9),
+				strength: 1,
+				cut: true
+			},
+			{
+				d:
+					rect(272, 40, 1.6, 104) +
+					rect(338, 40, 1.6, 104) +
+					rect(266, 142, 80, 4) +
+					rect(266, 120, 80, 3),
+				strength: 0.95,
+				motion: 'sway'
+			},
+			{
+				d:
+					seated(292, 142, 46) +
+					seated(318, 142, 42, { hat: 'beanie' }) +
+					limb(288, 140, 292, 158, 3) +
+					limb(296, 140, 300, 158, 3) +
+					limb(314, 140, 318, 157, 3) +
+					limb(322, 140, 326, 157, 3),
+				strength: 1,
+				motion: 'sway'
+			},
+			{ d: heart(306, 90, 7), strength: 1, motion: 'pulse' },
+			{
+				d: leaf(240, 100, 9) + leaf(268, 140, 9) + leaf(344, 150, 9) + leaf(230, 60, 9),
+				strength: 0.85,
+				motion: 'drift'
+			}
+		]
 	}
 };
