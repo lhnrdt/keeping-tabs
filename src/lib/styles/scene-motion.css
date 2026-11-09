@@ -338,35 +338,25 @@
 }
 /* Off to the right, round the world, back in from the left */
 @keyframes tap-drive {
+	/* Off one side, round the world, and in again from the other */
 	45% {
-		transform: translateX(260px);
-		opacity: 1;
+		transform: translateX(360px);
+		animation-timing-function: steps(1, end);
 	}
 	46% {
-		opacity: 0;
-	}
-	47% {
-		transform: translateX(-260px);
-		opacity: 0;
-	}
-	52% {
-		opacity: 1;
+		transform: translateX(-460px);
+		animation-timing-function: var(--ease-out-quad);
 	}
 }
 @keyframes tap-drive-left {
+	/* Off one side, round the world, and in again from the other */
 	45% {
-		transform: translateX(-260px);
-		opacity: 1;
+		transform: translateX(-360px);
+		animation-timing-function: steps(1, end);
 	}
 	46% {
-		opacity: 0;
-	}
-	47% {
-		transform: translateX(260px);
-		opacity: 0;
-	}
-	52% {
-		opacity: 1;
+		transform: translateX(460px);
+		animation-timing-function: var(--ease-out-quad);
 	}
 }
 @keyframes tap-hop {
@@ -448,8 +438,155 @@
 	}
 }
 
+/* What the actions leave in the air: swoosh lines and particles, once each */
+.scene-fx * {
+	transform-box: view-box;
+	opacity: 0;
+}
+.scene-fx > [class^='tap-'] {
+	opacity: 1;
+}
+.scene-fx .fx-speed {
+	animation: fx-speed 2.4s linear;
+}
+.scene-fx .fx-dust {
+	animation: fx-dust 2.4s var(--ease-out-quad);
+}
+.scene-fx .fx-landing {
+	animation: fx-landing 700ms var(--ease-out-quad);
+}
+.scene-fx .fx-lift {
+	animation: fx-lift 700ms var(--ease-out-quad);
+}
+.scene-fx .fx-spin-arcs {
+	opacity: 1;
+	animation: fx-spin 2.4s var(--ease-in-out-sine);
+}
+.scene-fx .fx-spin-arcs path {
+	animation: fx-fade 2.4s var(--ease-in-out-sine);
+}
+.scene-fx .fx-swoosh {
+	animation: fx-swoosh 1.2s var(--ease-out-quad) 2;
+}
+.scene-fx .fx-spark {
+	animation: fx-spark 1.2s var(--ease-out-quad);
+}
+.scene-fx .fx-ring {
+	animation: fx-ring 900ms var(--ease-out-quad);
+}
+.scene-fx .fx-ray {
+	animation: fx-fade 1s var(--ease-out-quad);
+}
+.scene-fx .fx-rise {
+	animation: fx-rise 1.6s var(--ease-out-quad);
+}
+.scene-fx .fx-wake {
+	animation: fx-fade 2.4s var(--ease-in-out-sine);
+}
+/* Speed lines while it's going, gone while it's away, back as it comes in */
+@keyframes fx-speed {
+	5%,
+	38% {
+		opacity: 1;
+	}
+	45%,
+	55% {
+		opacity: 0;
+	}
+	62%,
+	85% {
+		opacity: 1;
+	}
+}
+@keyframes fx-dust {
+	0% {
+		opacity: 1;
+		transform: translate(0, 0) scale(0.6);
+	}
+	30% {
+		opacity: 0;
+		transform: translate(var(--dx), var(--dy)) scale(1.4);
+	}
+	55% {
+		opacity: 1;
+		transform: translate(0, 0) scale(0.6);
+	}
+	85% {
+		opacity: 0;
+		transform: translate(var(--dx), var(--dy)) scale(1.4);
+	}
+}
+@keyframes fx-landing {
+	0%,
+	70% {
+		opacity: 1;
+		transform: translate(0, 0);
+	}
+	30%,
+	100% {
+		opacity: 0;
+		transform: translate(var(--dx), var(--dy));
+	}
+}
+@keyframes fx-lift {
+	15%,
+	40% {
+		opacity: 1;
+	}
+}
+@keyframes fx-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+@keyframes fx-fade {
+	20%,
+	70% {
+		opacity: 1;
+	}
+}
+@keyframes fx-swoosh {
+	30% {
+		opacity: 1;
+	}
+}
+@keyframes fx-spark {
+	0% {
+		opacity: 1;
+		transform: translate(0, 0);
+	}
+	100% {
+		opacity: 0;
+		transform: translate(var(--dx), var(--dy));
+	}
+}
+@keyframes fx-ring {
+	0% {
+		opacity: 1;
+		transform: scale(0.4);
+	}
+	100% {
+		opacity: 0;
+		transform: scale(1.5);
+	}
+}
+@keyframes fx-rise {
+	0% {
+		opacity: 0;
+		transform: translate(0, 0) scale(0.6);
+	}
+	30% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+		transform: translate(var(--dx, 0), var(--dy)) scale(1.3);
+	}
+}
+
 @media (prefers-reduced-motion: reduce) {
 	.scene-acting [class^='tap-'],
+	.scene-fx,
 	[class*='scene-'],
 	.scene-celebrate {
 		animation: none;

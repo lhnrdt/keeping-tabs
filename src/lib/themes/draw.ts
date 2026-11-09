@@ -100,9 +100,9 @@ export const flag = (x: number, y: number, h: number, w = h * 0.4) =>
 export const house = (x: number, y: number, w: number, h: number, roof: number, eave = 8) =>
 	`${rect(x, y - h, w, h)}${tri(x - eave, y - h + 2, x + w / 2, y - h - roof, x + w + eave, y - h + 2)}`;
 
-/** Where everything stands: flat from x 226, so things line up on it and nothing floats */
+/** Where everything stands: flat across the whole header, so things line up on it and nothing floats */
 export const GROUND_Y = 186;
-export const GROUND: Shape = { d: 'M196 200C208 190 216 186 226 186H400V200Z', strength: 0.95 };
+export const GROUND: Shape = { d: 'M-200 200V186H400V200Z', strength: 0.95 };
 /** Where everything floats: the water line, across the whole header */
 export const WATER_Y = 182;
 export const WATER: Shape = { d: 'M-200 200V182H400V200Z', strength: 0.4 };

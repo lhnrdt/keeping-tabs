@@ -1,5 +1,6 @@
 <!-- The nature theme's header scene (#60, #274), with the group's type in front if there is one: flat, in the header's own colors, behind the content -->
 <script lang="ts">
+	import SceneEffect from './SceneEffect.svelte';
 	import type { GroupKind } from '#lib/group/kinds.ts';
 	import {
 		GROUP_SETTLED,
@@ -46,16 +47,41 @@
 	const INTERACTIVE = 'a, button, input, select, textarea, label, summary';
 	/** Long enough for the longest move */
 	const ACTION_MS = 2600;
+	/** Where each move happens, to draw its swoosh lines and particles round it */
+	type Effect = { move: string; x: number; y: number; w: number; h: number };
+	let effects: Effect[] = $state([]);
+	const measure = () => {
+		const boxes = new Map<string, DOMRect>();
+		for (const el of svg.querySelectorAll<SVGGraphicsElement>('[class^="tap-"]')) {
+			const move = el.getAttribute('class')!.slice(4);
+			const box = el.getBBox();
+			const seen = boxes.get(move);
+			if (!seen) boxes.set(move, box);
+			else {
+				const x = Math.min(seen.x, box.x);
+				const y = Math.min(seen.y, box.y);
+				const right = Math.max(seen.x + seen.width, box.x + box.width);
+				const bottom = Math.max(seen.y + seen.height, box.y + box.height);
+				boxes.set(move, new DOMRect(x, y, right - x, bottom - y));
+			}
+		}
+		return [...boxes].map(([move, b]) => ({ move, x: b.x, y: b.y, w: b.width, h: b.height }));
+	};
 	onMount(() => {
 		const header = svg.parentElement;
 		let timer: ReturnType<typeof setTimeout> | undefined;
 		const act = (event: MouseEvent) => {
 			if ((event.target as Element).closest(INTERACTIVE)) return;
 			acting = false;
+			effects = [];
 			clearTimeout(timer);
 			requestAnimationFrame(() => {
+				effects = measure();
 				acting = true;
-				timer = setTimeout(() => (acting = false), ACTION_MS);
+				timer = setTimeout(() => {
+					acting = false;
+					effects = [];
+				}, ACTION_MS);
 			});
 		};
 		header?.addEventListener('click', act);
@@ -145,5 +171,8 @@
 				<circle {cx} {cy} {r} fill={inkOf(layer)} fill-opacity={opacityOf(layer, dot)} />
 			{/each}
 		</g>
+	{/each}
+	{#each effects as effect (effect.move)}
+		<SceneEffect {...effect} />
 	{/each}
 </svg>
