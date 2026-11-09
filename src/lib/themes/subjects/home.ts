@@ -5,6 +5,7 @@ import {
 	disc,
 	GROUND,
 	house,
+	leaf,
 	limb,
 	pine,
 	rect,
@@ -525,18 +526,65 @@ export const HOME: Record<ThemeId, Scene> = {
 			{ d: 'M376 200Q384 168 400 166V200Z' + pine(396, 200, 90), strength: 1 }
 		]
 	},
-	// A house with a porch, pumpkins on the steps
+	// The front porch close up: pumpkins on the steps, a lantern by the door, the rocking chair waiting
 	autumn: {
+		backdrop: {
+			shapes: [{ d: roundTree(214, 186, 90) + roundTree(240, 186, 64), strength: 0.45 }]
+		},
 		shapes: [
-			GROUND,
-			{ d: house(276, 186, 88, 52, 32, 10), strength: 1 },
-			{ d: rect(272, 152, 96, 5) + rect(276, 157, 4, 29) + rect(360, 157, 4, 29), strength: 1 },
+			{ d: rect(262, 40, 140, 140) + 'M254 44L332 6L410 44Z', strength: 0.75 },
+			{ d: rect(300, 92, 34, 88) + rect(352, 96, 34, 30), strength: 1, cut: true },
+			{ d: rect(302, 94, 30, 86) + rect(368, 96, 2, 30) + rect(352, 110, 34, 2), strength: 0.9 },
+			{ d: disc(326, 136, 2), strength: 1, cut: true },
 			{
-				d: rect(312, 160, 16, 26) + rect(290, 144, 14, 0) + rect(334, 128, 14, 14),
+				d: rect(250, 180, 160, 6) + rect(244, 186, 172, 7) + rect(238, 193, 184, 7),
+				strength: 0.55
+			},
+			{ d: rect(266, 60, 4, 120) + rect(394, 60, 4, 120) + rect(250, 54, 160, 7), strength: 1 },
+			{ d: rect(288, 114, 8, 12) + rect(290.5, 108, 3, 6), strength: 1 },
+			{ d: rect(289.5, 116, 5, 7), strength: 1, cut: true, motion: 'flicker' },
+			{
+				d:
+					limb(350, 180, 374, 180, 3) +
+					limb(352, 180, 354, 140, 3.4) +
+					limb(354, 158, 378, 158, 3.4) +
+					limb(376, 158, 374, 180, 3) +
+					'M346 182q16 8 34 0v3q-17 8-34 0Z',
+				strength: 1
+			},
+			{
+				d:
+					disc(251.9, 177.0, 6.8) +
+					disc(260.1, 177.0, 6.8) +
+					disc(256, 177.0, 7.2) +
+					disc(275.1, 182.0, 8.2) +
+					disc(284.9, 182.0, 8.2) +
+					disc(280, 182.0, 8.8) +
+					disc(244.6, 188.0, 9.0) +
+					disc(255.4, 188.0, 9.0) +
+					disc(250, 188.0, 9.6),
+				strength: 1
+			},
+			{
+				d: rect(255, 165.0, 2, 5) + rect(279, 168.0, 2, 5) + rect(249, 173.0, 2, 5),
+				strength: 0.9
+			},
+			{
+				d:
+					rect(251.3, 170.7, 1.2, 12.6) +
+					rect(259.4, 170.7, 1.2, 12.6) +
+					rect(274.4, 174.3, 1.2, 15.4) +
+					rect(284.3, 174.3, 1.2, 15.4) +
+					rect(244.0, 179.6, 1.2, 16.8) +
+					rect(254.8, 179.6, 1.2, 16.8),
 				strength: 1,
 				cut: true
 			},
-			{ d: disc(262, 178, 9) + disc(380, 180, 7), strength: 0.9 }
+			{
+				d: leaf(220, 80, 9) + leaf(250, 60, 9) + leaf(232, 124, 9),
+				strength: 0.85,
+				motion: 'drift'
+			}
 		]
 	}
 };
