@@ -122,7 +122,7 @@ export const OTHER: Record<ThemeId, Scene> = {
 			{ d: 'M270 178l1-26l6-8l8 2l3 6l1 26Z', strength: 0.48 },
 			{ d: 'M298 172l2-34l7-8l9 3l3 8l1 31Z', strength: 0.56 },
 			{ d: 'M332 174l3-76l7-4l9 2l2 78ZM372 174l1-80l9-2l8 4l2 78Z', strength: 0.66 },
-			{ d: 'M326 98l4-9l64-3l5 8l-3 9l-66 3Z', strength: 0.75 },
+			{ d: 'M326 98l4-9l64-3l5 8l-3 9l-66 3Z', strength: 0.75, tap: 'glint' },
 			{ d: figure(362, 170, 34, { hat: 'beanie' }), strength: 1, tap: 'hop', motion: 'nod' },
 			{ d: 'M-200 200V194H300V200Z', strength: 0.7 },
 			{ d: 'M150 200Q250 160 330 166T420 172V200Z', strength: 0.7 },
