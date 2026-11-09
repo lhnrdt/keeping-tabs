@@ -483,7 +483,8 @@ export const OTHER: Record<ThemeId, Scene> = {
 			{
 				d: rounded(304, 120, 26, 15, 4) + rect(296, 123, 9, 9) + rect(312, 116, 8, 5),
 				strength: 1,
-				rotate: { deg: 24, x: 317, y: 128 }
+				rotate: { deg: 24, x: 317, y: 128 },
+				tap: 'glint'
 			},
 			{
 				d: figure(372, 214, 96, { hat: 'beanie' }) + limb(360, 160, 332, 136, 5),
