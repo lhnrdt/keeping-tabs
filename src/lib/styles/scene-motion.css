@@ -315,7 +315,7 @@
 }
 
 /* Tapped (#327): the scene's action plays once, on the shapes that have a move */
-.scene-acting [class^='tap-'] {
+.scene-acting [class*='tap-'] {
 	transform-box: fill-box;
 	transform-origin: center bottom;
 }
@@ -553,6 +553,7 @@
 .scene-fx * {
 	transform-box: view-box;
 	opacity: 0;
+	animation-delay: var(--at, 0ms);
 }
 .scene-fx > [class^='tap-'] {
 	opacity: 1;
@@ -594,8 +595,15 @@
 .scene-fx .fx-wind {
 	animation: fx-wind 1.6s var(--ease-out-quad);
 }
+.scene-fx .fx-splash {
+	animation: fx-splash 900ms var(--ease-out-quad);
+}
 .scene-fx .fx-wake {
 	animation: fx-fade 2.4s var(--ease-in-out-sine);
+}
+/* Each effect starts when its action reaches it */
+.scene-fx [class^='fx-'] {
+	animation-delay: var(--at, 0ms);
 }
 /* Speed lines while it's going, gone while it's away, back as it comes in */
 @keyframes fx-speed {
@@ -695,6 +703,21 @@
 	100% {
 		opacity: 0;
 		transform: translateX(-40px);
+	}
+}
+/* A drop thrown up, then falling back */
+@keyframes fx-splash {
+	0% {
+		opacity: 1;
+		transform: translate(0, 0);
+	}
+	45% {
+		opacity: 1;
+		transform: translate(calc(var(--dx) * 0.7), var(--dy));
+	}
+	100% {
+		opacity: 0;
+		transform: translate(var(--dx), 2px);
 	}
 }
 @keyframes fx-rise {

@@ -49,8 +49,48 @@ export type TapMove =
 	| 'away'
 	| 'puff';
 
+/** A scene's own action, defined in styles/scene-actions.css */
+export type TapAction = TapMove | `act-${string}`;
+
+/** What an action leaves in the air (SceneEffect.svelte) */
+export type SceneFx =
+	| 'speed'
+	| 'landing'
+	| 'arcs'
+	| 'swoosh'
+	| 'sparks'
+	| 'rays'
+	| 'sparkles'
+	| 'wake'
+	| 'dust'
+	| 'wind'
+	| 'puffs'
+	| 'splash'
+	| 'none';
+
+/** The effect a move leaves, unless a shape says otherwise */
+export const FX_OF: Partial<Record<TapMove, SceneFx>> = {
+	drive: 'speed',
+	'drive-left': 'speed',
+	'drive-bridge': 'speed',
+	hop: 'landing',
+	spin: 'arcs',
+	swing: 'swoosh',
+	wave: 'swoosh',
+	burst: 'sparks',
+	glint: 'rays',
+	float: 'sparkles',
+	sail: 'wake',
+	climb: 'dust',
+	gust: 'wind',
+	puff: 'puffs'
+};
+
 export type Shape = {
-	tap?: TapMove;
+	tap?: TapAction;
+	/** What its action leaves in the air, and when (ms after the tap) */
+	fx?: SceneFx;
+	fxAt?: number;
 	/** Where it turns round when it moves, if not its own bottom middle: so parts of one thing move as one */
 	origin?: [x: number, y: number];
 	d: string;
@@ -69,7 +109,9 @@ export type Shape = {
 	sun?: { x: number; y: number; r: number };
 };
 export type Line = {
-	tap?: TapMove;
+	tap?: TapAction;
+	fx?: SceneFx;
+	fxAt?: number;
 	origin?: [x: number, y: number];
 	d: string;
 	strength: number;

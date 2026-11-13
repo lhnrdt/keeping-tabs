@@ -1,0 +1,83 @@
+/*
+ * Each scene's own action (#327), tapped once: what happens in it, physically right. Grouped by scene.
+ */
+
+/* Meadow kickabout: the shot flies under the bar into the net, the net gives, the keeper dives too late */
+.scene-acting .tap-act-shot {
+	animation: act-shot 2.4s linear;
+}
+.scene-acting .tap-act-net {
+	animation: act-net 2.4s var(--ease-out-quad);
+}
+.scene-acting .tap-act-dive {
+	animation: act-dive 2.4s var(--ease-out-quad);
+}
+.scene-acting .tap-act-follow {
+	animation: act-follow 2.4s var(--ease-out-quad);
+}
+@keyframes act-shot {
+	12% {
+		transform: translate(10px, -3px);
+	}
+	26% {
+		transform: translate(24px, 14px);
+	}
+	38% {
+		transform: translate(38px, 22px);
+	}
+	50% {
+		transform: translate(42px, 31px);
+		animation-timing-function: var(--ease-out-quad);
+	}
+	58% {
+		transform: translate(44px, 27px);
+	}
+	66% {
+		opacity: 1;
+		transform: translate(46px, 31px);
+	}
+	80% {
+		opacity: 0;
+		transform: translate(46px, 31px);
+	}
+	81% {
+		opacity: 0;
+		transform: translate(0, 0);
+	}
+}
+@keyframes act-net {
+	36% {
+		transform: none;
+	}
+	42% {
+		transform: translateX(5px) scaleY(0.96);
+	}
+	60% {
+		transform: none;
+	}
+}
+@keyframes act-dive {
+	14% {
+		transform: none;
+	}
+	30% {
+		transform: translate(-10px, -8px) rotate(-22deg);
+	}
+	44% {
+		transform: translate(-12px, 0) rotate(-30deg);
+	}
+	70% {
+		transform: translate(-12px, 0) rotate(-30deg);
+	}
+	90% {
+		transform: none;
+	}
+}
+@keyframes act-follow {
+	10% {
+		transform: rotate(-5deg);
+	}
+	40% {
+		transform: none;
+	}
+}

@@ -8,7 +8,15 @@
 		SUBJECT_INK,
 		subjectOf
 	} from '#lib/themes/group-subjects.ts';
-	import { mirrorOf, SCENES, type Scene } from '#lib/themes/scenes.ts';
+	import {
+		FX_OF,
+		mirrorOf,
+		SCENES,
+		type Scene,
+		type SceneFx,
+		type TapAction,
+		type TapMove
+	} from '#lib/themes/scenes.ts';
 	import { useTheme } from '#lib/themes/current.svelte.ts';
 	import type { ThemeId } from '#lib/themes/palettes.ts';
 	import { atNight, hasSun, isNight, moonForSun } from '#lib/themes/time-of-day.ts';
@@ -53,24 +61,47 @@
 	const INTERACTIVE = 'a, button, input, select, textarea, label, summary';
 	/** Long enough for the longest move */
 	const ACTION_MS = 3000;
-	/** Where each move happens, to draw its swoosh lines and particles round it */
-	type Effect = { move: string; x: number; y: number; w: number; h: number };
+	/** Where each action leaves its swoosh lines and particles, and when */
+	type Effect = {
+		fx: SceneFx;
+		move: string;
+		at: number;
+		x: number;
+		y: number;
+		w: number;
+		h: number;
+	};
 	let effects: Effect[] = $state([]);
-	/** One box per thing that moves: the parts of one thing (they overlap) share it */
+	const fxOf = (part: { tap?: TapAction; fx?: SceneFx }) =>
+		part.fx ?? (part.tap ? (FX_OF[part.tap as TapMove] ?? 'none') : 'none');
+	/** One box per thing: the parts of one thing (they overlap) share it */
 	const measure = () => {
 		const boxes: Effect[] = [];
-		const overlap = (a: Effect, b: Effect) =>
-			a.move === b.move && a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
-		for (const el of svg.querySelectorAll<SVGGraphicsElement>('[class^="tap-"]')) {
+		const same = (a: Effect, b: Effect) =>
+			a.fx === b.fx &&
+			a.at === b.at &&
+			a.x < b.x + b.w &&
+			b.x < a.x + a.w &&
+			a.y < b.y + b.h &&
+			b.y < a.y + a.h;
+		for (const el of svg.querySelectorAll<SVGGraphicsElement>('[data-fx]')) {
 			const { x, y, width, height } = el.getBBox();
-			let box: Effect = { move: el.getAttribute('class')!.slice(4), x, y, w: width, h: height };
+			let box: Effect = {
+				fx: el.dataset.fx as SceneFx,
+				move: el.dataset.move ?? '',
+				at: Number(el.dataset.fxAt ?? 0),
+				x,
+				y,
+				w: width,
+				h: height
+			};
 			for (let i = boxes.length - 1; i >= 0; i--) {
-				if (!overlap(boxes[i], box)) continue;
+				if (!same(boxes[i], box)) continue;
 				const other = boxes.splice(i, 1)[0];
 				const left = Math.min(other.x, box.x);
 				const top = Math.min(other.y, box.y);
 				box = {
-					move: box.move,
+					...box,
 					x: left,
 					y: top,
 					w: Math.max(other.x + other.w, box.x + box.w) - left,
@@ -165,7 +196,13 @@
 			{@const { scene, moment } = layer}
 			<g class={moment && celebrate ? 'scene-celebrate' : undefined}>
 				{#each scene.shapes as shape, i (i)}
-					<g class={shape.tap ? `tap-${shape.tap}` : undefined} style={pivot(shape.origin)}>
+					<g
+						class={shape.tap ? `tap-${shape.tap}` : undefined}
+						style={pivot(shape.origin)}
+						data-fx={fxOf(shape) === 'none' ? undefined : fxOf(shape)}
+						data-fx-at={shape.fxAt}
+						data-move={shape.tap}
+					>
 						<g transform={mirrorOf(shape)}>
 							<!-- Solid: the line color is see-through, so whatever's behind a shape would show -->
 							{#if !shape.cut}
@@ -191,7 +228,13 @@
 					</g>
 				{/each}
 				{#each scene.lines ?? [] as line, i (i)}
-					<g class={line.tap ? `tap-${line.tap}` : undefined} style={pivot(line.origin)}>
+					<g
+						class={line.tap ? `tap-${line.tap}` : undefined}
+						style={pivot(line.origin)}
+						data-fx={fxOf(line) === 'none' ? undefined : fxOf(line)}
+						data-fx-at={line.fxAt}
+						data-move={line.tap}
+					>
 						<path
 							d={line.d}
 							stroke={inkOf(layer)}

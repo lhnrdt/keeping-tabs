@@ -348,28 +348,43 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 					rect(362, 168, 34, 1) +
 					rect(362, 174, 34, 1) +
 					rect(362, 180, 34, 1),
-				strength: 0.5
+				strength: 0.5,
+				tap: 'act-net',
+				fx: 'sparks',
+				fxAt: 960
 			},
 			{ d: rect(360, 150, 3, 36) + rect(360, 150, 38, 3), strength: 1 },
 			{
 				d: figure(372, 186, 48) + limb(366, 158, 352, 146, 3.4) + limb(376, 158, 364, 142, 3.4),
 				strength: 0.85,
-				tap: 'hop',
-				motion: 'nod'
+				motion: 'nod',
+				tap: 'act-dive',
+				fx: 'landing',
+				fxAt: 1050
 			},
 
 			{
 				d: figure(290, 186, 56, { hat: 'cap' }) + limb(296, 178, 312, 168, 3.6),
 				strength: 1,
-				motion: 'nod'
+				motion: 'nod',
+				tap: 'act-follow'
 			},
-			{ d: disc(336, 146, 8.5), strength: 1, tap: 'sail', motion: 'bob' },
+			{
+				d: disc(336, 146, 8.5),
+				strength: 1,
+				motion: 'bob',
+				tap: 'act-shot',
+				fx: 'none',
+				origin: [336, 146]
+			},
 			{
 				d: 'M334 142l3 1-1 3-3-1ZM340 149l2 2-2 2-2-2ZM331 150l2 1-1 2-2-1Z',
 				strength: 1,
 				cut: true,
-				tap: 'sail',
-				motion: 'bob'
+				motion: 'bob',
+				tap: 'act-shot',
+				fx: 'none',
+				origin: [336, 146]
 			}
 		],
 		lines: [{ d: 'M314 164q8-10 14-14M312 156q8-6 14-8', strength: 0.5 }]
