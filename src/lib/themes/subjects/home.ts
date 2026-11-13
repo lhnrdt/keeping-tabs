@@ -362,8 +362,9 @@ export const HOME: Record<ThemeId, Scene> = {
 					limb(262, 190, 262, 148, 2) +
 					limb(280, 190, 280, 138, 2),
 				strength: 0.9,
-				tap: 'wave',
-				motion: 'sway'
+				tap: 'gust',
+				motion: 'breeze',
+				origin: [250, 190]
 			},
 			{
 				d:
@@ -400,14 +401,16 @@ export const HOME: Record<ThemeId, Scene> = {
 					disc(280.0, 131.5, 2.9250000000000003) +
 					disc(284.6, 133.4, 2.9250000000000003),
 				strength: 0.8,
-				tap: 'wave',
-				motion: 'sway'
+				tap: 'gust',
+				motion: 'breeze',
+				origin: [250, 190]
 			},
 			{
 				d: disc(226, 150, 4) + disc(244, 140, 4) + disc(262, 148, 4) + disc(280, 138, 4),
 				strength: 1,
-				tap: 'wave',
-				motion: 'sway'
+				tap: 'gust',
+				motion: 'breeze',
+				origin: [250, 190]
 			}
 		]
 	},
@@ -460,6 +463,12 @@ export const HOME: Record<ThemeId, Scene> = {
 			{
 				d: 'M196 200Q236 182 280 194Q296 198 300 200Z' + 'M352 200Q380 186 400 188V200Z',
 				strength: 0.85
+			},
+			{
+				d: rect(358, 120, 1.6, 17) + 'M359.6 120l11 3.5-11 3.5Z',
+				strength: 0.9,
+				motion: 'flutter',
+				tap: 'wave'
 			}
 		],
 		lines: [
