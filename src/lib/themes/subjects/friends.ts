@@ -36,8 +36,20 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 			GROUND,
 			{ d: pine(380, 92, 76), strength: 0.75, motion: 'sway' },
 			{ d: rect(372, 70, 16, 116) + 'M372 82L326 72L326 66L376 74Z', strength: 0.9 },
-			{ d: sitting(276, 138, 46, -1), strength: 1, motion: 'sway' },
-			{ d: rounded(262, 138, 30, 5, 2), strength: 1, motion: 'sway' },
+			{
+				d: sitting(276, 138, 46, -1),
+				strength: 1,
+				origin: [330, 70],
+				motion: 'swing',
+				tap: 'swing'
+			},
+			{
+				d: rounded(262, 138, 30, 5, 2),
+				strength: 1,
+				origin: [330, 70],
+				motion: 'swing',
+				tap: 'swing'
+			},
 			{
 				d: figure(322, 186, 54) + figure(348, 186, 48, { hat: 'beanie' }),
 				strength: 1,
@@ -46,7 +58,13 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 			}
 		],
 		lines: [
-			{ d: 'M328 70L264 140M332 70L290 140', strength: 1, motion: 'sway' },
+			{
+				d: 'M328 70L264 140M332 70L290 140',
+				strength: 1,
+				origin: [330, 70],
+				motion: 'swing',
+				tap: 'swing'
+			},
 			{ d: 'M294 152Q308 160 324 162M292 162Q306 170 322 172', strength: 0.5 }
 		]
 	},
