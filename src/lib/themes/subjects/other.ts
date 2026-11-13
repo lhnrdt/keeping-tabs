@@ -40,12 +40,18 @@ export const OTHER: Record<ThemeId, Scene> = {
 			{ d: 'M330 104h36l9 8-9 8h-36Z', strength: 1, tap: 'glint' },
 			{ d: 'M324 126h-30l-9 8 9 8h30Z', strength: 0.85 },
 			{ d: rect(336, 110, 22, 3) + rect(298, 132, 20, 3), strength: 1, cut: true },
-			{ d: figure(262, 186, 56, { pack: 'left' }), strength: 1, tap: 'hop', motion: 'nod' },
-			{ d: 'M266 146l12 4 12-4v16l-12 4-12-4Z', strength: 0.8, motion: 'nod', tap: 'hop' },
+			{ d: figure(262, 186, 56, { pack: 'left' }), strength: 1, motion: 'nod' },
+			{
+				d: 'M266 146l12 4 12-4v16l-12 4-12-4Z',
+				strength: 0.8,
+				motion: 'nod',
+				tap: 'act-flip',
+				origin: [278, 156]
+			},
 			{ d: 'M278 150v16', strength: 1, cut: true },
-			{ d: figure(372, 186, 60, { hat: 'cap' }), strength: 0.9, tap: 'hop', motion: 'nod' }
+			{ d: figure(372, 186, 60, { hat: 'cap' }), strength: 0.9, motion: 'nod', tap: 'act-lean' }
 		],
-		lines: [{ d: 'M278 150v16', strength: 0.9, tap: 'hop' }]
+		lines: [{ d: 'M278 150v16', strength: 0.9, tap: 'act-flip', origin: [278, 156] }]
 	},
 	// Someone at the end of the jetty, feet over the water, the rowing boat tied up beside it
 	fjord: {
@@ -57,12 +63,25 @@ export const OTHER: Record<ThemeId, Scene> = {
 		},
 		shapes: [
 			WATER,
-			{ d: hull(234, 190, 56, 12), strength: 0.85, motion: 'rock', tap: 'hop' },
+			{
+				d: hull(234, 190, 56, 12),
+				strength: 0.85,
+				motion: 'rock',
+				tap: 'act-ripple-rock',
+				fx: 'none'
+			},
 			{ d: rect(300, 168, 100, 8), strength: 1 },
 			{ d: rect(304, 176, 4, 18) + rect(340, 176, 4, 20) + rect(376, 176, 4, 20), strength: 0.9 },
 			{ d: seated(318, 168, 54, { hat: 'cap' }), strength: 1, motion: 'nod' },
-			{ d: rect(311, 168, 4, 18) + rect(319, 168, 4, 16), strength: 1 },
-			{ d: figure(362, 168, 46), strength: 0.9, tap: 'hop', motion: 'nod' },
+			{
+				d: rect(311, 168, 4, 18) + rect(319, 168, 4, 16),
+				strength: 1,
+				tap: 'act-kick-feet',
+				fx: 'splash',
+				fxAt: 250,
+				origin: [317, 168]
+			},
+			{ d: figure(362, 168, 46), strength: 0.9, motion: 'nod' },
 			{ d: rounded(380, 138, 12, 60, 4), strength: 0.95 }
 		],
 		lines: [
@@ -97,19 +116,20 @@ export const OTHER: Record<ThemeId, Scene> = {
 					tri(351, 98, 361, 106, 351, 112) +
 					tri(369, 121, 378, 130, 367, 134),
 				strength: 0.85,
-				tap: 'swing',
-				motion: 'flutter'
+				motion: 'flutter',
+				tap: 'gust'
 			},
 			{
 				d: figure(282, 132, 36, { hat: 'helmet', pack: 'left' }),
 				strength: 1,
-				tap: 'hop',
-				motion: 'walk'
+				motion: 'walk',
+				tap: 'act-brace',
+				origin: [282, 132]
 			}
 		],
 		lines: [
 			{ d: 'M321 64Q356 96 392 152', strength: 0.8 },
-			{ d: 'M294 112L297 132', strength: 0.9, tap: 'hop' }
+			{ d: 'M294 112L297 132', strength: 0.9, tap: 'act-brace', origin: [282, 132] }
 		]
 	},
 	// A stone circle on the knoll, a walker standing in the gateway of its tallest stones
@@ -127,7 +147,7 @@ export const OTHER: Record<ThemeId, Scene> = {
 			{ d: 'M298 172l2-34l7-8l9 3l3 8l1 31Z', strength: 0.56 },
 			{ d: 'M332 174l3-76l7-4l9 2l2 78ZM372 174l1-80l9-2l8 4l2 78Z', strength: 0.66 },
 			{ d: 'M326 98l4-9l64-3l5 8l-3 9l-66 3Z', strength: 0.75, tap: 'glint' },
-			{ d: figure(362, 170, 34, { hat: 'beanie' }), strength: 1, tap: 'hop', motion: 'nod' },
+			{ d: figure(362, 170, 34, { hat: 'beanie' }), strength: 1, motion: 'nod', tap: 'away' },
 			{ d: 'M-1000 200V194H300V200Z', strength: 0.7 },
 			{ d: 'M150 200Q250 160 330 166T420 172V200Z', strength: 0.7 },
 			{ d: 'M282 202l2-24l8-8l11 3l4 29Z', strength: 0.9 },
@@ -273,7 +293,8 @@ export const OTHER: Record<ThemeId, Scene> = {
 				d: rect(354, 122, 2, 14) + 'M356 122h8v5h-8Z',
 				strength: 1,
 				motion: 'flutter',
-				tap: 'wave'
+				tap: 'act-flag-down',
+				origin: [355, 136]
 			},
 			{ d: rect(328, 136, 24, 1.6), strength: 1, cut: true },
 			{
@@ -420,9 +441,17 @@ export const OTHER: Record<ThemeId, Scene> = {
 				d: 'M370 174l6-18 6 18Z' + rect(375, 150, 2, 6) + disc(376, 149, 2.6),
 				strength: 0.85,
 				motion: 'bob',
-				tap: 'hop'
+				tap: 'act-buoy',
+				origin: [376, 174]
 			},
-			{ d: rect(369, 166, 14, 3), strength: 1, cut: true, motion: 'bob', tap: 'hop' }
+			{
+				d: rect(369, 166, 14, 3),
+				strength: 1,
+				cut: true,
+				motion: 'bob',
+				tap: 'act-buoy',
+				origin: [376, 174]
+			}
 		],
 		lines: [
 			{
@@ -535,8 +564,8 @@ export const OTHER: Record<ThemeId, Scene> = {
 					limb(286, 140, 322, 182, 2) +
 					'M318 180l10 4-1 3-10-3Z',
 				strength: 1,
-				tap: 'hop',
-				motion: 'nod'
+				motion: 'nod',
+				tap: 'act-rake'
 			},
 			{
 				d: 'M236 176h30l-4 10h-22Z' + limb(266, 178, 280, 170, 2) + disc(240, 188, 5),

@@ -81,3 +81,104 @@
 		transform: none;
 	}
 }
+
+/* Forest signpost: the map is turned over to read the back, a friend leans in */
+.scene-acting .tap-act-flip {
+	animation: act-flip 1.6s var(--ease-in-out-sine);
+}
+.scene-acting .tap-act-lean {
+	animation: act-lean 1.8s var(--ease-in-out-sine);
+}
+@keyframes act-flip {
+	50% {
+		transform: scaleX(-1);
+	}
+}
+@keyframes act-lean {
+	40%,
+	70% {
+		transform: rotate(-6deg);
+	}
+}
+
+/* Fjord jetty: feet kicked into the water, the ripple reaches the boat a moment later */
+.scene-acting .tap-act-kick-feet {
+	animation: act-kick-feet 1.4s var(--ease-out-quad);
+}
+.scene-acting .tap-act-ripple-rock {
+	animation: act-ripple-rock 2.4s var(--ease-in-out-sine) 0.5s;
+}
+@keyframes act-kick-feet {
+	20% {
+		transform: rotate(-28deg);
+	}
+	45% {
+		transform: rotate(6deg);
+	}
+	65% {
+		transform: rotate(-14deg);
+	}
+}
+@keyframes act-ripple-rock {
+	20% {
+		transform: translateY(-3px) rotate(-5deg);
+	}
+	45% {
+		transform: translateY(1px) rotate(4deg);
+	}
+	70% {
+		transform: rotate(-2deg);
+	}
+}
+
+/* Summit: a gust hits, the flags whip, the climber braces into it */
+.scene-acting .tap-act-brace {
+	animation: act-brace 1.8s var(--ease-out-quad);
+}
+@keyframes act-brace {
+	20%,
+	55% {
+		transform: rotate(-7deg);
+	}
+}
+
+/* Mailbox: the letter taken out, the flag goes down, and up again */
+.scene-acting .tap-act-flag-down {
+	animation: act-flag-down 2.4s var(--ease-in-out-cubic);
+}
+@keyframes act-flag-down {
+	25%,
+	70% {
+		transform: rotate(90deg);
+	}
+}
+
+/* Paddleboard: the board's wake reaches the buoy, it rocks */
+.scene-acting .tap-act-buoy {
+	animation: act-buoy 2s var(--ease-in-out-sine) 0.6s;
+}
+@keyframes act-buoy {
+	20% {
+		transform: rotate(10deg);
+	}
+	45% {
+		transform: rotate(-8deg);
+	}
+	70% {
+		transform: rotate(4deg);
+	}
+}
+
+/* Leaf raking: two sweeps of the rake as the pile flies up */
+.scene-acting .tap-act-rake {
+	animation: act-rake 1.6s var(--ease-in-out-sine);
+}
+@keyframes act-rake {
+	25%,
+	75% {
+		transform: rotate(5deg);
+	}
+	50% {
+		transform: rotate(-2deg);
+	}
+}
