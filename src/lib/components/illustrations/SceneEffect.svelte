@@ -19,7 +19,7 @@
 </script>
 
 <g class="scene-fx" stroke="var(--tint-fg)" fill="var(--tint-fg)" stroke-linecap="round">
-	{#if move === 'drive' || move === 'drive-left'}
+	{#if move === 'drive' || move === 'drive-left' || move === 'drive-bridge'}
 		<!-- It moves, so what trails it moves with it -->
 		<g class="tap-{move}">
 			{#each [0.3, 0.55, 0.8] as at, i (at)}

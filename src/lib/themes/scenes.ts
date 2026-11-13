@@ -34,6 +34,7 @@ export type SceneMotion =
 export type TapMove =
 	| 'drive'
 	| 'drive-left'
+	| 'drive-bridge'
 	| 'hop'
 	| 'spin'
 	| 'swing'

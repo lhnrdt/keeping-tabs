@@ -288,52 +288,57 @@ export const CAR: Record<ThemeId, Scene> = {
 					limb(279.3, 178.2, 284.9, 180.5, 1.4),
 				strength: 1,
 				cut: true,
-				tap: 'drive'
+				tap: 'drive-bridge'
 			},
 			{
 				d: 'M317.71 137.07 Q313.14 134.79 308.86 136.21 Q304.57 137.64 298.86 134.5 L298.29 136.79 Q304.29 140.21 309.14 138.79 Q313.43 137.36 317.43 139.64Z',
 				strength: 0.8,
 				motion: 'flutter',
-				tap: 'drive'
+				tap: 'drive-bridge'
 			},
 			{
 				d: 'M316.71 135.21 A2.14286 2.14286 0 1 1 321 135.21 A2.14286 2.14286 0 1 1 316.71 135.21ZM317.14 136.21 H320.57 V140.21 H317.14ZM323.14 135.64 A2.14286 2.14286 0 1 1 327.43 135.64 A2.14286 2.14286 0 1 1 323.14 135.64ZM323.57 136.64 H327 V140.21 H323.57Z',
 				strength: 0.85,
 				motion: 'idle',
-				tap: 'drive'
+				tap: 'drive-bridge'
 			},
 			{
 				d: 'M271.71 155.93 Q270 154.79 269.86 152.36 L269.57 143.07 Q269.71 139.5 270.29 137.36 L275.29 138.36 Q282.43 137.07 288.86 135.5 Q293.14 134.21 296 133.07 Q297.71 131.36 300.29 131.07 L304.57 130.93 Q306 131.07 306.43 131.93 L306.86 139.07 L336 141.07 L338.86 140.5 Q344.57 139.79 349.57 139.79 Q355.29 139.79 359.57 141.36 Q364.57 143.36 368.14 145.93 Q370.57 148.79 371 153.07 L371 155.93Z',
 				strength: 0.85,
 				motion: 'idle',
-				tap: 'drive'
+				tap: 'drive-bridge'
 			},
 			{
 				d: 'M297.14 142.07 Q297.71 148.07 307.71 151.07 Q301.71 147.36 301 141.93Z',
 				strength: 1,
 				motion: 'idle',
-				tap: 'drive'
+				tap: 'drive-bridge'
 			},
-			{ d: limb(339.57, 140.5, 324.86, 131.93, 1.6), strength: 1, motion: 'idle', tap: 'drive' },
+			{
+				d: limb(339.57, 140.5, 324.86, 131.93, 1.6),
+				strength: 1,
+				motion: 'idle',
+				tap: 'drive-bridge'
+			},
 			{
 				d: 'M360.57 141.64 L364 143.36 L363.71 144.07 L360.29 142.36ZM300.71 136.21 A1 1 0 1 1 302.71 136.21 A1 1 0 1 1 300.71 136.21Z',
 				strength: 1,
 				cut: true,
 				motion: 'idle',
-				tap: 'drive'
+				tap: 'drive-bridge'
 			},
 			{
 				d: disc(286.0, 151.5, 9.0) + disc(352.0, 151.5, 9.0),
 				strength: 1,
 				motion: 'idle',
-				tap: 'drive'
+				tap: 'drive-bridge'
 			},
 			{
 				d: disc(286.0, 151.5, 5.58) + disc(352.0, 151.5, 5.58),
 				strength: 1,
 				cut: true,
 				motion: 'idle',
-				tap: 'drive'
+				tap: 'drive-bridge'
 			},
 			{
 				d:
@@ -351,7 +356,7 @@ export const CAR: Record<ThemeId, Scene> = {
 					disc(352.0, 151.5, 1.8),
 				strength: 1,
 				motion: 'idle',
-				tap: 'drive'
+				tap: 'drive-bridge'
 			},
 			{
 				d:

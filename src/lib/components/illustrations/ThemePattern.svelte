@@ -52,7 +52,7 @@
 	let acting = $state(false);
 	const INTERACTIVE = 'a, button, input, select, textarea, label, summary';
 	/** Long enough for the longest move */
-	const ACTION_MS = 2600;
+	const ACTION_MS = 3000;
 	/** Where each move happens, to draw its swoosh lines and particles round it */
 	type Effect = { move: string; x: number; y: number; w: number; h: number };
 	let effects: Effect[] = $state([]);
@@ -208,8 +208,8 @@
 				{/each}
 			</g>
 		{/each}
+		{#each effects as effect, i (i)}
+			<SceneEffect {...effect} />
+		{/each}
 	</g>
-	{#each effects as effect, i (i)}
-		<SceneEffect {...effect} />
-	{/each}
 </svg>

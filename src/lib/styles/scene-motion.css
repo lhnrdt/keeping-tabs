@@ -325,6 +325,9 @@
 .scene-acting .tap-drive-left {
 	animation: tap-drive-left 2.4s var(--ease-in-out-cubic);
 }
+.scene-acting .tap-drive-bridge {
+	animation: tap-drive-bridge 2.8s linear;
+}
 .scene-acting .tap-hop {
 	animation: tap-hop 700ms var(--ease-out-quad);
 }
@@ -390,6 +393,46 @@
 	46% {
 		transform: translateX(1400px);
 		animation-timing-function: var(--ease-out-quad);
+	}
+}
+/* Over the humpback bridge: down its slope, tilting with it, away along the bank, and back up it */
+@keyframes tap-drive-bridge {
+	8% {
+		transform: translate(30px, 2.3px) rotate(8.8deg);
+	}
+	15% {
+		transform: translate(60px, 9.3px) rotate(17.2deg);
+	}
+	21% {
+		transform: translate(90px, 20.9px) rotate(24.9deg);
+	}
+	25% {
+		transform: translate(106px, 29px) rotate(28.7deg);
+	}
+	31% {
+		transform: translate(170px, 31px) rotate(0deg);
+	}
+	45% {
+		transform: translate(1400px, 31px);
+		animation-timing-function: steps(1, end);
+	}
+	46% {
+		transform: translate(-1400px, 31px);
+	}
+	70% {
+		transform: translate(-170px, 31px) rotate(0deg);
+	}
+	76% {
+		transform: translate(-106px, 29px) rotate(-28.7deg);
+	}
+	82% {
+		transform: translate(-90px, 20.9px) rotate(-24.9deg);
+	}
+	88% {
+		transform: translate(-60px, 9.3px) rotate(-17.2deg);
+	}
+	94% {
+		transform: translate(-30px, 2.3px) rotate(-8.8deg);
 	}
 }
 @keyframes tap-hop {
