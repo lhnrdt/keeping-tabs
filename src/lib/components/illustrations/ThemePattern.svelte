@@ -25,6 +25,12 @@
 	};
 
 	let { kind, settled = false, celebrate = false, themeId }: Props = $props();
+	/** The header's text sits on the left: the scene fades out there, all but its ground (#327) */
+	const uid = $props.id();
+	const clear = `scene-clear-${uid}`;
+	/** Where the text ends and the scene begins, and where the ground starts, in the scene's units */
+	const TEXT_EDGE = [150, 205];
+	const GROUND_TOP = 176;
 
 	/** Snow is bright, but the header's text comes first */
 	const SNOW_STRENGTH = 0.6;
@@ -139,53 +145,70 @@
 	data-testid={kind ? 'group-scene' : undefined}
 	data-settled={kind ? settled : undefined}
 >
-	{#each layers as layer, l (l)}
-		{@const { scene, moment } = layer}
-		<g class={moment && celebrate ? 'scene-celebrate' : undefined}>
-			{#each scene.shapes as shape, i (i)}
-				<g class={shape.tap ? `tap-${shape.tap}` : undefined} style={pivot(shape.origin)}>
-					<g transform={mirrorOf(shape)}>
-						<!-- Solid: the line color is see-through, so whatever's behind a shape would show -->
-						{#if !shape.cut}
+	<defs>
+		<linearGradient
+			id="{clear}-x"
+			x1={TEXT_EDGE[0]}
+			x2={TEXT_EDGE[1]}
+			gradientUnits="userSpaceOnUse"
+		>
+			<stop offset="0" stop-color="#000" />
+			<stop offset="1" stop-color="#fff" />
+		</linearGradient>
+		<mask id={clear} maskUnits="userSpaceOnUse" x="-3000" y="-200" width="3800" height="600">
+			<rect x="-3000" y="-200" width="3800" height="600" fill="url(#{clear}-x)" />
+			<rect x="-3000" y={GROUND_TOP} width="3800" height="200" fill="#fff" />
+		</mask>
+	</defs>
+	<g mask="url(#{clear})">
+		{#each layers as layer, l (l)}
+			{@const { scene, moment } = layer}
+			<g class={moment && celebrate ? 'scene-celebrate' : undefined}>
+				{#each scene.shapes as shape, i (i)}
+					<g class={shape.tap ? `tap-${shape.tap}` : undefined} style={pivot(shape.origin)}>
+						<g transform={mirrorOf(shape)}>
+							<!-- Solid: the line color is see-through, so whatever's behind a shape would show -->
+							{#if !shape.cut}
+								<path
+									d={shape.d}
+									fill="var(--tint-bg)"
+									class={shape.motion ? `scene-${shape.motion}` : undefined}
+									style={pivot(shape.origin)}
+								/>
+							{/if}
 							<path
 								d={shape.d}
-								fill="var(--tint-bg)"
+								fill={shape.snow ? '#fff' : shape.cut ? 'var(--tint-bg)' : inkOf(layer)}
+								fill-opacity={shape.snow
+									? SNOW_STRENGTH
+									: shape.cut
+										? 1
+										: opacityOf(layer, shape.strength)}
 								class={shape.motion ? `scene-${shape.motion}` : undefined}
 								style={pivot(shape.origin)}
 							/>
-						{/if}
+						</g>
+					</g>
+				{/each}
+				{#each scene.lines ?? [] as line, i (i)}
+					<g class={line.tap ? `tap-${line.tap}` : undefined} style={pivot(line.origin)}>
 						<path
-							d={shape.d}
-							fill={shape.snow ? '#fff' : shape.cut ? 'var(--tint-bg)' : inkOf(layer)}
-							fill-opacity={shape.snow
-								? SNOW_STRENGTH
-								: shape.cut
-									? 1
-									: opacityOf(layer, shape.strength)}
-							class={shape.motion ? `scene-${shape.motion}` : undefined}
-							style={pivot(shape.origin)}
+							d={line.d}
+							stroke={inkOf(layer)}
+							stroke-opacity={opacityOf(layer, line.strength)}
+							stroke-width={layer.subject ? 2.2 : 1.5}
+							stroke-linecap="round"
+							class={line.motion ? `scene-${line.motion}` : undefined}
+							style={pivot(line.origin)}
 						/>
 					</g>
-				</g>
-			{/each}
-			{#each scene.lines ?? [] as line, i (i)}
-				<g class={line.tap ? `tap-${line.tap}` : undefined} style={pivot(line.origin)}>
-					<path
-						d={line.d}
-						stroke={inkOf(layer)}
-						stroke-opacity={opacityOf(layer, line.strength)}
-						stroke-width={layer.subject ? 2.2 : 1.5}
-						stroke-linecap="round"
-						class={line.motion ? `scene-${line.motion}` : undefined}
-						style={pivot(line.origin)}
-					/>
-				</g>
-			{/each}
-			{#each scene.dots ?? [] as [cx, cy, r, dot], i (i)}
-				<circle {cx} {cy} {r} fill={inkOf(layer)} fill-opacity={opacityOf(layer, dot)} />
-			{/each}
-		</g>
-	{/each}
+				{/each}
+				{#each scene.dots ?? [] as [cx, cy, r, dot], i (i)}
+					<circle {cx} {cy} {r} fill={inkOf(layer)} fill-opacity={opacityOf(layer, dot)} />
+				{/each}
+			</g>
+		{/each}
+	</g>
 	{#each effects as effect, i (i)}
 		<SceneEffect {...effect} />
 	{/each}

@@ -117,18 +117,18 @@ export const EVENT: Record<ThemeId, Scene> = {
 		backdrop: {
 			shapes: [
 				{ d: 'M190 166L230 120L266 166ZM360 166L388 128L416 166Z', strength: 0.35 },
-				{ d: 'M-200 200V164' + 'q12-10 24 0'.repeat(25) + 'V200Z', strength: 1, snow: true }
+				{ d: 'M-1000 200V164' + 'q12-10 24 0'.repeat(25) + 'V200Z', strength: 1, snow: true }
 			]
 		},
 		shapes: [
-			{ d: 'M-200 200V194H300V200Z', strength: 0.95 },
+			{ d: 'M-1000 200V194H300V200Z', strength: 0.95 },
 			{ d: 'M236 200L304 140Q320 128 336 140L400 200Z', strength: 0.95 },
 			{
 				d: 'M284 158L304 140Q320 128 336 140L356 158L348 155L342 162L334 154L324 160L316 153L306 161L298 154Z',
 				strength: 1,
 				snow: true
 			},
-			{ d: 'M-200 200V184' + 'q14-12 28 0'.repeat(22) + 'V200Z', strength: 1, snow: true },
+			{ d: 'M-1000 200V184' + 'q14-12 28 0'.repeat(22) + 'V200Z', strength: 1, snow: true },
 			{
 				d:
 					figure(306, 139, 30) +
@@ -390,7 +390,7 @@ export const EVENT: Record<ThemeId, Scene> = {
 	coast: {
 		backdrop: {
 			shapes: [
-				{ d: 'M-200 186V170H400V186Z', strength: 0.36 },
+				{ d: 'M-1000 186V170H400V186Z', strength: 0.36 },
 				{ d: 'M314 172Q350 126 410 120V172Z', strength: 0.35 },
 				{
 					d:

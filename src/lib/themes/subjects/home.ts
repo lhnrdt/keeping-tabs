@@ -119,7 +119,7 @@ export const HOME: Record<ThemeId, Scene> = {
 			]
 		},
 		shapes: [
-			{ d: 'M-200 200V194H300V200Z', strength: 0.95 },
+			{ d: 'M-1000 200V194H300V200Z', strength: 0.95 },
 			{ d: 'M214 200L284 168H368L400 156V200Z', strength: 0.95 },
 			{ d: rect(318, 168, 16, 4), strength: 0.8 },
 			{ d: rect(336, 118, 10, 30), strength: 1 },
@@ -418,7 +418,7 @@ export const HOME: Record<ThemeId, Scene> = {
 	coast: {
 		backdrop: {
 			shapes: [
-				{ d: 'M-200 186V166H400V186Z', strength: 0.36 },
+				{ d: 'M-1000 186V166H400V186Z', strength: 0.36 },
 				{ d: 'M372 166Q380 136 400 132V166Z', strength: 0.45 },
 				{
 					d:
@@ -438,7 +438,7 @@ export const HOME: Record<ThemeId, Scene> = {
 			lines: [{ d: waves(220, 176, 4), strength: 0.45, motion: 'flow' }]
 		},
 		shapes: [
-			{ d: 'M-200 200V184H400V200Z', strength: 0.4 },
+			{ d: 'M-1000 200V184H400V200Z', strength: 0.4 },
 			{
 				d:
 					house(236, 188, 30, 36, 16, 4) +

@@ -224,10 +224,17 @@
 		transform: translate(-130px, 0);
 	}
 }
+/* A star sparkles where it is: brighter, dimmer, never moving */
 @keyframes scene-twinkle {
-	50% {
-		opacity: 0.25;
-		transform: scale(0.55);
+	0%,
+	100% {
+		opacity: 1;
+	}
+	45% {
+		opacity: 0.2;
+	}
+	55% {
+		opacity: 0.35;
 	}
 }
 @keyframes scene-turn {
@@ -366,22 +373,22 @@
 @keyframes tap-drive {
 	/* Off one side, round the world, and in again from the other */
 	45% {
-		transform: translateX(360px);
+		transform: translateX(1400px);
 		animation-timing-function: steps(1, end);
 	}
 	46% {
-		transform: translateX(-460px);
+		transform: translateX(-1400px);
 		animation-timing-function: var(--ease-out-quad);
 	}
 }
 @keyframes tap-drive-left {
 	/* Off one side, round the world, and in again from the other */
 	45% {
-		transform: translateX(-360px);
+		transform: translateX(-1400px);
 		animation-timing-function: steps(1, end);
 	}
 	46% {
-		transform: translateX(460px);
+		transform: translateX(1400px);
 		animation-timing-function: var(--ease-out-quad);
 	}
 }
@@ -450,8 +457,15 @@
 	}
 }
 @keyframes tap-flash {
-	30% {
-		transform: scale(1.9);
+	10%,
+	30%,
+	50% {
+		opacity: 0.15;
+	}
+	20%,
+	40%,
+	60% {
+		opacity: 1;
 	}
 }
 @keyframes tap-glint {

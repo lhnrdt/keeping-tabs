@@ -113,7 +113,7 @@ export const FOOD: Record<ThemeId, Scene> = {
 					strength: 1,
 					snow: true
 				},
-				{ d: 'M-200 200V176Q100 170 400 174V200Z', strength: 1, snow: true }
+				{ d: 'M-1000 200V176Q100 170 400 174V200Z', strength: 1, snow: true }
 			]
 		},
 		shapes: [
@@ -608,7 +608,7 @@ export const FOOD: Record<ThemeId, Scene> = {
 	coast: {
 		backdrop: {
 			shapes: [
-				{ d: 'M-200 186V160H400V186Z', strength: 0.36 },
+				{ d: 'M-1000 186V160H400V186Z', strength: 0.36 },
 				{
 					d:
 						rect(224, 112, 1.4, 48) +
@@ -624,7 +624,7 @@ export const FOOD: Record<ThemeId, Scene> = {
 			]
 		},
 		shapes: [
-			{ d: 'M-200 200V184H400V200Z', strength: 0.45 },
+			{ d: 'M-1000 200V184H400V200Z', strength: 0.45 },
 			{
 				d:
 					rect(200, 168, 200, 2) +

@@ -97,7 +97,7 @@ export const TRIP: Record<ThemeId, Scene> = {
 			]
 		},
 		shapes: [
-			{ d: 'M-200 200V194H300V200Z', strength: 1, snow: true },
+			{ d: 'M-1000 200V194H300V200Z', strength: 1, snow: true },
 			{ d: 'M214 200L400 108V200Z', strength: 1, snow: true },
 			{ d: 'M362 129l6-6 9 2-1 5ZM344 140l5-4 7 2-1 3Z', strength: 0.8, tap: 'climb' },
 			{
@@ -147,7 +147,7 @@ export const TRIP: Record<ThemeId, Scene> = {
 				d: rounded(347, 118, 18, 9, 3) + rounded(350, 110, 12, 9, 3) + rounded(353, 103, 7, 8, 3),
 				strength: 0.7
 			},
-			{ d: 'M-200 200V194H300V200Z', strength: 0.6 },
+			{ d: 'M-1000 200V194H300V200Z', strength: 0.6 },
 			{ d: 'M150 200Q240 172 330 168T440 164V200Z', strength: 0.6 },
 			{ d: 'M258 200C290 188 330 178 370 168h6C352 180 334 190 322 200Z', strength: 1, cut: true },
 			{
@@ -252,7 +252,7 @@ export const TRIP: Record<ThemeId, Scene> = {
 			lines: [{ d: 'M276 142h20M320 141h24M362 142h16', strength: 0.5, motion: 'shimmer' }]
 		},
 		shapes: [
-			{ d: 'M-200 200V188H400V200Z', strength: 0.6 },
+			{ d: 'M-1000 200V188H400V200Z', strength: 0.6 },
 			{
 				d:
 					rect(0, 187, 6, 3) +
@@ -291,7 +291,7 @@ export const TRIP: Record<ThemeId, Scene> = {
 					rect(396, 187, 6, 3),
 				strength: 0.9
 			},
-			{ d: rect(-200, 185, 600, 2), strength: 1 },
+			{ d: rect(-1000, 185, 1400, 2), strength: 1 },
 			{
 				d:
 					rounded(206, 146, 60, 32, 4) +
@@ -407,7 +407,7 @@ export const TRIP: Record<ThemeId, Scene> = {
 			]
 		},
 		shapes: [
-			{ d: 'M-200 200V186H400V200Z', strength: 0.45 },
+			{ d: 'M-1000 200V186H400V200Z', strength: 0.45 },
 			{
 				d: disc(274.2, 171.7, 14.3) + disc(341.8, 171.7, 14.3),
 				strength: 1,
@@ -472,7 +472,7 @@ export const TRIP: Record<ThemeId, Scene> = {
 	// A sailboat rounding the lighthouse on its rocky point
 	coast: {
 		backdrop: {
-			shapes: [{ d: 'M-200 186V168H400V186Z', strength: 0.3 }]
+			shapes: [{ d: 'M-1000 186V168H400V186Z', strength: 0.3 }]
 		},
 		shapes: [
 			{ d: WATER.d, strength: 0.4 },
@@ -558,7 +558,7 @@ export const TRIP: Record<ThemeId, Scene> = {
 				motion: 'twinkle-late',
 				tap: 'flash'
 			},
-			{ d: 'M-200 200V194H300V200Z', strength: 0.55 },
+			{ d: 'M-1000 200V194H300V200Z', strength: 0.55 },
 			{ d: 'M196 200Q240 190 300 186T400 190V200Z', strength: 0.55 },
 			{ d: 'M362 176L400 166V188Z', strength: 0.3, motion: 'shimmer', tap: 'drive' },
 			{ d: rounded(306, 178, 32, 7, 3.5), strength: 1, motion: 'idle', tap: 'drive' },

@@ -56,7 +56,7 @@ export const PARTNER: Record<ThemeId, Scene> = {
 					rect(309, 136, 42, 3),
 				strength: 0.9
 			},
-			{ d: figure(320, 104, 30) + figure(338, 104, 28), strength: 1, motion: 'nod' },
+			{ d: figure(320, 104, 30) + figure(338, 104, 28), strength: 1, motion: 'nod', tap: 'hop' },
 			{ d: rect(306, 92, 48, 14) + rect(302, 104, 56, 4), strength: 1 },
 			{
 				d: tri(298, 66, 330, 50, 362, 66) + rect(308, 66, 3, 26) + rect(349, 66, 3, 26),
@@ -76,7 +76,7 @@ export const PARTNER: Record<ThemeId, Scene> = {
 			]
 		},
 		shapes: [
-			{ d: 'M-200 200V160H400V200Z', strength: 0.4 },
+			{ d: 'M-1000 200V160H400V200Z', strength: 0.4 },
 			...reflected(160, BOAT_FOR_TWO, 0.6),
 			{ d: rect(262, 176, 116, 1.5) + rect(280, 186, 80, 1.5), strength: 1, cut: true },
 			...BOAT_FOR_TWO,
@@ -94,12 +94,13 @@ export const PARTNER: Record<ThemeId, Scene> = {
 			]
 		},
 		shapes: [
-			{ d: 'M-200 200V194H300V200Z', strength: 0.95 },
+			{ d: 'M-1000 200V194H300V200Z', strength: 0.95 },
 			{ d: 'M214 200L280 162L330 134L400 176V200Z', strength: 0.95 },
 			{
 				d: 'M262 172L280 162L330 134L360 152L350 150L344 156L334 150L322 156L308 152L296 162L288 160Z',
 				strength: 1,
-				snow: true
+				snow: true,
+				tap: 'hop'
 			},
 			{
 				d:
@@ -133,12 +134,19 @@ export const PARTNER: Record<ThemeId, Scene> = {
 				strength: 1,
 				motion: 'nod'
 			},
-			{ d: limb(328, 152, 328, 112, 2.4) + 'M328 152q0 6 5 6t5-6', strength: 1 },
+			{
+				d: limb(328, 152, 328, 112, 2.4) + 'M328 152q0 6 5 6t5-6',
+				strength: 1,
+				tap: 'wave',
+				origin: [330, 146]
+			},
 			{
 				d:
 					'M282 114q46-44 92 0q-7-5-15 0q-8-5-16 0q-8-5-15 0q-8-5-16 0q-8-5-15 0q-8-5-15 0Z' +
 					rect(327, 86, 2, 6),
-				strength: 1
+				strength: 1,
+				tap: 'wave',
+				origin: [330, 146]
 			},
 			{ d: heart(352, 70, 7), strength: 1, motion: 'pulse', tap: 'burst' },
 			{
@@ -212,8 +220,8 @@ export const PARTNER: Record<ThemeId, Scene> = {
 				d: 'M326 192l2-8 2 8ZM330 192l3-10 1 10ZM378 192l2-9 2 9ZM382 192l3-7 1 7Z',
 				strength: 0.9
 			},
-			{ d: heart(354, 132, 11), strength: 1, tap: 'flash' },
-			{ d: heart(354, 132, 7.5), strength: 1, snow: true, tap: 'flash' },
+			{ d: heart(354, 132, 11), strength: 1, tap: 'glint' },
+			{ d: heart(354, 132, 7.5), strength: 1, snow: true, tap: 'glint' },
 			{
 				d: figure(320, 186, 56, { hat: 'cap' }) + limb(326, 152, 338, 136, 3.4),
 				strength: 1,
@@ -276,7 +284,7 @@ export const PARTNER: Record<ThemeId, Scene> = {
 	// At the end of the jetty, the sun going down into the sea, the two of them side by side
 	coast: {
 		backdrop: {
-			shapes: [{ d: 'M-200 186V166H400V186Z', strength: 0.36 }],
+			shapes: [{ d: 'M-1000 186V166H400V186Z', strength: 0.36 }],
 			lines: [{ d: 'M342 172h40M350 178h24M356 184h12', strength: 0.5, motion: 'shimmer' }]
 		},
 		shapes: [

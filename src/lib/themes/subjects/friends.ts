@@ -89,7 +89,7 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 			]
 		},
 		shapes: [
-			{ d: 'M-200 200V166Q240 160 300 166T400 162V200Z', strength: 1, snow: true },
+			{ d: 'M-1000 200V166Q240 160 300 166T400 162V200Z', strength: 1, snow: true },
 			{
 				d: 'M212 184L224 180L236 182L250 177L266 180L282 176L298 179L320 178L312 186L296 192L278 194L258 196L238 194L222 190Z',
 				strength: 0.5
@@ -126,7 +126,7 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 			shapes: [{ d: 'M60 200Q180 160 300 172T540 176V200Z', strength: 0.26 }]
 		},
 		shapes: [
-			{ d: 'M-200 200V194H300V200Z', strength: 0.7 },
+			{ d: 'M-1000 200V194H300V200Z', strength: 0.7 },
 			{ d: 'M200 200Q280 150 400 156V200Z', strength: 0.7 },
 			{ d: seated(294, 166, 42, { hat: 'beanie' }), strength: 0.85 },
 			{ d: figure(322, 161, 50) + limb(328, 134, 336, 110, 3.6), strength: 1, motion: 'nod' },
@@ -251,7 +251,7 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 			lines: [{ d: 'M276 172h18M312 173h26M352 172h20', strength: 0.4, motion: 'shimmer' }]
 		},
 		shapes: [
-			{ d: 'M-200 200V176H400V200Z', strength: 0.4 },
+			{ d: 'M-1000 200V176H400V200Z', strength: 0.4 },
 			{ d: 'M196 200V178Q210 172 250 172L262 178V200Z', strength: 0.75 },
 			{ d: rect(224, 140, 36, 34), strength: 0.9 },
 			{ d: 'M218 142L242 124L266 142Z' + rect(250, 122, 5, 12), strength: 1 },
@@ -360,7 +360,7 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 	coast: {
 		backdrop: {
 			shapes: [
-				{ d: 'M-200 186V164H400V186Z', strength: 0.36 },
+				{ d: 'M-1000 186V164H400V186Z', strength: 0.36 },
 				{ d: 'M190 164Q214 142 246 144Q262 150 268 164Z', strength: 0.42 },
 				{
 					d:
@@ -376,7 +376,7 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 			lines: [{ d: waves(260, 172, 3), strength: 0.45, motion: 'flow' }]
 		},
 		shapes: [
-			{ d: 'M-200 200V184H400V200Z', strength: 0.45 },
+			{ d: 'M-1000 200V184H400V200Z', strength: 0.45 },
 			{ d: rect(318, 128, 2.4, 58) + rect(318, 128, 2.4, 2), strength: 1 },
 			{ d: rect(310, 130, 18, 24), strength: 0.75 },
 			{
