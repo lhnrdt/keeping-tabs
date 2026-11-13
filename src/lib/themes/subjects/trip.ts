@@ -49,7 +49,13 @@ export const TRIP: Record<ThemeId, Scene> = {
 				motion: 'flutter'
 			},
 			{ d: rounded(230, 176, 34, 10, 5), strength: 0.85 },
-			{ d: seated(246, 176, 60, { hat: 'beanie' }), strength: 1, tap: 'hop', motion: 'nod' },
+			{
+				d: seated(246, 176, 60, { hat: 'beanie' }),
+				strength: 1,
+				motion: 'nod',
+				tap: 'act-recoil',
+				origin: [246, 176]
+			},
 			{
 				d: disc(270, 184, 3) + disc(278, 186, 3) + disc(298, 186, 3) + disc(306, 184, 3),
 				strength: 0.8

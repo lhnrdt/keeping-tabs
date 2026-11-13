@@ -56,13 +56,13 @@ export const PARTNER: Record<ThemeId, Scene> = {
 					rect(309, 136, 42, 3),
 				strength: 0.9
 			},
-			{ d: figure(320, 104, 30) + figure(338, 104, 28), strength: 1, motion: 'nod', tap: 'hop' },
+			{ d: figure(320, 104, 30) + figure(338, 104, 28), strength: 1, motion: 'nod' },
 			{ d: rect(306, 92, 48, 14) + rect(302, 104, 56, 4), strength: 1 },
 			{
 				d: tri(298, 66, 330, 50, 362, 66) + rect(308, 66, 3, 26) + rect(349, 66, 3, 26),
 				strength: 1
 			},
-			{ d: heart(330, 34, 6), strength: 1, motion: 'pulse', tap: 'burst' }
+			{ d: heart(330, 34, 6), strength: 1, motion: 'pulse', tap: 'float' }
 		]
 	},
 	// Two in a rowing boat on mirror-calm water, mirrored in it below
@@ -100,7 +100,8 @@ export const PARTNER: Record<ThemeId, Scene> = {
 				d: 'M330 134L402.8 177.7L360.6 165.5L327.4 184.3L294.2 165.5L252 177.7Z',
 				strength: 1,
 				snow: true,
-				tap: 'hop'
+				tap: 'act-brace',
+				origin: [314, 160]
 			},
 			{
 				d:

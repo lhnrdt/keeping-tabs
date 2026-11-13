@@ -338,8 +338,15 @@ export const HOME: Record<ThemeId, Scene> = {
 				strength: 1,
 				cut: true
 			},
-			{ d: disc(380, 186, 12), strength: 0.85, tap: 'spin' },
-			{ d: disc(380, 186, 7.5) + disc(380, 186, 3), strength: 1, cut: true, tap: 'spin' },
+			{ d: disc(380, 186, 12), strength: 0.85, tap: 'act-roll', origin: [380, 186], fx: 'dust' },
+			{
+				d: disc(380, 186, 7.5) + disc(380, 186, 3),
+				strength: 1,
+				cut: true,
+				tap: 'act-roll',
+				origin: [380, 186],
+				fx: 'none'
+			},
 			{
 				d:
 					rect(204, 178, 120, 2.4) +
@@ -560,7 +567,13 @@ export const HOME: Record<ThemeId, Scene> = {
 					rect(300, 172, 60, 1.6),
 				strength: 0.9
 			},
-			{ d: seated(318, 182, 32) + seated(342, 182, 30), strength: 0.85, tap: 'hop', motion: 'nod' },
+			{
+				d: seated(318, 182, 32) + seated(342, 182, 30),
+				strength: 0.85,
+				motion: 'nod',
+				tap: 'act-recoil',
+				origin: [330, 182]
+			},
 			{ d: 'M376 200Q384 168 400 166V200Z' + pine(396, 200, 90), strength: 1, motion: 'sway' }
 		]
 	},

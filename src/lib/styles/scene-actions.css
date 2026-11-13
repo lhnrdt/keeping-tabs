@@ -456,3 +456,13 @@
 		transform: scale(1.2);
 	}
 }
+
+/* Round bale: nudged, it rolls along the ground and back, turning as it goes */
+.scene-acting .tap-act-roll {
+	animation: act-roll 2.4s var(--ease-in-out-sine);
+}
+@keyframes act-roll {
+	50% {
+		transform: translateX(-30px) rotate(-143deg);
+	}
+}
