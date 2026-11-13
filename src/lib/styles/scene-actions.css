@@ -182,3 +182,86 @@
 		transform: rotate(-2deg);
 	}
 }
+
+/* Rock tongue: they lean out and peer over the edge */
+.scene-acting .tap-act-peer {
+	animation: act-peer 2s var(--ease-in-out-sine);
+}
+@keyframes act-peer {
+	30%,
+	65% {
+		transform: rotate(8deg);
+	}
+}
+
+/* Kite: a gust tugs the holder towards it */
+.scene-acting .tap-act-tug {
+	animation: act-tug 1.6s var(--ease-out-quad);
+}
+@keyframes act-tug {
+	25% {
+		transform: rotate(6deg);
+	}
+	55% {
+		transform: rotate(-2deg);
+	}
+}
+
+/* Sauna lake: the swimmer ducks under and comes up again */
+.scene-acting .tap-act-duck {
+	animation: act-duck 1.8s var(--ease-in-out-sine);
+}
+@keyframes act-duck {
+	30% {
+		opacity: 0;
+		transform: translateY(9px);
+	}
+	55% {
+		opacity: 0;
+		transform: translateY(9px);
+	}
+	70% {
+		opacity: 1;
+		transform: translateY(-3px);
+	}
+}
+
+/* Beach volleyball: tossed up, spiked down over the net into the sand */
+.scene-acting .tap-act-spike {
+	animation: act-spike 2.4s linear;
+}
+@keyframes act-spike {
+	15% {
+		transform: translate(0, -10px);
+		animation-timing-function: var(--ease-in-quad, cubic-bezier(0.11, 0, 0.5, 0));
+	}
+	34% {
+		transform: translate(34px, 62px);
+	}
+	42% {
+		transform: translate(40px, 56px);
+	}
+	50% {
+		opacity: 1;
+		transform: translate(44px, 62px);
+	}
+	72% {
+		opacity: 0;
+		transform: translate(44px, 62px);
+	}
+	73% {
+		opacity: 0;
+		transform: none;
+	}
+}
+
+/* Hot tub: they sink in to the chin, the steam billows */
+.scene-acting .tap-act-sink {
+	animation: act-sink 2.2s var(--ease-in-out-sine);
+}
+@keyframes act-sink {
+	35%,
+	70% {
+		transform: translateY(5px);
+	}
+}

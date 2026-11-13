@@ -53,7 +53,6 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 			{
 				d: figure(322, 186, 54) + figure(348, 186, 48, { hat: 'beanie' }),
 				strength: 1,
-				tap: 'hop',
 				motion: 'nod'
 			}
 		],
@@ -85,8 +84,9 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 			{
 				d: sitting(320, 107, 40, -1) + figure(350, 104, 44, { hat: 'beanie', pack: 'right' }),
 				strength: 0.9,
-				tap: 'hop',
-				motion: 'nod'
+				motion: 'nod',
+				tap: 'act-peer',
+				origin: [330, 110]
 			},
 			{ d: cloud(236, 140, 50) + cloud(292, 150, 40), strength: 0.25, motion: 'drift' }
 		],
@@ -146,12 +146,16 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 		shapes: [
 			{ d: 'M-1000 200V194H300V200Z', strength: 0.7 },
 			{ d: 'M200 200Q280 150 400 156V200Z', strength: 0.7 },
-			{ d: seated(294, 166, 42, { hat: 'beanie' }), strength: 0.85 },
+			{
+				d: seated(294, 166, 42, { hat: 'beanie' }),
+				strength: 0.85,
+				tap: 'act-tug',
+				origin: [322, 161]
+			},
 			{ d: figure(322, 161, 50) + limb(328, 134, 336, 110, 3.6), strength: 1, motion: 'nod' },
 			{
 				d: figure(352, 157, 30, { hat: 'cap' }) + limb(356, 140, 364, 128, 2.6),
-				strength: 0.85,
-				tap: 'hop'
+				strength: 0.85
 			},
 			{
 				d:
@@ -299,7 +303,9 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 				d: disc(374, 179, 4.5) + limb(378, 180, 382, 168, 2.6),
 				strength: 1,
 				motion: 'rock',
-				tap: 'hop'
+				tap: 'act-duck',
+				fx: 'splash',
+				fxAt: 1150
 			},
 			{
 				d: 'M364 183l-6-9 5 3ZM385 183l5-9-5 3ZM368 179l-3-11 5 6Z',
@@ -440,9 +446,24 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 				motion: 'nod'
 			},
 			{ d: figure(256, 186, 46), strength: 0.7, motion: 'nod' },
-			{ d: disc(318, 116, 6.5), strength: 1, motion: 'bob', tap: 'float' }
+			{
+				d: disc(318, 116, 6.5),
+				strength: 1,
+				motion: 'bob',
+				tap: 'act-spike',
+				fx: 'dust',
+				fxAt: 820
+			}
 		],
-		lines: [{ d: 'M314 113q4 3 8 0M313 118q5 2 10 0', strength: 0.6, motion: 'bob', tap: 'float' }]
+		lines: [
+			{
+				d: 'M314 113q4 3 8 0M313 118q5 2 10 0',
+				strength: 0.6,
+				motion: 'bob',
+				tap: 'act-spike',
+				fx: 'none'
+			}
+		]
 	},
 	// Three friends soaking in the big wooden hot tub, steam rising, the sauna glowing behind, the lights overhead
 	aurora: {
@@ -498,8 +519,10 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 			{
 				d: figure(290, 168, 50) + figure(324, 166, 54, { hat: 'beanie' }) + figure(358, 168, 48),
 				strength: 1,
-				tap: 'hop',
-				motion: 'nod'
+				motion: 'nod',
+				tap: 'act-sink',
+				fxAt: 500,
+				fx: 'puffs'
 			},
 			{
 				d:
@@ -508,7 +531,8 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 					limb(334, 140, 342, 120, 4.2) +
 					rounded(338, 110, 9, 11, 2),
 				strength: 1,
-				tap: 'hop'
+				tap: 'act-sink',
+				fx: 'none'
 			},
 			{ d: 'M262 152H388L382 196H268Z', strength: 0.85 },
 			{ d: rect(258, 148, 134, 6), strength: 1 },
