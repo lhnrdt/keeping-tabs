@@ -208,14 +208,22 @@ export const SCENES: Record<ThemeId, Scene> = {
 		shapes: [
 			{ d: 'M200 200L262 112L300 150L346 98L400 150V200Z', strength: 0.35 },
 			// Snow caps end on the slopes of their peaks, and the ones behind go behind what's in front
-			{ d: 'M262 112L278 128L270 123L264 132L257 125L250.7 128Z', strength: 1, snow: true },
 			{
-				d: 'M346 98L364.7 116L356 112L350 120L343 113L336 119L330.1 116Z',
+				d: 'M262 112L285 135L274 128.6L265.4 138.4L256.8 128.6L245.8 135Z',
+				strength: 1,
+				snow: true
+			},
+			{
+				d: 'M346 98L372.3 123.3L358.7 116.2L347.9 127.1L337.2 116.2L323.6 123.3Z',
 				strength: 1,
 				snow: true
 			},
 			{ d: 'M250 200L324 104L400 188V200Z', strength: 0.7 },
-			{ d: 'M324 104L347.5 130L338 123L330 135L322 125L314 134L304 130Z', strength: 1, snow: true },
+			{
+				d: 'M324 104L356.3 139.7L339.6 129.7L326.4 145.1L313.2 129.7L296.5 139.7Z',
+				strength: 1,
+				snow: true
+			},
 			{ d: 'M300 200C330 182 370 176 400 182V200Z', strength: 0.9 }
 		]
 	},

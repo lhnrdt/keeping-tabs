@@ -97,7 +97,7 @@ export const PARTNER: Record<ThemeId, Scene> = {
 			{ d: 'M-1000 200V194H300V200Z', strength: 0.95 },
 			{ d: 'M214 200L280 162L330 134L400 176V200Z', strength: 0.95 },
 			{
-				d: 'M262 172L280 162L330 134L360 152L350 150L344 156L334 150L322 156L308 152L296 162L288 160Z',
+				d: 'M330 134L402.8 177.7L360.6 165.5L327.4 184.3L294.2 165.5L252 177.7Z',
 				strength: 1,
 				snow: true,
 				tap: 'hop'

@@ -92,7 +92,11 @@ export const TRIP: Record<ThemeId, Scene> = {
 		backdrop: {
 			shapes: [
 				{ d: 'M224 200L300 76L376 200Z', strength: 0.28 },
-				{ d: 'M300 76L316 94L306 90L300 98L294 90L284 94Z', strength: 1, snow: true },
+				{
+					d: 'M300 76L315.5 101.3L306.8 94.2L300 105.1L293.2 94.2L284.5 101.3Z',
+					strength: 1,
+					snow: true
+				},
 				{ d: 'M362 52a12 12 0 1 1 24 0a12 12 0 1 1 -24 0Z', strength: 0.35 }
 			]
 		},

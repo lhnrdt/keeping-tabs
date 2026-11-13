@@ -81,7 +81,11 @@ export const OTHER: Record<ThemeId, Scene> = {
 		shapes: [
 			{ d: 'M-1000 200V194H300V200Z', strength: 0.95 },
 			{ d: 'M214 200L318 98L400 160V200Z', strength: 0.95 },
-			{ d: 'M290 126L318 98L346 120L332 116L324 126L316 116L304 124Z', strength: 1, snow: true },
+			{
+				d: 'M318 98L360.6 130.2L339.5 121.2L322.9 135L306.3 121.2L285.2 130.2Z',
+				strength: 1,
+				snow: true
+			},
 			{
 				d: 'M258 168l8-6 8 2-2 6ZM336 150l8-5 7 3-3 5ZM360 172l7-4 6 2-2 4Z',
 				strength: 1

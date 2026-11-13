@@ -92,7 +92,11 @@ export const CAR: Record<ThemeId, Scene> = {
 		backdrop: {
 			shapes: [
 				{ d: 'M200 182L250 110L320 182Z', strength: 0.32 },
-				{ d: 'M250 110L262 124L254 121L248 128L242 121L238 124Z', strength: 1, snow: true },
+				{
+					d: 'M250 110L270.1 130.7L260.5 124.9L252.9 133.8L245.3 124.9L235.6 130.7Z',
+					strength: 1,
+					snow: true
+				},
 				{ d: 'M200 182V176Q300 172 400 176V182Z', strength: 0.45 }
 			]
 		},
@@ -191,7 +195,7 @@ export const CAR: Record<ThemeId, Scene> = {
 			shapes: [
 				{ d: 'M170 200L250 86L310 150L356 92L430 200Z', strength: 0.3 },
 				{
-					d: 'M250 86L266 106L256 102L250 110L244 102L234 106ZM356 92L370 110L362 106L356 114L350 106L342 110Z',
+					d: 'M250 86L272.5 110L261.5 103.3L252.8 113.6L244.2 103.3L233.2 110ZM356 92L371.1 114L362 107.8L354.8 117.3L347.7 107.8L338.6 114Z',
 					strength: 1,
 					snow: true
 				}
