@@ -36,8 +36,9 @@ export const EVENT: Record<ThemeId, Scene> = {
 					seated(346, 186, 38, { hat: 'beanie' }) +
 					seated(368, 186, 40),
 				strength: 1,
-				tap: 'hop',
-				motion: 'nod'
+				motion: 'nod',
+				tap: 'act-recoil',
+				origin: [280, 186]
 			},
 			{ d: logs(318, 186, 22), strength: 0.9 },
 			{ d: flame(312, 181, 16) + flame(324, 181, 22), strength: 1, motion: 'flicker', tap: 'burst' }
@@ -88,7 +89,12 @@ export const EVENT: Record<ThemeId, Scene> = {
 				motion: 'swing'
 			},
 			{ d: 'M294 110l-3 12 4-1 2 3ZM340 110l-3 12 4-1 2 3Z', strength: 0.8, motion: 'flutter' },
-			{ d: figure(258, 186, 38) + figure(360, 186, 46), strength: 1, tap: 'hop', motion: 'walk' },
+			{
+				d: figure(258, 186, 38) + figure(360, 186, 46),
+				strength: 1,
+				motion: 'walk',
+				tap: 'act-dance'
+			},
 			{
 				d:
 					figure(282, 186, 44) +
@@ -96,8 +102,8 @@ export const EVENT: Record<ThemeId, Scene> = {
 					figure(384, 186, 40) +
 					'M376 186l4-16h8l4 16Z',
 				strength: 0.9,
-				tap: 'hop',
-				motion: 'walk'
+				motion: 'walk',
+				tap: 'act-dance'
 			},
 			{
 				d:
@@ -128,15 +134,20 @@ export const EVENT: Record<ThemeId, Scene> = {
 				strength: 1,
 				snow: true
 			},
-			{ d: 'M-1000 200V184' + 'q14-12 28 0'.repeat(22) + 'V200Z', strength: 1, snow: true },
+			{
+				d: 'M-1000 200V184' + 'q14-12 28 0'.repeat(22) + 'V200Z',
+				strength: 1,
+				snow: true,
+				tap: 'act-brace'
+			},
 			{
 				d:
 					figure(306, 139, 30) +
 					figure(320, 133, 32, { hat: 'beanie' }) +
 					figure(334, 139, 30, { hat: 'helmet' }),
 				strength: 1,
-				tap: 'hop',
-				motion: 'nod'
+				motion: 'nod',
+				tap: 'gust'
 			},
 			{
 				d: flag(294, 148, 30, 13) + flag(348, 148, 30, 13),
@@ -160,8 +171,8 @@ export const EVENT: Record<ThemeId, Scene> = {
 					figure(280, 178, 32) +
 					figure(298, 178, 30, { hat: 'cap' }),
 				strength: 0.5,
-				tap: 'hop',
-				motion: 'nod'
+				motion: 'nod',
+				tap: 'act-lean'
 			},
 			{ d: rect(208, 102, 3, 84) + rect(300, 96, 3, 90), strength: 0.5 },
 			{
@@ -186,10 +197,14 @@ export const EVENT: Record<ThemeId, Scene> = {
 			{ d: figure(320, 186, 64), strength: 1, motion: 'nod' },
 			{ d: 'M306 186l2-22h24l2 22Z', strength: 0.7 },
 			{ d: rect(307, 164, 26, 2), strength: 1, cut: true },
+			{ d: limb(326, 142, 338, 160, 4) + limb(332, 148, 340, 164, 4), strength: 1, motion: 'nod' },
 			{
-				d: 'M333 166l9 2 30-136-7-1Z' + limb(326, 142, 338, 160, 4) + limb(332, 148, 340, 164, 4),
+				d: 'M333 166l9 2 30-136-7-1Z',
 				strength: 1,
-				tap: 'wave'
+				tap: 'act-caber',
+				origin: [337, 166],
+				fx: 'dust',
+				fxAt: 1300
 			}
 		],
 		lines: [{ d: 'M210 106Q256 116 302 100', strength: 0.6 }]
@@ -267,7 +282,6 @@ export const EVENT: Record<ThemeId, Scene> = {
 					seated(330, 170, 46) +
 					seated(356, 170, 46),
 				strength: 0.85,
-				tap: 'hop',
 				motion: 'nod'
 			},
 			{
@@ -287,13 +301,13 @@ export const EVENT: Record<ThemeId, Scene> = {
 					limb(350, 152, 346, 132, 2.6) +
 					rect(343.5, 124, 5, 8),
 				strength: 1,
-				tap: 'hop'
+				tap: 'act-clink'
 			},
 			{
 				d: disc(250, 86, 10) + disc(306, 98, 12) + disc(362, 84, 10),
 				strength: 1,
-				tap: 'hop',
-				motion: 'bob-slow'
+				motion: 'bob-slow',
+				tap: 'act-lantern'
 			},
 			{
 				d:
@@ -305,8 +319,8 @@ export const EVENT: Record<ThemeId, Scene> = {
 					disc(365, 82, 1.4),
 				strength: 1,
 				cut: true,
-				tap: 'hop',
-				motion: 'bob-slow'
+				motion: 'bob-slow',
+				tap: 'act-lantern'
 			}
 		],
 		lines: [
@@ -315,10 +329,10 @@ export const EVENT: Record<ThemeId, Scene> = {
 			{
 				d: 'M247 89q3 3 6 0M302 102q4 3 8 0M359 87q3 3 6 0',
 				strength: 1,
-				tap: 'hop',
-				motion: 'bob-slow'
+				motion: 'bob-slow',
+				tap: 'act-lantern'
 			},
-			{ d: 'M271 120l-3-4M280 120l3-4M345 120l-3-4', strength: 0.8, tap: 'hop' }
+			{ d: 'M271 120l-3-4M280 120l3-4M345 120l-3-4', strength: 0.8, tap: 'act-clink' }
 		]
 	},
 	// The open-air concert in the field: the stage lit up, the crowd's arms in the air up close
@@ -360,8 +374,8 @@ export const EVENT: Record<ThemeId, Scene> = {
 			{
 				d: figure(348, 160, 30) + limb(352, 144, 358, 136, 2.4) + rect(356, 134, 1.4, 26),
 				strength: 1,
-				tap: 'hop',
-				motion: 'nod'
+				motion: 'nod',
+				tap: 'act-lean'
 			},
 			{
 				d:
@@ -373,8 +387,8 @@ export const EVENT: Record<ThemeId, Scene> = {
 					limb(300, 174, 310, 130, 4.4) +
 					limb(220, 176, 212, 134, 4),
 				strength: 1,
-				tap: 'hop',
-				motion: 'walk'
+				motion: 'walk',
+				tap: 'act-dance'
 			}
 		],
 		lines: [
@@ -435,7 +449,6 @@ export const EVENT: Record<ThemeId, Scene> = {
 					figure(292, 178, 44) +
 					limb(254, 150, 262, 132, 3.4),
 				strength: 1,
-				tap: 'hop',
 				motion: 'nod'
 			}
 		],
@@ -444,21 +457,27 @@ export const EVENT: Record<ThemeId, Scene> = {
 				d: 'M307.7 60.0L322.0 60.0M306.7 63.8L319.1 71.0M303.9 66.7L311.0 79.1M300.0 67.7L300.0 82.0M296.2 66.7L289.0 79.1M293.3 63.8L280.9 71.0M292.3 60.0L278.0 60.0M293.3 56.2L280.9 49.0M296.1 53.3L289.0 40.9M300.0 52.3L300.0 38.0M303.9 53.3L311.0 40.9M306.7 56.1L319.1 49.0',
 				strength: 0.9,
 				motion: 'pulse',
-				tap: 'burst'
+				tap: 'act-burst-late',
+				fx: 'sparks',
+				fxAt: 700
 			},
 			{
 				d: 'M357.6 84.0L368.0 84.0M356.5 87.3L364.9 93.4M353.7 89.3L356.9 99.2M350.3 89.3L347.1 99.2M347.5 87.3L339.1 93.4M346.4 84.0L336.0 84.0M347.5 80.7L339.1 74.6M350.3 78.7L347.1 68.8M353.7 78.7L356.9 68.8M356.5 80.7L364.9 74.6',
 				strength: 0.75,
 				motion: 'pulse',
-				tap: 'burst'
+				tap: 'act-burst-late',
+				fx: 'sparks',
+				fxAt: 700
 			},
 			{
 				d: 'M258.5 92.0L267.0 92.0M257.2 95.2L263.2 101.2M254.0 96.5L254.0 105.0M250.8 95.2L244.8 101.2M249.5 92.0L241.0 92.0M250.8 88.8L244.8 82.8M254.0 87.5L254.0 79.0M257.2 88.8L263.2 82.8',
 				strength: 0.6,
 				motion: 'pulse',
-				tap: 'burst'
+				tap: 'act-burst-late',
+				fx: 'sparks',
+				fxAt: 700
 			},
-			{ d: 'M300 160V86M352 160V102', strength: 0.3 }
+			{ d: 'M300 160V86M352 160V102', strength: 0.3, tap: 'act-launch', origin: [300, 186] }
 		]
 	},
 	// Skating on the frozen lake: skaters near and far under a string of lights, the aurora in bands
@@ -629,7 +648,6 @@ export const EVENT: Record<ThemeId, Scene> = {
 			{
 				d: figure(228, 204, 60, { hat: 'beanie' }) + figure(252, 206, 54),
 				strength: 1,
-				tap: 'hop',
 				motion: 'nod'
 			}
 		],

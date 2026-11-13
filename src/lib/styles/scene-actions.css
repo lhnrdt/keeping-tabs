@@ -354,3 +354,105 @@
 		transform: translateY(-4px) rotate(-3deg);
 	}
 }
+
+/* Campfire: it flares up, they lean back from the heat */
+.scene-acting .tap-act-recoil {
+	animation: act-recoil 1.6s var(--ease-out-quad);
+}
+@keyframes act-recoil {
+	20%,
+	45% {
+		transform: rotate(-5deg);
+	}
+}
+
+/* Dancing: hops with a step to the side, in time */
+.scene-acting .tap-act-dance {
+	animation: act-dance 1.8s var(--ease-in-out-sine);
+}
+@keyframes act-dance {
+	12%,
+	45%,
+	78% {
+		transform: translate(0, -6px);
+	}
+	28% {
+		transform: translate(3px, 0);
+	}
+	62% {
+		transform: translate(-3px, 0);
+	}
+}
+
+/* Highland games: the caber tips over forward, end over end, and lands */
+.scene-acting .tap-act-caber {
+	animation: act-caber 2.4s cubic-bezier(0.11, 0, 0.5, 0);
+}
+@keyframes act-caber {
+	25% {
+		transform: rotate(18deg) translateY(-6px);
+	}
+	55% {
+		opacity: 1;
+		transform: translate(40px, 4px) rotate(180deg);
+	}
+	75% {
+		opacity: 0;
+		transform: translate(40px, 4px) rotate(180deg);
+	}
+	76% {
+		opacity: 0;
+		transform: none;
+	}
+}
+
+/* Crayfish party: the glasses clink, the lanterns sway on their string */
+.scene-acting .tap-act-clink {
+	animation: act-clink 1.2s var(--ease-out-quad);
+}
+.scene-acting .tap-act-lantern {
+	animation: act-lantern 2.4s var(--ease-in-out-sine);
+}
+@keyframes act-clink {
+	30% {
+		transform: translate(2px, -4px);
+	}
+	45% {
+		transform: translate(0, -3px);
+	}
+}
+@keyframes act-lantern {
+	25% {
+		transform: translateX(4px);
+	}
+	50% {
+		transform: translateX(-3px);
+	}
+	75% {
+		transform: translateX(2px);
+	}
+}
+
+/* Fireworks: the rockets go up, then burst at the top */
+.scene-acting .tap-act-launch {
+	animation: act-launch 0.7s var(--ease-out-quad);
+}
+.scene-acting .tap-act-burst-late {
+	transform-origin: center;
+	animation: act-burst-late 1.6s var(--ease-out-back) 0.6s backwards;
+}
+@keyframes act-launch {
+	0% {
+		transform: scaleY(0);
+	}
+}
+@keyframes act-burst-late {
+	0% {
+		opacity: 0;
+		transform: scale(0.2);
+	}
+	40% {
+		opacity: 1;
+		transform: scale(1.2);
+	}
+}
