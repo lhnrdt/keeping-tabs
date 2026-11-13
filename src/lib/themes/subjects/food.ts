@@ -34,14 +34,28 @@ export const FOOD: Record<ThemeId, Scene> = {
 			{ d: pine(240, 186, 64), strength: 0.45, motion: 'sway' },
 			{ d: disc(270, 184, 6) + disc(372, 184, 6), strength: 0.8 },
 			{ d: logs(320, 186, 90), strength: 0.9 },
-			{ d: 'M276 157h88q-6 20-26 20h-36q-20 0-26-20Z', strength: 1 },
-			{ d: limb(364, 161, 396, 145, 6), strength: 1 },
+			{
+				d: 'M276 157h88q-6 20-26 20h-36q-20 0-26-20Z',
+				strength: 1,
+				tap: 'act-pan',
+				origin: [396, 145]
+			},
+			{ d: limb(364, 161, 396, 145, 6), strength: 1, tap: 'act-pan', origin: [396, 145] },
 			{
 				d: 'M280 157a9 7 0 0 1 18 0ZM302 157a12 10 0 0 1 24 0ZM330 157a10 8 0 0 1 20 0ZM350 157a8 6 0 0 1 16 0Z',
 				strength: 1,
-				tap: 'hop'
+				tap: 'act-toss',
+				origin: [320, 157],
+				fx: 'none'
 			},
-			{ d: 'M287 153h4v4h-4ZM312 151h4v6h-4ZM338 153h4v4h-4Z', strength: 1, cut: true, tap: 'hop' },
+			{
+				d: 'M287 153h4v4h-4ZM312 151h4v6h-4ZM338 153h4v4h-4Z',
+				strength: 1,
+				cut: true,
+				tap: 'act-toss',
+				origin: [320, 157],
+				fx: 'none'
+			},
 			{
 				d: flame(266, 178, 36) + flame(374, 178, 38),
 				strength: 0.55,
@@ -91,7 +105,10 @@ export const FOOD: Record<ThemeId, Scene> = {
 			{
 				d: 'M286 136q12-10 26 0q-12 8-26 0ZM312 136l7-6v12ZM318 136q12-10 24 0q-12 8-24 0ZM342 136l7-6v12Z',
 				strength: 1,
-				tap: 'hop'
+				tap: 'act-flip-over',
+				origin: [299, 136],
+				fx: 'sparks',
+				fxAt: 650
 			},
 			{ d: sitting(380, 170, 52, -1), strength: 1, motion: 'nod' },
 			{ d: rect(354, 160, 16, 3), strength: 1 },
@@ -120,32 +137,61 @@ export const FOOD: Record<ThemeId, Scene> = {
 			{
 				d: 'M300 112h52v58q0 14-14 14h-24q-14 0-14-14Z',
 				strength: 0.7,
-				tap: 'hop',
-				motion: 'bob-slow'
+				motion: 'bob-slow',
+				tap: 'act-sip',
+				origin: [300, 184],
+				fx: 'none'
 			},
 			{
 				d: 'M352 124q22 0 22 20t-22 20v-8q12 0 12-12t-12-12Z',
 				strength: 0.7,
-				tap: 'hop',
-				motion: 'bob-slow'
+				motion: 'bob-slow',
+				tap: 'act-sip',
+				origin: [300, 184]
 			},
 			{
 				d: 'M302 113a24 6 0 1 0 48 0a24 6 0 1 0 -48 0Z',
 				strength: 1,
 				cut: true,
-				tap: 'hop',
-				motion: 'bob-slow'
+				motion: 'bob-slow',
+				tap: 'act-sip',
+				origin: [300, 184]
 			},
 			{
 				d: 'M306 114a20 4 0 1 0 40 0a20 4 0 1 0 -40 0Z',
 				strength: 0.5,
-				tap: 'hop',
-				motion: 'bob-slow'
+				motion: 'bob-slow',
+				tap: 'act-sip',
+				origin: [300, 184]
 			},
-			{ d: limb(226, 230, 274, 186, 36), strength: 0.55, motion: 'bob-slow' },
-			{ d: limb(268, 192, 282, 178, 34), strength: 0.75, motion: 'bob-slow' },
-			{ d: rounded(282, 144, 48, 38, 15), strength: 1, tap: 'hop', motion: 'bob-slow' },
-			{ d: limb(290, 150, 324, 140, 12), strength: 1, tap: 'hop', motion: 'bob-slow' }
+			{
+				d: limb(226, 230, 274, 186, 36),
+				strength: 0.55,
+				motion: 'bob-slow',
+				tap: 'act-sip',
+				origin: [300, 184]
+			},
+			{
+				d: limb(268, 192, 282, 178, 34),
+				strength: 0.75,
+				motion: 'bob-slow',
+				tap: 'act-sip',
+				origin: [300, 184]
+			},
+			{
+				d: rounded(282, 144, 48, 38, 15),
+				strength: 1,
+				motion: 'bob-slow',
+				tap: 'act-sip',
+				origin: [300, 184]
+			},
+			{
+				d: limb(290, 150, 324, 140, 12),
+				strength: 1,
+				motion: 'bob-slow',
+				tap: 'act-sip',
+				origin: [300, 184]
+			}
 		],
 		lines: [
 			{
@@ -223,7 +269,7 @@ export const FOOD: Record<ThemeId, Scene> = {
 					disc(290, 197, 4.5) +
 					disc(280, 199, 4),
 				strength: 1,
-				tap: 'hop'
+				tap: 'act-settle'
 			},
 			{
 				d:
@@ -246,7 +292,7 @@ export const FOOD: Record<ThemeId, Scene> = {
 					disc(282, 196.5, 1.4),
 				strength: 1,
 				cut: true,
-				tap: 'hop'
+				tap: 'act-settle'
 			},
 			{ d: 'M300 156h96l-9 50h-78Z', strength: 0.7 },
 			{ d: rect(304, 170, 88, 2) + rect(306, 184, 84, 2), strength: 1, cut: true }
@@ -377,7 +423,7 @@ export const FOOD: Record<ThemeId, Scene> = {
 					disc(367, 150, 7.5) +
 					disc(381, 150, 7.5),
 				strength: 0.85,
-				tap: 'hop'
+				tap: 'act-settle'
 			},
 			{
 				d:
@@ -508,7 +554,7 @@ export const FOOD: Record<ThemeId, Scene> = {
 					limb(384.77, 147.6, 385.62, 149.69, 1.1),
 				strength: 1,
 				cut: true,
-				tap: 'hop'
+				tap: 'act-settle'
 			}
 		],
 		lines: [
@@ -556,7 +602,6 @@ export const FOOD: Record<ThemeId, Scene> = {
 			{
 				d: figure(262, 186, 46, { hat: 'cap' }) + rounded(266, 166, 12, 9, 2),
 				strength: 0.7,
-				tap: 'hop',
 				motion: 'nod'
 			},
 			{
@@ -590,7 +635,7 @@ export const FOOD: Record<ThemeId, Scene> = {
 					'M362 146C353.0 140 354.0 132 362 133C370.0 132 371.0 140 362 146Z' +
 					'M381 145C372.0 139 373.0 131 381 132C389.0 131 390.0 139 381 145Z',
 				strength: 1,
-				tap: 'hop'
+				tap: 'act-settle'
 			},
 			{
 				d:
@@ -600,7 +645,7 @@ export const FOOD: Record<ThemeId, Scene> = {
 					'M357.0 134.0l2.5 -4.0 2.5 2.5 2.5 -2.5 2.5 4.0Z' +
 					'M376.0 133.0l2.5 -4.0 2.5 2.5 2.5 -2.5 2.5 4.0Z',
 				strength: 0.75,
-				tap: 'hop'
+				tap: 'act-settle'
 			}
 		]
 	},
@@ -668,8 +713,9 @@ export const FOOD: Record<ThemeId, Scene> = {
 					'M326 152l-3-9 6 0Z' +
 					disc(326, 141, 3.5),
 				strength: 1,
-				tap: 'hop',
-				motion: 'nod'
+				motion: 'nod',
+				tap: 'act-lean',
+				origin: [310, 186]
 			},
 			{ d: figure(286, 186, 44, { hat: 'cap' }), strength: 0.8, motion: 'nod' },
 			{ d: figure(266, 186, 38), strength: 0.65, motion: 'nod' }
@@ -783,8 +829,9 @@ export const FOOD: Record<ThemeId, Scene> = {
 			{
 				d: figure(318, 155, 44, { hat: 'cap' }) + limb(324, 127, 334, 106, 3.2),
 				strength: 1,
-				tap: 'hop',
-				motion: 'nod'
+				motion: 'nod',
+				tap: 'act-reach',
+				origin: [318, 155]
 			},
 			{
 				d:
@@ -794,7 +841,7 @@ export const FOOD: Record<ThemeId, Scene> = {
 					disc(237, 170, 5) +
 					disc(247, 169, 5),
 				strength: 1,
-				tap: 'hop'
+				tap: 'act-settle'
 			},
 			{ d: 'M226 176H262L258 192H230Z' + 'M228 176q16-16 32 0h-3q-13-12-26 0Z', strength: 0.85 },
 			{ d: rect(228, 182, 32, 1.4), strength: 1, cut: true }

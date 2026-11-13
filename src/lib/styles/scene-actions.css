@@ -265,3 +265,92 @@
 		transform: translateY(5px);
 	}
 }
+
+/* Mushroom pan: the pan flicks up, the mushrooms fly in an arc and land back in it */
+.scene-acting .tap-act-pan {
+	animation: act-pan 1.6s var(--ease-out-quad);
+}
+.scene-acting .tap-act-toss {
+	animation: act-toss 1.6s linear;
+}
+@keyframes act-pan {
+	15% {
+		transform: rotate(-8deg) translateY(-3px);
+	}
+	40% {
+		transform: none;
+	}
+	62% {
+		transform: translateY(2px);
+	}
+}
+@keyframes act-toss {
+	10% {
+		transform: translateY(0);
+		animation-timing-function: var(--ease-out-quad);
+	}
+	35% {
+		transform: translate(-4px, -26px) rotate(-14deg);
+		animation-timing-function: cubic-bezier(0.11, 0, 0.5, 0);
+	}
+	60% {
+		transform: translate(0, 2px);
+	}
+	70% {
+		transform: none;
+	}
+}
+
+/* Grill: the fish is flipped over */
+.scene-acting .tap-act-flip-over {
+	animation: act-flip-over 1.4s var(--ease-in-out-sine);
+}
+@keyframes act-flip-over {
+	50% {
+		transform: translateY(-14px) scaleY(-1);
+	}
+}
+
+/* Mug: lifted for a sip, tilted towards the mouth */
+.scene-acting .tap-act-sip {
+	animation: act-sip 2.2s var(--ease-in-out-sine);
+}
+@keyframes act-sip {
+	35%,
+	65% {
+		transform: translateY(-10px) rotate(-14deg);
+	}
+}
+
+/* Berries, buns: a fresh handful drops in and settles */
+.scene-acting .tap-act-settle {
+	animation: act-settle 1.2s cubic-bezier(0.11, 0, 0.5, 0);
+}
+@keyframes act-settle {
+	0% {
+		opacity: 0;
+		transform: translateY(-18px);
+	}
+	50% {
+		opacity: 1;
+		transform: none;
+		animation-timing-function: var(--ease-out-quad);
+	}
+	65% {
+		transform: translateY(-3px);
+	}
+	80% {
+		transform: none;
+	}
+}
+
+/* Reaching: up on the toes for the one just out of reach */
+.scene-acting .tap-act-reach {
+	animation: act-reach 1.6s var(--ease-in-out-sine);
+}
+@keyframes act-reach {
+	35%,
+	60% {
+		transform: translateY(-4px) rotate(-3deg);
+	}
+}
