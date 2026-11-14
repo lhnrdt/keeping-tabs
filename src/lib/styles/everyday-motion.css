@@ -1,0 +1,48 @@
+/*
+ * Everyday moments (#291): the new row comes into its place as the page goes back (morph.ts),
+ * and glows softly in the accent as it settles. None of it for anyone who asks for less motion.
+ */
+/* The new row comes into its place once the page is back: down a little, from a soft blur */
+::view-transition-group(new-entry) {
+	animation: none;
+}
+::view-transition-new(new-entry) {
+	animation: new-entry-in 650ms var(--ease-calm) 120ms both;
+}
+@keyframes new-entry-in {
+	from {
+		opacity: 0;
+		transform: translateY(-0.75rem) scale(0.96);
+		filter: blur(6px);
+	}
+}
+
+.just-added {
+	position: relative;
+}
+.just-added::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	pointer-events: none;
+	background: var(--color-accent-soft);
+	opacity: 0;
+}
+:where(.dark) .just-added::after {
+	background: var(--color-accent-soft-night);
+}
+@media (prefers-reduced-motion: no-preference) {
+	.just-added::after {
+		animation: just-added-glow 1800ms var(--ease-calm) both;
+	}
+}
+@keyframes just-added-glow {
+	0%,
+	25% {
+		opacity: 0.7;
+	}
+	100% {
+		opacity: 0;
+	}
+}

@@ -40,6 +40,8 @@
 		query?: string;
 		/** The server can't search an encrypted group: everything loads, and it's searched here (#110) */
 		searchHere?: boolean;
+		/** Just added: it glows as it comes in (#291) */
+		fresh?: string;
 	};
 
 	let {
@@ -49,8 +51,10 @@
 		entries,
 		hasMore,
 		query = '',
-		searchHere = false
+		searchHere = false,
+		fresh
 	}: Props = $props();
+	const glow = (id: string) => (id === fresh ? 'just-added' : undefined);
 
 	// Older pages load while scrolling (seamless); the link is the fallback without JS
 	const older = new OlderEntries(
@@ -173,6 +177,7 @@
 						<ul class="mx-4">
 							<SwipeRow
 								items={menuItems(payment)}
+								class={glow(payment.id)}
 								style={transitionName('expense', payment.id)}
 								data-entry={payment.id}
 							>
@@ -197,6 +202,7 @@
 							{#each run as expense (expense.id)}
 								<SwipeRow
 									items={menuItems(expense)}
+									class={glow(expense.id)}
 									style={transitionName('expense', expense.id)}
 									data-entry={expense.id}
 								>

@@ -41,6 +41,7 @@
 	sealed={['payment']}
 	sealRow={paymentId ?? clientId}
 	announce={paymentId ? undefined : 'payment'}
+	moment={paymentId ? undefined : { kind: 'paid', id: clientId }}
 >
 	<input type="hidden" name="clientId" value={paymentId ? '' : clientId} />
 	<div class="page-sections">
