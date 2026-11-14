@@ -7,6 +7,8 @@ async function addExpense(page: Page, title: string, amount: string) {
 	await page.getByLabel('Amount (€)').fill(amount);
 	await page.getByRole('button', { name: 'Add expense' }).click();
 	await expect(page.getByRole('link', { name: new RegExp(title) })).toBeVisible();
+	// The list is drawn again once the new entry is in: swiping before that is undone
+	await page.waitForLoadState('networkidle');
 }
 
 /** As a finger would: the row scrolls sideways and snaps open, until its action is there (the
@@ -37,7 +39,9 @@ test('swipe an entry for its quick actions (#323)', async ({ page }) => {
 	await expect(() => swipeOpen(bread, 'Edit expense')).toPass({ timeout: 20_000 });
 	await bread.getByRole('link', { name: /Bread/ }).click();
 	await expect(bread.getByTitle('Edit expense')).not.toBeInViewport();
+	await page.waitForLoadState('networkidle');
 	await expect(page).toHaveURL(/\/g\/[^/]+$/);
+	await expect(pizza).toBeVisible();
 
 	// The same actions as pressing and holding: delete, right there
 	await swipeAndTap(pizza, 'Delete expense');
