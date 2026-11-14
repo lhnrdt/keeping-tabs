@@ -67,10 +67,7 @@ test('a welcome, then a tour of the start screen and of a group, tapping through
 	await expect(bubble(page)).toContainText('Welcome to Keeping Tabs');
 });
 
-test('not now means none of it, and a tip comes once the tours are done (#331)', async ({
-	page,
-	browser
-}) => {
+test('not now means none of it (#331)', async ({ page }) => {
 	test.setTimeout(90_000);
 	await firstVisit(page);
 	await bubble(page).getByRole('button', { name: 'Not now' }).click();
@@ -82,26 +79,26 @@ test('not now means none of it, and a tip comes once the tours are done (#331)',
 	await page.getByRole('button', { name: 'Create group' }).click();
 	await page.waitForLoadState('networkidle');
 	await expect(bubble(page)).toHaveCount(0);
+});
 
-	// Someone who took the tours gets the tip about swiping, once there's an entry
-	const ben = await (await browser.newContext()).newPage();
-	await firstVisit(ben);
-	await bubble(ben).getByRole('button', { name: 'Show me around' }).click();
-	for (let i = 0; i < 2; i++) await bubble(ben).getByRole('button', { name: 'Next' }).click();
-	await bubble(ben).getByRole('button', { name: 'Got it' }).click();
-	await ben.goto('/new');
-	await ben.getByLabel('Group name').fill('Trip');
-	await ben.getByLabel('Your name').fill('Ben');
-	await keepPlain(ben);
-	await ben.getByRole('button', { name: 'Create group' }).click();
-	await bubble(ben).getByRole('button', { name: 'Close the tour' }).click();
-	await ben.getByRole('link', { name: 'Add expense' }).click();
-	await bubble(ben).getByRole('button', { name: 'Close the tour' }).click();
-	await ben.getByLabel('What was it for?').fill('Pizza');
-	await ben.getByLabel('Amount (€)').fill('20');
-	await ben.getByRole('button', { name: 'Add expense' }).click();
-	await expect(ben.getByRole('link', { name: /Pizza/ })).toBeVisible();
-	await ben.reload();
-	await ben.locator('.driver-hint').click();
-	await expect(ben.locator('.driver-popover')).toContainText('Swipe an entry to the left');
+test('a tip comes once the tours are done, when there is an entry (#331)', async ({ page }) => {
+	test.setTimeout(90_000);
+	// Someone who has been through the tours already
+	await page.addInitScript(() =>
+		localStorage.setItem('kt-onboarding', JSON.stringify(['welcome', 'home', 'group', 'expense']))
+	);
+	await firstVisit(page);
+	await page.goto('/new');
+	await page.getByLabel('Group name').fill('Trip');
+	await page.getByLabel('Your name').fill('Ben');
+	await keepPlain(page);
+	await page.getByRole('button', { name: 'Create group' }).click();
+	await page.getByRole('link', { name: 'Add expense' }).click();
+	await page.getByLabel('What was it for?').fill('Pizza');
+	await page.getByLabel('Amount (€)').fill('20');
+	await page.getByRole('button', { name: 'Add expense' }).click();
+	await expect(page.getByRole('link', { name: /Pizza/ })).toBeVisible();
+	await page.reload();
+	await page.locator('.driver-hint').click();
+	await expect(bubble(page)).toContainText('Swipe an entry to the left');
 });
