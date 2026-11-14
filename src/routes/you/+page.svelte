@@ -1,6 +1,7 @@
 <script lang="ts">
 	// Settings: who you are and your access lead on to their own pages; quick choices are right
 	// here and save as they change. Without JavaScript, each has its own Save button.
+	import InstallRow from '#lib/components/install/InstallRow.svelte';
 	import { applyLook } from '#lib/themes/apply-look.ts';
 	import { onMount } from 'svelte';
 	import { version } from '$app/env';
@@ -226,6 +227,7 @@
 					icon="passkey"
 					value={data.backedUp ? `✓ ${m.backup_saved()}` : m.backup_not_set_up()}
 				/>
+				<InstallRow />
 			</div>
 		</section>
 

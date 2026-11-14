@@ -1,4 +1,5 @@
 <script lang="ts">
+	import InstallCard from '#lib/components/install/InstallCard.svelte';
 	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
@@ -65,6 +66,7 @@
 	{:else}
 		<YourGroups memberOf={data.yourGroups} />
 	{/if}
+	<InstallCard />
 	{#if data.needsBackup}<BackupNudge />{/if}
 	<Block data-tour="new-group">
 		<LinkButton href={resolve('/new')}>

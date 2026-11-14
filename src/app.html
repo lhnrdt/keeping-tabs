@@ -57,6 +57,12 @@
 					for (const name of owned) root.style.setProperty(name, own[name]);
 					apply();
 				};
+				// Installing it (#352): the browser's offer comes early, so it's kept for the app's button
+				addEventListener('beforeinstallprompt', (event) => {
+					event.preventDefault();
+					window.installPrompt = event;
+					dispatchEvent(new Event('kt-installable'));
+				});
 				// Which day it is here, for a scenery that changes every day (#332)
 				const zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 				if (zone && !document.cookie.includes('kt-tz=' + encodeURIComponent(zone))) {
