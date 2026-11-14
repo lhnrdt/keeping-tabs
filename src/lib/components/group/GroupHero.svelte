@@ -47,6 +47,7 @@
 </script>
 
 <header
+	data-tour="group-hero"
 	class="{groupTintClass(
 		group.tint
 	)} relative mx-4 mt-2 overflow-hidden rounded-3xl bg-(--tint-bg) px-5 pt-5 pb-6 text-(--tint-fg)"

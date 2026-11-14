@@ -12,6 +12,7 @@
 
 <a
 	href={resolve('/you')}
+	data-tour="profile"
 	aria-label={me ? undefined : m.settings_title()}
 	class="k-link inline-flex h-full max-h-12 items-center justify-center gap-1 px-4 duration-300 select-none active:opacity-50"
 >
