@@ -13,6 +13,17 @@ export type ChangelogEntry = {
 /** Newest first */
 export const CHANGELOG: ChangelogEntry[] = [
 	{
+		version: '0.21.0',
+		date: '',
+		items: [
+			{
+				icon: 'edit',
+				en: 'Swipe an expense or payment to the left to edit or delete it straight from the list.',
+				de: 'Wisch eine Ausgabe oder Zahlung nach links, um sie direkt in der Liste zu bearbeiten oder zu löschen.'
+			}
+		]
+	},
+	{
 		version: '0.20.0',
 		date: '2026-11-14',
 		items: [
