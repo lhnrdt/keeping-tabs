@@ -381,8 +381,8 @@ svg.scene-layer {
 	animation: tap-float 2.2s var(--ease-in-out-sine);
 }
 .scene-acting .tap-burst {
-	transform-origin: center;
-	animation: tap-burst 1.4s var(--ease-out-back);
+	transform-origin: center bottom;
+	animation: tap-burst 1.4s var(--ease-in-out-sine);
 }
 .scene-acting .tap-wave {
 	animation: tap-wave 1.2s var(--ease-in-out-sine);
@@ -513,14 +513,19 @@ svg.scene-layer {
 		transform: translateY(-26px) scale(1.15);
 	}
 }
+/* A heartbeat, a fire flaring up: big, back, and a second smaller swell, from the base */
 @keyframes tap-burst {
-	0% {
-		opacity: 0;
-		transform: scale(0.2);
+	20% {
+		transform: scale(1.35);
 	}
 	40% {
-		opacity: 1;
-		transform: scale(1.25);
+		transform: scale(0.95);
+	}
+	58% {
+		transform: scale(1.18);
+	}
+	80% {
+		transform: none;
 	}
 }
 @keyframes tap-wave {
@@ -715,20 +720,24 @@ svg.scene-layer {
 		opacity: 1;
 	}
 }
+/* Flying out from the edge of what threw them, not bunched up in its middle */
 @keyframes fx-spark {
 	0% {
+		opacity: 0;
+		transform: translate(calc(var(--dx) * 0.9), calc(var(--dy) * 0.9));
+	}
+	15% {
 		opacity: 1;
-		transform: translate(0, 0);
 	}
 	100% {
 		opacity: 0;
-		transform: translate(var(--dx), var(--dy));
+		transform: translate(calc(var(--dx) * 1.7), calc(var(--dy) * 1.7));
 	}
 }
 @keyframes fx-ring {
 	0% {
 		opacity: 1;
-		transform: scale(0.4);
+		transform: scale(1);
 	}
 	100% {
 		opacity: 0;

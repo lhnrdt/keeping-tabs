@@ -27,8 +27,18 @@ const BOAT_FOR_TWO: Shape[] = [
 ];
 /** ...and their oars, dipping in (not reflected: they're in the water) */
 const OARS: Shape[] = [
-	{ d: limb(284, 152, 254, 166, 2.5) + limb(356, 152, 386, 166, 2.5), strength: 0.9 },
-	{ d: 'M248 162l-6 6 4 3 6-6ZM392 162l6 6-4 3-6-6Z', strength: 0.9 }
+	{
+		d: limb(284, 152, 254, 166, 2.5) + 'M248 162l-6 6 4 3 6-6Z',
+		strength: 0.9,
+		tap: 'act-row',
+		origin: [284, 152]
+	},
+	{
+		d: limb(356, 152, 386, 166, 2.5) + 'M392 162l6 6-4 3-6-6Z',
+		strength: 0.9,
+		tap: 'act-row-right',
+		origin: [356, 152]
+	}
 ];
 
 export const PARTNER: Record<ThemeId, Scene> = {
@@ -99,21 +109,20 @@ export const PARTNER: Record<ThemeId, Scene> = {
 			{
 				d: 'M330 134L402.8 177.7L360.6 165.5L327.4 184.3L294.2 165.5L252 177.7Z',
 				strength: 1,
-				snow: true,
-				tap: 'act-brace',
-				origin: [314, 160]
+				snow: true
 			},
 			{
 				d:
 					figure(296, 156, 40, { hat: 'helmet', pack: 'left' }) +
 					figure(332, 136, 42, { hat: 'beanie', pack: 'left' }),
 				strength: 1,
-				motion: 'walk'
+				motion: 'walk',
+				tap: 'act-taut'
 			},
 			{ d: heart(314, 96, 6), strength: 1, motion: 'pulse', tap: 'burst' },
 			{ d: 'M372 200l6-12 10-2 8 14ZM230 200l5-8 8 1 4 7Z', strength: 1 }
 		],
-		lines: [{ d: 'M302 140Q316 140 328 122', strength: 1 }]
+		lines: [{ d: 'M302 140Q316 140 328 122', strength: 1, tap: 'act-taut' }]
 	},
 	// Two under one umbrella in the moorland rain
 	heather: {
@@ -306,7 +315,8 @@ export const PARTNER: Record<ThemeId, Scene> = {
 					limb(307, 170, 312, 185, 3) +
 					limb(313, 170, 318, 185, 3),
 				strength: 1,
-				motion: 'nod'
+				motion: 'nod',
+				tap: 'act-dangle'
 			},
 			{ d: heart(300, 116, 7), strength: 1, motion: 'pulse', tap: 'burst' }
 		],
@@ -351,7 +361,13 @@ export const PARTNER: Record<ThemeId, Scene> = {
 				motion: 'twinkle-late',
 				tap: 'flash'
 			},
-			{ d: disc(290, 134, 12) + disc(316, 140, 11), strength: 1, motion: 'nod' },
+			{
+				d: disc(290, 134, 12) + disc(316, 140, 11),
+				strength: 1,
+				motion: 'nod',
+				tap: 'act-nestle',
+				origin: [303, 160]
+			},
 			{
 				d: 'M256 186Q256 150 288 146L304 152L318 150Q354 152 354 186Z',
 				strength: 0.85,

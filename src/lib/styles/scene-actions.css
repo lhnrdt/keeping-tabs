@@ -707,3 +707,48 @@
 		opacity: 0;
 	}
 }
+
+/* Rowing for two: two long strokes, the blades sweeping through the water from the oarlocks */
+.scene-acting .tap-act-row,
+.scene-acting .tap-act-row-right {
+	animation: act-row 2.6s var(--ease-in-out-sine);
+}
+.tap-act-row-right {
+	--dir: -1;
+}
+@keyframes act-row {
+	25%,
+	75% {
+		transform: rotate(calc(var(--dir, 1) * -14deg));
+	}
+	50% {
+		transform: rotate(calc(var(--dir, 1) * 6deg));
+	}
+}
+
+/* On the jetty's edge: feet swinging over the water, from the knee */
+.scene-acting .tap-act-dangle {
+	transform-origin: center top;
+	animation: act-dangle 2.2s var(--ease-in-out-sine);
+}
+@keyframes act-dangle {
+	20%,
+	60% {
+		transform: skewX(14deg);
+	}
+	40%,
+	80% {
+		transform: skewX(-10deg);
+	}
+}
+
+/* The bench under the lights: a head on the other's shoulder */
+.scene-acting .tap-act-nestle {
+	animation: act-nestle 2.6s var(--ease-in-out-sine);
+}
+@keyframes act-nestle {
+	30%,
+	75% {
+		transform: rotate(5deg);
+	}
+}
