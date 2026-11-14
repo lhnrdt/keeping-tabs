@@ -41,6 +41,7 @@
 		"@sveltejs/vite-plugin-svelte": "^7.2.0",
 		"@tabler/icons-svelte-runes": "3.49.0",
 		"@tailwindcss/vite": "^4.3.0",
+		"@types/culori": "4.0.1",
 		"@types/d3-shape": "3.2.0",
 		"@types/node": "^24",
 		"@vitest/browser-playwright": "^4.1.8",
@@ -72,6 +73,7 @@
 		"#lib/*": "./src/lib/*"
 	},
 	"dependencies": {
+		"culori": "4.0.2",
 		"driver.js": "1.14.0",
 		"qrcode-generator": "^2.0.4"
 	}
