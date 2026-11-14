@@ -1,5 +1,8 @@
 <script lang="ts">
 	import { invalidateAll } from '$app/navigation';
+	import { page } from '$app/state';
+	import { onMount } from 'svelte';
+	import { startTour } from '#lib/onboarding/run.ts';
 	import { encryptGroup } from '#lib/crypto/encrypt-group.ts';
 	import ListSkeleton from '#lib/components/skeleton/ListSkeleton.svelte';
 	import BackupNudge from '#lib/components/home/BackupNudge.svelte';
@@ -35,6 +38,11 @@
 			.finally(() => (upgrading = false));
 	});
 
+	// The first time here, once the friendly note is read: a short tour (#331)
+	onMount(() => {
+		if (!page.data.showNote) void startTour('home');
+	});
+
 	// Your menu (#156), opened from the navbar; rendered here, outside the bar
 	const named = $derived(
 		data.me?.name ? { avatarId: data.me.id, name: data.me.name, avatar: data.me.avatar } : null
@@ -58,7 +66,7 @@
 		<YourGroups memberOf={data.yourGroups} />
 	{/if}
 	{#if data.needsBackup}<BackupNudge />{/if}
-	<Block>
+	<Block data-tour="new-group">
 		<LinkButton href={resolve('/new')}>
 			<Icon name="add" />
 			{m.new_group()}
@@ -66,8 +74,10 @@
 	</Block>
 	<RecentlyDeleted groups={data.recentlyDeleted} error={form?.error} />
 	<p class="my-2 text-center text-sm">
-		<a class="font-medium text-accent dark:text-accent-night" href={resolve('/how-it-works')}
-			>{m.how_title()}</a
+		<a
+			class="font-medium text-accent dark:text-accent-night"
+			href={resolve('/how-it-works')}
+			data-tour="how-it-works">{m.how_title()}</a
 		>
 	</p>
 </AppPage>
