@@ -3,6 +3,7 @@ import IconAccessible from '@tabler/icons-svelte-runes/icons/accessible';
 import IconBell from '@tabler/icons-svelte-runes/icons/bell';
 import IconLanguage from '@tabler/icons-svelte-runes/icons/language';
 import IconPalette from '@tabler/icons-svelte-runes/icons/palette';
+import IconCloudOff from '@tabler/icons-svelte-runes/icons/cloud-off';
 import IconColorPicker from '@tabler/icons-svelte-runes/icons/color-picker';
 import IconBed from '@tabler/icons-svelte-runes/icons/bed';
 import IconBeer from '@tabler/icons-svelte-runes/icons/beer';
@@ -106,6 +107,7 @@ export const icons = {
 	notifications: IconBell,
 	fast: IconBolt,
 	palette: IconPalette,
+	offline: IconCloudOff,
 	pickColor: IconColorPicker,
 	accessible: IconAccessible,
 	language: IconLanguage,
