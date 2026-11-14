@@ -124,7 +124,7 @@
 			}}
 		/>
 		<span
-			class="flex min-h-16 items-center gap-3 rounded-2xl border-2 border-dashed border-current/25 px-3 py-2 peer-checked:border-solid peer-checked:border-accent peer-focus-visible:outline-2 dark:peer-checked:border-accent-night"
+			class="flex min-h-16 items-center gap-3 rounded-2xl border-2 border-transparent bg-surface px-3 py-2 peer-checked:border-accent peer-focus-visible:outline-2 dark:bg-surface-night dark:peer-checked:border-accent-night"
 		>
 			<span
 				class="{tintClass(

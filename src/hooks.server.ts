@@ -20,6 +20,7 @@ import { tooManyRequests, withinLimit } from '#lib/server/rate-limit.ts';
 import { findPerson } from '#lib/server/people.ts';
 import { applySettings, markSettingsChecked, settingsChecked } from '#lib/server/settings.ts';
 import { lookOf } from '#lib/server/look.ts';
+import { ownThemeProperties, styleOf } from '#lib/themes/own-theme.ts';
 
 const handleParaglide: Handle = ({ event, resolve }) =>
 	paraglideMiddleware(event.request, ({ request, locale }) => {
@@ -84,7 +85,12 @@ const handleSettings: Handle = async ({ event, resolve }) => {
 const handleLook: Handle = ({ event, resolve }) => {
 	event.locals.look = lookOf(event.cookies);
 	return resolve(event, {
-		transformPageChunk: ({ html }) => html.replace('%kt.colors%', event.locals.look.colors)
+		transformPageChunk: ({ html }) => {
+			const { colors, own } = event.locals.look;
+			return html
+				.replace('%kt.colors%', colors)
+				.replace('%kt.own%', styleOf(own ? ownThemeProperties(own) : null));
+		}
 	});
 };
 

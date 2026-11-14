@@ -10,13 +10,18 @@ export const isScenery = (value: unknown): value is Scenery => value === DAILY |
 
 /** The colours of whatever the scenery is */
 export const LIKE_SCENERY = 'scenery';
-export type Colors = ThemeId | typeof LIKE_SCENERY;
-export const COLORS: readonly Colors[] = [LIKE_SCENERY, ...THEME_IDS];
+/** A theme of your own, made from one colour (#330), e.g. "#e05aa0" */
+export type OwnColor = `#${string}`;
+export const isOwnColor = (value: unknown): value is OwnColor =>
+	typeof value === 'string' && /^#[0-9a-f]{6}$/.test(value);
+export type Colors = ThemeId | typeof LIKE_SCENERY | OwnColor;
+/** The ready-made choices; your own colour comes on top */
+export const COLORS: readonly (ThemeId | typeof LIKE_SCENERY)[] = [LIKE_SCENERY, ...THEME_IDS];
 export const isColors = (value: unknown): value is Colors =>
-	value === LIKE_SCENERY || isThemeId(value);
+	value === LIKE_SCENERY || isThemeId(value) || isOwnColor(value);
 
-/** The scenery and colours in use today */
-export type Look = { scenery: ThemeId; colors: ThemeId };
+/** The scenery and colours in use today, with your own main colour if there is one */
+export type Look = { scenery: ThemeId; colors: ThemeId; own?: OwnColor };
 
 /** Today's date where someone is, e.g. "2026-11-14": in their time zone, or this device's */
 export function localDate(now = new Date(), timeZone?: string): string {
@@ -64,5 +69,6 @@ export function dailyTheme(date: string): ThemeId {
 /** What the choices come to on a date */
 export function lookOn(scenery: Scenery, colors: Colors, date: string): Look {
 	const shown = scenery === DAILY ? dailyTheme(date) : scenery;
+	if (isOwnColor(colors)) return { scenery: shown, colors: shown, own: colors };
 	return { scenery: shown, colors: colors === LIKE_SCENERY ? shown : colors };
 }
