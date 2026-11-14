@@ -90,7 +90,7 @@
 	<svg
 		bind:this={pad}
 		viewBox="0 0 {DRAWING_SIZE} {DRAWING_SIZE}"
-		class="{tint} aspect-square w-48 touch-none self-center rounded-full bg-(--tint-bg) text-(--tint-fg)"
+		class="{tint} aspect-square w-full touch-none rounded-full bg-(--tint-bg) text-(--tint-fg)"
 		role="img"
 		aria-label={m.avatar_draw_pad()}
 		onpointerdown={down}

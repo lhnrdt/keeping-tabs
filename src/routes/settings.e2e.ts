@@ -128,9 +128,11 @@ test("other colours than the scenery's, kept when the scenery changes (#332)", a
 	await expect(page.locator('html')).toHaveAttribute('data-accent', 'autumn');
 	await expect(page.getByText('Saved').first()).toBeVisible();
 
-	// Back to the scenery's own
+	// Back to the scenery's own, saved before leaving the page
+	const saved = page.waitForResponse((r) => r.url().includes('/colors') && r.ok());
 	await page.getByRole('group', { name: 'Colours' }).getByText('Like the scenery').click();
 	await expect(page.locator('html')).toHaveAttribute('data-accent', 'coast');
+	await saved;
 	await open(page, '/');
 	await expect(page.locator('html')).toHaveAttribute('data-accent', 'coast');
 });
@@ -174,6 +176,17 @@ test('draw your own avatar, and see it wherever you appear (#158)', async ({ pag
 	const pad = page.getByRole('img', { name: 'Drawing area' });
 	await pad.scrollIntoViewIfNeeded();
 	const box = (await pad.boundingBox())!;
+	// Big enough to draw with a finger: as wide as the page's content (#329)
+	const room = await pad.evaluate((el) => {
+		const parent = getComputedStyle(el.parentElement!);
+		return (
+			el.parentElement!.clientWidth -
+			parseFloat(parent.paddingLeft) -
+			parseFloat(parent.paddingRight)
+		);
+	});
+	expect(box.width).toBeCloseTo(room, 0);
+	expect(box.height).toBeCloseTo(box.width, 0);
 	await page.mouse.move(box.x + box.width * 0.3, box.y + box.height * 0.3);
 	await page.mouse.down();
 	await page.mouse.move(box.x + box.width * 0.5, box.y + box.height * 0.6, { steps: 8 });
