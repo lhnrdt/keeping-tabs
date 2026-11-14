@@ -39,6 +39,14 @@ it('is in the hue of what was picked, backgrounds too', () => {
 	}
 });
 
+it('is as vivid as what was picked: a bright green makes a bright green theme', () => {
+	const chroma = (hex: string) => converter('oklch')(hex)?.c ?? 0;
+	const bright = ownTheme('#3ddc5a');
+	const soft = ownTheme('#8fa894');
+	expect(chroma(bright.light.heroBg)).toBeGreaterThan(0.15);
+	expect(chroma(bright.light.canvas)).toBeGreaterThan(chroma(soft.light.canvas) * 2);
+});
+
 it('names its colours the way themes.css does, light and dark', () => {
 	const properties = ownThemeProperties('#e05aa0');
 	expect(Object.keys(properties)).toContain('--canvas');

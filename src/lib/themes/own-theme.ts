@@ -1,26 +1,55 @@
-// A theme of your own (#330), made from one colour you pick: every colour of a nature theme (the
-// background, cards, header, text and accent, light and dark) turned to its hue, as bright as
-// it is, with each colour's lightness kept, so it's as calm as the others. Whatever then doesn't
-// read well enough (WCAG AA, as every nature theme is checked) is made darker or lighter.
+// A theme of your own (#330), made from one colour you pick: the background, cards, header, text
+// and accent, light and dark, all in its hue and as vivid as it is, laid out as light and dark as
+// a nature theme's. Whatever then doesn't read well enough (WCAG AA, as every nature theme is
+// checked) is made darker or lighter.
 import { clampChroma, converter, formatHex, type Oklch } from 'culori';
 import { contrast } from './contrast';
 import { NAMES } from './css';
 import { PALETTES, type Palette } from './palettes';
 import { AA, colorOf, readingPairs, type Mode } from './reading';
 
-/** The theme it's made like: one with a clear hue in all its colours */
+/** The theme whose lightness each colour keeps, so it's laid out like the others */
 const TEMPLATE = PALETTES.forest;
-/** As bright as the pick, up to a little more than the template */
-const MAX_CHROMA = 1.4;
 const STEP = 0.01;
 
 const oklch = (hex: string): Oklch => converter('oklch')(hex) ?? { mode: 'oklch', l: 0.5, c: 0 };
 const hex = (color: Oklch) => formatHex(clampChroma(color, 'oklch'));
 
-/** The template's colour in the picked hue and brightness */
-function turned(template: string, picked: Oklch, chroma: number) {
-	const { l, c } = oklch(template);
-	return hex({ mode: 'oklch', l, c: c * chroma, h: picked.h ?? 0 });
+/**
+ * How much of the picked colour's vividness each part gets: a bright, saturated pick makes a
+ * bright, saturated theme, a soft one a soft theme. The light header is the picked colour itself.
+ */
+const SHARE: Record<Mode, Record<keyof Palette, number>> = {
+	light: {
+		canvas: 0.12,
+		surface: 0.03,
+		surfaceMuted: 0.18,
+		ink: 0.12,
+		inkMuted: 0.18,
+		accent: 1,
+		accentSoft: 0.6,
+		heroBg: 1,
+		heroFg: 0.4
+	},
+	dark: {
+		canvas: 0.14,
+		surface: 0.12,
+		surfaceMuted: 0.15,
+		ink: 0.06,
+		inkMuted: 0.1,
+		accent: 1,
+		accentSoft: 0.5,
+		heroBg: 0.6,
+		heroFg: 0.3
+	}
+};
+
+/** How light each part is: the template's, but the accent and the light header are the pick's */
+function lightness(mode: Mode, key: keyof Palette, template: number, picked: number) {
+	if (key === 'accent') return picked;
+	if (mode === 'light' && key === 'heroBg') return Math.min(Math.max(picked, 0.7), 0.93);
+	if (mode === 'dark' && key === 'heroBg') return Math.min(Math.max(picked * 0.5, 0.25), 0.4);
+	return template;
 }
 
 /** Lighter or darker, a step at a time, until it reads against the other side */
@@ -34,13 +63,13 @@ function nudge(color: string, against: string, lighter: boolean) {
 }
 
 function themeIn(mode: Mode, picked: Oklch): Palette {
-	const template = TEMPLATE[mode];
-	const chroma = Math.min(picked.c / Math.max(oklch(TEMPLATE.light.accent).c, 0.01), MAX_CHROMA);
 	const palette = Object.fromEntries(
-		Object.entries(template).map(([key, value]) => [key, turned(value, picked, chroma)])
+		Object.entries(TEMPLATE[mode]).map(([key, value]) => {
+			const part = key as keyof Palette;
+			const l = lightness(mode, part, oklch(value).l, picked.l);
+			return [part, hex({ mode: 'oklch', l, c: picked.c * SHARE[mode][part], h: picked.h ?? 0 })];
+		})
 	) as Palette;
-	// The accent is the picked colour itself where it can be: its lightness, not the template's
-	palette.accent = hex(picked);
 	// A few rounds: a change for one pair can touch another
 	for (let round = 0; round < 3; round++) {
 		for (const { foreground, background, adjust } of readingPairs(mode)) {
