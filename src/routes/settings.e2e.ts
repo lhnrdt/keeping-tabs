@@ -172,7 +172,7 @@ test('choose an avatar and see it wherever you appear (#61)', async ({ page }) =
 test('draw your own avatar, and see it wherever you appear (#158)', async ({ page }) => {
 	const groupUrl = await createGroup(page, 'Trip', 'Anna', ['Ben']);
 	await open(page, '/you/profile');
-	await page.getByRole('group', { name: 'Picture' }).getByTitle('Draw your own').click();
+	await page.getByRole('group', { name: 'Picture' }).getByText('Draw your own').click();
 	const pad = page.getByRole('img', { name: 'Drawing area' });
 	await pad.scrollIntoViewIfNeeded();
 	const box = (await pad.boundingBox())!;

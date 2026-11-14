@@ -531,6 +531,8 @@
 	"avatar_icon": "Bild",
 	"avatar_initials": "Initialen",
 	"avatar_draw": "Selbst zeichnen",
+	"avatar_draw_hint": "Skizzier dein eigenes Bild mit dem Finger",
+	"avatar_draw_here": "Hier zeichnen",
 	"avatar_draw_pad": "Zeichenfläche",
 	"avatar_draw_full": "Mehr passt nicht in einen Avatar.",
 	"avatar_draw_width": "Linienbreite {size}",
