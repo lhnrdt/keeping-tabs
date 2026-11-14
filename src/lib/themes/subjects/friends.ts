@@ -569,6 +569,11 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 		shapes: [
 			{ d: GROUND.d, strength: 0.55 },
 			{
+				d: leaf(232, 110, 9) + leaf(270, 92, 9) + leaf(250, 140, 9),
+				strength: 0.85,
+				motion: 'fall'
+			},
+			{
 				d: rect(222, 160, 84, 12) + rect(304, 166, 18, 3),
 				strength: 0.9,
 				motion: 'idle',
@@ -628,11 +633,6 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 				cut: true,
 				motion: 'idle',
 				tap: 'drive'
-			},
-			{
-				d: leaf(232, 110, 9) + leaf(270, 92, 9) + leaf(250, 140, 9),
-				strength: 0.85,
-				motion: 'fall'
 			}
 		],
 		lines: [{ d: steam(360, 116, 18), strength: 0.5, motion: 'rise', tap: 'puff' }]

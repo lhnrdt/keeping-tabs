@@ -109,7 +109,7 @@ export const TRIP: Record<ThemeId, Scene> = {
 		shapes: [
 			{ d: 'M-1000 200V194H300V200Z', strength: 1, snow: true },
 			{ d: 'M214 200L400 108V200Z', strength: 1, snow: true },
-			{ d: 'M362 129l6-6 9 2-1 5ZM344 140l5-4 7 2-1 3Z', strength: 0.8, tap: 'climb' },
+			{ d: 'M362 129l6-6 9 2-1 5ZM344 140l5-4 7 2-1 3Z', strength: 0.8 },
 			{
 				d: limb(250, 183, 280, 168, 2.2) + limb(280, 168, 286, 162, 2.2),
 				strength: 0.85,
@@ -137,8 +137,8 @@ export const TRIP: Record<ThemeId, Scene> = {
 					limb(310, 118, 304, 152, 2.4) +
 					limb(334, 116, 334, 142, 2.4),
 				strength: 1,
-				tap: 'sail',
-				motion: 'walk'
+				motion: 'walk',
+				tap: 'climb'
 			},
 			{ d: 'M196 200Q232 180 270 192Q290 196 300 200Z', strength: 1, snow: true }
 		],
@@ -302,6 +302,11 @@ export const TRIP: Record<ThemeId, Scene> = {
 				strength: 0.9
 			},
 			{ d: rect(-1000, 185, 1400, 2), strength: 1 },
+			{ d: rect(265, 0, 9, 200) + rect(330, 0, 9, 200), strength: 1, snow: true },
+			{
+				d: 'M265 14.1l4.9 1.75l-4.9 1.75ZM274 31.1l-5.9 1.5l5.9 1.5ZM265 50.0l5.9 1.3l-5.9 1.3ZM274 72.0l-4.7 1.3l4.7 1.3ZM265 90.9l6.7 1.35l-6.7 1.35ZM274 108.3l-6.2 1.95l6.2 1.95ZM265 130.1l5.6 2.0l-5.6 2.0ZM274 144.9l-6.8 1.45l6.8 1.45ZM265 164.7l4.8 1.5l-4.8 1.5ZM274 189.0l-5.0 1.7l5.0 1.7ZM330 15.2l7.1 1.35l-7.1 1.35ZM339 37.8l-4.7 1.45l4.7 1.45ZM330 59.0l5.1 1.75l-5.1 1.75ZM339 73.5l-5.7 1.6l5.7 1.6ZM330 90.1l6.7 1.3l-6.7 1.3ZM339 109.3l-4.6 1.45l4.6 1.45ZM330 129.5l6.9 1.55l-6.9 1.55ZM339 145.9l-5.2 2.0l5.2 2.0ZM330 164.3l6.2 1.55l-6.2 1.55ZM339 187.9l-5.4 1.75l5.4 1.75Z',
+				strength: 1
+			},
 			{
 				d:
 					rounded(206, 146, 60, 32, 4) +
@@ -378,12 +383,7 @@ export const TRIP: Record<ThemeId, Scene> = {
 				motion: 'idle',
 				tap: 'drive'
 			},
-			{ d: rect(348, 179, 36, 1.8), strength: 1, motion: 'idle', tap: 'drive' },
-			{ d: rect(265, 0, 9, 200) + rect(330, 0, 9, 200), strength: 1, snow: true },
-			{
-				d: 'M265 14.1l4.9 1.75l-4.9 1.75ZM274 31.1l-5.9 1.5l5.9 1.5ZM265 50.0l5.9 1.3l-5.9 1.3ZM274 72.0l-4.7 1.3l4.7 1.3ZM265 90.9l6.7 1.35l-6.7 1.35ZM274 108.3l-6.2 1.95l6.2 1.95ZM265 130.1l5.6 2.0l-5.6 2.0ZM274 144.9l-6.8 1.45l6.8 1.45ZM265 164.7l4.8 1.5l-4.8 1.5ZM274 189.0l-5.0 1.7l5.0 1.7ZM330 15.2l7.1 1.35l-7.1 1.35ZM339 37.8l-4.7 1.45l4.7 1.45ZM330 59.0l5.1 1.75l-5.1 1.75ZM339 73.5l-5.7 1.6l5.7 1.6ZM330 90.1l6.7 1.3l-6.7 1.3ZM339 109.3l-4.6 1.45l4.6 1.45ZM330 129.5l6.9 1.55l-6.9 1.55ZM339 145.9l-5.2 2.0l5.2 2.0ZM330 164.3l6.2 1.55l-6.2 1.55ZM339 187.9l-5.4 1.75l5.4 1.75Z',
-				strength: 1
-			}
+			{ d: rect(348, 179, 36, 1.8), strength: 1, motion: 'idle', tap: 'drive' }
 		],
 		lines: [
 			{ d: steam(384, 130, 22) + steam(372, 122, 18), strength: 0.5, motion: 'rise', tap: 'puff' }
@@ -570,6 +570,7 @@ export const TRIP: Record<ThemeId, Scene> = {
 			},
 			{ d: 'M-1000 200V194H300V200Z', strength: 0.55 },
 			{ d: 'M196 200Q240 190 300 186T400 190V200Z', strength: 0.55 },
+			{ d: pine(210, 206, 70) + pine(228, 204, 40), strength: 0.95, motion: 'sway' },
 			{ d: 'M362 176L400 166V188Z', strength: 0.3, motion: 'shimmer', tap: 'drive' },
 			{ d: rounded(306, 178, 32, 7, 3.5), strength: 1, motion: 'idle', tap: 'drive' },
 			{
@@ -602,8 +603,7 @@ export const TRIP: Record<ThemeId, Scene> = {
 				strength: 1,
 				motion: 'idle',
 				tap: 'drive'
-			},
-			{ d: pine(210, 206, 70) + pine(228, 204, 40), strength: 0.95, motion: 'sway' }
+			}
 		],
 		lines: [{ d: 'M306 184Q280 188 262 192T230 200', strength: 0.5 }]
 	},
