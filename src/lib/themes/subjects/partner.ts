@@ -416,7 +416,8 @@ export const PARTNER: Record<ThemeId, Scene> = {
 					limb(322, 140, 326, 157, 3),
 				strength: 1,
 				motion: 'swing',
-				tap: 'sail'
+				tap: 'swing',
+				origin: [306, 40]
 			},
 			{ d: heart(306, 90, 7), strength: 1, motion: 'pulse', tap: 'burst' },
 			{

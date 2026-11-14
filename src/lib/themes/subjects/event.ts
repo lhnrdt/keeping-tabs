@@ -527,25 +527,11 @@ export const EVENT: Record<ThemeId, Scene> = {
 			{
 				d: figure(352, 168, 14, { hat: 'beanie' }) + figure(326, 170, 18),
 				strength: 0.6,
-				tap: 'sail',
 				motion: 'drift'
 			},
 			{
 				d: figure(296, 178, 30) + limb(290, 164, 280, 168, 2.4) + rect(287, 178, 18, 1.6),
 				strength: 0.8,
-				tap: 'sail',
-				motion: 'drift'
-			},
-			{
-				d:
-					figure(240, 190, 58, { hat: 'beanie' }) +
-					limb(250, 158, 268, 150, 4.4) +
-					limb(230, 158, 214, 166, 4.4) +
-					rect(226, 190, 30, 2.4) +
-					rect(232, 186, 3, 4) +
-					rect(246, 186, 3, 4),
-				strength: 1,
-				tap: 'sail',
 				motion: 'drift'
 			},
 			{ d: rect(396, 100, 3, 68) + rect(204, 104, 3, 96), strength: 1 },
@@ -573,6 +559,19 @@ export const EVENT: Record<ThemeId, Scene> = {
 				snow: true,
 				tap: 'flash',
 				motion: 'twinkle'
+			},
+			{
+				d:
+					figure(240, 190, 58, { hat: 'beanie' }) +
+					limb(250, 158, 268, 150, 4.4) +
+					limb(230, 158, 214, 166, 4.4) +
+					rect(226, 190, 30, 2.4) +
+					rect(232, 186, 3, 4) +
+					rect(246, 186, 3, 4),
+				strength: 1,
+				motion: 'drift',
+				tap: 'drive',
+				fx: 'dust'
 			}
 		],
 		lines: [

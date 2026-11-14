@@ -426,17 +426,6 @@ export const OTHER: Record<ThemeId, Scene> = {
 		},
 		shapes: [
 			{ d: 'M-1000 200V170H400V200Z', strength: 0.4 },
-			{ d: 'M262 174h76q-4 5-12 5h-52q-8 0-12-5Z', strength: 1, motion: 'rock', tap: 'sail' },
-			{
-				d:
-					figure(300, 174, 52, { hat: 'cap' }) +
-					limb(306, 146, 322, 136, 3) +
-					limb(322, 130, 330, 182, 2) +
-					'M327 178l6 0 0 10-6 0Z',
-				strength: 1,
-				motion: 'rock',
-				tap: 'sail'
-			},
 			{
 				d: 'M370 174l6-18 6 18Z' + rect(375, 150, 2, 6) + disc(376, 149, 2.6),
 				strength: 0.85,
@@ -451,6 +440,24 @@ export const OTHER: Record<ThemeId, Scene> = {
 				motion: 'bob',
 				tap: 'act-buoy',
 				origin: [376, 174]
+			},
+			{
+				d: 'M262 174h76q-4 5-12 5h-52q-8 0-12-5Z',
+				strength: 1,
+				motion: 'rock',
+				tap: 'drive',
+				fx: 'wake'
+			},
+			{
+				d:
+					figure(300, 174, 52, { hat: 'cap' }) +
+					limb(306, 146, 322, 136, 3) +
+					limb(322, 130, 330, 182, 2) +
+					'M327 178l6 0 0 10-6 0Z',
+				strength: 1,
+				motion: 'rock',
+				tap: 'drive',
+				fx: 'none'
 			}
 		],
 		lines: [

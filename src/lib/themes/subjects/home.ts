@@ -100,7 +100,12 @@ export const HOME: Record<ThemeId, Scene> = {
 			{ d: 'M294 176v-34q0-8 8-8h20q8 0 8 8v34Z', strength: 1, cut: true },
 			{ d: rect(305, 102, 14, 12), strength: 1, cut: true },
 			{ d: rect(268, 176, 4, 18) + rect(348, 176, 4, 18), strength: 0.9 },
-			{ d: 'M290 186l8-10h28l4 10q-8 6-20 6t-20-6Z', strength: 0.85, tap: 'sail', motion: 'rock' },
+			{
+				d: 'M290 186l8-10h28l4 10q-8 6-20 6t-20-6Z',
+				strength: 0.85,
+				motion: 'rock',
+				tap: 'act-buoy'
+			},
 			{ d: rect(358, 168, 42, 6), strength: 1 },
 			{ d: rect(372, 174, 3, 22) + rect(394, 174, 3, 22), strength: 0.9 },
 			{

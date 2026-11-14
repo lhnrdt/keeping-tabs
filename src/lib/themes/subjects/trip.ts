@@ -83,10 +83,28 @@ export const TRIP: Record<ThemeId, Scene> = {
 			WATER,
 			{ d: 'M232 180h18q-2 3-8 3h-4q-4 0-6-3Z' + disc(241, 176, 2.5), strength: 0.5 },
 			{ d: disc(356, 182, 7) + disc(368, 180, 8) + disc(380, 183, 6), strength: 1, cut: true },
-			{ d: figure(288, 180, 34, { hat: 'cap' }), strength: 1, motion: 'rock', tap: 'sail' },
-			{ d: 'M252 176h76q-6 8-20 8h-38q-12 0-18-8Z', strength: 1, motion: 'rock', tap: 'sail' },
-			{ d: limb(258, 186, 318, 150, 2), strength: 1, motion: 'rock', tap: 'sail' },
-			{ d: 'M252 182l6 9 5-4-6-8ZM318 150l3-9 5 3-4 8Z', strength: 1, motion: 'rock', tap: 'sail' }
+			{
+				d: figure(288, 180, 34, { hat: 'cap' }),
+				strength: 1,
+				motion: 'rock',
+				tap: 'drive',
+				fx: 'none'
+			},
+			{
+				d: 'M252 176h76q-6 8-20 8h-38q-12 0-18-8Z',
+				strength: 1,
+				motion: 'rock',
+				tap: 'drive',
+				fx: 'wake'
+			},
+			{ d: limb(258, 186, 318, 150, 2), strength: 1, motion: 'rock', tap: 'drive', fx: 'none' },
+			{
+				d: 'M252 182l6 9 5-4-6-8ZM318 150l3-9 5 3-4 8Z',
+				strength: 1,
+				motion: 'rock',
+				tap: 'drive',
+				fx: 'none'
+			}
 		],
 		lines: [
 			{ d: waves(226, 193, 2) + waves(300, 196, 2), strength: 0.6, motion: 'flow' },
@@ -496,7 +514,14 @@ export const TRIP: Record<ThemeId, Scene> = {
 				strength: 1,
 				cut: true
 			},
-			{ d: hull(246, 182, 70, 9), strength: 1, motion: 'rock', tap: 'sail' },
+			{
+				d: hull(246, 182, 70, 9),
+				strength: 1,
+				motion: 'rock',
+				tap: 'act-heel',
+				origin: [281, 182],
+				fx: 'wake'
+			},
 			{
 				d:
 					rect(280, 110, 2.6, 64) +
@@ -504,9 +529,16 @@ export const TRIP: Record<ThemeId, Scene> = {
 					tri(278, 122, 278, 168, 252, 168),
 				strength: 0.9,
 				motion: 'rock',
-				tap: 'sail'
+				tap: 'act-heel',
+				origin: [281, 182]
 			},
-			{ d: figure(262, 174, 18, { hat: 'cap' }), strength: 1, motion: 'rock', tap: 'sail' }
+			{
+				d: figure(262, 174, 18, { hat: 'cap' }),
+				strength: 1,
+				motion: 'rock',
+				tap: 'act-heel',
+				origin: [281, 182]
+			}
 		],
 		lines: [
 			{ d: waves(212, 190, 2) + waves(300, 194, 2), strength: 0.6, motion: 'flow' },

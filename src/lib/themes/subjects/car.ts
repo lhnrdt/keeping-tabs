@@ -102,21 +102,48 @@ export const CAR: Record<ThemeId, Scene> = {
 		},
 		shapes: [
 			WATER,
-			{ d: 'M236 168h164v8l-8 12H250Z', strength: 0.75, motion: 'rock', tap: 'sail' },
-			{ d: rect(236, 164, 164, 4), strength: 0.7, motion: 'rock', tap: 'sail' },
-			{ d: 'M236 164l-12-24 8-3 12 24Z', strength: 0.7, motion: 'rock', tap: 'sail' },
+			{
+				d: 'M236 168h164v8l-8 12H250Z',
+				strength: 0.75,
+				motion: 'rock',
+				tap: 'act-swell',
+				origin: [318, 188],
+				fx: 'wake'
+			},
+			{
+				d: rect(236, 164, 164, 4),
+				strength: 0.7,
+				motion: 'rock',
+				tap: 'act-swell',
+				origin: [318, 188]
+			},
+			{
+				d: 'M236 164l-12-24 8-3 12 24Z',
+				strength: 0.7,
+				motion: 'rock',
+				tap: 'act-swell',
+				origin: [318, 188]
+			},
 			{
 				d: rect(248, 150, 2, 14) + rect(340, 150, 2, 14) + rect(248, 150, 94, 2),
 				strength: 0.7,
 				motion: 'rock',
-				tap: 'sail'
+				tap: 'act-swell',
+				origin: [318, 188]
 			},
-			{ d: figure(252, 164, 28, { hat: 'cap' }), strength: 1, tap: 'sail', motion: 'rock' },
+			{
+				d: figure(252, 164, 28, { hat: 'cap' }),
+				strength: 1,
+				motion: 'rock',
+				tap: 'act-swell',
+				origin: [318, 188]
+			},
 			{
 				d: rect(352, 124, 40, 40) + rect(358, 108, 26, 16),
 				strength: 0.75,
 				motion: 'rock',
-				tap: 'sail'
+				tap: 'act-swell',
+				origin: [318, 188]
 			},
 			{
 				d:
@@ -127,34 +154,45 @@ export const CAR: Record<ThemeId, Scene> = {
 				strength: 1,
 				cut: true,
 				motion: 'rock',
-				tap: 'sail'
+				tap: 'act-swell',
+				origin: [318, 188]
 			},
-			{ d: rect(368, 92, 10, 16), strength: 0.7, motion: 'rock', tap: 'sail' },
+			{
+				d: rect(368, 92, 10, 16),
+				strength: 0.7,
+				motion: 'rock',
+				tap: 'act-swell',
+				origin: [318, 188]
+			},
 			{
 				d: 'M292.67 137.91 L304.13 137.91 L304.38 138.16 L307.94 138.16 L309.98 138.67 L311.76 138.67 L314.31 139.69 L315.07 139.69 L315.58 140.2 L317.36 140.71 L319.14 141.73 L321.69 142.49 L326.78 145.29 L330.34 145.55 L331.62 146.05 L338.49 146.82 L341.54 147.84 L343.33 148.85 L344.09 148.85 L345.87 150.13 L346.64 150.13 L347.65 150.64 L348.16 151.15 L347.4 154.2 L347.65 154.71 L347.4 155.47 L348.42 157.25 L347.91 158.78 L348.93 159.8 L348.67 160.05 L345.87 160.31 L345.11 160.82 L343.84 160.82 L343.33 161.33 L336.96 161.33 L336.71 161.07 L335.94 161.33 L328.05 161.33 L327.8 161.07 L326.53 161.33 L317.36 161.33 L274.09 161.33 L273.58 160.56 L272.56 160.82 L272.31 160.56 L270.78 160.56 L263.91 158.78 L263.65 158.53 L263.91 158.02 L262.89 157 L262.89 155.73 L263.4 154.2 L263.14 153.95 L263.4 152.93 L264.16 151.65 L263.4 149.36 L263.4 147.84 L264.67 146.56 L264.42 146.05 L264.67 145.04 L266.45 144.53 L268.24 144.53 L270.78 144.02 L278.42 140.71 L280.71 139.95 L281.98 139.95 L283.51 139.18 L287.58 138.42 L289.36 138.42 L289.62 138.16 L292.42 138.16Z',
 				strength: 1,
 				motion: 'rock',
-				tap: 'sail'
+				tap: 'act-swell',
+				origin: [318, 188]
 			},
 			{
 				d: 'M275.24 143.13 Q278.54 140.84 282.36 140.07 Q287.45 139.18 300.69 138.93 L300.94 144.02 L287.45 144.15 L277.27 143.76ZM304.25 139.05 Q309.09 139.18 311.38 139.69 Q315.96 140.84 320.54 143.13 Q322.58 144.15 323.6 145.67 L304.25 144.53Z',
 				strength: 1,
 				cut: true,
 				motion: 'rock',
-				tap: 'sail'
+				tap: 'act-swell',
+				origin: [318, 188]
 			},
 			{
 				d: disc(279.69, 157.0, 7.0) + disc(334.16, 157.0, 7.0),
 				strength: 1,
 				motion: 'rock',
-				tap: 'sail'
+				tap: 'act-swell',
+				origin: [318, 188]
 			},
 			{
 				d: disc(279.69, 157.0, 4.34) + disc(334.16, 157.0, 4.34),
 				strength: 1,
 				cut: true,
 				motion: 'rock',
-				tap: 'sail'
+				tap: 'act-swell',
+				origin: [318, 188]
 			},
 			{
 				d:
@@ -172,7 +210,8 @@ export const CAR: Record<ThemeId, Scene> = {
 					disc(334.16, 157.0, 1.4),
 				strength: 1,
 				motion: 'rock',
-				tap: 'sail'
+				tap: 'act-swell',
+				origin: [318, 188]
 			},
 			{
 				d: disc(396, 186, 6) + disc(388, 190, 5) + disc(380, 186, 4),

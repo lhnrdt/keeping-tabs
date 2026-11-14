@@ -77,7 +77,6 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 		},
 		shapes: [
 			WATER,
-			{ d: hull(258, 186, 18, 5), strength: 0.7 },
 			{ d: 'M356 98L400 90V182H350L360 152L352 128L366 116Z', strength: 0.65 },
 			{ d: 'M276 112L290 107L372 100L366 114L340 118L298 116Z', strength: 1 },
 			{ d: sitting(284, 110, 42, -1), strength: 1, motion: 'nod' },
@@ -88,7 +87,8 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 				tap: 'act-peer',
 				origin: [330, 110]
 			},
-			{ d: cloud(236, 140, 50) + cloud(292, 150, 40), strength: 0.25, motion: 'drift' }
+			{ d: cloud(236, 140, 50) + cloud(292, 150, 40), strength: 0.25, motion: 'drift' },
+			{ d: hull(258, 186, 18, 5), strength: 0.7, tap: 'drive', fx: 'wake' }
 		],
 		lines: [
 			{ d: waves(230, 196, 3) + bird(250, 122) + bird(266, 132, 4), strength: 0.5, motion: 'flow' }
@@ -113,6 +113,7 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 				strength: 0.5
 			},
 			{ d: 'M228 186Q264 180 306 182Q266 190 228 186Z', strength: 1 },
+			{ d: 'M262 180.5h9l-1.5 3h-6Z', strength: 1, snow: true, tap: 'act-crumble' },
 			{
 				d: 'M236 182l3 6 2-6ZM256 178l3 7 2-7ZM284 177l3 6 2-6ZM300 179l2 5 2-5Z',
 				strength: 1,
@@ -125,16 +126,16 @@ export const FRIENDS: Record<ThemeId, Scene> = {
 					figure(310, 165, 40, { hat: 'helmet', pack: 'left' }) +
 					figure(352, 164, 40, { hat: 'helmet', pack: 'left' }),
 				strength: 1,
-				tap: 'sail',
-				motion: 'walk'
+				motion: 'walk',
+				tap: 'act-taut'
 			}
 		],
 		lines: [
 			{
 				d: 'M268 146Q288 152 304 145M316 145Q332 150 346 144',
 				strength: 1,
-				tap: 'sail',
-				motion: 'walk'
+				motion: 'walk',
+				tap: 'act-taut'
 			}
 		]
 	},

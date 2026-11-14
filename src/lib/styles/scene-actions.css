@@ -573,3 +573,55 @@
 		transform: rotate(-6deg);
 	}
 }
+
+/* Ferry: a swell runs under it, bow up, then down, and it settles */
+.scene-acting .tap-act-swell {
+	animation: act-swell 2.8s var(--ease-in-out-sine);
+}
+@keyframes act-swell {
+	25% {
+		transform: translateY(-3px) rotate(-2deg);
+	}
+	55% {
+		transform: translateY(1px) rotate(1.5deg);
+	}
+	80% {
+		transform: translateY(-1px) rotate(-0.5deg);
+	}
+}
+
+/* Sailboat: a gust fills the sail, it heels over and surges on, then rights itself */
+.scene-acting .tap-act-heel {
+	animation: act-heel 2.6s var(--ease-out-quad);
+}
+@keyframes act-heel {
+	20%,
+	40% {
+		transform: translateX(6px) rotate(9deg);
+	}
+	70% {
+		transform: translateX(4px) rotate(-2deg);
+	}
+}
+
+/* Rope team on the glacier: the lip gives way in front, they lean back on the rope, feet planted */
+.scene-acting .tap-act-taut {
+	animation: act-taut 2s var(--ease-out-quad) 400ms;
+}
+@keyframes act-taut {
+	25%,
+	55% {
+		transform: skewX(-12deg);
+	}
+}
+
+/* ...and the crevasse's lip crumbles in under them */
+.scene-acting .tap-act-crumble {
+	animation: act-crumble 1.4s cubic-bezier(0.55, 0, 1, 0.45) 500ms;
+}
+@keyframes act-crumble {
+	to {
+		opacity: 0;
+		transform: translate(1px, 8px) rotate(25deg);
+	}
+}
