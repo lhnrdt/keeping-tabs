@@ -31,6 +31,14 @@ describe('the look', () => {
 		expect(lookOn('fjord', 'autumn', '2026-11-14')).toEqual({ scenery: 'fjord', colors: 'autumn' });
 	});
 
+	it('puts your own main colour on the scenery’s palette (#330)', () => {
+		expect(lookOn('fjord', '#e05aa0', '2026-11-14')).toEqual({
+			scenery: 'fjord',
+			colors: 'fjord',
+			own: '#e05aa0'
+		});
+	});
+
 	it("follows the day's scenery, colours too", () => {
 		const today = dailyTheme('2026-11-14');
 		expect(lookOn('daily', 'scenery', '2026-11-14')).toEqual({ scenery: today, colors: today });

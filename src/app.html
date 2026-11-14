@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="%paraglide.lang%" dir="%paraglide.dir%" data-accent="%kt.colors%">
+<html lang="%paraglide.lang%" dir="%paraglide.dir%" data-accent="%kt.colors%" style="%kt.own%">
 	<head>
 		<meta charset="utf-8" />
 		<meta
@@ -47,8 +47,14 @@
 					apply();
 				};
 				// The colours (#60, #332) come with the page; settings switch them right away
-				window.applyAccent = (accent) => {
-					document.documentElement.dataset.accent = accent;
+				// ...or a theme of your own over them (#330), its colours set on the page itself
+				let owned = [...document.documentElement.style].filter((name) => name.startsWith('--'));
+				window.applyAccent = (accent, own) => {
+					const root = document.documentElement;
+					root.dataset.accent = accent;
+					for (const name of owned) root.style.removeProperty(name);
+					owned = Object.keys(own ?? {});
+					for (const name of owned) root.style.setProperty(name, own[name]);
 					apply();
 				};
 				// Which day it is here, for a scenery that changes every day (#332)

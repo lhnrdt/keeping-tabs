@@ -14,10 +14,12 @@ export {
 	COLORS,
 	DAILY,
 	isColors,
+	isOwnColor,
 	isScenery,
 	LIKE_SCENERY,
 	SCENERIES,
 	type Colors,
+	type OwnColor,
 	type Scenery
 } from './themes/look';
 export const DEFAULT_SCENERY: Scenery = DEFAULT_THEME;

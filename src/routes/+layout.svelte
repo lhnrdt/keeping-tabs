@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { applyLook } from '#lib/themes/apply-look.ts';
 	import { beforeNavigate, onNavigate } from '$app/navigation';
 	import { page, updated } from '$app/state';
 	import { App } from 'konsta/svelte';
@@ -25,7 +26,7 @@
 	// e.g. brought from another device of yours, or a new day's scenery (#332)
 	$effect(() => {
 		theme.id = data.theme;
-		window.applyAccent?.(data.colors);
+		applyLook({ colors: data.colors, own: data.own ?? undefined });
 	});
 
 	const depth = (url: URL | undefined) => url?.pathname.split('/').filter(Boolean).length ?? 0;

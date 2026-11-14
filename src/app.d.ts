@@ -10,7 +10,7 @@ declare global {
 		/** Switches the theme without reloading (defined by the page script in app.html) */
 		applyTheme?: (theme: Theme) => void;
 		/** Switches the colours without reloading (app.html) */
-		applyAccent?: (accent: ThemeId) => void;
+		applyAccent?: (accent: ThemeId, own: Record<string, string> | null) => void;
 	}
 
 	namespace App {
