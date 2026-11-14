@@ -3,7 +3,7 @@
 // data-accent="<theme>" shows that theme (html for the app, swatches in the picker).
 import { DEFAULT_THEME, MEANING, PALETTES, SERIES, THEME_IDS, type Palette } from './palettes.ts';
 
-const NAMES: Record<keyof Palette, string> = {
+export const NAMES: Record<keyof Palette, string> = {
 	canvas: 'canvas',
 	surface: 'surface',
 	surfaceMuted: 'surface-muted',
