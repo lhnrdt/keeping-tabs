@@ -1,6 +1,6 @@
 import { resolve } from '$app/paths';
 import { browser, openedGroupLoad } from '#lib/crypto/open-data.ts';
-import { sealedEntries } from '#lib/group/sealed-entries.ts';
+import { ENTRIES_CHANGED, sealedEntries } from '#lib/group/sealed-entries.ts';
 import type { SealedEntry } from '#lib/group/sealed-money.ts';
 import { groupInsights } from '#lib/insights/group.ts';
 import { defaultPeriod, parsePeriod } from '#lib/insights/period.ts';
@@ -8,7 +8,8 @@ import { moneyOf, withYourSide } from '#lib/group/sealed-money.ts';
 import type { PageLoad } from './$types';
 
 /** An encrypted group's money and insights are worked out here (#110), for the server can't */
-export const load: PageLoad = async ({ data, parent, url, fetch }) => {
+export const load: PageLoad = async ({ data, parent, url, fetch, depends }) => {
+	depends(ENTRIES_CHANGED);
 	const { sealed, ...opened } = await openedGroupLoad(data, parent);
 	if (!sealed || !browser) return opened;
 	const { group, members } = await parent();
