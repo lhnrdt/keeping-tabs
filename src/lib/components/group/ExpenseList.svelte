@@ -42,6 +42,8 @@
 		searchHere?: boolean;
 		/** Just added: it glows as it comes in (#291) */
 		fresh?: string;
+		/** ...and already came in, as the form turning into it: only the glow */
+		morphed?: boolean;
 	};
 
 	let {
@@ -52,9 +54,11 @@
 		hasMore,
 		query = '',
 		searchHere = false,
-		fresh
+		fresh,
+		morphed = false
 	}: Props = $props();
-	const glow = (id: string) => (id === fresh ? 'just-added' : undefined);
+	const glow = (id: string) =>
+		id === fresh ? (morphed ? 'just-added just-arrived' : 'just-added') : undefined;
 
 	// Older pages load while scrolling (seamless); the link is the fallback without JS
 	const older = new OlderEntries(

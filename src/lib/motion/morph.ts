@@ -1,19 +1,29 @@
-// The new entry's arrival in the list (#291): as the page goes back to it, its row comes into
-// place on its own, softly (everyday-motion.css), in the same view transition. Named once the
-// row is there; the name goes when the transition is over.
+// The new entry's way into the list (#291): the whole screen it was filled in on shrinks, smaller
+// and smaller, onto the place of its row in the list and becomes it (a container transform, in
+// one view transition; everyday-motion.css). The list is there underneath all along.
 import { tick } from 'svelte';
-import { peekMoment } from './moments';
+import { cueMoment, peekMoment } from './moments';
 
 const NAME = 'new-entry';
 
-/** The row to bring in, if an entry was just added */
-export const arriving = () => peekMoment()?.id ?? null;
+/** Names the screen, if an entry was just added on it; the row to find afterwards */
+export function morphFrom(): string | null {
+	const moment = peekMoment();
+	const screen = document.querySelector<HTMLElement>('.k-page');
+	if (!moment?.id || moment.kind !== 'added' || !screen) return null;
+	screen.style.viewTransitionName = NAME;
+	document.documentElement.dataset.transition = 'morph';
+	cueMoment({ ...moment, morphed: true });
+	return moment.id;
+}
 
-/** Names its row once the list is drawn */
-export async function bringIn(id: string, finished: Promise<unknown>) {
+/** ...and names its row once the list is drawn; all of it goes when the transition is over */
+export async function morphTo(id: string, finished: Promise<unknown>) {
 	await tick();
 	const row = document.querySelector<HTMLElement>(`[data-entry="${CSS.escape(id)}"]`);
-	if (!row) return;
-	row.style.viewTransitionName = NAME;
-	finished.finally(() => row.style.removeProperty('view-transition-name'));
+	if (row) row.style.viewTransitionName = NAME;
+	finished.finally(() => {
+		row?.style.removeProperty('view-transition-name');
+		delete document.documentElement.dataset.transition;
+	});
 }
