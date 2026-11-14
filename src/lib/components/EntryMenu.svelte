@@ -1,4 +1,6 @@
 <script lang="ts" module>
+	import type { IconName } from '#lib/icons.ts';
+
 	/** One thing to do with an entry: go somewhere, run something, or send a form action */
 	export type MenuItem = {
 		label: string;
@@ -10,16 +12,17 @@
 		/** What to tell the group about once it's done (#267) */
 		announce?: string;
 		destructive?: boolean;
+		/** Also behind a swipe of the row (#323), shown as this */
+		icon?: IconName;
 	};
 </script>
 
 <script lang="ts">
 	// What you can do with an entry, from pressing and holding it: a sheet of actions, in the
 	// app's look instead of the browser's own menu.
-	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import { Actions, ActionsButton, ActionsGroup, ActionsLabel } from 'konsta/svelte';
-	import { sealing } from '#lib/crypto/seal-form.ts';
+	import EntryActionForm from './EntryActionForm.svelte';
 	import { m } from '#lib/paraglide/messages.js';
 
 	type Props = {
@@ -57,21 +60,11 @@
 			<ActionsLabel>{shown.title}</ActionsLabel>
 			{#each shown.items as item (item.label)}
 				{#if item.action}
-					<form
-						method="POST"
-						action={item.action}
-						data-announce={item.announce}
-						use:enhance={sealing([], () => {
-							onClose();
-						})}
-					>
-						{#each Object.entries(item.fields ?? {}) as [name, value] (name)}
-							<input type="hidden" {name} {value} />
-						{/each}
+					<EntryActionForm {item} onDone={onClose}>
 						<ActionsButton type="submit" class={item.destructive ? 'tone-destructive' : ''}
 							>{item.label}</ActionsButton
 						>
-					</form>
+					</EntryActionForm>
 				{:else}
 					<ActionsButton
 						type="button"
