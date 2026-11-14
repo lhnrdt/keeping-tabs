@@ -148,7 +148,7 @@
 					saved={setting.saved === 'scenery'}
 					error={errorFor('scenery')}
 				>
-					<SceneryPicker value={scenery} today={today.scenery} />
+					<SceneryPicker value={scenery} />
 				</SettingField>
 				<noscript><button type="submit">{m.save()}</button></noscript>
 			</form>
