@@ -30,9 +30,11 @@
 		celebrate?: boolean;
 		/** Another theme's scene than the one in use, e.g. to show what a theme looks like */
 		themeId?: ThemeId;
+		/** Raised to play the scene's action, as a tap would: something was just done (#291) */
+		play?: number;
 	};
 
-	let { kind, settled = false, celebrate = false, themeId }: Props = $props();
+	let { kind, settled = false, celebrate = false, themeId, play = 0 }: Props = $props();
 	/** The header's text sits on the left: the scene fades out there, all but its ground (#327) */
 	const uid = $props.id();
 	const clear = `scene-clear-${uid}`;
@@ -112,25 +114,31 @@
 		}
 		return boxes;
 	};
+	let timer: ReturnType<typeof setTimeout> | undefined;
+	/** The scene's action, from the start */
+	const perform = () => {
+		acting = false;
+		effects = [];
+		clearTimeout(timer);
+		requestAnimationFrame(() => {
+			// The scene's units the header shows, right edge fixed: drive that far plus a car to be out on the left
+			const shown = Math.max(400, (svg.clientWidth * 200) / svg.clientHeight);
+			svg.style.setProperty('--off-left', `${Math.ceil(shown + 40)}px`);
+			effects = measure();
+			acting = true;
+			timer = setTimeout(() => {
+				acting = false;
+				effects = [];
+			}, ACTION_MS);
+		});
+	};
+	$effect(() => {
+		if (play > 0) perform();
+	});
 	onMount(() => {
 		const header = svg.parentElement;
-		let timer: ReturnType<typeof setTimeout> | undefined;
 		const act = (event: MouseEvent) => {
-			if ((event.target as Element).closest(INTERACTIVE)) return;
-			acting = false;
-			effects = [];
-			clearTimeout(timer);
-			requestAnimationFrame(() => {
-				// The scene's units the header shows, right edge fixed: drive that far plus a car to be out on the left
-				const shown = Math.max(400, (svg.clientWidth * 200) / svg.clientHeight);
-				svg.style.setProperty('--off-left', `${Math.ceil(shown + 40)}px`);
-				effects = measure();
-				acting = true;
-				timer = setTimeout(() => {
-					acting = false;
-					effects = [];
-				}, ACTION_MS);
-			});
+			if (!(event.target as Element).closest(INTERACTIVE)) perform();
 		};
 		header?.addEventListener('click', act);
 		return () => {
