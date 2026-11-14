@@ -20,6 +20,11 @@ export const CHANGELOG: ChangelogEntry[] = [
 				icon: 'edit',
 				en: 'Swipe an expense or payment to the left to edit or delete it straight from the list.',
 				de: 'Wisch eine Ausgabe oder Zahlung nach links, um sie direkt in der Liste zu bearbeiten oder zu löschen.'
+			},
+			{
+				icon: 'help',
+				en: 'New here? A short tour shows you around the start screen and your first group, with a tip here and there. Take it again any time from How it works.',
+				de: 'Neu hier? Eine kurze Tour zeigt dir den Startbildschirm und deine erste Gruppe, mit einem Tipp hier und da. Unter So funktioniert’s kannst du sie jederzeit noch mal machen.'
 			}
 		]
 	},

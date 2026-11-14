@@ -1,5 +1,8 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import { page } from '$app/state';
+	import { onMount } from 'svelte';
+	import { startTour } from '#lib/onboarding/run.ts';
 	import AppPage from '#lib/components/AppPage.svelte';
 	import ExpenseForm from '#lib/components/expense/ExpenseForm.svelte';
 	import { m } from '#lib/paraglide/messages.js';
@@ -30,6 +33,11 @@
 				: { splitMode: '', inputs: {} })
 		}
 	);
+
+	// The first expense: how the form works, the split above all (#331)
+	onMount(() => {
+		if (!page.data.showNote) void startTour('expense');
+	});
 </script>
 
 <svelte:head>

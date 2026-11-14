@@ -17,6 +17,8 @@
 		/** Below the well, e.g. a hint */
 		below?: Snippet;
 		class?: string;
+		/** What the onboarding points at (#331) */
+		tour?: string;
 	};
 
 	let {
@@ -26,12 +28,13 @@
 		children,
 		aside,
 		below,
-		class: className = ''
+		class: className = '',
+		tour
 	}: Props = $props();
 	const id = $props.id();
 </script>
 
-<div class="flex min-w-0 flex-col gap-1.5 {className}">
+<div class="flex min-w-0 flex-col gap-1.5 {className}" data-tour={tour}>
 	<div class="flex min-h-5 items-center justify-between gap-2">
 		<label for={id} class="field-label">{label}</label>
 		{@render aside?.()}

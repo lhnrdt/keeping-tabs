@@ -3,6 +3,7 @@
 	import { page } from '$app/state';
 	import { BlockTitle, List, ListItem } from 'konsta/svelte';
 	import { onMount } from 'svelte';
+	import { showTip, startTour } from '#lib/onboarding/run.ts';
 	import { loadGroupInsights, warmUp } from '#lib/components/insights/load.ts';
 	import AppPage from '#lib/components/AppPage.svelte';
 	import FloatingLink from '#lib/components/FloatingLink.svelte';
@@ -35,6 +36,14 @@
 
 	// Fetch the insights' charts while idle, so the tab opens without waiting
 	onMount(() => warmUp(loadGroupInsights));
+	// The first time in a group: its tour (#331); after that, a tip on the first entry
+	onMount(() => {
+		if (page.data.showNote) return;
+		void startTour('group').then((started) => {
+			const entry = document.querySelector('[data-entry]');
+			if (!started && entry) void showTip('swipe', entry, m.tip_swipe());
+		});
+	});
 	onMount(() => followChanges(resolve('/g/[token]/changes', { token: data.group.shareToken })));
 </script>
 
@@ -79,6 +88,7 @@
 					href={resolve('/g/[token]/expenses/new', { token: data.group.shareToken })}
 					icon="add"
 					label={m.add_expense()}
+					tour="add-expense"
 				/>
 			{:else if tab === 'balances'}
 				<BetweenYou

@@ -35,6 +35,7 @@
 			label={tab.label()}
 			linkProps={{
 				href: groupTabUrl('', tab.id),
+				'data-tour': `tab-${tab.id}`,
 				'aria-current': tab.id === active ? 'page' : undefined,
 				'data-sveltekit-replacestate': '',
 				'data-sveltekit-reset': 'false'

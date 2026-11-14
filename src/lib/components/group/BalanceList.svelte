@@ -11,7 +11,7 @@
 	let { currency, members, balances }: Props = $props();
 </script>
 
-<List strong inset role="region" aria-label={m.balances_title()}>
+<List strong inset role="region" aria-label={m.balances_title()} data-tour="balances">
 	{#each members as member (member.id)}
 		{@const balance = balances[member.id] ?? 0}
 		<ListItem title={member.name} style={transitionName('balance', member.id)}>

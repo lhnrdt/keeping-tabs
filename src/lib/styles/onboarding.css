@@ -1,0 +1,91 @@
+/*
+ * The onboarding's bubbles and tips (#331), in the app's own look: a card on the theme's paper,
+ * the title in the display serif, the main button a solid accent pill like everywhere else.
+ */
+.driver-popover.kt-tour {
+	--driver-popover-font-family: var(--font-sans);
+	background-color: var(--color-surface);
+	color: var(--color-ink);
+	border-radius: 1.25rem;
+	padding: 1.1rem 1.1rem 1rem;
+	max-width: min(20rem, calc(100vw - 2rem));
+	box-shadow: 0 12px 32px rgb(37 40 34 / 0.25);
+}
+.kt-tour .driver-popover-title {
+	font-family: var(--font-display);
+	font-size: 1.25rem;
+	font-weight: 600;
+	padding-right: 1.5rem;
+}
+.kt-tour .driver-popover-description {
+	font-size: 0.95rem;
+	color: var(--color-ink-muted);
+}
+.kt-tour .driver-popover-progress-text {
+	color: var(--color-ink-muted);
+}
+.kt-tour .driver-popover-close-btn {
+	color: var(--color-ink-muted);
+	width: 2.75rem;
+	height: 2.75rem;
+}
+.kt-tour .driver-popover-footer {
+	gap: 0.5rem;
+}
+.kt-tour .driver-popover-navigation-btns {
+	gap: 0.5rem;
+}
+.driver-popover.kt-tour .driver-popover-footer-btn,
+.driver-popover.kt-tour .driver-popover-footer-btn:hover,
+.driver-popover.kt-tour .driver-popover-footer-btn:focus-visible {
+	min-height: 2.5rem;
+	padding: 0 0.9rem;
+	border: none;
+	border-radius: 999px;
+	font-size: 0.9rem;
+	font-weight: 600;
+	text-shadow: none;
+	background: transparent;
+	outline-offset: 2px;
+	color: var(--color-accent);
+}
+.driver-popover.kt-tour :is(.driver-popover-next-btn, .driver-popover-done-btn),
+.driver-popover.kt-tour
+	:is(.driver-popover-next-btn, .driver-popover-done-btn):is(:hover, :focus-visible) {
+	background-color: var(--color-accent);
+	color: #fff;
+}
+.kt-tour .driver-popover-arrow {
+	border-color: var(--color-surface);
+}
+
+/* The tip's beacon, in the accent */
+.driver-hint {
+	--driver-hint-color: var(--color-accent);
+}
+
+:where(.dark) .driver-popover.kt-tour {
+	background-color: var(--color-surface-night);
+	color: var(--color-ink-night);
+	box-shadow: 0 12px 32px rgb(0 0 0 / 0.5);
+}
+:where(.dark) .kt-tour .driver-popover-description,
+:where(.dark) .kt-tour .driver-popover-progress-text,
+:where(.dark) .kt-tour .driver-popover-close-btn {
+	color: var(--color-ink-muted-night);
+}
+:where(.dark) .driver-popover.kt-tour .driver-popover-footer-btn:is(*, :hover, :focus-visible) {
+	color: var(--color-accent-night);
+}
+:where(.dark)
+	.driver-popover.kt-tour
+	:is(.driver-popover-next-btn, .driver-popover-done-btn):is(*, :hover, :focus-visible) {
+	background-color: var(--color-accent-night);
+	color: var(--color-canvas-night);
+}
+:where(.dark) .kt-tour .driver-popover-arrow {
+	border-color: var(--color-surface-night);
+}
+:where(.dark) .driver-hint {
+	--driver-hint-color: var(--color-accent-night);
+}

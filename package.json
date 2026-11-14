@@ -72,6 +72,7 @@
 		"#lib/*": "./src/lib/*"
 	},
 	"dependencies": {
+		"driver.js": "1.14.0",
 		"qrcode-generator": "^2.0.4"
 	}
 }
