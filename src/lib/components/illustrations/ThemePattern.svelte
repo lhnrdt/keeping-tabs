@@ -176,7 +176,7 @@
 
 <svg
 	bind:this={svg}
-	class="scene-layer pointer-events-none absolute inset-0 h-full w-full overflow-visible {acting
+	class="pointer-events-none absolute inset-0 h-full w-full overflow-visible {acting
 		? 'scene-acting'
 		: ''}"
 	viewBox="0 0 400 200"

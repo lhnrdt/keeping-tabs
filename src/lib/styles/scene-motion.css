@@ -6,10 +6,6 @@
  * slows, ease-in for what falls, linear for what turns. Only transform and opacity, and not at all for
  * anyone who asks for less motion.
  */
-/* The scene on a layer of its own from the start, so the header's text isn't redrawn (and flashes) when an action starts */
-svg.scene-layer {
-	will-change: transform;
-}
 [class*='scene-'] {
 	transform-box: fill-box;
 	transform-origin: center bottom;
