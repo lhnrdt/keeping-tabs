@@ -25,6 +25,11 @@ export const CHANGELOG: ChangelogEntry[] = [
 				icon: 'help',
 				en: 'New here? A short tour shows you around the start screen and your first group, with a tip here and there. Take it again any time from How it works.',
 				de: 'Neu hier? Eine kurze Tour zeigt dir den Startbildschirm und deine erste Gruppe, mit einem Tipp hier und da. Unter So funktioniert’s kannst du sie jederzeit noch mal machen.'
+			},
+			{
+				icon: 'palette',
+				en: 'Make the app your own colour: pick any colour in Settings and get a whole theme in it, light and dark, as easy to read as the others.',
+				de: 'Gib der App deine eigene Farbe: Wähl in den Einstellungen irgendeine Farbe und bekomm ein ganzes Farbschema darin, hell und dunkel, so gut lesbar wie die anderen.'
 			}
 		]
 	},
