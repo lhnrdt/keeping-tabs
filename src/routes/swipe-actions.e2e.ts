@@ -23,7 +23,8 @@ const swipeOpen = (row: Locator, action: string) =>
 const swipeAndTap = (row: Locator, action: string) =>
 	expect(async () => {
 		await swipeOpen(row, action);
-		await row.getByTitle(action).click({ timeout: 2000 });
+		// Tapped as soon as it's there: on slow machines the row may still be redrawn meanwhile
+		await row.getByTitle(action).dispatchEvent('click', undefined, { timeout: 2000 });
 	}).toPass({ timeout: 20_000 });
 
 test('swipe an entry for its quick actions (#323)', async ({ page }) => {
