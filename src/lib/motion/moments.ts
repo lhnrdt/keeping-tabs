@@ -15,6 +15,16 @@ export function cueMoment(moment: Moment) {
 	}
 }
 
+/** What was just done, without taking it: for the way there */
+export function peekMoment(): Moment | null {
+	try {
+		const cued = sessionStorage.getItem(KEY);
+		return cued ? (JSON.parse(cued) as Moment) : null;
+	} catch {
+		return null;
+	}
+}
+
 /** What was just done, if anything, and only once */
 export function takeMoment(): Moment | null {
 	try {
