@@ -19,6 +19,8 @@ const tap = (element: string, title: string, description: string): DriveStep => 
 
 export const TOURS: Record<TourName, () => DriveStep[]> = {
 	home: () => [
+		// Only while it can be installed: the card isn't there otherwise, and the step is skipped
+		step('install', m.onboarding_install_title(), m.onboarding_install_text()),
 		step('new-group', m.onboarding_new_group_title(), m.onboarding_new_group_text()),
 		step('profile', m.onboarding_profile_title(), m.onboarding_profile_text()),
 		step('how-it-works', m.onboarding_how_title(), m.onboarding_how_text())

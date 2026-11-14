@@ -44,6 +44,7 @@ import IconReceipt from '@tabler/icons-svelte-runes/icons/receipt';
 import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
 import IconScale from '@tabler/icons-svelte-runes/icons/scale';
 import IconShare from '@tabler/icons-svelte-runes/icons/share';
+import IconShare2 from '@tabler/icons-svelte-runes/icons/share-2';
 import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
 import IconUser from '@tabler/icons-svelte-runes/icons/user';
 import IconUserCircle from '@tabler/icons-svelte-runes/icons/user-circle';
@@ -100,6 +101,8 @@ export const icons = {
 	passkey: IconFingerprint,
 	remove: IconX,
 	share: IconShare,
+	/** As Safari on an iPhone draws it: a box with an arrow up */
+	shareApple: IconShare2,
 	settings: IconSettings,
 	help: IconHelp,
 	report: IconMessageReport,
