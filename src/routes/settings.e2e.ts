@@ -128,9 +128,11 @@ test("other colours than the scenery's, kept when the scenery changes (#332)", a
 	await expect(page.locator('html')).toHaveAttribute('data-accent', 'autumn');
 	await expect(page.getByText('Saved').first()).toBeVisible();
 
-	// Back to the scenery's own
+	// Back to the scenery's own, saved before leaving the page
+	const saved = page.waitForResponse((r) => r.url().includes('/colors') && r.ok());
 	await page.getByRole('group', { name: 'Colours' }).getByText('Like the scenery').click();
 	await expect(page.locator('html')).toHaveAttribute('data-accent', 'coast');
+	await saved;
 	await open(page, '/');
 	await expect(page.locator('html')).toHaveAttribute('data-accent', 'coast');
 });
