@@ -1,7 +1,11 @@
 // Runs the onboarding (#331) with driver.js: a tour once per device, opening with the welcome if
 // it's the first, and a tip here and there once the tours are done. Loaded only when needed.
 import { m } from '#lib/paraglide/messages.js';
-import { declineAll, hasSeen, markSeen, mayShow } from './seen';
+import { page } from '$app/state';
+import { adopt, declineAll, hasSeen, markSeen, mayShow } from './seen';
+
+/** What the person's other devices have seen, as loaded with this page (#331) */
+const known = () => adopt((page.data as { onboarding?: string[] }).onboarding ?? []);
 import { TOURS, welcome, type TourName } from './tours';
 
 const WELCOME = 'welcome';
@@ -13,6 +17,7 @@ let running = false;
 
 /** The tour of a screen, the first time it's seen here; whether it started */
 export async function startTour(name: TourName): Promise<boolean> {
+	known();
 	if (running || hasSeen(name) || !mayShow()) return false;
 	running = true;
 	const [{ driver }] = await Promise.all([
@@ -51,6 +56,7 @@ export async function startTour(name: TourName): Promise<boolean> {
 /** A tip on something, once, when no tour is on */
 export async function showTip(name: string, element: Element, text: string) {
 	const tip = `tip-${name}`;
+	known();
 	if (running || hasSeen(tip) || !mayShow()) return;
 	const [{ hints }] = await Promise.all([
 		import('driver.js/hints'),

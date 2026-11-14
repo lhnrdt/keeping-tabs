@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { declineAll, hasSeen, markSeen, mayShow, startAgain } from './seen';
+import { adopt, declineAll, hasSeen, markSeen, mayShow, startAgain } from './seen';
 
 const storage = () => {
 	const items = new Map<string, string>();
@@ -14,6 +14,35 @@ describe('what of the onboarding was seen (#331)', () => {
 		vi.stubGlobal('localStorage', storage());
 		vi.stubGlobal('sessionStorage', storage());
 		vi.stubGlobal('navigator', { webdriver: false });
+		vi.stubGlobal(
+			'fetch',
+			vi.fn(async () => new Response('{}'))
+		);
+	});
+
+	it('is once per person: what their other devices saw counts here, and this one tells the server what it saw', () => {
+		adopt(['home']);
+		expect(hasSeen('home')).toBe(true);
+		expect(fetch).not.toHaveBeenCalled();
+		markSeen('group');
+		expect(fetch).toHaveBeenLastCalledWith(
+			'/you/onboarding',
+			expect.objectContaining({ body: JSON.stringify({ seen: ['home', 'group'] }) })
+		);
+		// Seen here before this device was anyone's: sent once it is
+		adopt([]);
+		expect(fetch).toHaveBeenLastCalledWith(
+			'/you/onboarding',
+			expect.objectContaining({ body: JSON.stringify({ seen: ['home', 'group'] }) })
+		);
+	});
+
+	it('starts again everywhere', () => {
+		startAgain();
+		expect(fetch).toHaveBeenLastCalledWith(
+			'/you/onboarding',
+			expect.objectContaining({ body: JSON.stringify({ again: true }) })
+		);
 	});
 
 	it('remembers each part', () => {
