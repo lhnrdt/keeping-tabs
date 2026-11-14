@@ -22,9 +22,10 @@
 	// The theme's illustrations follow the picker at once (#60)
 	const theme = new ThemeChoice(untrack(() => data.theme));
 	provideTheme(theme);
-	// e.g. brought from another device of yours
+	// e.g. brought from another device of yours, or a new day's scenery (#332)
 	$effect(() => {
 		theme.id = data.theme;
+		window.applyAccent?.(data.colors);
 	});
 
 	const depth = (url: URL | undefined) => url?.pathname.split('/').filter(Boolean).length ?? 0;

@@ -1,5 +1,5 @@
 import { and, eq, gt, isNull } from 'drizzle-orm';
-import type { Accent, Locale, Theme, Units } from '#lib/settings.ts';
+import type { Colors, Locale, Scenery, Theme, Units } from '#lib/settings.ts';
 import type { Db } from './db';
 import { once } from './request-cache';
 import { deviceLinks, devices, people, personKeys } from './db/schema';
@@ -17,7 +17,8 @@ export type Person = {
 	/** Personal settings (S-3); null follows the browser */
 	locale: Locale | null;
 	theme: Theme | null;
-	accent: Accent | null;
+	accent: Scenery | null;
+	colors: Colors | null;
 	units: Units | null;
 	displayCurrency: string | null;
 	avatar: string | null;
@@ -47,6 +48,7 @@ export async function findPerson(db: Db, deviceKey: string): Promise<Person | un
 			locale: people.locale,
 			theme: people.theme,
 			accent: people.accent,
+			colors: people.colors,
 			units: people.units,
 			displayCurrency: people.displayCurrency,
 			avatar: people.avatar,
@@ -77,6 +79,7 @@ export async function ensurePerson(db: Db, deviceKey: string): Promise<Person> {
 		locale: null,
 		theme: null,
 		accent: null,
+		colors: null,
 		units: null,
 		displayCurrency: null,
 		avatar: null,
