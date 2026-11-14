@@ -128,13 +128,14 @@ test("other colours than the scenery's, kept when the scenery changes (#332)", a
 	await expect(page.locator('html')).toHaveAttribute('data-accent', 'autumn');
 	await expect(page.getByText('Saved').first()).toBeVisible();
 
-	// Back to the scenery's own, saved before leaving the page
+	// Kept after a reload, and changed only by choosing other colours
+	await open(page, '/');
+	await expect(page.locator('html')).toHaveAttribute('data-accent', 'autumn');
+	await open(page, '/you');
 	const saved = page.waitForResponse((r) => r.url().includes('/colors') && r.ok());
-	await page.getByRole('group', { name: 'Colours' }).getByText('Like the scenery').click();
+	await page.getByRole('group', { name: 'Colours' }).getByText('Coast', { exact: true }).click();
 	await expect(page.locator('html')).toHaveAttribute('data-accent', 'coast');
 	await saved;
-	await open(page, '/');
-	await expect(page.locator('html')).toHaveAttribute('data-accent', 'coast');
 });
 
 test('a new scenery every day (#332)', async ({ page }) => {
@@ -155,6 +156,16 @@ test('a theme of your own from any colour, made readable, and kept (#330)', asyn
 		.getByRole('button', { name: /Your own/ })
 		.click();
 	const sheet = page.getByRole('dialog', { name: 'Your own' });
+	const html = page.locator('html');
+	// The whole app shows it while picking, and goes back if it's not taken
+	await sheet.getByLabel('Colour', { exact: true }).fill('300');
+	await expect(html).toHaveAttribute('style', /--accent: #/);
+	await sheet.getByRole('button', { name: 'Cancel' }).click();
+	await expect(html).not.toHaveAttribute('style', /--accent:/);
+	await page
+		.getByRole('group', { name: 'Colours' })
+		.getByRole('button', { name: /Your own/ })
+		.click();
 	// A bright yellow
 	await sheet.getByLabel('Colour', { exact: true }).fill('100');
 	await sheet.getByLabel('How colourful').fill('0.2');
@@ -163,7 +174,6 @@ test('a theme of your own from any colour, made readable, and kept (#330)', asyn
 
 	// A whole theme in its hue, light and dark, after a reload too
 	await open(page, '/');
-	const html = page.locator('html');
 	const style = (await html.getAttribute('style')) ?? '';
 	const picked = /--accent: (#[0-9a-f]{6})/.exec(style)?.[1];
 	expect(picked).toBeTruthy();
@@ -175,9 +185,9 @@ test('a theme of your own from any colour, made readable, and kept (#330)', asyn
 		`rgb(${r}, ${g}, ${b})`
 	);
 
-	// Back to the scenery's own: nothing of your own left over
+	// Back to a scenery's colours: nothing of your own left over
 	await open(page, '/you');
-	await page.getByRole('group', { name: 'Colours' }).getByText('Like the scenery').click();
+	await page.getByRole('group', { name: 'Colours' }).getByText('Forest', { exact: true }).click();
 	await expect(html).not.toHaveAttribute('style', /--accent:/);
 });
 

@@ -1,11 +1,12 @@
 <script lang="ts">
-	// Choose the app's colours (#60, #332, #330). Two choices of their own come first: the
-	// scenery's colours, and a theme made from any colour you pick on the device's colour picker.
-	// Then the themes' colours, each a small preview (background, a card, the accent), light or
-	// dark like the app.
+	// Choose the app's colours (#60, #332, #330): a theme made from any colour you pick, on a card
+	// of its own, or one of the sceneries' colours, each a small preview (background, a card, the
+	// accent), light or dark like the app. Until someone picks, the colours are the scenery's.
 	import Icon from '#lib/components/Icon.svelte';
 	import { m } from '#lib/paraglide/messages.js';
 	import { COLORS, isOwnColor, LIKE_SCENERY, type Colors } from '#lib/settings.ts';
+	import { applyLook } from '#lib/themes/apply-look.ts';
+	import { localDate, lookOn } from '#lib/themes/look.ts';
 	import { ownThemeProperties, styleOf } from '#lib/themes/own-theme.ts';
 	import { PALETTES, type ThemeId } from '#lib/themes/palettes.ts';
 	import OwnColorSheet from './OwnColorSheet.svelte';
@@ -24,6 +25,12 @@
 	let ownChoice: HTMLInputElement;
 	let picking = $state(false);
 
+	/** Not picked after all: the colours chosen before, back on the whole app */
+	function cancelled() {
+		picking = false;
+		applyLook(lookOn(scenery, value, localDate()));
+	}
+
 	/** Picked: chosen, and the form saves it like any other choice */
 	function picked(color: string) {
 		picking = false;
@@ -34,70 +41,46 @@
 		ownChoice.dispatchEvent(new Event('change', { bubbles: true }));
 	}
 
-	/** The two choices of their own: a card with a round preview, dashed until chosen */
+	/** Your own colour: a card of its own with a round preview, outlined in the accent once chosen */
 	const card = (chosen: boolean) =>
-		`flex h-full items-center gap-3 rounded-2xl border-2 p-3 ${
-			chosen
-				? 'border-solid border-accent dark:border-accent-night'
-				: 'border-dashed border-current/25'
+		`flex h-full items-center gap-3 rounded-2xl border-2 bg-surface p-3 dark:bg-surface-night ${
+			chosen ? 'border-accent dark:border-accent-night' : 'border-transparent'
 		}`;
-	const preview =
-		'grid size-10 flex-none place-items-center rounded-full bg-(--hero-bg) text-(--accent) dark:bg-(--hero-bg-night) dark:text-(--accent-night)';
 	const themes = COLORS.filter((colors): colors is ThemeId => colors !== LIKE_SCENERY);
 </script>
 
 <fieldset class="flex flex-col gap-3 px-4">
 	<legend class="sr-only">{m.settings_colors()}</legend>
-	<div class="grid grid-cols-2 gap-3">
-		<label class="cursor-pointer">
-			<input
-				class="peer sr-only"
-				type="radio"
-				name="colors"
-				value={LIKE_SCENERY}
-				checked={value === LIKE_SCENERY}
-			/>
-			<span class="{card(value === LIKE_SCENERY)} peer-focus-visible:ring-2">
-				<span class={preview} data-accent={scenery}><Icon name="scenery" size={20} /></span>
+	<div>
+		<input
+			bind:this={ownChoice}
+			class="sr-only"
+			type="radio"
+			name="colors"
+			value={own}
+			checked={mine}
+			tabindex="-1"
+			aria-hidden="true"
+		/>
+		<button
+			type="button"
+			class="block h-full w-full cursor-pointer text-start"
+			onclick={() => (picking = true)}
+		>
+			<span class={card(mine)}>
+				<!-- Filled with your colour, as the app's buttons will be -->
+				<span
+					class="grid size-10 flex-none place-items-center rounded-full bg-(--accent) text-(--surface) dark:bg-(--accent-night) dark:text-(--canvas-night)"
+					style={styleOf(ownThemeProperties(own))}
+				>
+					<Icon name="pickColor" size={20} />
+				</span>
 				<span class="flex min-w-0 flex-col">
-					<span class="text-sm font-medium">{m.colors_like_scenery()}</span>
-					<span class="text-xs text-muted"
-						>{m.colors_like_scenery_hint({ theme: themeLabels[scenery]() })}</span
-					>
+					<span class="text-sm font-medium">{m.colors_own()}</span>
+					<span class="text-xs text-muted">{m.colors_own_hint()}</span>
 				</span>
 			</span>
-		</label>
-		<div>
-			<input
-				bind:this={ownChoice}
-				class="sr-only"
-				type="radio"
-				name="colors"
-				value={own}
-				checked={mine}
-				tabindex="-1"
-				aria-hidden="true"
-			/>
-			<button
-				type="button"
-				class="block h-full w-full cursor-pointer text-start"
-				onclick={() => (picking = true)}
-			>
-				<span class={card(mine)}>
-					<!-- Filled with your colour, as the app's buttons will be -->
-					<span
-						class="grid size-10 flex-none place-items-center rounded-full bg-(--accent) text-(--surface) dark:bg-(--accent-night) dark:text-(--canvas-night)"
-						style={styleOf(ownThemeProperties(own))}
-					>
-						<Icon name="pickColor" size={20} />
-					</span>
-					<span class="flex min-w-0 flex-col">
-						<span class="text-sm font-medium">{m.colors_own()}</span>
-						<span class="text-xs text-muted">{m.colors_own_hint()}</span>
-					</span>
-				</span>
-			</button>
-		</div>
+		</button>
 	</div>
 	<p class="text-xs text-muted">{m.colors_themes()}</p>
 	<div class="grid grid-cols-3 gap-3">
@@ -108,7 +91,7 @@
 					type="radio"
 					name="colors"
 					value={colors}
-					checked={colors === value}
+					checked={colors === value || (value === LIKE_SCENERY && colors === scenery)}
 				/>
 				<span
 					class="flex h-full flex-col gap-1.5 rounded-2xl border-2 border-transparent bg-(--canvas) p-2 peer-checked:border-(--accent) peer-focus-visible:ring-2 dark:bg-(--canvas-night) dark:peer-checked:border-(--accent-night)"
@@ -127,4 +110,4 @@
 	</div>
 </fieldset>
 
-<OwnColorSheet opened={picking} color={own} onPick={picked} onClose={() => (picking = false)} />
+<OwnColorSheet opened={picking} color={own} {scenery} onPick={picked} onClose={cancelled} />
