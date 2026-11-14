@@ -1,7 +1,9 @@
 <script lang="ts">
 	// Going to another screen that takes a moment: its outline comes up at once, instead of the old
-	// screen just staying. A quick one never shows this, so nothing flickers.
+	// screen just staying. A quick one never shows this, so nothing flickers. Nor the way back after
+	// something was just saved: the form waits, its button busy, and turns into the new row (#291).
 	import { navigating, page } from '$app/state';
+	import { peekMoment } from '#lib/motion/moments.ts';
 	import ListSkeleton from './ListSkeleton.svelte';
 
 	const AFTER_MS = 180;
@@ -11,7 +13,7 @@
 	);
 	let slow = $state(false);
 	$effect(() => {
-		if (!elsewhere) {
+		if (!elsewhere || peekMoment()) {
 			slow = false;
 			return;
 		}

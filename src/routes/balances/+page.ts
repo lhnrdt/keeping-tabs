@@ -1,12 +1,13 @@
 import { resolve } from '$app/paths';
 import { browser, openedLoad } from '#lib/crypto/open-data.ts';
-import { sealedEntries } from '#lib/group/sealed-entries.ts';
+import { ENTRIES_CHANGED, sealedEntries } from '#lib/group/sealed-entries.ts';
 import { moneyOf, type SealedEntry } from '#lib/group/sealed-money.ts';
 import { spendingWithCategories } from '#lib/insights/across.ts';
 import { summarizePeople } from '#lib/people-summary.ts';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ data, fetch }) => {
+export const load: PageLoad = async ({ data, fetch, depends }) => {
+	depends(ENTRIES_CHANGED);
 	const { sealedSpending, ...opened } = await openedLoad(data);
 	if (!sealedSpending || !browser) return opened;
 	// Every group's money from its opened entries: some only the browser can read (#110)

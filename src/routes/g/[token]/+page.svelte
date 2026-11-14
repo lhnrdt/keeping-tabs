@@ -1,8 +1,11 @@
 <script lang="ts">
+	import { keepReady } from '#lib/offline/ready.ts';
+	import { takeMoment } from '#lib/motion/moments.ts';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { BlockTitle, List, ListItem } from 'konsta/svelte';
 	import { onMount } from 'svelte';
+	import { showTip, startTour } from '#lib/onboarding/run.ts';
 	import { loadGroupInsights, warmUp } from '#lib/components/insights/load.ts';
 	import AppPage from '#lib/components/AppPage.svelte';
 	import FloatingLink from '#lib/components/FloatingLink.svelte';
@@ -29,12 +32,42 @@
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();
+	/** Once the page has come in, so the action is seen */
+	const MOMENT_DELAY_MS = 350;
 
 	const tab = $derived(currentTab(page.url));
 	const errorFor = (action: string) => (form?.action === action ? form.error : undefined);
 
+	// Just added, paid or created: the scene plays its action once the page is in, and the new
+	// entry glows (#291)
+	let play = $state(0);
+	let fresh = $state<string | undefined>();
+	/** It came as the form turning into it: no coming in again, only the glow */
+	let morphed = $state(false);
+	onMount(() => {
+		const moment = takeMoment();
+		if (!moment) return;
+		fresh = moment.id;
+		morphed = Boolean(moment.morphed);
+		const later = setTimeout(() => play++, MOMENT_DELAY_MS);
+		return () => clearTimeout(later);
+	});
+
+	// Without a connection later, an expense can still be added here, and the start screen opens
+	onMount(() =>
+		keepReady([resolve('/g/[token]/expenses/new', { token: data.group.shareToken }), resolve('/')])
+	);
+
 	// Fetch the insights' charts while idle, so the tab opens without waiting
 	onMount(() => warmUp(loadGroupInsights));
+	// The first time in a group: its tour (#331); after that, a tip on the first entry
+	onMount(() => {
+		if (page.data.showNote) return;
+		void startTour('group').then((started) => {
+			const entry = document.querySelector('[data-entry]');
+			if (!started && entry) void showTip('swipe', entry, m.tip_swipe());
+		});
+	});
 	onMount(() => followChanges(resolve('/g/[token]/changes', { token: data.group.shareToken })));
 </script>
 
@@ -52,6 +85,7 @@
 			members={data.members}
 			balances={data.balances}
 			transfers={data.transfers}
+			{play}
 		/>
 	{/snippet}
 
@@ -73,12 +107,15 @@
 						hasMore={data.hasMore}
 						query={data.query}
 						searchHere={Boolean(data.group.keyId || data.group.transitionKey)}
+						{fresh}
+						{morphed}
 					/>
 				{/key}
 				<FloatingLink
 					href={resolve('/g/[token]/expenses/new', { token: data.group.shareToken })}
 					icon="add"
 					label={m.add_expense()}
+					tour="add-expense"
 				/>
 			{:else if tab === 'balances'}
 				<BetweenYou

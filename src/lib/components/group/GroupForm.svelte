@@ -13,6 +13,7 @@
 	import { Submission } from '#lib/forms/submission.svelte.ts';
 	import { sealing } from '#lib/crypto/seal-form.ts';
 	import { keep } from '#lib/offline/outbox.ts';
+	import { cueMoment, type Moment } from '#lib/motion/moments.ts';
 
 	type Props = {
 		error?: ErrorCode;
@@ -27,6 +28,8 @@
 		announce?: string;
 		/** Runs once it's saved, before moving on; can name a different page to go to */
 		onSaved?: () => Promise<string | void>;
+		/** Answered where it lands once it's saved, e.g. a new expense (#291) */
+		moment?: Moment;
 		children: Snippet;
 	};
 
@@ -38,6 +41,7 @@
 		sealRow,
 		announce,
 		onSaved,
+		moment,
 		children
 	}: Props = $props();
 
@@ -67,15 +71,18 @@
 					fields,
 					title: field('title'),
 					amount: field('amount'),
+					currency: field('currency'),
 					date: field('date'),
 					addedAt: Date.now()
 				});
 				if (kept) {
+					if (moment) cueMoment(moment);
 					submission.pending = false;
 					await goto(resolve('/g/[token]', { token: offlineToken }));
 					return;
 				}
 			}
+			if (result.type === 'redirect' && moment) cueMoment(moment);
 			if (result.type === 'redirect' && onSaved) {
 				const elsewhere = await onSaved();
 				if (elsewhere) {

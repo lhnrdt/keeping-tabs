@@ -13,6 +13,37 @@ export type ChangelogEntry = {
 /** Newest first */
 export const CHANGELOG: ChangelogEntry[] = [
 	{
+		version: '0.21.0',
+		date: '2026-11-14',
+		items: [
+			{
+				icon: 'edit',
+				en: 'Swipe an expense or payment to the left to edit or delete it straight from the list.',
+				de: 'Wisch eine Ausgabe oder Zahlung nach links, um sie direkt in der Liste zu bearbeiten oder zu löschen.'
+			},
+			{
+				icon: 'sparkles',
+				en: 'Little moments: a new expense turns into its row as the list comes back, and the header’s scene answers when you add, pay or start a group. Choosing a period in Insights slides instead of jumping.',
+				de: 'Kleine Momente: Eine neue Ausgabe wird beim Zurückkehren zu ihrer Zeile, und die Szene oben reagiert, wenn du etwas einträgst, bezahlst oder eine Gruppe anlegst. Der Zeitraum in Insights gleitet, statt zu springen.'
+			},
+			{
+				icon: 'phone',
+				en: 'Put Keeping Tabs on your home screen: the start screen offers it, the tour points at it, and Settings has it for later. Then it opens like an app and works offline.',
+				de: 'Leg Keeping Tabs auf deinen Home-Bildschirm: Der Startbildschirm bietet es an, die Tour zeigt darauf, und in den Einstellungen findest du es später. Dann öffnet sie sich wie eine App und funktioniert offline.'
+			},
+			{
+				icon: 'help',
+				en: 'New here? A short tour shows you around the start screen and your first group, with a tip here and there. Take it again any time from How it works.',
+				de: 'Neu hier? Eine kurze Tour zeigt dir den Startbildschirm und deine erste Gruppe, mit einem Tipp hier und da. Unter So funktioniert’s kannst du sie jederzeit noch mal machen.'
+			},
+			{
+				icon: 'palette',
+				en: 'Make the app your own colour: pick any colour in Settings and get a whole theme in it, light and dark, as easy to read as the others.',
+				de: 'Gib der App deine eigene Farbe: Wähl in den Einstellungen irgendeine Farbe und bekomm ein ganzes Farbschema darin, hell und dunkel, so gut lesbar wie die anderen.'
+			}
+		]
+	},
+	{
 		version: '0.20.0',
 		date: '2026-11-14',
 		items: [

@@ -1,6 +1,8 @@
 <script lang="ts">
 	// Settings: who you are and your access lead on to their own pages; quick choices are right
 	// here and save as they change. Without JavaScript, each has its own Save button.
+	import InstallRow from '#lib/components/install/InstallRow.svelte';
+	import { applyLook } from '#lib/themes/apply-look.ts';
 	import { onMount } from 'svelte';
 	import { version } from '$app/env';
 	import { enhance } from '$app/forms';
@@ -70,7 +72,7 @@
 		const chosenColors = form.get('colors');
 		if (isScenery(chosenScenery)) scenery = chosenScenery;
 		if (isColors(chosenColors)) colors = chosenColors;
-		window.applyAccent?.(today.colors);
+		applyLook(today);
 		theme.id = today.scenery;
 		event.currentTarget.requestSubmit();
 	}
@@ -147,7 +149,7 @@
 					saved={setting.saved === 'scenery'}
 					error={errorFor('scenery')}
 				>
-					<SceneryPicker value={scenery} today={today.scenery} />
+					<SceneryPicker value={scenery} />
 				</SettingField>
 				<noscript><button type="submit">{m.save()}</button></noscript>
 			</form>
@@ -225,6 +227,7 @@
 					icon="passkey"
 					value={data.backedUp ? `✓ ${m.backup_saved()}` : m.backup_not_set_up()}
 				/>
+				<InstallRow />
 			</div>
 		</section>
 

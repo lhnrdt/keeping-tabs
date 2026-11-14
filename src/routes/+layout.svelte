@@ -1,4 +1,8 @@
 <script lang="ts">
+	import { adopt } from '#lib/onboarding/seen.ts';
+	import { morphFrom, morphTo } from '#lib/motion/morph.ts';
+	import { followKept } from '#lib/offline/follow-kept.ts';
+	import { applyLook } from '#lib/themes/apply-look.ts';
 	import { beforeNavigate, onNavigate } from '$app/navigation';
 	import { page, updated } from '$app/state';
 	import { App } from 'konsta/svelte';
@@ -25,7 +29,7 @@
 	// e.g. brought from another device of yours, or a new day's scenery (#332)
 	$effect(() => {
 		theme.id = data.theme;
-		window.applyAccent?.(data.colors);
+		applyLook({ colors: data.colors, own: data.own ?? undefined });
 	});
 
 	const depth = (url: URL | undefined) => url?.pathname.split('/').filter(Boolean).length ?? 0;
@@ -36,6 +40,9 @@
 	});
 
 	onMount(refreshOnReturn);
+	onMount(followKept);
+	// The onboarding once per person: what their other devices have seen counts here too (#331)
+	$effect(() => adopt(data.onboarding));
 	// No browser menu on a long press or right click, except where text can be typed or copied, and
 	// no pinching to zoom
 	onMount(() => {
@@ -64,11 +71,17 @@
 		// 1 = deeper (slide forward), -1 = back up, 0 = same level such as tabs (fade)
 		const direction = Math.sign(depth(navigation.to?.url) - depth(navigation.from?.url));
 		document.documentElement.style.setProperty('--vt-direction', String(direction));
+		// A new entry just saved: its screen shrinks into its row in the list (#291)
+		const entry = morphFrom();
 		return new Promise((resolve) => {
-			document.startViewTransition(async () => {
+			const transition = document.startViewTransition(async () => {
 				resolve();
 				await navigation.complete;
+				if (entry) await morphTo(entry, transition.finished);
 			});
+			if (!entry) return;
+			// Not landed anywhere (no row to turn into): nothing left named
+			transition.finished.finally(() => delete document.documentElement.dataset.transition);
 		});
 	});
 </script>

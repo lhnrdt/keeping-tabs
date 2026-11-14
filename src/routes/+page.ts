@@ -1,11 +1,12 @@
 import { resolve } from '$app/paths';
 import { browser, openedLoad } from '#lib/crypto/open-data.ts';
 import { m } from '#lib/paraglide/messages.js';
-import { sealedEntries } from '#lib/group/sealed-entries.ts';
+import { ENTRIES_CHANGED, sealedEntries } from '#lib/group/sealed-entries.ts';
 import { summaryOf, type SealedEntry } from '#lib/group/sealed-money.ts';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ data, fetch }) => {
+export const load: PageLoad = async ({ data, fetch, depends }) => {
+	depends(ENTRIES_CHANGED);
 	const opened = await openedLoad(data);
 	if (!browser) {
 		// Nothing readable to show yet: its outline instead

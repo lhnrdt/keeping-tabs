@@ -36,6 +36,18 @@
 		)
 	);
 
+	/** Chosen, the drawing area comes up below: brought into sight, to draw on right away */
+	let justChosen = false;
+	const intoView = (node: HTMLElement) => {
+		// Not when the page opens on a drawing already saved
+		if (!justChosen) return;
+		justChosen = false;
+		const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+		requestAnimationFrame(() =>
+			node.scrollIntoView({ behavior: calm ? 'auto' : 'smooth', block: 'nearest' })
+		);
+	};
+
 	const option =
 		'grid h-11 w-11 place-items-center rounded-full bg-(--tint-bg) text-(--tint-fg) ring-offset-2 ring-offset-canvas peer-checked:ring-2 peer-checked:ring-accent peer-focus-visible:outline-2 dark:ring-offset-canvas-night dark:peer-checked:ring-accent-night';
 </script>
@@ -95,29 +107,43 @@
 				</span>
 			</label>
 		{/each}
-		<label class="cursor-pointer">
-			<input
-				class="peer sr-only"
-				type="radio"
-				name="icon"
-				value={DRAWN}
-				checked={icon === DRAWN}
-				onchange={(event) => {
-					icon = DRAWN;
-					// Nothing drawn yet: nothing to save until there is
-					if (!value.drawing) event.stopPropagation();
-				}}
-			/>
-			<span class="{tintClass(id, tint)} {option}" title={m.avatar_draw()}>
-				<Icon name="edit" size={20} />
-				<span class="sr-only">{m.avatar_draw()}</span>
-			</span>
-		</label>
 	</div>
+	<!-- Not one more icon: a picture of your own, on a tile of its own -->
+	<label class="mt-3 block cursor-pointer">
+		<input
+			class="peer sr-only"
+			type="radio"
+			name="icon"
+			value={DRAWN}
+			checked={icon === DRAWN}
+			onchange={(event) => {
+				justChosen = true;
+				icon = DRAWN;
+				// Nothing drawn yet: nothing to save until there is
+				if (!value.drawing) event.stopPropagation();
+			}}
+		/>
+		<span
+			class="flex min-h-16 items-center gap-3 rounded-2xl border-2 border-transparent bg-surface px-3 py-2 peer-checked:border-accent peer-focus-visible:outline-2 dark:bg-surface-night dark:peer-checked:border-accent-night"
+		>
+			<span
+				class="{tintClass(
+					id,
+					tint
+				)} grid size-11 flex-none place-items-center rounded-full bg-(--tint-bg) text-(--tint-fg)"
+			>
+				<Icon name="edit" size={20} />
+			</span>
+			<span class="flex flex-col">
+				<span class="font-medium">{m.avatar_draw()}</span>
+				<span class="text-sm text-muted">{m.avatar_draw_hint()}</span>
+			</span>
+		</span>
+	</label>
 </fieldset>
 
 {#if icon === DRAWN}
-	<div class="pt-4">
+	<div class="scroll-mt-20 pt-4" use:intoView>
 		<AvatarDrawing
 			tint={tintClass(id, tint)}
 			initial={value.drawing}

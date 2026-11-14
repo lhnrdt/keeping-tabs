@@ -164,27 +164,30 @@
 	sealed={['title', 'notes', 'items']}
 	sealRow={expenseId ?? clientId}
 	announce={expenseId ? 'changed' : undefined}
+	moment={expenseId ? undefined : { kind: 'added', id: clientId }}
 	onSaved={offlineToken ? afterSaving : undefined}
 >
 	{#if offlineToken}<input type="hidden" name="clientId" value={clientId} />{/if}
 	<div class="flex flex-col gap-4 px-4 pt-2 pb-4">
-		<TitleNoteField bind:title notes={values.notes} />
-		<AmountCurrencyField
-			bind:amount
-			bind:currency={amountCurrency}
-			bind:converted
-			groupCurrency={currency}
-			{currencies}
-			{date}
-			{saved}
-		/>
+		<div data-tour="expense-what"><TitleNoteField bind:title notes={values.notes} /></div>
+		<div data-tour="expense-amount">
+			<AmountCurrencyField
+				bind:amount
+				bind:currency={amountCurrency}
+				bind:converted
+				groupCurrency={currency}
+				{currencies}
+				{date}
+				{saved}
+			/>
+		</div>
 		<!-- Also when the group is no car group anymore: saving must not lose what's noted -->
 		{#if kind === 'car' || values.odometer || values.litres}
 			<DrivingFields odometer={values.odometer ?? ''} litres={values.litres ?? ''} />
 		{/if}
 
 		<div class="grid grid-cols-2 gap-2.5">
-			<PlainField label={m.field_paid_by()} icon="paidBy" arrow>
+			<PlainField label={m.field_paid_by()} icon="paidBy" arrow tour="expense-paid-by">
 				{#snippet children(id)}
 					<select {id} name="paidBy" bind:value={payer}>
 						{#each members as member (member.id)}
@@ -195,7 +198,7 @@
 					</select>
 				{/snippet}
 			</PlainField>
-			<PlainField label={m.field_split()} arrow>
+			<PlainField label={m.field_split()} arrow tour="expense-split">
 				{#snippet children(id)}
 					<select {id} name="splitMode" bind:value={mode}>
 						{#each SPLIT_MODES as option (option)}
@@ -212,45 +215,47 @@
 				<PayerAmounts {members} {currency} amount={converted} initial={values.payers ?? {}} />
 			</div>
 		{/if}
-		{#if mode === ITEMS_MODE}
-			<ItemSplit
-				{members}
-				{currency}
-				{amount}
-				{amountCurrency}
-				{converted}
-				initial={values.items ?? ''}
-			/>
-		{:else if mode === 'equal'}
-			<ParticipantChecklist
-				{members}
-				selected={values.participants}
-				amount={converted}
-				{currency}
-			/>
-		{:else}
-			<SplitInputs
-				{mode}
-				{members}
-				{currency}
-				amount={converted}
-				initial={{
-					mode: isSplitMode(values.splitMode) ? values.splitMode : 'equal',
-					inputs: values.inputs
-				}}
-			/>
-			{#if canBeDefault(mode)}
-				<!-- Remember this split for the group's new expenses (#41) -->
-				<label class="-mt-2 flex cursor-pointer items-center gap-3 text-sm">
-					<input
-						type="checkbox"
-						name="makeDefault"
-						class="size-[18px] shrink-0 accent-accent dark:accent-accent-night"
-					/>
-					{m.default_split_remember()}
-				</label>
+		<div class="flex flex-col gap-4" data-tour="expense-for">
+			{#if mode === ITEMS_MODE}
+				<ItemSplit
+					{members}
+					{currency}
+					{amount}
+					{amountCurrency}
+					{converted}
+					initial={values.items ?? ''}
+				/>
+			{:else if mode === 'equal'}
+				<ParticipantChecklist
+					{members}
+					selected={values.participants}
+					amount={converted}
+					{currency}
+				/>
+			{:else}
+				<SplitInputs
+					{mode}
+					{members}
+					{currency}
+					amount={converted}
+					initial={{
+						mode: isSplitMode(values.splitMode) ? values.splitMode : 'equal',
+						inputs: values.inputs
+					}}
+				/>
+				{#if canBeDefault(mode)}
+					<!-- Remember this split for the group's new expenses (#41) -->
+					<label class="-mt-2 flex cursor-pointer items-center gap-3 text-sm">
+						<input
+							type="checkbox"
+							name="makeDefault"
+							class="size-[18px] shrink-0 accent-accent dark:accent-accent-night"
+						/>
+						{m.default_split_remember()}
+					</label>
+				{/if}
 			{/if}
-		{/if}
+		</div>
 
 		<CategoryPicker value={values.category} {title} learned={learnCategories(chosen)} {kind} />
 		<DateChips bind:date />

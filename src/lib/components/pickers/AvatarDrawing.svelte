@@ -87,26 +87,37 @@
 <div class="flex flex-col gap-3 px-4 pb-3">
 	<input bind:this={fields} type="hidden" name="width" value={width} />
 	<input type="hidden" name="drawing" value={pathOf(strokes)} />
-	<svg
-		bind:this={pad}
-		viewBox="0 0 {DRAWING_SIZE} {DRAWING_SIZE}"
-		class="{tint} aspect-square w-full touch-none rounded-full bg-(--tint-bg) text-(--tint-fg)"
-		role="img"
-		aria-label={m.avatar_draw_pad()}
-		onpointerdown={down}
-		onpointermove={move}
-		onpointerup={up}
-		onpointercancel={up}
-	>
-		<path
-			{d}
-			fill="none"
-			stroke="currentColor"
-			stroke-width={STROKE_WIDTHS[width]}
-			stroke-linecap="round"
-			stroke-linejoin="round"
-		/>
-	</svg>
+	<div class="{tint} relative text-(--tint-fg)">
+		<svg
+			bind:this={pad}
+			viewBox="0 0 {DRAWING_SIZE} {DRAWING_SIZE}"
+			class="aspect-square w-full cursor-crosshair touch-none rounded-full bg-(--tint-bg)"
+			role="img"
+			aria-label={m.avatar_draw_pad()}
+			onpointerdown={down}
+			onpointermove={move}
+			onpointerup={up}
+			onpointercancel={up}
+		>
+			<path
+				{d}
+				fill="none"
+				stroke="currentColor"
+				stroke-width={STROKE_WIDTHS[width]}
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			/>
+		</svg>
+		{#if !strokes.length && !current}
+			<!-- Until the first line: what it's for -->
+			<span
+				class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 opacity-60"
+			>
+				<Icon name="edit" size={32} />
+				<span class="text-sm font-medium">{m.avatar_draw_here()}</span>
+			</span>
+		{/if}
+	</div>
 	{#if full}<p class="text-center text-sm text-muted" role="status">{m.avatar_draw_full()}</p>{/if}
 	<div class="flex flex-wrap items-center justify-center gap-2">
 		{#each STROKE_WIDTHS as stroke, index (stroke)}

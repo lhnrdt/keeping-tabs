@@ -8,6 +8,7 @@
 	import { whenVisible } from '#lib/actions/when-visible.ts';
 	import { entryOf, longPress } from '#lib/actions/long-press.ts';
 	import EntryMenu, { type MenuItem } from '#lib/components/EntryMenu.svelte';
+	import SwipeRow from '#lib/components/SwipeRow.svelte';
 
 	import { categoryIcons } from '#lib/expense/category-style.ts';
 	import { formatDistance, formatFuel } from '#lib/expense/driving.ts';
@@ -39,6 +40,10 @@
 		query?: string;
 		/** The server can't search an encrypted group: everything loads, and it's searched here (#110) */
 		searchHere?: boolean;
+		/** Just added: it glows as it comes in (#291) */
+		fresh?: string;
+		/** ...and already came in, as the form turning into it: only the glow */
+		morphed?: boolean;
 	};
 
 	let {
@@ -48,8 +53,12 @@
 		entries,
 		hasMore,
 		query = '',
-		searchHere = false
+		searchHere = false,
+		fresh,
+		morphed = false
 	}: Props = $props();
+	const glow = (id: string) =>
+		id === fresh ? (morphed ? 'just-added just-arrived' : 'just-added') : undefined;
 
 	// Older pages load while scrolling (seamless); the link is the fallback without JS
 	const older = new OlderEntries(
@@ -142,12 +151,13 @@
 	const menuItems = (entry: Entry): MenuItem[] => {
 		const payment = entry.type === 'payment';
 		return [
-			{ label: payment ? m.edit_payment() : m.edit_expense(), href: hrefOf(entry) },
+			{ label: payment ? m.edit_payment() : m.edit_expense(), href: hrefOf(entry), icon: 'edit' },
 			{
 				label: payment ? m.delete_payment() : m.delete_expense(),
 				action: `${hrefOf(entry)}?/delete`,
 				announce: payment ? undefined : 'changed',
-				destructive: true
+				destructive: true,
+				icon: 'delete'
 			}
 		];
 	};
@@ -169,7 +179,12 @@
 						{@const payment = run[0]}
 						<!-- Money that changed hands, not something bought: not in a card with the expenses -->
 						<ul class="mx-4">
-							<li style={transitionName('expense', payment.id)} data-entry={payment.id}>
+							<SwipeRow
+								items={menuItems(payment)}
+								class={glow(payment.id)}
+								style={transitionName('expense', payment.id)}
+								data-entry={payment.id}
+							>
 								<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- resolved in hrefOf -->
 								<a
 									href={hrefOf(payment)}
@@ -184,47 +199,53 @@
 									</span>
 									<span class="h-px flex-1 bg-current/15"></span>
 								</a>
-							</li>
+							</SwipeRow>
 						</ul>
 					{:else}
 						<List strong inset class="!my-0">
 							{#each run as expense (expense.id)}
-								<ListItem
-									link
-									href={hrefOf(expense)}
-									title={titleOf(expense)}
-									subtitle={subtitleOf(expense)}
+								<SwipeRow
+									items={menuItems(expense)}
+									class={glow(expense.id)}
 									style={transitionName('expense', expense.id)}
 									data-entry={expense.id}
 								>
-									{#snippet media()}
-										<IconBadge name={categoryIcons[expense.category ?? 'other']} />
-									{/snippet}
-									{#snippet after()}
-										{#if expense.yourSide === null}
-											<span class="text-sm text-muted">{m.side_not_involved()}</span>
-										{:else if expense.yourSide === 0 && expense.payers?.length}
-											<!-- Everyone paid their own share (#301) -->
-											<span class="text-sm text-muted">{m.side_paid_own()}</span>
-										{:else if expense.yourSide >= 0}
-											<span class="text-sm font-medium tone-positive tabular-nums">
-												<AnimatedAmount
-													amount={expense.yourSide}
-													{currency}
-													label={(amount) => m.side_lent({ amount })}
-												/>
-											</span>
-										{:else}
-											<span class="text-sm font-medium tone-negative tabular-nums">
-												<AnimatedAmount
-													amount={-expense.yourSide}
-													{currency}
-													label={(amount) => m.side_borrowed({ amount })}
-												/>
-											</span>
-										{/if}
-									{/snippet}
-								</ListItem>
+									<ListItem
+										component="div"
+										link
+										href={hrefOf(expense)}
+										title={titleOf(expense)}
+										subtitle={subtitleOf(expense)}
+									>
+										{#snippet media()}
+											<IconBadge name={categoryIcons[expense.category ?? 'other']} />
+										{/snippet}
+										{#snippet after()}
+											{#if expense.yourSide === null}
+												<span class="text-sm text-muted">{m.side_not_involved()}</span>
+											{:else if expense.yourSide === 0 && expense.payers?.length}
+												<!-- Everyone paid their own share (#301) -->
+												<span class="text-sm text-muted">{m.side_paid_own()}</span>
+											{:else if expense.yourSide >= 0}
+												<span class="text-sm font-medium tone-positive tabular-nums">
+													<AnimatedAmount
+														amount={expense.yourSide}
+														{currency}
+														label={(amount) => m.side_lent({ amount })}
+													/>
+												</span>
+											{:else}
+												<span class="text-sm font-medium tone-negative tabular-nums">
+													<AnimatedAmount
+														amount={-expense.yourSide}
+														{currency}
+														label={(amount) => m.side_borrowed({ amount })}
+													/>
+												</span>
+											{/if}
+										{/snippet}
+									</ListItem>
+								</SwipeRow>
 							{/each}
 						</List>
 					{/if}

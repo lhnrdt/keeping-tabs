@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { cueMoment } from '#lib/motion/moments.ts';
 	import { applyAction, enhance, type SubmitFunction } from '$app/forms';
 	import { rememberKey } from '#lib/crypto/keyring.ts';
 	import { openDeep } from '#lib/crypto/open-data.ts';
@@ -102,7 +103,11 @@
 				options.result.data = data;
 			}
 			await after?.(options);
-			if (options.result.type === 'redirect') void syncKeys().catch(() => {});
+			if (options.result.type === 'redirect') {
+				// The new group's scene greets it (#291)
+				cueMoment({ kind: 'created' });
+				void syncKeys().catch(() => {});
+			}
 		};
 	};
 	const currency = $derived(values?.currency || defaultCurrency);

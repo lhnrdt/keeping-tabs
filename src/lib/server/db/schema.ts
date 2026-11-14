@@ -90,6 +90,8 @@ export const people = sqliteTable('people', {
 	notedAt: integer('noted_at', { mode: 'timestamp_ms' }),
 	// Which version of it: when what it says changes, they're shown it once more
 	notedVersion: integer('noted_version').notNull().default(0),
+	/** What of the onboarding they've been through, as JSON: once per person, on every device (#331) */
+	onboarding: text('onboarding'),
 	/** Notification kinds switched off, comma-separated (#267) */
 	pushMuted: text('push_muted'),
 	// How to pay them, e.g. a PayPal.me link or IBAN (#47); shown to people in their groups

@@ -3,6 +3,8 @@ import IconAccessible from '@tabler/icons-svelte-runes/icons/accessible';
 import IconBell from '@tabler/icons-svelte-runes/icons/bell';
 import IconLanguage from '@tabler/icons-svelte-runes/icons/language';
 import IconPalette from '@tabler/icons-svelte-runes/icons/palette';
+import IconCloudOff from '@tabler/icons-svelte-runes/icons/cloud-off';
+import IconColorPicker from '@tabler/icons-svelte-runes/icons/color-picker';
 import IconBed from '@tabler/icons-svelte-runes/icons/bed';
 import IconBeer from '@tabler/icons-svelte-runes/icons/beer';
 import IconBus from '@tabler/icons-svelte-runes/icons/bus';
@@ -42,6 +44,10 @@ import IconReceipt from '@tabler/icons-svelte-runes/icons/receipt';
 import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
 import IconScale from '@tabler/icons-svelte-runes/icons/scale';
 import IconShare from '@tabler/icons-svelte-runes/icons/share';
+import IconShare2 from '@tabler/icons-svelte-runes/icons/share-2';
+import IconDots from '@tabler/icons-svelte-runes/icons/dots';
+import IconSquarePlus from '@tabler/icons-svelte-runes/icons/square-plus';
+import IconStar from '@tabler/icons-svelte-runes/icons/star';
 import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
 import IconUser from '@tabler/icons-svelte-runes/icons/user';
 import IconUserCircle from '@tabler/icons-svelte-runes/icons/user-circle';
@@ -98,6 +104,12 @@ export const icons = {
 	passkey: IconFingerprint,
 	remove: IconX,
 	share: IconShare,
+	/** As Safari on an iPhone draws it: a box with an arrow up */
+	shareApple: IconShare2,
+	/** Safari's menu button, its Add to Home Screen and Add to Favourites, for the way to install it */
+	safariMore: IconDots,
+	safariHomeScreen: IconSquarePlus,
+	safariFavourite: IconStar,
 	settings: IconSettings,
 	help: IconHelp,
 	report: IconMessageReport,
@@ -105,6 +117,8 @@ export const icons = {
 	notifications: IconBell,
 	fast: IconBolt,
 	palette: IconPalette,
+	offline: IconCloudOff,
+	pickColor: IconColorPicker,
 	accessible: IconAccessible,
 	language: IconLanguage,
 	locked: IconLock,
