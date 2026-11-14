@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { ownThemeProperties } from '../lib/themes/own-theme';
 import { createGroup, open, openFold } from './e2e-helpers';
 
 test('settings are saved and follow you to another device', async ({ browser }) => {
@@ -146,6 +147,36 @@ test('a new scenery every day (#332)', async ({ page }) => {
 		'data-accent',
 		/^(forest|fjord|mountains|heather|birch|meadow|coast|aurora|autumn)$/
 	);
+});
+
+test('a theme of your own from any colour, made readable, and kept (#330)', async ({ page }) => {
+	await open(page, '/you');
+	// The device's own colour picker can't be driven: set what it would, as it would
+	const picker = page.getByRole('group', { name: 'Colours' }).getByLabel('Your own');
+	await picker.evaluate((input: HTMLInputElement) => {
+		input.value = '#ffe14d';
+		input.dispatchEvent(new Event('change', { bubbles: true }));
+	});
+	await expect(page.getByText('Saved').first()).toBeVisible();
+	// A whole theme in its hue; a bright yellow wouldn't read on the light background, so the
+	// accent is made darker, same hue
+	const theme = ownThemeProperties('#ffe14d');
+	const accent = theme['--accent'];
+	expect(accent).not.toBe('#ffe14d');
+	await open(page, '/');
+	const html = page.locator('html');
+	await expect(html).toHaveAttribute('style', new RegExp(`--accent: ${accent}`));
+	await expect(html).toHaveAttribute('style', new RegExp(`--canvas: ${theme['--canvas']}`));
+	const [r, g, b] = [1, 3, 5].map((i) => parseInt(accent.slice(i, i + 2), 16));
+	await expect(page.getByRole('link', { name: 'New group' })).toHaveCSS(
+		'background-color',
+		`rgb(${r}, ${g}, ${b})`
+	);
+
+	// Back to the scenery's own: nothing of your own left over
+	await open(page, '/you');
+	await page.getByRole('group', { name: 'Colours' }).getByText('Like the scenery').click();
+	await expect(page.locator('html')).not.toHaveAttribute('style', /--accent:/);
 });
 
 test('choose an avatar and see it wherever you appear (#61)', async ({ page }) => {
