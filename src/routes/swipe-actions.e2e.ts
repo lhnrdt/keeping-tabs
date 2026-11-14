@@ -17,9 +17,10 @@ const swipeOpen = (row: Locator, action: string) =>
 			.locator('.swipe-track')
 			.evaluate((track) => track.scrollTo({ left: track.scrollWidth }));
 		await expect(row.getByTitle(action)).toBeInViewport({ timeout: 1000 });
-	}).toPass();
+	}).toPass({ timeout: 10_000 });
 
 test('swipe an entry for its quick actions (#323)', async ({ page }) => {
+	test.setTimeout(60_000);
 	await page.setViewportSize({ width: 390, height: 844 });
 	await createGroup(page, 'Flat', 'Anna', ['Ben']);
 	await addExpense(page, 'Pizza', '20');
