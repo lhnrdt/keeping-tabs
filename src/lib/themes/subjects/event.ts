@@ -89,21 +89,20 @@ export const EVENT: Record<ThemeId, Scene> = {
 				motion: 'swing'
 			},
 			{ d: 'M294 110l-3 12 4-1 2 3ZM340 110l-3 12 4-1 2 3Z', strength: 0.8, motion: 'flutter' },
+			// The ring, in two pairs hand in hand: into the pole and out again
+			{ d: figure(258, 186, 38), strength: 1, motion: 'walk', tap: 'act-ring' },
 			{
-				d: figure(258, 186, 38) + figure(360, 186, 46),
-				strength: 1,
-				motion: 'walk',
-				tap: 'act-dance'
-			},
-			{
-				d:
-					figure(282, 186, 44) +
-					'M274 186l4-18h8l4 18Z' +
-					figure(384, 186, 40) +
-					'M376 186l4-16h8l4 16Z',
+				d: figure(282, 186, 44) + 'M274 186l4-18h8l4 18Z',
 				strength: 0.9,
 				motion: 'walk',
-				tap: 'act-dance'
+				tap: 'act-ring'
+			},
+			{ d: figure(360, 186, 46), strength: 1, motion: 'walk', tap: 'act-ring-left' },
+			{
+				d: figure(384, 186, 40) + 'M376 186l4-16h8l4 16Z',
+				strength: 0.9,
+				motion: 'walk',
+				tap: 'act-ring-left'
 			},
 			{
 				d:
@@ -116,7 +115,10 @@ export const EVENT: Record<ThemeId, Scene> = {
 				strength: 0.8
 			}
 		],
-		lines: [{ d: 'M264 164l12 0M366 164l12 0', strength: 0.9 }]
+		lines: [
+			{ d: 'M264 164l12 0', strength: 0.9, tap: 'act-ring' },
+			{ d: 'M366 164l12 0', strength: 0.9, tap: 'act-ring-left' }
+		]
 	},
 	// Everyone together on a summit above a sea of clouds, flags planted in the snow
 	mountains: {

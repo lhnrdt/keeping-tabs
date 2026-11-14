@@ -625,3 +625,53 @@
 		transform: translate(1px, 8px) rotate(25deg);
 	}
 }
+
+/* Midsummer: the ring hops in to the pole, hand in hand, and back out */
+.scene-acting .tap-act-ring,
+.scene-acting .tap-act-ring-left {
+	animation: act-ring 2.6s linear;
+}
+.tap-act-ring-left {
+	--dir: -1;
+}
+@keyframes act-ring {
+	0%,
+	20%,
+	40%,
+	65%,
+	85% {
+		animation-timing-function: var(--ease-out-quad);
+	}
+	10%,
+	30%,
+	55%,
+	75%,
+	95% {
+		animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+	}
+	10% {
+		transform: translate(calc(var(--dir, 1) * 6px), -6px);
+	}
+	20% {
+		transform: translateX(calc(var(--dir, 1) * 12px));
+	}
+	30% {
+		transform: translate(calc(var(--dir, 1) * 16px), -6px);
+	}
+	40%,
+	65% {
+		transform: translateX(calc(var(--dir, 1) * 18px));
+	}
+	55% {
+		transform: translate(calc(var(--dir, 1) * 18px), -6px);
+	}
+	75% {
+		transform: translate(calc(var(--dir, 1) * 12px), -6px);
+	}
+	85% {
+		transform: translateX(calc(var(--dir, 1) * 6px));
+	}
+	95% {
+		transform: translate(calc(var(--dir, 1) * 2px), -4px);
+	}
+}
