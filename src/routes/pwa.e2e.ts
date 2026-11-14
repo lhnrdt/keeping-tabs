@@ -59,3 +59,29 @@ test('the system bars follow the light or dark theme', async ({ browser }) => {
 		await page.close();
 	}
 });
+
+test('a group seen before opens at once from the copy kept here, and catches up (#347)', async ({
+	page,
+	context
+}) => {
+	test.setTimeout(60_000);
+	const groupUrl = await createGroup(page, 'Cabin', 'Anna', ['Ben']);
+	await waitForServiceWorker(page);
+	// Seen once while the service worker controls the page, so it keeps a copy of its data
+	await open(page, '/');
+	await page.getByRole('link', { name: /Cabin/ }).click();
+	await expect(page).toHaveURL(groupUrl);
+	await open(page, '/');
+	// Past the few seconds after creating it, when loads go to the server first
+	await page.waitForTimeout(9000);
+
+	// A slow server: the group still opens at once, from what's kept
+	await context.route(/\/__data\.json/, async (route) => {
+		await new Promise((resolve) => setTimeout(resolve, 4000));
+		await route.continue();
+	});
+	const started = Date.now();
+	await page.getByRole('link', { name: /Cabin/ }).click();
+	await expect(page.getByRole('heading', { name: 'Cabin' })).toBeVisible();
+	expect(Date.now() - started).toBeLessThan(2500);
+});
