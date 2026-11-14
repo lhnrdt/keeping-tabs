@@ -166,7 +166,9 @@
 				(hang ? `; --hang-x: ${hang[0] - origin[0]}px; --hang-y: ${hang[1] - origin[1]}px` : '')
 			: undefined;
 	/** What drives through goes all the way across, under the text too; the rest fades out there */
-	const maskOf = (tap?: string) => (tap?.startsWith('drive') ? undefined : `url(#${clear})`);
+	const drives = (tap?: string) => tap?.startsWith('drive') ?? false;
+	/** Dots never move: they stay behind the fade */
+	const dotsOf = (scene: Scene, front: boolean) => (front ? [] : (scene.dots ?? []));
 	const inkOf = (layer: Layer) => (layer.subject ? 'var(--tint-fg)' : 'var(--tint-line)');
 	const opacityOf = (layer: Layer, strength: number) =>
 		strength * layer.strength * (layer.subject ? SUBJECT_INK : 1);
@@ -191,21 +193,16 @@
 			x2={TEXT_EDGE[1]}
 			gradientUnits="userSpaceOnUse"
 		>
-			<stop offset="0" stop-color="#000" />
-			<stop offset="1" stop-color="#fff" />
+			<stop offset="0" stop-color="var(--tint-bg)" />
+			<stop offset="1" stop-color="var(--tint-bg)" stop-opacity="0" />
 		</linearGradient>
-		<mask id={clear} maskUnits="userSpaceOnUse" x="-3000" y="-200" width="3800" height="600">
-			<rect x="-3000" y="-200" width="3800" height="600" fill="url(#{clear}-x)" />
-			<rect x="-3000" y={GROUND_TOP} width="3800" height="200" fill="#fff" />
-		</mask>
 	</defs>
-	<g>
-		<!-- Masked outside what moves, so the fade stays put while things turn -->
+	{#snippet parts(front: boolean)}
 		{#each layers as layer, l (l)}
 			{@const { scene, moment } = layer}
 			<g class={moment && celebrate ? 'scene-celebrate' : undefined}>
-				{#each scene.shapes as shape, i (i)}
-					<g mask={maskOf(shape.tap)}>
+				{#each scene.shapes.filter((shape) => drives(shape.tap) === front) as shape, i (i)}
+					<g>
 						<g
 							class={shape.tap ? `tap-${shape.tap}` : undefined}
 							style={pivot(shape.origin, shape.hang)}
@@ -238,8 +235,8 @@
 						</g>
 					</g>
 				{/each}
-				{#each scene.lines ?? [] as line, i (i)}
-					<g mask={maskOf(line.tap)}>
+				{#each (scene.lines ?? []).filter((line) => drives(line.tap) === front) as line, i (i)}
+					<g>
 						<g
 							class={line.tap ? `tap-${line.tap}` : undefined}
 							style={pivot(line.origin)}
@@ -259,20 +256,25 @@
 						</g>
 					</g>
 				{/each}
-				{#each scene.dots ?? [] as [cx, cy, r, dot], i (i)}
-					<circle
-						{cx}
-						{cy}
-						{r}
-						mask={maskOf()}
-						fill={inkOf(layer)}
-						fill-opacity={opacityOf(layer, dot)}
-					/>
+				{#each dotsOf(scene, front) as [cx, cy, r, dot], i (i)}
+					<circle {cx} {cy} {r} fill={inkOf(layer)} fill-opacity={opacityOf(layer, dot)} />
 				{/each}
 			</g>
 		{/each}
-		{#each effects as effect, i (i)}
-			<g mask={maskOf(effect.move)}><SceneEffect {...effect} /></g>
+		{#each effects.filter((effect) => drives(effect.move) === front) as effect, i (i)}
+			<SceneEffect {...effect} />
 		{/each}
-	</g>
+	{/snippet}
+	{@render parts(false)}
+	<!-- The scene fades out under the text, all but its ground: the header's own colour laid over it,
+	     not a mask, which phones redraw on every frame of the motion (#327) -->
+	<rect
+		x="-3000"
+		y="-200"
+		width={3000 + TEXT_EDGE[1]}
+		height={200 + GROUND_TOP}
+		fill="url(#{clear}-x)"
+	/>
+	<!-- What drives through goes all the way across, over the fade too -->
+	{@render parts(true)}
 </svg>
