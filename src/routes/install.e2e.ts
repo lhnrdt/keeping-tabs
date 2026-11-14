@@ -10,7 +10,9 @@ test('on an iPhone, the way to install it is shown, until put off, and in Settin
 	const page = await (await browser.newContext({ userAgent: IPHONE })).newPage();
 	await open(page, '/');
 	const card = page.getByRole('region', { name: 'Keeping Tabs on your home screen' });
-	await expect(card).toContainText('Add to Home Screen');
+	await expect(card.getByRole('list', { name: 'How to add it in Safari' })).toContainText(
+		'Choose Add to Home Screen'
+	);
 	await card.getByRole('button', { name: 'Not now' }).click();
 	await expect(card).toHaveCount(0);
 	await page.reload();
@@ -18,7 +20,7 @@ test('on an iPhone, the way to install it is shown, until put off, and in Settin
 
 	await open(page, '/you');
 	await page.getByRole('button', { name: 'Install as app' }).click();
-	await expect(page.getByText('Add to Home Screen')).toBeVisible();
+	await expect(page.getByRole('list', { name: 'How to add it in Safari' })).toBeVisible();
 });
 
 test('where the browser offers it, our button opens its install dialog (#352)', async ({

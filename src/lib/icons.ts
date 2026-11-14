@@ -45,6 +45,9 @@ import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
 import IconScale from '@tabler/icons-svelte-runes/icons/scale';
 import IconShare from '@tabler/icons-svelte-runes/icons/share';
 import IconShare2 from '@tabler/icons-svelte-runes/icons/share-2';
+import IconDots from '@tabler/icons-svelte-runes/icons/dots';
+import IconSquarePlus from '@tabler/icons-svelte-runes/icons/square-plus';
+import IconStar from '@tabler/icons-svelte-runes/icons/star';
 import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
 import IconUser from '@tabler/icons-svelte-runes/icons/user';
 import IconUserCircle from '@tabler/icons-svelte-runes/icons/user-circle';
@@ -103,6 +106,10 @@ export const icons = {
 	share: IconShare,
 	/** As Safari on an iPhone draws it: a box with an arrow up */
 	shareApple: IconShare2,
+	/** Safari's menu button, its Add to Home Screen and Add to Favourites, for the way to install it */
+	safariMore: IconDots,
+	safariHomeScreen: IconSquarePlus,
+	safariFavourite: IconStar,
 	settings: IconSettings,
 	help: IconHelp,
 	report: IconMessageReport,
