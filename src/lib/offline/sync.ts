@@ -5,6 +5,7 @@ import { deserialize } from '$app/forms';
 import { invalidateAll } from '$app/navigation';
 import type { ErrorCode } from '#lib/errors.ts';
 import { announceExpense } from '#lib/expense/announce.ts';
+import { wantFresh } from './freshness';
 import { drop, markFailed, pendingItems } from './outbox';
 
 const RETRY_MS = 30_000;
@@ -49,7 +50,10 @@ export async function flushOutbox() {
 	} finally {
 		running = false;
 	}
-	if (sent) await invalidateAll();
+	if (sent) {
+		wantFresh();
+		await invalidateAll();
+	}
 	return sent;
 }
 

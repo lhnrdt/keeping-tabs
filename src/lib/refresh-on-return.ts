@@ -1,6 +1,7 @@
 // Others change things while the app sits in the background: an open tab or an installed
 // app brought back to the front shows fresh data, e.g. no group someone deleted (#125).
 import { invalidateAll } from '$app/navigation';
+import { wantFresh } from '#lib/offline/freshness.ts';
 
 /** Shorter breaks (switching apps for a moment) don't reload */
 const AWAY_MS = 30_000;
@@ -9,7 +10,10 @@ const AWAY_MS = 30_000;
 export function refreshOnReturn() {
 	let hiddenAt = 0;
 	const refresh = () => {
-		if (navigator.onLine) invalidateAll();
+		if (!navigator.onLine) return;
+		// Back after a while: the server's, not the copy kept here (#347)
+		wantFresh();
+		invalidateAll();
 	};
 	const onVisibility = () => {
 		if (document.visibilityState === 'hidden') hiddenAt = Date.now();
