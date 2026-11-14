@@ -22,6 +22,11 @@ export const CHANGELOG: ChangelogEntry[] = [
 				de: 'Wisch eine Ausgabe oder Zahlung nach links, um sie direkt in der Liste zu bearbeiten oder zu löschen.'
 			},
 			{
+				icon: 'sparkles',
+				en: 'Little moments: a new expense turns into its row as the list comes back, and the header’s scene answers when you add, pay or start a group. Choosing a period in Insights slides instead of jumping.',
+				de: 'Kleine Momente: Eine neue Ausgabe wird beim Zurückkehren zu ihrer Zeile, und die Szene oben reagiert, wenn du etwas einträgst, bezahlst oder eine Gruppe anlegst. Der Zeitraum in Insights gleitet, statt zu springen.'
+			},
+			{
 				icon: 'help',
 				en: 'New here? A short tour shows you around the start screen and your first group, with a tip here and there. Take it again any time from How it works.',
 				de: 'Neu hier? Eine kurze Tour zeigt dir den Startbildschirm und deine erste Gruppe, mit einem Tipp hier und da. Unter So funktioniert’s kannst du sie jederzeit noch mal machen.'
