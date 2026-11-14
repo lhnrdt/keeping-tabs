@@ -466,3 +466,110 @@
 		transform: translateX(-30px) rotate(-143deg);
 	}
 }
+
+/* Forest cabin: the lights go on inside, a while, then off again */
+.tap-act-lights {
+	opacity: 0;
+}
+.scene-acting .tap-act-lights {
+	animation: act-lights 2.6s linear;
+}
+@keyframes act-lights {
+	8% {
+		opacity: 0;
+	}
+	10%,
+	16% {
+		opacity: 1;
+	}
+	12% {
+		opacity: 0.5;
+	}
+	80% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+
+/* Mountain hut: the roof's snow slides down the pitch, faster and faster, drops off the eave, and knocks the skis */
+.scene-acting .tap-act-slide {
+	animation: act-slide 2.8s linear;
+}
+.scene-acting .tap-act-knock {
+	animation: act-knock 2.8s var(--ease-out-quad);
+}
+@keyframes act-slide {
+	0% {
+		animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+	}
+	30% {
+		transform: translate(24px, 15.6px);
+		animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+	}
+	42% {
+		opacity: 1;
+		transform: translate(40px, 44px) rotate(30deg);
+	}
+	44%,
+	75% {
+		opacity: 0;
+		transform: translate(40px, 44px) rotate(30deg);
+	}
+	76% {
+		opacity: 0;
+		transform: none;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+@keyframes act-knock {
+	40% {
+		transform: none;
+	}
+	46% {
+		transform: rotate(-6deg);
+	}
+	54% {
+		transform: rotate(3deg);
+	}
+	62% {
+		transform: rotate(-1.5deg);
+	}
+	70% {
+		transform: none;
+	}
+}
+
+/* Glass dome under the lights: a shooting star crosses, and the two lean back to follow it */
+.tap-act-shoot {
+	opacity: 0;
+}
+.scene-acting .tap-act-shoot {
+	animation: act-shoot 1.4s cubic-bezier(0.3, 0, 0.7, 1) 200ms;
+}
+.scene-acting .tap-act-look {
+	animation: act-look 2.6s var(--ease-in-out-sine) 300ms;
+}
+@keyframes act-shoot {
+	from {
+		opacity: 0;
+		transform: translate(60px, -24px);
+	}
+	20%,
+	70% {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+		transform: translate(-50px, 20px);
+	}
+}
+@keyframes act-look {
+	25%,
+	70% {
+		transform: rotate(-6deg);
+	}
+}

@@ -47,8 +47,13 @@ export const HOME: Record<ThemeId, Scene> = {
 			{
 				d: rect(318, 154, 20, 32) + rect(290, 140, 16, 16) + rect(350, 140, 16, 16),
 				strength: 1,
-				cut: true,
-				tap: 'glint'
+				cut: true
+			},
+			{
+				d: rect(290, 140, 16, 16) + rect(350, 140, 16, 16),
+				strength: 1,
+				snow: true,
+				tap: 'act-lights'
 			},
 			{
 				d:
@@ -124,7 +129,8 @@ export const HOME: Record<ThemeId, Scene> = {
 			{ d: rect(318, 168, 16, 4), strength: 0.8 },
 			{ d: rect(336, 118, 10, 30), strength: 1 },
 			{ d: house(294, 168, 64, 34, 24, 8), strength: 1 },
-			{ d: 'M286 136L326 110L366 136L360 139L326 116L292 139Z', strength: 1, snow: true },
+			{ d: 'M286 136L326 110L326 116L292 139Z', strength: 1, snow: true },
+			{ d: 'M326 110L366 136L360 139L326 116Z', strength: 1, snow: true, tap: 'act-slide' },
 			{
 				d: rect(318, 148, 16, 20) + rect(302, 142, 10, 10) + rect(342, 142, 10, 10),
 				strength: 1,
@@ -137,7 +143,8 @@ export const HOME: Record<ThemeId, Scene> = {
 					limb(382, 168, 368, 122, 3) +
 					limb(368, 122, 364, 117, 3),
 				strength: 1,
-				tap: 'swing'
+				tap: 'act-knock',
+				origin: [374, 168]
 			}
 		],
 		lines: [{ d: steam(341, 110), strength: 0.8, motion: 'rise', tap: 'puff' }]
@@ -571,11 +578,13 @@ export const HOME: Record<ThemeId, Scene> = {
 				d: seated(318, 182, 32) + seated(342, 182, 30),
 				strength: 0.85,
 				motion: 'nod',
-				tap: 'act-recoil',
+				tap: 'act-look',
 				origin: [330, 182]
 			},
-			{ d: 'M376 200Q384 168 400 166V200Z' + pine(396, 200, 90), strength: 1, motion: 'sway' }
-		]
+			{ d: 'M376 200Q384 168 400 166V200Z' + pine(396, 200, 90), strength: 1, motion: 'sway' },
+			{ d: sparkle(304, 30, 5), strength: 1, snow: true, tap: 'act-shoot' }
+		],
+		lines: [{ d: 'M334 18l-30 12', strength: 0.9, tap: 'act-shoot' }]
 	},
 	// The front porch close up: pumpkins on the steps, a lantern by the door, the rocking chair waiting
 	autumn: {
