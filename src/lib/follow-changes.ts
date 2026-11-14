@@ -2,6 +2,7 @@
 // free plan, where a connection kept open would not: only an open, visible screen asks, and it
 // reloads its data only when something changed.
 import { invalidateAll } from '$app/navigation';
+import { wantFresh } from '#lib/offline/freshness.ts';
 
 const EVERY_MS = 15_000;
 
@@ -14,7 +15,10 @@ export function followChanges(url: string) {
 			const response = await fetch(url);
 			if (!response.ok) return;
 			const { at } = (await response.json()) as { at: number | null };
-			if (known !== undefined && at !== known) await invalidateAll();
+			if (known !== undefined && at !== known) {
+				wantFresh();
+				await invalidateAll();
+			}
 			known = at;
 		} catch {
 			// The connection went away; the next round tries again

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { morphFrom, morphTo } from '#lib/motion/morph.ts';
+	import { followKept } from '#lib/offline/follow-kept.ts';
 	import { applyLook } from '#lib/themes/apply-look.ts';
 	import { beforeNavigate, onNavigate } from '$app/navigation';
 	import { page, updated } from '$app/state';
@@ -38,6 +39,7 @@
 	});
 
 	onMount(refreshOnReturn);
+	onMount(followKept);
 	// No browser menu on a long press or right click, except where text can be typed or copied, and
 	// no pinching to zoom
 	onMount(() => {
