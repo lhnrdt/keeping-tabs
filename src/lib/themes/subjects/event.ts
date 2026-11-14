@@ -598,7 +598,9 @@ export const EVENT: Record<ThemeId, Scene> = {
 					'M260 96a70 70 0 1 0 140 0a70 70 0 1 0 -140 0Z' +
 					'M263 96a67 67 0 1 1 134 0a67 67 0 1 1 -134 0Z',
 				strength: 0.8,
+				origin: [330, 96],
 				tap: 'spin',
+				fx: 'none',
 				motion: 'turn'
 			},
 			{
@@ -617,26 +619,106 @@ export const EVENT: Record<ThemeId, Scene> = {
 					limb(330, 96, 390.6, 61.0, 1.6) +
 					disc(330, 96, 5),
 				strength: 0.8,
+				origin: [330, 96],
 				tap: 'spin',
+				fx: 'none',
 				motion: 'turn'
 			},
 			{
-				d:
-					rounded(392.6, 116.1, 10, 8, 2) +
-					rounded(374.5, 147.5, 10, 8, 2) +
-					rounded(343.1, 165.6, 10, 8, 2) +
-					rounded(306.9, 165.6, 10, 8, 2) +
-					rounded(275.5, 147.5, 10, 8, 2) +
-					rounded(257.4, 116.1, 10, 8, 2) +
-					rounded(257.4, 79.9, 10, 8, 2) +
-					rounded(275.5, 48.5, 10, 8, 2) +
-					rounded(306.9, 30.4, 10, 8, 2) +
-					rounded(343.1, 30.4, 10, 8, 2) +
-					rounded(374.5, 48.5, 10, 8, 2) +
-					rounded(392.6, 79.9, 10, 8, 2),
+				d: limb(400.0, 96.0, 400.0, 100.0, 0.9) + rounded(395.0, 99.0, 10, 8, 2),
 				strength: 0.95,
-				tap: 'spin',
-				motion: 'turn'
+				origin: [330, 96],
+				hang: [400.0, 96.0],
+				motion: 'orbit',
+				tap: 'orbit'
+			},
+			{
+				d: limb(390.6, 131.0, 390.6, 135.0, 0.9) + rounded(385.6, 134.0, 10, 8, 2),
+				strength: 0.95,
+				origin: [330, 96],
+				hang: [390.6, 131.0],
+				motion: 'orbit',
+				tap: 'orbit'
+			},
+			{
+				d: limb(365.0, 156.6, 365.0, 160.6, 0.9) + rounded(360.0, 159.6, 10, 8, 2),
+				strength: 0.95,
+				origin: [330, 96],
+				hang: [365.0, 156.6],
+				motion: 'orbit',
+				tap: 'orbit'
+			},
+			{
+				d: limb(330.0, 166.0, 330.0, 170.0, 0.9) + rounded(325.0, 169.0, 10, 8, 2),
+				strength: 0.95,
+				origin: [330, 96],
+				hang: [330.0, 166.0],
+				motion: 'orbit',
+				tap: 'orbit'
+			},
+			{
+				d: limb(295.0, 156.6, 295.0, 160.6, 0.9) + rounded(290.0, 159.6, 10, 8, 2),
+				strength: 0.95,
+				origin: [330, 96],
+				hang: [295.0, 156.6],
+				motion: 'orbit',
+				tap: 'orbit'
+			},
+			{
+				d: limb(269.4, 131.0, 269.4, 135.0, 0.9) + rounded(264.4, 134.0, 10, 8, 2),
+				strength: 0.95,
+				origin: [330, 96],
+				hang: [269.4, 131.0],
+				motion: 'orbit',
+				tap: 'orbit'
+			},
+			{
+				d: limb(260.0, 96.0, 260.0, 100.0, 0.9) + rounded(255.0, 99.0, 10, 8, 2),
+				strength: 0.95,
+				origin: [330, 96],
+				hang: [260.0, 96.0],
+				motion: 'orbit',
+				tap: 'orbit'
+			},
+			{
+				d: limb(269.4, 61.0, 269.4, 65.0, 0.9) + rounded(264.4, 64.0, 10, 8, 2),
+				strength: 0.95,
+				origin: [330, 96],
+				hang: [269.4, 61.0],
+				motion: 'orbit',
+				tap: 'orbit'
+			},
+			{
+				d: limb(295.0, 35.4, 295.0, 39.4, 0.9) + rounded(290.0, 38.4, 10, 8, 2),
+				strength: 0.95,
+				origin: [330, 96],
+				hang: [295.0, 35.4],
+				motion: 'orbit',
+				tap: 'orbit'
+			},
+			{
+				d: limb(330.0, 26.0, 330.0, 30.0, 0.9) + rounded(325.0, 29.0, 10, 8, 2),
+				strength: 0.95,
+				origin: [330, 96],
+				hang: [330.0, 26.0],
+				motion: 'orbit',
+				tap: 'orbit'
+			},
+			{
+				d: limb(365.0, 35.4, 365.0, 39.4, 0.9) + rounded(360.0, 38.4, 10, 8, 2),
+				strength: 0.95,
+				origin: [330, 96],
+				hang: [365.0, 35.4],
+				motion: 'orbit',
+				tap: 'orbit'
+			},
+			{
+				d: limb(390.6, 61.0, 390.6, 65.0, 0.9) + rounded(385.6, 64.0, 10, 8, 2),
+				strength: 0.95,
+				origin: [330, 96],
+				hang: [390.6, 61.0],
+				motion: 'orbit',
+				tap: 'orbit'
 			},
 			{ d: limb(330, 96, 300, 186, 4) + limb(330, 96, 360, 186, 4), strength: 0.95 },
 			{ d: rect(262, 150, 44, 36) + 'M256 152L266 138H302L312 152Z', strength: 0.9 },

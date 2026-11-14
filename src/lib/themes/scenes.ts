@@ -23,6 +23,7 @@ export type SceneMotion =
 	| 'twinkle'
 	| 'twinkle-late'
 	| 'turn'
+	| 'orbit'
 	| 'swing'
 	| 'walk'
 	| 'fall'
@@ -37,6 +38,7 @@ export type TapMove =
 	| 'drive-bridge'
 	| 'hop'
 	| 'spin'
+	| 'orbit'
 	| 'swing'
 	| 'float'
 	| 'burst'
@@ -93,6 +95,8 @@ export type Shape = {
 	fxAt?: number;
 	/** Where it turns round when it moves, if not its own bottom middle: so parts of one thing move as one */
 	origin?: [x: number, y: number];
+	/** Where it hangs from something turning round its origin: it goes round with it but stays level (orbit), like a big wheel's cabins */
+	hang?: [x: number, y: number];
 	d: string;
 	strength: number;
 	cut?: boolean;

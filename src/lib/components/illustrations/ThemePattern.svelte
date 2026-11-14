@@ -121,6 +121,9 @@
 			effects = [];
 			clearTimeout(timer);
 			requestAnimationFrame(() => {
+				// The scene's units the header shows, right edge fixed: drive that far plus a car to be out on the left
+				const shown = Math.max(400, (svg.clientWidth * 200) / svg.clientHeight);
+				svg.style.setProperty('--off-left', `${Math.ceil(shown + 40)}px`);
 				effects = measure();
 				acting = true;
 				timer = setTimeout(() => {
@@ -157,8 +160,13 @@
 	);
 
 	/** A shared turning point, so the parts of one thing move together */
-	const pivot = (origin?: [number, number]) =>
-		origin ? `transform-box: view-box; transform-origin: ${origin[0]}px ${origin[1]}px` : undefined;
+	const pivot = (origin?: [number, number], hang?: [number, number]) =>
+		origin
+			? `transform-box: view-box; transform-origin: ${origin[0]}px ${origin[1]}px` +
+				(hang ? `; --hang-x: ${hang[0] - origin[0]}px; --hang-y: ${hang[1] - origin[1]}px` : '')
+			: undefined;
+	/** What drives through goes all the way across, under the text too; the rest fades out there */
+	const maskOf = (tap?: string) => (tap?.startsWith('drive') ? undefined : `url(#${clear})`);
 	const inkOf = (layer: Layer) => (layer.subject ? 'var(--tint-fg)' : 'var(--tint-line)');
 	const opacityOf = (layer: Layer, strength: number) =>
 		strength * layer.strength * (layer.subject ? SUBJECT_INK : 1);
@@ -166,7 +174,7 @@
 
 <svg
 	bind:this={svg}
-	class="pointer-events-none absolute inset-0 h-full w-full overflow-visible {acting
+	class="scene-layer pointer-events-none absolute inset-0 h-full w-full overflow-visible {acting
 		? 'scene-acting'
 		: ''}"
 	viewBox="0 0 400 200"
@@ -191,68 +199,80 @@
 			<rect x="-3000" y={GROUND_TOP} width="3800" height="200" fill="#fff" />
 		</mask>
 	</defs>
-	<g mask="url(#{clear})">
+	<g>
+		<!-- Masked outside what moves, so the fade stays put while things turn -->
 		{#each layers as layer, l (l)}
 			{@const { scene, moment } = layer}
 			<g class={moment && celebrate ? 'scene-celebrate' : undefined}>
 				{#each scene.shapes as shape, i (i)}
-					<g
-						class={shape.tap ? `tap-${shape.tap}` : undefined}
-						style={pivot(shape.origin)}
-						data-fx={fxOf(shape) === 'none' ? undefined : fxOf(shape)}
-						data-fx-at={shape.fxAt}
-						data-move={shape.tap}
-					>
-						<g transform={mirrorOf(shape)}>
-							<!-- Solid: the line color is see-through, so whatever's behind a shape would show -->
-							{#if !shape.cut}
+					<g mask={maskOf(shape.tap)}>
+						<g
+							class={shape.tap ? `tap-${shape.tap}` : undefined}
+							style={pivot(shape.origin, shape.hang)}
+							data-fx={fxOf(shape) === 'none' ? undefined : fxOf(shape)}
+							data-fx-at={shape.fxAt}
+							data-move={shape.tap}
+						>
+							<g transform={mirrorOf(shape)}>
+								<!-- Solid: the line color is see-through, so whatever's behind a shape would show -->
+								{#if !shape.cut}
+									<path
+										d={shape.d}
+										fill="var(--tint-bg)"
+										class={shape.motion ? `scene-${shape.motion}` : undefined}
+										style={pivot(shape.origin, shape.hang)}
+									/>
+								{/if}
 								<path
 									d={shape.d}
-									fill="var(--tint-bg)"
+									fill={shape.snow ? '#fff' : shape.cut ? 'var(--tint-bg)' : inkOf(layer)}
+									fill-opacity={shape.snow
+										? SNOW_STRENGTH
+										: shape.cut
+											? 1
+											: opacityOf(layer, shape.strength)}
 									class={shape.motion ? `scene-${shape.motion}` : undefined}
-									style={pivot(shape.origin)}
+									style={pivot(shape.origin, shape.hang)}
 								/>
-							{/if}
-							<path
-								d={shape.d}
-								fill={shape.snow ? '#fff' : shape.cut ? 'var(--tint-bg)' : inkOf(layer)}
-								fill-opacity={shape.snow
-									? SNOW_STRENGTH
-									: shape.cut
-										? 1
-										: opacityOf(layer, shape.strength)}
-								class={shape.motion ? `scene-${shape.motion}` : undefined}
-								style={pivot(shape.origin)}
-							/>
+							</g>
 						</g>
 					</g>
 				{/each}
 				{#each scene.lines ?? [] as line, i (i)}
-					<g
-						class={line.tap ? `tap-${line.tap}` : undefined}
-						style={pivot(line.origin)}
-						data-fx={fxOf(line) === 'none' ? undefined : fxOf(line)}
-						data-fx-at={line.fxAt}
-						data-move={line.tap}
-					>
-						<path
-							d={line.d}
-							stroke={inkOf(layer)}
-							stroke-opacity={opacityOf(layer, line.strength)}
-							stroke-width={layer.subject ? 2.2 : 1.5}
-							stroke-linecap="round"
-							class={line.motion ? `scene-${line.motion}` : undefined}
+					<g mask={maskOf(line.tap)}>
+						<g
+							class={line.tap ? `tap-${line.tap}` : undefined}
 							style={pivot(line.origin)}
-						/>
+							data-fx={fxOf(line) === 'none' ? undefined : fxOf(line)}
+							data-fx-at={line.fxAt}
+							data-move={line.tap}
+						>
+							<path
+								d={line.d}
+								stroke={inkOf(layer)}
+								stroke-opacity={opacityOf(layer, line.strength)}
+								stroke-width={layer.subject ? 2.2 : 1.5}
+								stroke-linecap="round"
+								class={line.motion ? `scene-${line.motion}` : undefined}
+								style={pivot(line.origin)}
+							/>
+						</g>
 					</g>
 				{/each}
 				{#each scene.dots ?? [] as [cx, cy, r, dot], i (i)}
-					<circle {cx} {cy} {r} fill={inkOf(layer)} fill-opacity={opacityOf(layer, dot)} />
+					<circle
+						{cx}
+						{cy}
+						{r}
+						mask={maskOf()}
+						fill={inkOf(layer)}
+						fill-opacity={opacityOf(layer, dot)}
+					/>
 				{/each}
 			</g>
 		{/each}
 		{#each effects as effect, i (i)}
-			<SceneEffect {...effect} />
+			<g mask={maskOf(effect.move)}><SceneEffect {...effect} /></g>
 		{/each}
 	</g>
 </svg>

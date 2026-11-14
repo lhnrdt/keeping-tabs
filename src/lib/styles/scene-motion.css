@@ -6,6 +6,10 @@
  * slows, ease-in for what falls, linear for what turns. Only transform and opacity, and not at all for
  * anyone who asks for less motion.
  */
+/* The scene on a layer of its own from the start, so the header's text isn't redrawn (and flashes) when an action starts */
+svg.scene-layer {
+	will-change: transform;
+}
 [class*='scene-'] {
 	transform-box: fill-box;
 	transform-origin: center bottom;
@@ -70,6 +74,12 @@
 .scene-turn {
 	transform-origin: center;
 	animation: scene-turn 24s linear infinite;
+}
+.scene-orbit {
+	transform: rotate(calc(var(--orbit-turn) + var(--orbit-tap))) translate(var(--hang-x), var(--hang-y))
+		rotate(calc(-1 * (var(--orbit-turn) + var(--orbit-tap))))
+		translate(calc(-1 * var(--hang-x)), calc(-1 * var(--hang-y)));
+	animation: scene-orbit 24s linear infinite;
 }
 .scene-swing {
 	transform-origin: center top;
@@ -242,6 +252,28 @@
 		transform: rotate(360deg);
 	}
 }
+/* Round its origin, turned back round where it hangs, so it goes round level (a big wheel's cabins):
+ * one turn made of two angles, the idle one and the tap's, so the two add up */
+@property --orbit-turn {
+	syntax: '<angle>';
+	inherits: false;
+	initial-value: 0deg;
+}
+@property --orbit-tap {
+	syntax: '<angle>';
+	inherits: false;
+	initial-value: 0deg;
+}
+@keyframes scene-orbit {
+	to {
+		--orbit-turn: 360deg;
+	}
+}
+@keyframes scene-orbit-tap {
+	to {
+		--orbit-tap: 360deg;
+	}
+}
 @keyframes scene-swing {
 	0%,
 	100% {
@@ -335,6 +367,11 @@
 	transform-origin: center;
 	animation: tap-spin 2.4s var(--ease-in-out-sine);
 }
+.scene-acting .tap-orbit .scene-orbit {
+	animation:
+		scene-orbit 24s linear infinite,
+		scene-orbit-tap 2.4s var(--ease-in-out-sine);
+}
 .scene-acting .tap-swing {
 	transform-origin: center top;
 	animation: tap-swing 2.4s var(--ease-in-out-sine);
@@ -372,26 +409,31 @@
 .scene-acting .tap-puff {
 	animation: tap-puff 1.6s var(--ease-out-quad);
 }
+/* How far to drive to be out of the picture: the right edge is fixed, the left is as far as the header is wide (ThemePattern sets it) */
+.scene-acting {
+	--off-right: 320px;
+	--off-left: 1400px;
+}
 /* Off to the right, round the world, back in from the left */
 @keyframes tap-drive {
 	/* Off one side, round the world, and in again from the other */
 	45% {
-		transform: translateX(1400px);
+		transform: translateX(var(--off-right));
 		animation-timing-function: steps(1, end);
 	}
 	46% {
-		transform: translateX(-1400px);
+		transform: translateX(calc(-1 * var(--off-left)));
 		animation-timing-function: var(--ease-out-quad);
 	}
 }
 @keyframes tap-drive-left {
 	/* Off one side, round the world, and in again from the other */
 	45% {
-		transform: translateX(-1400px);
+		transform: translateX(calc(-1 * var(--off-left)));
 		animation-timing-function: steps(1, end);
 	}
 	46% {
-		transform: translateX(1400px);
+		transform: translateX(var(--off-right));
 		animation-timing-function: var(--ease-out-quad);
 	}
 }
@@ -413,11 +455,11 @@
 		transform: translate(170px, 31px) rotate(0deg);
 	}
 	45% {
-		transform: translate(1400px, 31px);
+		transform: translate(var(--off-right), 31px);
 		animation-timing-function: steps(1, end);
 	}
 	46% {
-		transform: translate(-1400px, 31px);
+		transform: translate(calc(-1 * var(--off-left)), 31px);
 	}
 	70% {
 		transform: translate(-170px, 31px) rotate(0deg);
