@@ -169,20 +169,17 @@
 >
 	{#if offlineToken}<input type="hidden" name="clientId" value={clientId} />{/if}
 	<div class="flex flex-col gap-4 px-4 pt-2 pb-4">
-		<!-- What turns into the new row as it's saved (#291) -->
-		<div class="flex flex-col gap-4" data-morph-source={expenseId ? undefined : ''}>
-			<div data-tour="expense-what"><TitleNoteField bind:title notes={values.notes} /></div>
-			<div data-tour="expense-amount">
-				<AmountCurrencyField
-					bind:amount
-					bind:currency={amountCurrency}
-					bind:converted
-					groupCurrency={currency}
-					{currencies}
-					{date}
-					{saved}
-				/>
-			</div>
+		<div data-tour="expense-what"><TitleNoteField bind:title notes={values.notes} /></div>
+		<div data-tour="expense-amount">
+			<AmountCurrencyField
+				bind:amount
+				bind:currency={amountCurrency}
+				bind:converted
+				groupCurrency={currency}
+				{currencies}
+				{date}
+				{saved}
+			/>
 		</div>
 		<!-- Also when the group is no car group anymore: saving must not lose what's noted -->
 		{#if kind === 'car' || values.odometer || values.litres}

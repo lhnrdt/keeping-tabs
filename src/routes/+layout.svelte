@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { applyLook } from '#lib/themes/apply-look.ts';
-	import { morphFrom, morphTo } from '#lib/motion/morph.ts';
+	import { arriving, bringIn } from '#lib/motion/morph.ts';
 	import { beforeNavigate, onNavigate } from '$app/navigation';
 	import { page, updated } from '$app/state';
 	import { App } from 'konsta/svelte';
@@ -66,13 +66,13 @@
 		// 1 = deeper (slide forward), -1 = back up, 0 = same level such as tabs (fade)
 		const direction = Math.sign(depth(navigation.to?.url) - depth(navigation.from?.url));
 		document.documentElement.style.setProperty('--vt-direction', String(direction));
-		// A new entry just saved turns from the form into its row (#291)
-		const entry = morphFrom();
+		// A new entry just saved comes into its place in the list (#291)
+		const entry = arriving();
 		return new Promise((resolve) => {
 			const transition = document.startViewTransition(async () => {
 				resolve();
 				await navigation.complete;
-				if (entry) await morphTo(entry, transition.finished);
+				if (entry) await bringIn(entry, transition.finished);
 			});
 		});
 	});
