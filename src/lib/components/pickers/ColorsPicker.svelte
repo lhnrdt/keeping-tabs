@@ -8,6 +8,7 @@
 	import { COLORS, isOwnColor, LIKE_SCENERY, type Colors } from '#lib/settings.ts';
 	import { ownThemeProperties, styleOf } from '#lib/themes/own-theme.ts';
 	import { PALETTES, type ThemeId } from '#lib/themes/palettes.ts';
+	import OwnColorSheet from './OwnColorSheet.svelte';
 	import { themeLabels } from './theme-labels';
 
 	type Props = {
@@ -21,11 +22,12 @@
 	/** Your colour, or the scenery's to start from */
 	let own = $derived(isOwnColor(value) ? value : PALETTES[scenery].light.accent);
 	let ownChoice: HTMLInputElement;
-	const pickerId = $props.id();
+	let picking = $state(false);
 
 	/** Picked: chosen, and the form saves it like any other choice */
-	function picked(event: Event & { currentTarget: HTMLInputElement }) {
-		own = event.currentTarget.value;
+	function picked(color: string) {
+		picking = false;
+		own = color;
 		// Set here, not left to the next render: the form reads it right away
 		ownChoice.value = own;
 		ownChoice.checked = true;
@@ -76,16 +78,12 @@
 				tabindex="-1"
 				aria-hidden="true"
 			/>
-			<label for={pickerId} class="block h-full cursor-pointer">
-				<input
-					id={pickerId}
-					class="peer sr-only"
-					type="color"
-					value={own}
-					onchange={picked}
-					aria-label={m.colors_own()}
-				/>
-				<span class="{card(mine)} peer-focus-visible:ring-2">
+			<button
+				type="button"
+				class="block h-full w-full cursor-pointer text-start"
+				onclick={() => (picking = true)}
+			>
+				<span class={card(mine)}>
 					<!-- Filled with your colour, as the app's buttons will be -->
 					<span
 						class="grid size-10 flex-none place-items-center rounded-full bg-(--accent) text-(--surface) dark:bg-(--accent-night) dark:text-(--canvas-night)"
@@ -98,7 +96,7 @@
 						<span class="text-xs text-muted">{m.colors_own_hint()}</span>
 					</span>
 				</span>
-			</label>
+			</button>
 		</div>
 	</div>
 	<p class="text-xs text-muted">{m.colors_themes()}</p>
@@ -128,3 +126,5 @@
 		{/each}
 	</div>
 </fieldset>
+
+<OwnColorSheet opened={picking} color={own} onPick={picked} onClose={() => (picking = false)} />
