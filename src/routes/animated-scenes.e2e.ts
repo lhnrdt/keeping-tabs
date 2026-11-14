@@ -44,13 +44,15 @@ test('an empty group’s picture is about what kind of group it is', async ({ pa
 	await expect(page.getByTestId('empty-scene')).toHaveAttribute('data-kind', 'other');
 });
 
-test('tapping the header, even its text, makes its scene hop (#291)', async ({ page }) => {
+test("tapping the header, even its text, plays its scene's action (#291, #327)", async ({
+	page
+}) => {
 	const groupUrl = await createGroup(page, 'Hop', 'Anna', ['Ben']);
 	await open(page, groupUrl);
 	const scene = page.getByTestId('group-scene');
 	await page.getByRole('banner').click({ position: { x: 300, y: 40 } });
-	await expect(scene).toHaveClass(/scene-poke/);
-	await expect(scene).not.toHaveClass(/scene-poke/);
+	await expect(scene).toHaveClass(/scene-acting/);
+	await expect(scene).not.toHaveClass(/scene-acting/);
 	await page.getByRole('banner').getByRole('heading').click();
-	await expect(scene).toHaveClass(/scene-poke/);
+	await expect(scene).toHaveClass(/scene-acting/);
 });

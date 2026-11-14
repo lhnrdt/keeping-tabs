@@ -15,7 +15,8 @@
 	import FormError from '#lib/components/FormError.svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import PlainField from '#lib/components/fields/PlainField.svelte';
-	import AccentPicker from '#lib/components/pickers/AccentPicker.svelte';
+	import ColorsPicker from '#lib/components/pickers/ColorsPicker.svelte';
+	import SceneryPicker from '#lib/components/pickers/SceneryPicker.svelte';
 	import SegmentedPicker from '#lib/components/pickers/SegmentedPicker.svelte';
 	import SavedHint from '#lib/components/SavedHint.svelte';
 	import SettingField from '#lib/components/SettingField.svelte';
@@ -28,7 +29,8 @@
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale, locales } from '#lib/paraglide/runtime.js';
 	import {
-		isAccent,
+		isColors,
+		isScenery,
 		isTheme,
 		LOCALE_NAMES,
 		THEMES,
@@ -36,6 +38,7 @@
 		type Units
 	} from '#lib/settings.ts';
 	import { useTheme } from '#lib/themes/current.svelte.ts';
+	import { localDate, lookOn } from '#lib/themes/look.ts';
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();
@@ -57,12 +60,18 @@
 		event.currentTarget.requestSubmit();
 
 	const theme = useTheme();
-	function accentChanged(event: Event & { currentTarget: HTMLFormElement }) {
-		const accent = new FormData(event.currentTarget).get('accent');
-		if (isAccent(accent)) {
-			window.applyAccent?.(accent);
-			theme.id = accent;
-		}
+	// The scenery and colours change at once, worked out for today here (#332)
+	let scenery = $derived(data.scenery);
+	let colors = $derived(data.colors);
+	const today = $derived(lookOn(scenery, colors, localDate()));
+	function lookChanged(event: Event & { currentTarget: HTMLFormElement }) {
+		const form = new FormData(event.currentTarget);
+		const chosenScenery = form.get('scenery');
+		const chosenColors = form.get('colors');
+		if (isScenery(chosenScenery)) scenery = chosenScenery;
+		if (isColors(chosenColors)) colors = chosenColors;
+		window.applyAccent?.(today.colors);
+		theme.id = today.scenery;
 		event.currentTarget.requestSubmit();
 	}
 	function themeChanged(event: Event & { currentTarget: HTMLFormElement }) {
@@ -132,13 +141,24 @@
 				<noscript><button type="submit">{m.save()}</button></noscript>
 			</form>
 
-			<form method="POST" action="?/accent" use:enhance={setting.quietly} onchange={accentChanged}>
+			<form method="POST" action="?/scenery" use:enhance={setting.quietly} onchange={lookChanged}>
 				<SettingField
-					label={m.settings_accent()}
-					saved={setting.saved === 'accent'}
-					error={errorFor('accent')}
+					label={m.settings_scenery()}
+					saved={setting.saved === 'scenery'}
+					error={errorFor('scenery')}
 				>
-					<AccentPicker value={data.accent} />
+					<SceneryPicker value={scenery} today={today.scenery} />
+				</SettingField>
+				<noscript><button type="submit">{m.save()}</button></noscript>
+			</form>
+
+			<form method="POST" action="?/colors" use:enhance={setting.quietly} onchange={lookChanged}>
+				<SettingField
+					label={m.settings_colors()}
+					saved={setting.saved === 'colors'}
+					error={errorFor('colors')}
+				>
+					<ColorsPicker value={colors} scenery={today.scenery} />
 				</SettingField>
 				<noscript><button type="submit">{m.save()}</button></noscript>
 			</form>

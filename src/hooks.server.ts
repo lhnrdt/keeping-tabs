@@ -7,7 +7,7 @@ import { activityLog } from '#lib/server/db/schema.ts';
 import { redirect } from '@sveltejs/kit';
 import { resolve as resolveRoute } from '$app/paths';
 import { cookieName, getTextDirection } from '#lib/paraglide/runtime.js';
-import { ACCENT_COOKIE, LOCALE_COOKIE, THEME_COOKIE } from '#lib/settings.ts';
+import { LOCALE_COOKIE, SCENERY_COOKIE, THEME_COOKIE } from '#lib/settings.ts';
 import { paraglideMiddleware } from '#lib/paraglide/server.js';
 import { getDb } from '#lib/server/db/index.ts';
 import { grantAccess, hasAccess, isOpenPath } from '#lib/server/access.ts';
@@ -19,6 +19,7 @@ import { limitKindOf } from '#lib/server/rate-limit-kinds.ts';
 import { tooManyRequests, withinLimit } from '#lib/server/rate-limit.ts';
 import { findPerson } from '#lib/server/people.ts';
 import { applySettings, markSettingsChecked, settingsChecked } from '#lib/server/settings.ts';
+import { lookOf } from '#lib/server/look.ts';
 
 const handleParaglide: Handle = ({ event, resolve }) =>
 	paraglideMiddleware(event.request, ({ request, locale }) => {
@@ -58,7 +59,7 @@ const handleDevice: Handle = async ({ event, resolve }) => {
  * in the last day, don't cost an extra lookup.
  */
 const handleSettings: Handle = async ({ event, resolve }) => {
-	const missing = [LOCALE_COOKIE, THEME_COOKIE, ACCENT_COOKIE].some(
+	const missing = [LOCALE_COOKIE, THEME_COOKIE, SCENERY_COOKIE].some(
 		(name) => !event.cookies.get(name)
 	);
 	if (missing && event.request.method === 'GET' && !settingsChecked(event.cookies)) {
@@ -74,6 +75,17 @@ const handleSettings: Handle = async ({ event, resolve }) => {
 		}
 	}
 	return resolve(event);
+};
+
+/**
+ * The scenery and colours shown today (#332), worked out once: the page comes in those colours
+ * from its first paint, and its scenes show that scenery.
+ */
+const handleLook: Handle = ({ event, resolve }) => {
+	event.locals.look = lookOf(event.cookies);
+	return resolve(event, {
+		transformPageChunk: ({ html }) => html.replace('%kt.colors%', event.locals.look.colors)
+	});
 };
 
 /**
@@ -174,6 +186,7 @@ export const handle: Handle = sequence(
 	handleAccess,
 	handleGroupPassword,
 	handleSettings,
+	handleLook,
 	handleParaglide,
 	handleRateLimit
 );

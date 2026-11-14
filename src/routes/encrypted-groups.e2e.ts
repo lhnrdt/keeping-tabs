@@ -231,6 +231,37 @@ test('a group joined in Safari opens in the home screen app too, with its own st
 	await expect(safari.getByRole('link', { name: /Whiskey tasting/ })).toBeVisible();
 });
 
+test('a home screen app added later, with nothing stored, gets the groups too (#298)', async ({
+	page,
+	browser
+}) => {
+	// Safari: the groups open here
+	const { groupUrl } = await encryptedGroup(page);
+
+	// The home screen app: signed in as the same person, its storage empty
+	const app = await (await browser.newContext()).newPage();
+	await app.context().addCookies(await page.context().cookies());
+	await open(app, '/');
+	// It makes a vault of its own, and says so
+	await expect
+		.poll(async () => (await (await app.request.get('/device/keys')).json()).vaults.length, {
+			timeout: 15_000
+		})
+		.toBe(2);
+
+	// Safari, opened once more, puts the keys in it; then the app reads the group
+	await open(page, '/');
+	await expect
+		.poll(
+			async () => {
+				await open(app, groupUrl);
+				return app.getByRole('link', { name: /Whiskey tasting/ }).count();
+			},
+			{ timeout: 30_000 }
+		)
+		.toBe(1);
+});
+
 test('an existing group gets encrypted by itself, and nobody has to do anything (#110)', async ({
 	page,
 	browser

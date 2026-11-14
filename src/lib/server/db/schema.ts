@@ -3,7 +3,7 @@ import type { ExpenseItem } from '#lib/split/items.ts';
 import { SPLIT_MODES } from '#lib/split/modes.ts';
 import type { ExpenseCategory } from '#lib/expense/categories.ts';
 import type { GroupKind } from '#lib/group/kinds.ts';
-import type { Accent, Locale, Theme, Units } from '#lib/settings.ts';
+import type { Colors, Locale, Scenery, Theme, Units } from '#lib/settings.ts';
 import type { Tint } from '#lib/tints.ts';
 import { FREQUENCIES } from '#lib/expense/recurrence.ts';
 import {
@@ -78,7 +78,9 @@ export const people = sqliteTable('people', {
 	// Personal settings (S-3, src/lib/settings.ts); null = follow the browser
 	locale: text('locale').$type<Locale>(),
 	theme: text('theme').$type<Theme>(),
-	accent: text('accent').$type<Accent>(),
+	// The scenery (column named from when it was the whole theme) and the colours (#332)
+	accent: text('accent').$type<Scenery>(),
+	colors: text('colors').$type<Colors>(),
 	// How distances and fuel show, and the currency amounts are also shown in (#238)
 	units: text('units').$type<Units>(),
 	displayCurrency: text('display_currency'),

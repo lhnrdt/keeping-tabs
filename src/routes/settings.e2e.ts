@@ -105,9 +105,9 @@ test('a group offers your settings from your avatar, and whether you can step ba
 	await expect(page).toHaveURL(/\/you$/);
 });
 
-test('a nature theme switches at once and is remembered (#60)', async ({ page }) => {
+test('a scenery brings its colours, switches at once and is remembered (#60)', async ({ page }) => {
 	await open(page, '/you');
-	await page.getByRole('group', { name: 'Theme' }).getByText('Fjord', { exact: true }).click();
+	await page.getByRole('group', { name: 'Scenery' }).getByText('Fjord', { exact: true }).click();
 	await expect(page.locator('html')).toHaveAttribute('data-accent', 'fjord');
 	await expect(page.getByText('Saved').first()).toBeVisible();
 
@@ -118,11 +118,32 @@ test('a nature theme switches at once and is remembered (#60)', async ({ page })
 		'background-color',
 		'rgb(34, 78, 129)'
 	);
+});
 
-	// Back to the default: no attribute at all
+test("other colours than the scenery's, kept when the scenery changes (#332)", async ({ page }) => {
 	await open(page, '/you');
-	await page.getByRole('group', { name: 'Theme' }).getByText('Forest', { exact: true }).click();
-	await expect(page.locator('html')).not.toHaveAttribute('data-accent');
+	await page.getByRole('group', { name: 'Colours' }).getByText('Autumn', { exact: true }).click();
+	await expect(page.locator('html')).toHaveAttribute('data-accent', 'autumn');
+	await page.getByRole('group', { name: 'Scenery' }).getByText('Coast', { exact: true }).click();
+	await expect(page.locator('html')).toHaveAttribute('data-accent', 'autumn');
+	await expect(page.getByText('Saved').first()).toBeVisible();
+
+	// Back to the scenery's own
+	await page.getByRole('group', { name: 'Colours' }).getByText('Like the scenery').click();
+	await expect(page.locator('html')).toHaveAttribute('data-accent', 'coast');
+	await open(page, '/');
+	await expect(page.locator('html')).toHaveAttribute('data-accent', 'coast');
+});
+
+test('a new scenery every day (#332)', async ({ page }) => {
+	await open(page, '/you');
+	await page.getByRole('group', { name: 'Scenery' }).getByText('A new one every day').click();
+	await expect(page.getByText('Saved').first()).toBeVisible();
+	await open(page, '/');
+	await expect(page.locator('html')).toHaveAttribute(
+		'data-accent',
+		/^(forest|fjord|mountains|heather|birch|meadow|coast|aurora|autumn)$/
+	);
 });
 
 test('choose an avatar and see it wherever you appear (#61)', async ({ page }) => {

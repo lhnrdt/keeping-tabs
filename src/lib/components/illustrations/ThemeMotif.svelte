@@ -3,8 +3,9 @@
 	import { page } from '$app/state';
 	import type { GroupKind } from '#lib/group/kinds.ts';
 	import { MOTIFS } from '#lib/themes/art.ts';
+	import { mirrorOf } from '#lib/themes/scenes.ts';
 	import { MOMENTS, type Moment } from '#lib/themes/moments.ts';
-	import { GROUP_SUBJECTS } from '#lib/themes/group-subjects.ts';
+	import { subjectOf } from '#lib/themes/group-subjects.ts';
 	import { useTheme } from '#lib/themes/current.svelte.ts';
 
 	/** Something's off (#291): its own scene instead of the theme's or the group's */
@@ -13,7 +14,9 @@
 	const theme = useTheme();
 	// In a group: what it's about, in the same round window
 	const kind: GroupKind | undefined = $derived(moment ? undefined : page.data.group?.kind);
-	const art = $derived(moment ? MOMENTS[moment] : kind ? GROUP_SUBJECTS[kind] : MOTIFS[theme.id]);
+	const art = $derived(
+		moment ? MOMENTS[moment] : kind ? subjectOf(kind, theme.id) : MOTIFS[theme.id]
+	);
 	const cx = $derived(kind ? 310 : 60);
 	const cy = $derived(kind ? 136 : 60);
 	const radius = $derived(kind ? 77 : 58);
@@ -32,22 +35,24 @@
 	<g clip-path={`url(#${clip})`} fill="currentColor">
 		<circle {cx} {cy} r={radius} opacity="0.12" />
 		{#each art.shapes as shape, i (i)}
-			{#if shape.snow}
-				<path d={shape.d} fill="#fff" />
-			{:else if shape.cut}
-				<path d={shape.d} class="text-canvas dark:text-canvas-night" />
-			{:else}
-				<!-- Solid: whatever's behind a shape shouldn't show through it -->
-				<path
-					d={shape.d}
-					class="text-canvas dark:text-canvas-night {shape.motion ? `scene-${shape.motion}` : ''}"
-				/>
-				<path
-					d={shape.d}
-					opacity={shape.strength}
-					class={shape.motion ? `scene-${shape.motion}` : undefined}
-				/>
-			{/if}
+			<g transform={mirrorOf(shape)}>
+				{#if shape.snow}
+					<path d={shape.d} fill="#fff" />
+				{:else if shape.cut}
+					<path d={shape.d} class="text-canvas dark:text-canvas-night" />
+				{:else}
+					<!-- Solid: whatever's behind a shape shouldn't show through it -->
+					<path
+						d={shape.d}
+						class="text-canvas dark:text-canvas-night {shape.motion ? `scene-${shape.motion}` : ''}"
+					/>
+					<path
+						d={shape.d}
+						opacity={shape.strength}
+						class={shape.motion ? `scene-${shape.motion}` : undefined}
+					/>
+				{/if}
+			</g>
 		{/each}
 		{#each art.lines ?? [] as line, i (i)}
 			<path

@@ -79,9 +79,12 @@ async function vaultToAnnounce(key: string, vaultId: string, stored: Stored) {
  */
 export async function syncKeys() {
 	const vault = await vaultKey();
-	if (!vault && (await allKeys()).length === 0) return;
 	const stored = await fetchStored();
 	if (!stored) return;
+	// A device with nothing yet, like a new home screen app, still gets a vault of its own if the
+	// person has keys elsewhere: once it's known, their other devices put the keys in it (#298)
+	const elsewhere = stored.keys.length > 0 || (stored.vaults?.length ?? 0) > 0;
+	if (!vault && (await allKeys()).length === 0 && !elsewhere) return;
 	const key = await ensureVault();
 	const vaultId = await keyIdOf(key);
 	for (const { sealed } of stored.keys) {

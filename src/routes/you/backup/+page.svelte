@@ -24,7 +24,7 @@
 			done={data.passkeyCount > 0}
 		>
 			<p class="text-sm text-muted">{m.passkey_intro()}</p>
-			<PasskeySave count={data.passkeyCount} />
+			<PasskeySave count={data.passkeyCount} withoutVault={data.passkeysWithoutVault} />
 		</Fold>
 		<Fold
 			plain
