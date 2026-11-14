@@ -1,9 +1,11 @@
 // A finished trip's recap as a picture to share (#291): the group's scene across the bottom, in its
 // header's colors, with its name, dates, total and a few numbers above. Drawn on a canvas in the
 // browser, from the same scenes as the headers.
-import type { Scene } from '#lib/themes/scenes.ts';
+import { SUBJECT_INK } from '#lib/themes/group-subjects.ts';
+import { flipOf, type Scene } from '#lib/themes/scenes.ts';
 
 export type PosterColors = { background: string; line: string; text: string };
+export type PosterLayer = { scene: Scene; strength: number; subject?: boolean };
 export type PosterText = {
 	app: string;
 	name: string;
@@ -22,11 +24,16 @@ const SNOW_STRENGTH = 0.6;
 
 function drawScene(
 	ctx: CanvasRenderingContext2D,
-	scene: Scene,
-	strength: number,
+	{ scene, strength, subject }: PosterLayer,
 	colors: PosterColors
 ) {
+	// As in the header: the subject in the text's color, the landscape in the line color
+	const ink = subject ? colors.text : colors.line;
+	strength *= subject ? SUBJECT_INK : 1;
 	for (const shape of scene.shapes) {
+		ctx.save();
+		const flip = flipOf(shape);
+		if (flip) ctx.transform(...flip);
 		const path = new Path2D(shape.d);
 		if (!shape.cut) {
 			ctx.globalAlpha = 1;
@@ -34,17 +41,18 @@ function drawScene(
 			ctx.fill(path);
 		}
 		ctx.globalAlpha = shape.snow ? SNOW_STRENGTH : shape.cut ? 1 : shape.strength * strength;
-		ctx.fillStyle = shape.snow ? '#fff' : shape.cut ? colors.background : colors.line;
+		ctx.fillStyle = shape.snow ? '#fff' : shape.cut ? colors.background : ink;
 		ctx.fill(path);
+		ctx.restore();
 	}
-	ctx.strokeStyle = colors.line;
-	ctx.lineWidth = 1.5;
+	ctx.strokeStyle = ink;
+	ctx.lineWidth = subject ? 2.2 : 1.5;
 	ctx.lineCap = 'round';
 	for (const line of scene.lines ?? []) {
 		ctx.globalAlpha = line.strength * strength;
 		ctx.stroke(new Path2D(line.d));
 	}
-	ctx.fillStyle = colors.line;
+	ctx.fillStyle = ink;
 	for (const [x, y, r, dot] of scene.dots ?? []) {
 		ctx.globalAlpha = dot * strength;
 		ctx.beginPath();
@@ -71,7 +79,7 @@ function fitted(
 }
 
 export async function recapPoster(
-	layers: { scene: Scene; strength: number }[],
+	layers: PosterLayer[],
 	colors: PosterColors,
 	text: PosterText,
 	fonts: { display: string; body: string }
@@ -89,7 +97,7 @@ export async function recapPoster(
 	ctx.save();
 	ctx.translate(0, HEIGHT - SCENE_HEIGHT * scale);
 	ctx.scale(scale, scale);
-	for (const { scene, strength } of layers) drawScene(ctx, scene, strength, colors);
+	for (const layer of layers) drawScene(ctx, layer, colors);
 	ctx.restore();
 
 	const display = (size: number) => `600 ${size}px ${fonts.display}`;

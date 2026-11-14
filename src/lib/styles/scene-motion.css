@@ -1,94 +1,332 @@
 /*
- * The scenes breathe a little: smoke rises, balloons bob, water drifts. Slow, small, only transform
- * and opacity, and not at all for anyone who asks for less motion.
+ * The scenes are alive (#326), as if they were filmed: smoke drifts up and fades, flags flap, trees and
+ * grass sway, boats rock on the swell, water flows, fires flicker, leaves come down, wheels and sails
+ * turn, swings swing, walkers bob along, engines idle, the aurora ripples, stars twinkle. Each with the
+ * easing of how it really moves: sine for what swings back and forth, ease-out for what rises and
+ * slows, ease-in for what falls, linear for what turns. Only transform and opacity, and not at all for
+ * anyone who asks for less motion.
  */
-.scene-rise,
-.scene-bob,
-.scene-bob-slow,
-.scene-flutter,
-.scene-pulse,
-.scene-idle,
-.scene-drift,
-.scene-breathe,
-.scene-flicker {
+/* The scene on a layer of its own from the start, so the header's text isn't redrawn (and flashes) when an action starts */
+svg.scene-layer {
+	will-change: transform;
+}
+[class*='scene-'] {
 	transform-box: fill-box;
 	transform-origin: center bottom;
 }
 .scene-rise {
-	animation: scene-rise 5s ease-in-out infinite;
+	animation: scene-rise 4s var(--ease-out-quad) infinite;
 }
 .scene-bob {
-	animation: scene-bob 5s ease-in-out infinite;
+	animation: scene-bob 3.6s var(--ease-in-out-sine) infinite;
 }
 .scene-bob-slow {
-	animation: scene-bob 7s ease-in-out -2s infinite;
+	animation: scene-bob 5s var(--ease-in-out-sine) -1.8s infinite;
 }
 .scene-flutter {
 	transform-origin: left center;
-	animation: scene-flutter 3.5s ease-in-out infinite;
+	animation: scene-flutter 1.4s var(--ease-in-out-sine) infinite;
 }
 .scene-pulse {
 	transform-origin: center;
-	animation: scene-pulse 3.2s ease-in-out infinite;
+	animation: scene-pulse 1.8s ease-out infinite;
 }
 .scene-idle {
-	animation: scene-idle 2.4s ease-in-out infinite;
+	animation: scene-idle 0.3s var(--ease-in-out-sine) infinite;
+}
+.scene-flow {
+	animation: scene-flow 4.5s var(--ease-in-out-sine) infinite;
 }
 .scene-drift {
-	animation: scene-drift 8s ease-in-out infinite;
+	animation: scene-drift 9s var(--ease-in-out-sine) infinite;
+}
+.scene-cloud {
+	animation: scene-cloud 30s linear infinite;
 }
 .scene-breathe {
-	animation: scene-breathe 9s ease-in-out infinite;
+	animation: scene-breathe 6s var(--ease-in-out-sine) infinite;
 }
 .scene-flicker {
-	animation: scene-flicker 1.4s ease-in-out infinite;
+	animation: scene-flicker 0.8s steps(1, end) infinite;
+}
+.scene-sway {
+	animation: scene-sway 4.2s var(--ease-in-out-sine) infinite;
+}
+.scene-shimmer {
+	transform-origin: center top;
+	animation: scene-shimmer 7s var(--ease-in-out-sine) infinite;
+}
+.scene-rock {
+	animation: scene-rock 3.4s var(--ease-in-out-sine) infinite;
+}
+.scene-fly {
+	transform-origin: center;
+	animation: scene-fly 14s linear infinite;
+}
+.scene-twinkle,
+.scene-twinkle-late {
+	transform-origin: center;
+	animation: scene-twinkle 2.6s var(--ease-in-out-sine) infinite;
+}
+.scene-twinkle-late {
+	animation-delay: -1.3s;
+}
+.scene-turn {
+	transform-origin: center;
+	animation: scene-turn 24s linear infinite;
+}
+.scene-orbit {
+	transform: rotate(calc(var(--orbit-turn) + var(--orbit-tap)))
+		translate(var(--hang-x), var(--hang-y))
+		rotate(calc(-1 * (var(--orbit-turn) + var(--orbit-tap))))
+		translate(calc(-1 * var(--hang-x)), calc(-1 * var(--hang-y)));
+	animation: scene-orbit 24s linear infinite;
+}
+.scene-swing {
+	transform-origin: center top;
+	animation: scene-swing 3s var(--ease-in-out-sine) infinite;
+}
+.scene-walk {
+	animation: scene-walk 0.9s var(--ease-in-out-sine) infinite;
+}
+.scene-fall {
+	transform-origin: center;
+	animation: scene-fall 7s cubic-bezier(0.55, 0, 0.75, 0.4) infinite;
+}
+.scene-breeze {
+	animation: scene-breeze 4.2s var(--ease-in-out-sine) infinite;
+}
+.scene-nod {
+	animation: scene-nod 3.4s var(--ease-in-out-sine) infinite;
 }
 @keyframes scene-rise {
 	0% {
 		opacity: 0;
-		transform: translateY(5px);
+		transform: translate(0, 6px) scale(0.8);
 	}
-	35% {
+	25% {
 		opacity: 1;
+	}
+	60% {
+		transform: translate(4px, -12px) scale(1.1);
 	}
 	100% {
 		opacity: 0;
-		transform: translateY(-9px);
+		transform: translate(-2px, -24px) scale(1.35);
 	}
 }
 @keyframes scene-bob {
 	50% {
-		transform: translateY(-5px);
+		transform: translateY(-6px) rotate(-2deg);
 	}
 }
 @keyframes scene-flutter {
 	50% {
-		transform: skewY(-9deg) scaleX(0.92);
+		transform: skewY(-14deg) scaleX(0.86);
 	}
 }
+/* A heartbeat: two beats, then rest */
 @keyframes scene-pulse {
-	50% {
-		transform: scale(1.14);
+	0%,
+	40%,
+	100% {
+		transform: scale(1);
+	}
+	12% {
+		transform: scale(1.25);
+	}
+	26% {
+		transform: scale(1.12);
 	}
 }
+/* An engine running: a fine tremble */
 @keyframes scene-idle {
 	50% {
 		transform: translateY(-0.8px);
 	}
 }
+@keyframes scene-flow {
+	50% {
+		transform: translateX(14px);
+	}
+}
 @keyframes scene-drift {
 	50% {
-		transform: translateX(7px);
+		transform: translateX(12px);
+	}
+}
+@keyframes scene-cloud {
+	0% {
+		opacity: 0;
+		transform: translateX(40px);
+	}
+	10%,
+	90% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+		transform: translateX(-80px);
 	}
 }
 @keyframes scene-breathe {
 	50% {
-		opacity: 0.55;
+		opacity: 0.4;
 	}
 }
 @keyframes scene-flicker {
+	0% {
+		transform: scale(1, 1);
+	}
+	25% {
+		transform: scale(0.86, 1.14);
+	}
 	50% {
-		transform: scale(0.88, 1.1);
+		transform: scale(1.08, 0.9);
+	}
+	75% {
+		transform: scale(0.92, 1.1);
+	}
+}
+@keyframes scene-sway {
+	0%,
+	100% {
+		transform: rotate(-2deg);
+	}
+	50% {
+		transform: rotate(2deg);
+	}
+}
+/* The aurora's curtains ripple and brighten */
+@keyframes scene-shimmer {
+	0%,
+	100% {
+		opacity: 1;
+		transform: skewX(0deg) translateX(0);
+	}
+	50% {
+		opacity: 0.5;
+		transform: skewX(-8deg) translateX(10px);
+	}
+}
+@keyframes scene-rock {
+	0%,
+	100% {
+		transform: rotate(-3deg) translateY(0);
+	}
+	50% {
+		transform: rotate(3deg) translateY(-2px);
+	}
+}
+@keyframes scene-fly {
+	0% {
+		opacity: 0;
+		transform: translate(70px, 10px);
+	}
+	8%,
+	85% {
+		opacity: 1;
+	}
+	50% {
+		transform: translate(-30px, -4px);
+	}
+	100% {
+		opacity: 0;
+		transform: translate(-130px, 0);
+	}
+}
+/* A star sparkles where it is: brighter, dimmer, never moving */
+@keyframes scene-twinkle {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	45% {
+		opacity: 0.2;
+	}
+	55% {
+		opacity: 0.35;
+	}
+}
+@keyframes scene-turn {
+	to {
+		transform: rotate(360deg);
+	}
+}
+/* Round its origin, turned back round where it hangs, so it goes round level (a big wheel's cabins):
+ * one turn made of two angles, the idle one and the tap's, so the two add up */
+@property --orbit-turn {
+	syntax: '<angle>';
+	inherits: false;
+	initial-value: 0deg;
+}
+@property --orbit-tap {
+	syntax: '<angle>';
+	inherits: false;
+	initial-value: 0deg;
+}
+@keyframes scene-orbit {
+	to {
+		--orbit-turn: 360deg;
+	}
+}
+@keyframes scene-orbit-tap {
+	to {
+		--orbit-tap: 360deg;
+	}
+}
+@keyframes scene-swing {
+	0%,
+	100% {
+		transform: rotate(-7deg);
+	}
+	50% {
+		transform: rotate(7deg);
+	}
+}
+/* Walking: a step, a step */
+@keyframes scene-walk {
+	50% {
+		transform: translateY(-1.5px);
+	}
+}
+/* A leaf comes down, swinging from side to side */
+@keyframes scene-fall {
+	0% {
+		opacity: 0;
+		transform: translate(0, -10px) rotate(0deg);
+	}
+	15% {
+		opacity: 1;
+	}
+	35% {
+		transform: translate(10px, 14px) rotate(60deg);
+	}
+	65% {
+		transform: translate(-8px, 36px) rotate(-30deg);
+	}
+	85% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+		transform: translate(6px, 56px) rotate(40deg);
+	}
+}
+/* Wind through what grows: it leans, the higher the more, and stays rooted */
+@keyframes scene-breeze {
+	0%,
+	100% {
+		transform: skewX(-3deg);
+	}
+	50% {
+		transform: skewX(3deg);
+	}
+}
+/* Someone standing still is never quite still */
+@keyframes scene-nod {
+	50% {
+		transform: rotate(1.2deg);
 	}
 }
 
@@ -109,38 +347,449 @@
 	}
 }
 
-/* Tapped (#291): the scene hops, once, layer after layer */
-.scene-poke > g {
+/* Tapped (#327): the scene's action plays once, on the shapes that have a move */
+.scene-acting [class*='tap-'] {
 	transform-box: fill-box;
 	transform-origin: center bottom;
-	animation: scene-poke 650ms var(--ease-calm);
 }
-.scene-poke > g:nth-child(2) {
-	animation-delay: 70ms;
+.scene-acting .tap-drive {
+	animation: tap-drive 2.4s var(--ease-in-out-cubic);
 }
-.scene-poke > g:nth-child(3) {
-	animation-delay: 140ms;
+.scene-acting .tap-drive-left {
+	animation: tap-drive-left 2.4s var(--ease-in-out-cubic);
 }
-@keyframes scene-poke {
-	40% {
-		transform: translateY(-5px) scale(1.02);
+.scene-acting .tap-drive-bridge {
+	animation: tap-drive-bridge 2.8s linear;
+}
+.scene-acting .tap-hop {
+	animation: tap-hop 700ms var(--ease-out-quad);
+}
+.scene-acting .tap-spin {
+	transform-origin: center;
+	animation: tap-spin 2.4s var(--ease-in-out-sine);
+}
+.scene-acting .tap-orbit .scene-orbit {
+	animation:
+		scene-orbit 24s linear infinite,
+		scene-orbit-tap 2.4s var(--ease-in-out-sine);
+}
+.scene-acting .tap-swing {
+	transform-origin: center top;
+	animation: tap-swing 2.4s var(--ease-in-out-sine);
+}
+.scene-acting .tap-float {
+	animation: tap-float 2.2s var(--ease-in-out-sine);
+}
+.scene-acting .tap-burst {
+	transform-origin: center bottom;
+	animation: tap-burst 1.4s var(--ease-in-out-sine);
+}
+.scene-acting .tap-wave {
+	animation: tap-wave 1.2s var(--ease-in-out-sine);
+}
+.scene-acting .tap-sail {
+	animation: tap-sail 2.4s var(--ease-in-out-sine);
+}
+.scene-acting .tap-flash {
+	transform-origin: center;
+	animation: tap-flash 1.2s var(--ease-out-back);
+}
+.scene-acting .tap-glint {
+	transform-origin: center;
+	animation: tap-glint 1s var(--ease-out-back);
+}
+.scene-acting .tap-gust {
+	animation: tap-gust 1.8s var(--ease-out-quad);
+}
+.scene-acting .tap-climb {
+	animation: tap-climb 2.2s var(--ease-in-out-sine);
+}
+.scene-acting .tap-away {
+	animation: tap-away 2.4s var(--ease-in-out-sine);
+}
+.scene-acting .tap-puff {
+	animation: tap-puff 1.6s var(--ease-out-quad);
+}
+/* How far to drive to be out of the picture: the right edge is fixed, the left is as far as the header is wide (ThemePattern sets it) */
+.scene-acting {
+	--off-right: 320px;
+	--off-left: 1400px;
+}
+/* Off to the right, round the world, back in from the left */
+@keyframes tap-drive {
+	/* Off one side, round the world, and in again from the other */
+	45% {
+		transform: translateX(var(--off-right));
+		animation-timing-function: steps(1, end);
+	}
+	46% {
+		transform: translateX(calc(-1 * var(--off-left)));
+		animation-timing-function: var(--ease-out-quad);
+	}
+}
+@keyframes tap-drive-left {
+	/* Off one side, round the world, and in again from the other */
+	45% {
+		transform: translateX(calc(-1 * var(--off-left)));
+		animation-timing-function: steps(1, end);
+	}
+	46% {
+		transform: translateX(var(--off-right));
+		animation-timing-function: var(--ease-out-quad);
+	}
+}
+/* Over the humpback bridge: down its slope, tilting with it, away along the bank, and back up it */
+@keyframes tap-drive-bridge {
+	8% {
+		transform: translate(30px, 2.3px) rotate(8.8deg);
+	}
+	15% {
+		transform: translate(60px, 9.3px) rotate(17.2deg);
+	}
+	21% {
+		transform: translate(90px, 20.9px) rotate(24.9deg);
+	}
+	25% {
+		transform: translate(106px, 29px) rotate(28.7deg);
+	}
+	31% {
+		transform: translate(170px, 31px) rotate(0deg);
+	}
+	45% {
+		transform: translate(var(--off-right), 31px);
+		animation-timing-function: steps(1, end);
+	}
+	46% {
+		transform: translate(calc(-1 * var(--off-left)), 31px);
 	}
 	70% {
-		transform: translateY(1px) scale(0.995);
+		transform: translate(-170px, 31px) rotate(0deg);
+	}
+	76% {
+		transform: translate(-106px, 29px) rotate(-28.7deg);
+	}
+	82% {
+		transform: translate(-90px, 20.9px) rotate(-24.9deg);
+	}
+	88% {
+		transform: translate(-60px, 9.3px) rotate(-17.2deg);
+	}
+	94% {
+		transform: translate(-30px, 2.3px) rotate(-8.8deg);
+	}
+}
+@keyframes tap-hop {
+	40% {
+		transform: translateY(-12px);
+	}
+	75% {
+		transform: translateY(0);
+	}
+	88% {
+		transform: translateY(-3px);
+	}
+}
+@keyframes tap-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+@keyframes tap-swing {
+	15% {
+		transform: rotate(14deg);
+	}
+	40% {
+		transform: rotate(-10deg);
+	}
+	60% {
+		transform: rotate(6deg);
+	}
+	80% {
+		transform: rotate(-3deg);
+	}
+}
+@keyframes tap-float {
+	50% {
+		transform: translateY(-26px) scale(1.15);
+	}
+}
+/* A heartbeat, a fire flaring up: big, back, and a second smaller swell, from the base */
+@keyframes tap-burst {
+	20% {
+		transform: scale(1.35);
+	}
+	40% {
+		transform: scale(0.95);
+	}
+	58% {
+		transform: scale(1.18);
+	}
+	80% {
+		transform: none;
+	}
+}
+@keyframes tap-wave {
+	20% {
+		transform: rotate(-14deg);
+	}
+	40% {
+		transform: rotate(10deg);
+	}
+	60% {
+		transform: rotate(-8deg);
+	}
+	80% {
+		transform: rotate(4deg);
+	}
+}
+@keyframes tap-sail {
+	50% {
+		transform: translateX(22px);
+	}
+}
+@keyframes tap-flash {
+	10%,
+	30%,
+	50% {
+		opacity: 0.15;
+	}
+	20%,
+	40%,
+	60% {
+		opacity: 1;
+	}
+}
+@keyframes tap-glint {
+	30% {
+		transform: scale(1.08);
+	}
+}
+@keyframes tap-gust {
+	20% {
+		transform: skewX(-16deg);
+	}
+	45% {
+		transform: skewX(8deg);
+	}
+	70% {
+		transform: skewX(-4deg);
+	}
+}
+/* Up the slope a stretch, and back to where the scene stands */
+@keyframes tap-climb {
+	50% {
+		transform: translate(18px, -9px);
+	}
+}
+/* Off into the distance, smaller and higher up the path, and back */
+@keyframes tap-away {
+	50% {
+		transform: translateY(-12px) scale(0.6);
+	}
+}
+@keyframes tap-puff {
+	30% {
+		transform: translateY(-6px) scale(1.5);
+	}
+	100% {
+		opacity: 0;
+		transform: translateY(-16px) scale(1.7);
+	}
+}
+
+/* What the actions leave in the air: swoosh lines and particles, once each */
+.scene-fx * {
+	transform-box: view-box;
+	opacity: 0;
+	animation-delay: var(--at, 0ms);
+}
+.scene-fx > [class^='tap-'] {
+	opacity: 1;
+}
+.scene-fx .fx-speed {
+	animation: fx-speed 2.4s linear;
+}
+.scene-fx .fx-dust {
+	animation: fx-dust 2.4s var(--ease-out-quad);
+}
+.scene-fx .fx-landing {
+	animation: fx-landing 700ms var(--ease-out-quad);
+}
+.scene-fx .fx-lift {
+	animation: fx-lift 700ms var(--ease-out-quad);
+}
+.scene-fx .fx-spin-arcs {
+	opacity: 1;
+	animation: fx-spin 2.4s var(--ease-in-out-sine);
+}
+.scene-fx .fx-spin-arcs path {
+	animation: fx-fade 2.4s var(--ease-in-out-sine);
+}
+.scene-fx .fx-swoosh {
+	animation: fx-swoosh 1.2s var(--ease-out-quad) 2;
+}
+.scene-fx .fx-spark {
+	animation: fx-spark 1.2s var(--ease-out-quad);
+}
+.scene-fx .fx-ring {
+	animation: fx-ring 900ms var(--ease-out-quad);
+}
+.scene-fx .fx-ray {
+	animation: fx-fade 1s var(--ease-out-quad);
+}
+.scene-fx .fx-rise {
+	animation: fx-rise 1.6s var(--ease-out-quad);
+}
+.scene-fx .fx-wind {
+	animation: fx-wind 1.6s var(--ease-out-quad);
+}
+.scene-fx .fx-splash {
+	animation: fx-splash 900ms var(--ease-out-quad);
+}
+.scene-fx .fx-wake {
+	animation: fx-fade 2.4s var(--ease-in-out-sine);
+}
+/* Each effect starts when its action reaches it */
+.scene-fx [class^='fx-'] {
+	animation-delay: var(--at, 0ms);
+}
+/* Speed lines while it's going, gone while it's away, back as it comes in */
+@keyframes fx-speed {
+	5%,
+	38% {
+		opacity: 1;
+	}
+	45%,
+	55% {
+		opacity: 0;
+	}
+	62%,
+	85% {
+		opacity: 1;
+	}
+}
+@keyframes fx-dust {
+	0% {
+		opacity: 1;
+		transform: translate(0, 0) scale(0.6);
+	}
+	30% {
+		opacity: 0;
+		transform: translate(var(--dx), var(--dy)) scale(1.4);
+	}
+	55% {
+		opacity: 1;
+		transform: translate(0, 0) scale(0.6);
+	}
+	85% {
+		opacity: 0;
+		transform: translate(var(--dx), var(--dy)) scale(1.4);
+	}
+}
+@keyframes fx-landing {
+	0%,
+	70% {
+		opacity: 1;
+		transform: translate(0, 0);
+	}
+	30%,
+	100% {
+		opacity: 0;
+		transform: translate(var(--dx), var(--dy));
+	}
+}
+@keyframes fx-lift {
+	15%,
+	40% {
+		opacity: 1;
+	}
+}
+@keyframes fx-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+@keyframes fx-fade {
+	20%,
+	70% {
+		opacity: 1;
+	}
+}
+@keyframes fx-swoosh {
+	30% {
+		opacity: 1;
+	}
+}
+/* Flying out from the edge of what threw them, not bunched up in its middle */
+@keyframes fx-spark {
+	0% {
+		opacity: 0;
+		transform: translate(calc(var(--dx) * 0.9), calc(var(--dy) * 0.9));
+	}
+	15% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+		transform: translate(calc(var(--dx) * 1.7), calc(var(--dy) * 1.7));
+	}
+}
+@keyframes fx-ring {
+	0% {
+		opacity: 1;
+		transform: scale(1);
+	}
+	100% {
+		opacity: 0;
+		transform: scale(1.5);
+	}
+}
+@keyframes fx-wind {
+	0% {
+		opacity: 0;
+		transform: translateX(30px);
+	}
+	30% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+		transform: translateX(-40px);
+	}
+}
+/* A drop thrown up, then falling back */
+@keyframes fx-splash {
+	0% {
+		opacity: 1;
+		transform: translate(0, 0);
+	}
+	45% {
+		opacity: 1;
+		transform: translate(calc(var(--dx) * 0.7), var(--dy));
+	}
+	100% {
+		opacity: 0;
+		transform: translate(var(--dx), 2px);
+	}
+}
+@keyframes fx-rise {
+	0% {
+		opacity: 0;
+		transform: translate(0, 0) scale(0.6);
+	}
+	30% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+		transform: translate(var(--dx, 0), var(--dy)) scale(1.3);
 	}
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.scene-poke > g,
-	.scene-rise,
-	.scene-bob,
-	.scene-bob-slow,
-	.scene-flutter,
-	.scene-pulse,
-	.scene-idle,
-	.scene-drift,
-	.scene-breathe,
-	.scene-flicker,
+	.scene-acting [class^='tap-'],
+	.scene-fx,
+	[class*='scene-'],
 	.scene-celebrate {
 		animation: none;
 	}

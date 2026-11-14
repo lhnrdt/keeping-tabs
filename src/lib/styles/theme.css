@@ -73,6 +73,11 @@
 
 	/* Motion: calm ease-out (style guide); svelte/easing's quintOut is the same curve */
 	--ease-calm: cubic-bezier(0.22, 1, 0.36, 1);
+	/* The standard curves (easings.net), for the scenes' tap actions */
+	--ease-in-out-sine: cubic-bezier(0.37, 0, 0.63, 1);
+	--ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
+	--ease-out-quad: cubic-bezier(0.5, 1, 0.89, 1);
+	--ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
 
 	--font-display: 'Fraunces Variable', ui-serif, Georgia, serif;
 

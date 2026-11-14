@@ -1,0 +1,754 @@
+/*
+ * Each scene's own action (#327), tapped once: what happens in it, physically right. Grouped by scene.
+ */
+
+/* Meadow kickabout: the shot flies under the bar into the net, the net gives, the keeper dives too late */
+.scene-acting .tap-act-shot {
+	animation: act-shot 2.4s linear;
+}
+.scene-acting .tap-act-net {
+	animation: act-net 2.4s var(--ease-out-quad);
+}
+.scene-acting .tap-act-dive {
+	animation: act-dive 2.4s var(--ease-out-quad);
+}
+.scene-acting .tap-act-follow {
+	animation: act-follow 2.4s var(--ease-out-quad);
+}
+@keyframes act-shot {
+	12% {
+		transform: translate(10px, -3px);
+	}
+	26% {
+		transform: translate(24px, 14px);
+	}
+	38% {
+		transform: translate(38px, 22px);
+	}
+	50% {
+		transform: translate(42px, 31px);
+		animation-timing-function: var(--ease-out-quad);
+	}
+	58% {
+		transform: translate(44px, 27px);
+	}
+	66% {
+		opacity: 1;
+		transform: translate(46px, 31px);
+	}
+	80% {
+		opacity: 0;
+		transform: translate(46px, 31px);
+	}
+	81% {
+		opacity: 0;
+		transform: translate(0, 0);
+	}
+}
+@keyframes act-net {
+	36% {
+		transform: none;
+	}
+	42% {
+		transform: translateX(5px) scaleY(0.96);
+	}
+	60% {
+		transform: none;
+	}
+}
+@keyframes act-dive {
+	14% {
+		transform: none;
+	}
+	30% {
+		transform: translate(-10px, -8px) rotate(-22deg);
+	}
+	44% {
+		transform: translate(-12px, 0) rotate(-30deg);
+	}
+	70% {
+		transform: translate(-12px, 0) rotate(-30deg);
+	}
+	90% {
+		transform: none;
+	}
+}
+@keyframes act-follow {
+	10% {
+		transform: rotate(-5deg);
+	}
+	40% {
+		transform: none;
+	}
+}
+
+/* Forest signpost: the map is turned over to read the back, a friend leans in */
+.scene-acting .tap-act-flip {
+	animation: act-flip 1.6s var(--ease-in-out-sine);
+}
+.scene-acting .tap-act-lean {
+	animation: act-lean 1.8s var(--ease-in-out-sine);
+}
+@keyframes act-flip {
+	50% {
+		transform: scaleX(-1);
+	}
+}
+@keyframes act-lean {
+	40%,
+	70% {
+		transform: rotate(-6deg);
+	}
+}
+
+/* Fjord jetty: feet kicked into the water, the ripple reaches the boat a moment later */
+.scene-acting .tap-act-kick-feet {
+	animation: act-kick-feet 1.4s var(--ease-out-quad);
+}
+.scene-acting .tap-act-ripple-rock {
+	animation: act-ripple-rock 2.4s var(--ease-in-out-sine) 0.5s;
+}
+@keyframes act-kick-feet {
+	20% {
+		transform: rotate(-28deg);
+	}
+	45% {
+		transform: rotate(6deg);
+	}
+	65% {
+		transform: rotate(-14deg);
+	}
+}
+@keyframes act-ripple-rock {
+	20% {
+		transform: translateY(-3px) rotate(-5deg);
+	}
+	45% {
+		transform: translateY(1px) rotate(4deg);
+	}
+	70% {
+		transform: rotate(-2deg);
+	}
+}
+
+/* Summit: a gust hits, the flags whip, the climber braces into it */
+.scene-acting .tap-act-brace {
+	animation: act-brace 1.8s var(--ease-out-quad);
+}
+@keyframes act-brace {
+	20%,
+	55% {
+		transform: rotate(-7deg);
+	}
+}
+
+/* Mailbox: the letter taken out, the flag goes down, and up again */
+.scene-acting .tap-act-flag-down {
+	animation: act-flag-down 2.4s var(--ease-in-out-cubic);
+}
+@keyframes act-flag-down {
+	25%,
+	70% {
+		transform: rotate(90deg);
+	}
+}
+
+/* Paddleboard: the board's wake reaches the buoy, it rocks */
+.scene-acting .tap-act-buoy {
+	animation: act-buoy 2s var(--ease-in-out-sine) 0.6s;
+}
+@keyframes act-buoy {
+	20% {
+		transform: rotate(10deg);
+	}
+	45% {
+		transform: rotate(-8deg);
+	}
+	70% {
+		transform: rotate(4deg);
+	}
+}
+
+/* Leaf raking: two sweeps of the rake as the pile flies up */
+.scene-acting .tap-act-rake {
+	animation: act-rake 1.6s var(--ease-in-out-sine);
+}
+@keyframes act-rake {
+	25%,
+	75% {
+		transform: rotate(5deg);
+	}
+	50% {
+		transform: rotate(-2deg);
+	}
+}
+
+/* Rock tongue: they lean out and peer over the edge */
+.scene-acting .tap-act-peer {
+	animation: act-peer 2s var(--ease-in-out-sine);
+}
+@keyframes act-peer {
+	30%,
+	65% {
+		transform: rotate(8deg);
+	}
+}
+
+/* Kite: a gust tugs the holder towards it */
+.scene-acting .tap-act-tug {
+	animation: act-tug 1.6s var(--ease-out-quad);
+}
+@keyframes act-tug {
+	25% {
+		transform: rotate(6deg);
+	}
+	55% {
+		transform: rotate(-2deg);
+	}
+}
+
+/* Sauna lake: the swimmer ducks under and comes up again */
+.scene-acting .tap-act-duck {
+	animation: act-duck 1.8s var(--ease-in-out-sine);
+}
+@keyframes act-duck {
+	30% {
+		opacity: 0;
+		transform: translateY(9px);
+	}
+	55% {
+		opacity: 0;
+		transform: translateY(9px);
+	}
+	70% {
+		opacity: 1;
+		transform: translateY(-3px);
+	}
+}
+
+/* Beach volleyball: tossed up, spiked down over the net into the sand */
+.scene-acting .tap-act-spike {
+	animation: act-spike 2.4s linear;
+}
+@keyframes act-spike {
+	15% {
+		transform: translate(0, -10px);
+		animation-timing-function: var(--ease-in-quad, cubic-bezier(0.11, 0, 0.5, 0));
+	}
+	34% {
+		transform: translate(34px, 62px);
+	}
+	42% {
+		transform: translate(40px, 56px);
+	}
+	50% {
+		opacity: 1;
+		transform: translate(44px, 62px);
+	}
+	72% {
+		opacity: 0;
+		transform: translate(44px, 62px);
+	}
+	73% {
+		opacity: 0;
+		transform: none;
+	}
+}
+
+/* Hot tub: they sink in to the chin, the steam billows */
+.scene-acting .tap-act-sink {
+	animation: act-sink 2.2s var(--ease-in-out-sine);
+}
+@keyframes act-sink {
+	35%,
+	70% {
+		transform: translateY(5px);
+	}
+}
+
+/* Mushroom pan: the pan flicks up, the mushrooms fly in an arc and land back in it */
+.scene-acting .tap-act-pan {
+	animation: act-pan 1.6s var(--ease-out-quad);
+}
+.scene-acting .tap-act-toss {
+	animation: act-toss 1.6s linear;
+}
+@keyframes act-pan {
+	15% {
+		transform: rotate(-8deg) translateY(-3px);
+	}
+	40% {
+		transform: none;
+	}
+	62% {
+		transform: translateY(2px);
+	}
+}
+@keyframes act-toss {
+	10% {
+		transform: translateY(0);
+		animation-timing-function: var(--ease-out-quad);
+	}
+	35% {
+		transform: translate(-4px, -26px) rotate(-14deg);
+		animation-timing-function: cubic-bezier(0.11, 0, 0.5, 0);
+	}
+	60% {
+		transform: translate(0, 2px);
+	}
+	70% {
+		transform: none;
+	}
+}
+
+/* Grill: the fish is flipped over */
+.scene-acting .tap-act-flip-over {
+	animation: act-flip-over 1.4s var(--ease-in-out-sine);
+}
+@keyframes act-flip-over {
+	50% {
+		transform: translateY(-14px) scaleY(-1);
+	}
+}
+
+/* Mug: lifted for a sip, tilted towards the mouth */
+.scene-acting .tap-act-sip {
+	animation: act-sip 2.2s var(--ease-in-out-sine);
+}
+@keyframes act-sip {
+	35%,
+	65% {
+		transform: translateY(-10px) rotate(-14deg);
+	}
+}
+
+/* Berries, buns: a fresh handful drops in and settles */
+.scene-acting .tap-act-settle {
+	animation: act-settle 1.2s cubic-bezier(0.11, 0, 0.5, 0);
+}
+@keyframes act-settle {
+	0% {
+		opacity: 0;
+		transform: translateY(-18px);
+	}
+	50% {
+		opacity: 1;
+		transform: none;
+		animation-timing-function: var(--ease-out-quad);
+	}
+	65% {
+		transform: translateY(-3px);
+	}
+	80% {
+		transform: none;
+	}
+}
+
+/* Reaching: up on the toes for the one just out of reach */
+.scene-acting .tap-act-reach {
+	animation: act-reach 1.6s var(--ease-in-out-sine);
+}
+@keyframes act-reach {
+	35%,
+	60% {
+		transform: translateY(-4px) rotate(-3deg);
+	}
+}
+
+/* Campfire: it flares up, they lean back from the heat */
+.scene-acting .tap-act-recoil {
+	animation: act-recoil 1.6s var(--ease-out-quad);
+}
+@keyframes act-recoil {
+	20%,
+	45% {
+		transform: rotate(-5deg);
+	}
+}
+
+/* Dancing: hops with a step to the side, in time */
+.scene-acting .tap-act-dance {
+	animation: act-dance 1.8s var(--ease-in-out-sine);
+}
+@keyframes act-dance {
+	12%,
+	45%,
+	78% {
+		transform: translate(0, -6px);
+	}
+	28% {
+		transform: translate(3px, 0);
+	}
+	62% {
+		transform: translate(-3px, 0);
+	}
+}
+
+/* Highland games: the caber tips over forward, end over end, and lands */
+.scene-acting .tap-act-caber {
+	animation: act-caber 2.4s cubic-bezier(0.11, 0, 0.5, 0);
+}
+@keyframes act-caber {
+	25% {
+		transform: rotate(18deg) translateY(-6px);
+	}
+	55% {
+		opacity: 1;
+		transform: translate(40px, 4px) rotate(180deg);
+	}
+	75% {
+		opacity: 0;
+		transform: translate(40px, 4px) rotate(180deg);
+	}
+	76% {
+		opacity: 0;
+		transform: none;
+	}
+}
+
+/* Crayfish party: the glasses clink, the lanterns sway on their string */
+.scene-acting .tap-act-clink {
+	animation: act-clink 1.2s var(--ease-out-quad);
+}
+.scene-acting .tap-act-lantern {
+	animation: act-lantern 2.4s var(--ease-in-out-sine);
+}
+@keyframes act-clink {
+	30% {
+		transform: translate(2px, -4px);
+	}
+	45% {
+		transform: translate(0, -3px);
+	}
+}
+@keyframes act-lantern {
+	25% {
+		transform: translateX(4px);
+	}
+	50% {
+		transform: translateX(-3px);
+	}
+	75% {
+		transform: translateX(2px);
+	}
+}
+
+/* Fireworks: the rockets go up, then burst at the top */
+.scene-acting .tap-act-launch {
+	animation: act-launch 0.7s var(--ease-out-quad);
+}
+.scene-acting .tap-act-burst-late {
+	transform-origin: center;
+	animation: act-burst-late 1.6s var(--ease-out-back) 0.6s backwards;
+}
+@keyframes act-launch {
+	0% {
+		transform: scaleY(0);
+	}
+}
+@keyframes act-burst-late {
+	0% {
+		opacity: 0;
+		transform: scale(0.2);
+	}
+	40% {
+		opacity: 1;
+		transform: scale(1.2);
+	}
+}
+
+/* Round bale: nudged, it rolls along the ground and back, turning as it goes */
+.scene-acting .tap-act-roll {
+	animation: act-roll 2.4s var(--ease-in-out-sine);
+}
+@keyframes act-roll {
+	50% {
+		transform: translateX(-30px) rotate(-143deg);
+	}
+}
+
+/* Forest cabin: the lights go on inside, a while, then off again */
+.tap-act-lights {
+	opacity: 0;
+}
+.scene-acting .tap-act-lights {
+	animation: act-lights 2.6s linear;
+}
+@keyframes act-lights {
+	8% {
+		opacity: 0;
+	}
+	10%,
+	16% {
+		opacity: 1;
+	}
+	12% {
+		opacity: 0.5;
+	}
+	80% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+
+/* Mountain hut: the roof's snow slides down the pitch, faster and faster, drops off the eave, and knocks the skis */
+.scene-acting .tap-act-slide {
+	animation: act-slide 2.8s linear;
+}
+.scene-acting .tap-act-knock {
+	animation: act-knock 2.8s var(--ease-out-quad);
+}
+@keyframes act-slide {
+	0% {
+		animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+	}
+	30% {
+		transform: translate(24px, 15.6px);
+		animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+	}
+	42% {
+		opacity: 1;
+		transform: translate(40px, 44px) rotate(30deg);
+	}
+	44%,
+	75% {
+		opacity: 0;
+		transform: translate(40px, 44px) rotate(30deg);
+	}
+	76% {
+		opacity: 0;
+		transform: none;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+@keyframes act-knock {
+	40% {
+		transform: none;
+	}
+	46% {
+		transform: rotate(-6deg);
+	}
+	54% {
+		transform: rotate(3deg);
+	}
+	62% {
+		transform: rotate(-1.5deg);
+	}
+	70% {
+		transform: none;
+	}
+}
+
+/* Glass dome under the lights: a shooting star crosses, and the two lean back to follow it */
+.tap-act-shoot {
+	opacity: 0;
+}
+.scene-acting .tap-act-shoot {
+	animation: act-shoot 1.4s cubic-bezier(0.3, 0, 0.7, 1) 200ms;
+}
+.scene-acting .tap-act-look {
+	animation: act-look 2.6s var(--ease-in-out-sine) 300ms;
+}
+@keyframes act-shoot {
+	from {
+		opacity: 0;
+		transform: translate(60px, -24px);
+	}
+	20%,
+	70% {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+		transform: translate(-50px, 20px);
+	}
+}
+@keyframes act-look {
+	25%,
+	70% {
+		transform: rotate(-6deg);
+	}
+}
+
+/* Ferry: a swell runs under it, bow up, then down, and it settles */
+.scene-acting .tap-act-swell {
+	animation: act-swell 2.8s var(--ease-in-out-sine);
+}
+@keyframes act-swell {
+	25% {
+		transform: translateY(-3px) rotate(-2deg);
+	}
+	55% {
+		transform: translateY(1px) rotate(1.5deg);
+	}
+	80% {
+		transform: translateY(-1px) rotate(-0.5deg);
+	}
+}
+
+/* Sailboat: a gust fills the sail, it heels over and surges on, then rights itself */
+.scene-acting .tap-act-heel {
+	animation: act-heel 2.6s var(--ease-out-quad);
+}
+@keyframes act-heel {
+	20%,
+	40% {
+		transform: translateX(6px) rotate(9deg);
+	}
+	70% {
+		transform: translateX(4px) rotate(-2deg);
+	}
+}
+
+/* Rope team on the glacier: the lip gives way in front, they lean back on the rope, feet planted */
+.scene-acting .tap-act-taut {
+	animation: act-taut 2s var(--ease-out-quad) 400ms;
+}
+@keyframes act-taut {
+	25%,
+	55% {
+		transform: skewX(-12deg);
+	}
+}
+
+/* ...and the crevasse's lip crumbles in under them */
+.scene-acting .tap-act-crumble {
+	animation: act-crumble 1.4s cubic-bezier(0.55, 0, 1, 0.45) 500ms;
+}
+@keyframes act-crumble {
+	to {
+		opacity: 0;
+		transform: translate(1px, 8px) rotate(25deg);
+	}
+}
+
+/* Midsummer: the ring hops in to the pole, hand in hand, and back out */
+.scene-acting .tap-act-ring,
+.scene-acting .tap-act-ring-left {
+	animation: act-ring 2.6s linear;
+}
+.tap-act-ring-left {
+	--dir: -1;
+}
+@keyframes act-ring {
+	0%,
+	20%,
+	40%,
+	65%,
+	85% {
+		animation-timing-function: var(--ease-out-quad);
+	}
+	10%,
+	30%,
+	55%,
+	75%,
+	95% {
+		animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+	}
+	10% {
+		transform: translate(calc(var(--dir, 1) * 6px), -6px);
+	}
+	20% {
+		transform: translateX(calc(var(--dir, 1) * 12px));
+	}
+	30% {
+		transform: translate(calc(var(--dir, 1) * 16px), -6px);
+	}
+	40%,
+	65% {
+		transform: translateX(calc(var(--dir, 1) * 18px));
+	}
+	55% {
+		transform: translate(calc(var(--dir, 1) * 18px), -6px);
+	}
+	75% {
+		transform: translate(calc(var(--dir, 1) * 12px), -6px);
+	}
+	85% {
+		transform: translateX(calc(var(--dir, 1) * 6px));
+	}
+	95% {
+		transform: translate(calc(var(--dir, 1) * 2px), -4px);
+	}
+}
+
+/* Fika: the pot tips forward on its base, the coffee runs into the cup, and it's set back */
+.scene-acting .tap-act-pour {
+	animation: act-pour 2.4s var(--ease-in-out-sine);
+}
+.tap-act-stream {
+	opacity: 0;
+}
+.scene-acting .tap-act-stream {
+	transform-origin: center top;
+	animation: act-stream 2.4s linear;
+}
+@keyframes act-pour {
+	25%,
+	65% {
+		transform: rotate(18deg);
+	}
+}
+@keyframes act-stream {
+	24% {
+		opacity: 0;
+		transform: scaleY(0);
+	}
+	30%,
+	62% {
+		opacity: 1;
+		transform: none;
+	}
+	68% {
+		opacity: 0;
+	}
+}
+
+/* Rowing for two: two long strokes, the blades sweeping through the water from the oarlocks */
+.scene-acting .tap-act-row,
+.scene-acting .tap-act-row-right {
+	animation: act-row 2.6s var(--ease-in-out-sine);
+}
+.tap-act-row-right {
+	--dir: -1;
+}
+@keyframes act-row {
+	25%,
+	75% {
+		transform: rotate(calc(var(--dir, 1) * -14deg));
+	}
+	50% {
+		transform: rotate(calc(var(--dir, 1) * 6deg));
+	}
+}
+
+/* On the jetty's edge: feet swinging over the water, from the knee */
+.scene-acting .tap-act-dangle {
+	transform-origin: center top;
+	animation: act-dangle 2.2s var(--ease-in-out-sine);
+}
+@keyframes act-dangle {
+	20%,
+	60% {
+		transform: skewX(14deg);
+	}
+	40%,
+	80% {
+		transform: skewX(-10deg);
+	}
+}
+
+/* The bench under the lights: a head on the other's shoulder */
+.scene-acting .tap-act-nestle {
+	animation: act-nestle 2.6s var(--ease-in-out-sine);
+}
+@keyframes act-nestle {
+	30%,
+	75% {
+		transform: rotate(5deg);
+	}
+}
