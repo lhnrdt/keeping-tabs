@@ -4,7 +4,13 @@
 const KEY = 'kt-moment';
 
 export type MomentKind = 'added' | 'paid' | 'created';
-export type Moment = { kind: MomentKind; /** The new row, where there is one */ id?: string };
+export type Moment = {
+	kind: MomentKind;
+	/** The new row, where there is one */
+	id?: string;
+	/** The form turned into the row on the way (morph.ts): it doesn't come in again */
+	morphed?: boolean;
+};
 
 /** Just done: for the page that comes next */
 export function cueMoment(moment: Moment) {

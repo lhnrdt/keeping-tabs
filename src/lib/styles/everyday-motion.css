@@ -1,8 +1,51 @@
 /*
- * Everyday moments (#291): once the page is back, the list opens up for the new row, which comes
- * in from a soft blur and glows in the accent as it settles. None of it for anyone who asks for
- * less motion.
+ * Everyday moments (#291): the screen a new expense was filled in on shrinks onto its row in the
+ * list and becomes it (morph.ts), the list there underneath; without that (another way in, or a
+ * browser without view transitions) the list opens up for the row, which comes in from a soft
+ * blur. Then it glows in the accent as it settles. None of it for anyone who asks for less motion.
  */
+:root[data-transition='morph']::view-transition-old(root),
+:root[data-transition='morph']::view-transition-new(root) {
+	animation: none;
+}
+::view-transition-group(new-entry) {
+	animation-duration: 520ms;
+	animation-timing-function: var(--ease-calm);
+	background: var(--color-surface);
+	border-radius: 1rem;
+	overflow: clip;
+}
+:root.dark::view-transition-group(new-entry) {
+	background: var(--color-surface-night);
+}
+::view-transition-old(new-entry),
+::view-transition-new(new-entry) {
+	height: 100%;
+	object-fit: cover;
+	object-position: top;
+	animation-duration: 520ms;
+	animation-timing-function: var(--ease-calm);
+}
+/* The screen's content goes as it gets small, the row's comes as it lands */
+::view-transition-old(new-entry) {
+	animation-name: new-entry-out;
+}
+::view-transition-new(new-entry) {
+	animation-name: new-entry-in;
+}
+@keyframes new-entry-out {
+	55%,
+	100% {
+		opacity: 0;
+	}
+}
+@keyframes new-entry-in {
+	0%,
+	45% {
+		opacity: 0;
+	}
+}
+
 .just-added {
 	position: relative;
 	/* Its height can grow from nothing to what it needs */
@@ -27,6 +70,13 @@
 	}
 	.just-added::after {
 		animation: just-added-glow 1800ms var(--ease-calm) 400ms both;
+	}
+	/* Already there, from the screen turning into it */
+	.just-arrived {
+		animation: none;
+	}
+	.just-arrived::after {
+		animation-delay: 450ms;
 	}
 }
 @keyframes just-added-open {

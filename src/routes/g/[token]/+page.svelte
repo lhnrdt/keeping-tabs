@@ -41,10 +41,13 @@
 	// entry glows (#291)
 	let play = $state(0);
 	let fresh = $state<string | undefined>();
+	/** It came as the form turning into it: no coming in again, only the glow */
+	let morphed = $state(false);
 	onMount(() => {
 		const moment = takeMoment();
 		if (!moment) return;
 		fresh = moment.id;
+		morphed = Boolean(moment.morphed);
 		const later = setTimeout(() => play++, MOMENT_DELAY_MS);
 		return () => clearTimeout(later);
 	});
@@ -99,6 +102,7 @@
 						query={data.query}
 						searchHere={Boolean(data.group.keyId || data.group.transitionKey)}
 						{fresh}
+						{morphed}
 					/>
 				{/key}
 				<FloatingLink
