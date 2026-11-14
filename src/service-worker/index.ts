@@ -3,6 +3,7 @@
 import { self } from '$app/service-worker';
 import { APP_CACHE, fetchForCache, PAGES_CACHE, precached } from './caches';
 import './push';
+import { warm } from './warm';
 import { fromCache, networkFirst, strategyFor } from './respond';
 
 self.addEventListener('install', (event) => {
@@ -26,6 +27,13 @@ self.addEventListener('activate', (event) => {
 			)
 			.then(() => self.clients.claim())
 	);
+});
+
+// The app says which screens to have ready for offline (#347)
+self.addEventListener('message', (event) => {
+	if (event.data?.type === 'warm' && Array.isArray(event.data.urls)) {
+		event.waitUntil(warm(event.data.urls));
+	}
 });
 
 self.addEventListener('fetch', (event) => {

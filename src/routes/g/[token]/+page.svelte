@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { keepReady } from '#lib/offline/ready.ts';
 	import { takeMoment } from '#lib/motion/moments.ts';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
@@ -51,6 +52,11 @@
 		const later = setTimeout(() => play++, MOMENT_DELAY_MS);
 		return () => clearTimeout(later);
 	});
+
+	// Without a connection later, an expense can still be added here, and the start screen opens
+	onMount(() =>
+		keepReady([resolve('/g/[token]/expenses/new', { token: data.group.shareToken }), resolve('/')])
+	);
 
 	// Fetch the insights' charts while idle, so the tab opens without waiting
 	onMount(() => warmUp(loadGroupInsights));

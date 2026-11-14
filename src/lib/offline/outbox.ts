@@ -13,6 +13,8 @@ export type Pending = {
 	/** What the list shows while it waits */
 	title: string;
 	amount: string;
+	/** ...in this currency, as typed (blank: the group's) */
+	currency?: string;
 	date: string;
 	addedAt: number;
 	/** The server said no (e.g. someone left the group): shown, to remove by hand */

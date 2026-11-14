@@ -27,8 +27,10 @@ export async function networkFirst(request: Request) {
 	} catch (error) {
 		// The same page with other parameters (SvelteKit adds some to its data requests) beats
 		// no page: e.g. back to a group after keeping an expense offline (#55)
+		// Kept ahead of time too (warm.ts), when its request's headers were others
 		const cached =
-			(await pages.match(request)) ?? (await pages.match(request, { ignoreSearch: true }));
+			(await pages.match(request, { ignoreVary: true })) ??
+			(await pages.match(request, { ignoreSearch: true, ignoreVary: true }));
 		if (cached) return cached;
 		if (request.mode !== 'navigate') throw error;
 		return (await (await caches.open(APP_CACHE)).match(OFFLINE_PAGE)) ?? Response.error();

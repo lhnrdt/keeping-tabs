@@ -39,7 +39,7 @@ test('groups seen online can be viewed offline', async ({ page, context }) => {
 	await context.setOffline(true);
 	await page.reload();
 	await expect(page.getByRole('heading', { name: 'Cabin' })).toBeVisible();
-	await expect(page.getByRole('status').filter({ hasText: "You're offline" })).toBeVisible();
+	await expect(page.getByRole('status').filter({ hasText: /You.re offline/ })).toBeVisible();
 
 	// A page never opened on this device shows the offline page instead
 	await page.goto('/g/AAAAAAAAAAAAAAAAAAAAAA');

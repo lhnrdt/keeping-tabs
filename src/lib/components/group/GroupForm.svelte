@@ -71,6 +71,7 @@
 					fields,
 					title: field('title'),
 					amount: field('amount'),
+					currency: field('currency'),
 					date: field('date'),
 					addedAt: Date.now()
 				});
