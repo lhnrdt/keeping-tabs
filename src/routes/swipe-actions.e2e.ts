@@ -19,12 +19,16 @@ const swipeOpen = (row: Locator, action: string) =>
 		.evaluate((track) => track.scrollTo({ left: track.scrollWidth }))
 		.then(() => expect(row.getByTitle(action)).toBeInViewport({ timeout: 1000 }));
 
-/** Swiped open and the action tapped, again if the row was redrawn in between */
-const swipeAndTap = (row: Locator, action: string) =>
+/**
+ * Swiped open and the action tapped, again if the row was redrawn in between, until it's done:
+ * a tap that deletes the row takes it away mid-tap, which isn't a reason to tap again
+ */
+const swipeAndTap = (row: Locator, action: string, done: () => Promise<boolean>) =>
 	expect(async () => {
+		if (await done()) return;
 		await swipeOpen(row, action);
-		// Tapped as soon as it's there: on slow machines the row may still be redrawn meanwhile
 		await row.getByTitle(action).dispatchEvent('click', undefined, { timeout: 2000 });
+		expect(await done()).toBe(true);
 	}).toPass({ timeout: 20_000 });
 
 test('swipe an entry for its quick actions (#323)', async ({ page }) => {
@@ -45,9 +49,11 @@ test('swipe an entry for its quick actions (#323)', async ({ page }) => {
 	await expect(pizza).toBeVisible();
 
 	// The same actions as pressing and holding: delete, right there
-	await swipeAndTap(pizza, 'Delete expense');
+	await swipeAndTap(pizza, 'Delete expense', async () => (await pizza.count()) === 0);
 	await expect(pizza).toHaveCount(0);
 
-	await swipeAndTap(bread, 'Edit expense');
+	await swipeAndTap(bread, 'Edit expense', async () =>
+		/\/expenses\/[^/]+$/.test(new URL(page.url()).pathname)
+	);
 	await expect(page.getByLabel('What was it for?')).toHaveValue('Bread');
 });
