@@ -7,6 +7,9 @@ import { scale, slide } from 'svelte/transition';
 
 const duration = (ms: number) => (prefersReducedMotion.current ? 0 : ms);
 
+/** A transition's length, or none for people who prefer reduced motion */
+export const calmMs = duration;
+
 /** A row or block that opens and closes the space it takes */
 export const calmSlide = (node: Element) =>
 	slide(node, { duration: duration(200), easing: quintOut });

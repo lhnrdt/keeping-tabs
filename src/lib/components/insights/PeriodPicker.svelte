@@ -5,6 +5,8 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { onMount } from 'svelte';
+	import { fly } from 'svelte/transition';
+	import { calmMs } from '#lib/motion/calm.ts';
 	import Icon from '#lib/components/Icon.svelte';
 	import { groupTabUrl } from '#lib/group/tabs.ts';
 	import { m } from '#lib/paraglide/messages.js';
@@ -31,6 +33,16 @@
 	};
 
 	let { period, span, today, token }: Props = $props();
+
+	// The marker slides to the kind tapped right away, not once the new period has loaded
+	let tapped = $state<PeriodKind | null>(null);
+	$effect(() => {
+		void period.kind;
+		tapped = null;
+	});
+	const marked = $derived(Math.max(0, PERIOD_KINDS.indexOf(tapped ?? period.kind)));
+	// Stepping back or forth: the new period comes in from that side
+	let direction = $state(0);
 
 	// Invisible over the label, so a tap lands on the native control
 	const native = 'absolute inset-0 h-full w-full cursor-pointer opacity-0';
@@ -88,15 +100,25 @@
 
 <!-- eslint-disable svelte/no-navigation-without-resolve -- resolve() plus ?tab= and the period -->
 <nav class="mx-4 pt-4" aria-label={m.period_label()}>
-	<div class="grid grid-cols-4 gap-1 rounded-full bg-surface-muted p-1 dark:bg-surface-muted-night">
-		{#each PERIOD_KINDS as kind (kind)}
+	<div
+		class="relative grid grid-cols-4 rounded-full bg-surface-muted p-1 dark:bg-surface-muted-night"
+	>
+		<!-- The marker slides to what's chosen -->
+		<span
+			class="absolute inset-y-1 start-1 w-[calc((100%-0.5rem)/4)] rounded-full bg-surface shadow-sm transition-transform duration-300 ease-[var(--ease-calm)] motion-reduce:transition-none dark:bg-surface-night"
+			style:transform={`translateX(${marked * 100}%)`}
+			aria-hidden="true"
+		></span>
+		{#each PERIOD_KINDS as kind, i (kind)}
 			<a
 				href={href(switchKind(period, kind, today, span?.to ?? null))}
 				data-sveltekit-noscroll
 				data-sveltekit-replacestate
 				aria-current={period.kind === kind ? 'true' : undefined}
-				class="rounded-full py-1.5 text-center text-sm font-medium {period.kind === kind
-					? 'bg-surface shadow-sm dark:bg-surface-night'
+				onclick={() => (tapped = kind)}
+				class="relative rounded-full py-1.5 text-center text-sm font-medium transition-colors duration-300 {marked ===
+				i
+					? ''
 					: 'text-muted'}">{kinds[kind]()}</a
 			>
 		{/each}
@@ -113,6 +135,7 @@
 					role={enabled ? undefined : 'link'}
 					aria-disabled={!enabled}
 					aria-label={by < 0 ? m.period_previous() : m.period_next()}
+					onclick={() => (direction = by)}
 					class="grid h-10 w-10 place-items-center rounded-full bg-surface dark:bg-surface-night {by >
 					0
 						? 'order-last'
@@ -123,7 +146,15 @@
 			{/each}
 			<!-- Tapping the label opens the system's own picker for a day, month or year -->
 			<label class="relative min-w-0 flex-1 text-center font-medium">
-				<span aria-live="polite">{label}</span>
+				<span class="grid overflow-hidden" aria-live="polite">
+					{#key label}
+						<span
+							class="col-start-1 row-start-1"
+							in:fly={{ x: direction * 24, duration: calmMs(250), opacity: 0 }}
+							out:fly={{ x: direction * -24, duration: calmMs(200), opacity: 0 }}>{label}</span
+						>
+					{/key}
+				</span>
 				<span class="sr-only">{m.period_choose()}</span>
 				{#if period.kind === 'day'}
 					<input
@@ -132,7 +163,10 @@
 						value={period.at}
 						min={span?.from}
 						max={span?.to}
-						onchange={(event) => choose(event.currentTarget.value)}
+						onchange={(event) => {
+							direction = 0;
+							choose(event.currentTarget.value);
+						}}
 					/>
 				{:else if period.kind === 'month' && monthInput}
 					<input
