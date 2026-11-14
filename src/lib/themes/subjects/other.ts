@@ -37,7 +37,7 @@ export const OTHER: Record<ThemeId, Scene> = {
 			{ d: pine(396, 186, 84) + pine(236, 186, 58), strength: 0.5, motion: 'sway' },
 			{ d: 'M300 200L316 186H326L304 200ZM336 200L330 186H340L366 200Z', strength: 1, cut: true },
 			{ d: rect(324, 98, 6, 88), strength: 1 },
-			{ d: 'M330 104h36l9 8-9 8h-36Z', strength: 1, tap: 'glint' },
+			{ d: 'M330 104h36l9 8-9 8h-36Z', strength: 1 },
 			{ d: 'M324 126h-30l-9 8 9 8h30Z', strength: 0.85 },
 			{ d: rect(336, 110, 22, 3) + rect(298, 132, 20, 3), strength: 1, cut: true },
 			{ d: figure(262, 186, 56, { pack: 'left' }), strength: 1, motion: 'nod' },
@@ -146,7 +146,7 @@ export const OTHER: Record<ThemeId, Scene> = {
 			{ d: 'M270 178l1-26l6-8l8 2l3 6l1 26Z', strength: 0.48 },
 			{ d: 'M298 172l2-34l7-8l9 3l3 8l1 31Z', strength: 0.56 },
 			{ d: 'M332 174l3-76l7-4l9 2l2 78ZM372 174l1-80l9-2l8 4l2 78Z', strength: 0.66 },
-			{ d: 'M326 98l4-9l64-3l5 8l-3 9l-66 3Z', strength: 0.75, tap: 'glint' },
+			{ d: 'M326 98l4-9l64-3l5 8l-3 9l-66 3Z', strength: 0.75 },
 			{ d: figure(362, 170, 34, { hat: 'beanie' }), strength: 1, motion: 'nod', tap: 'away' },
 			{ d: 'M-1000 200V194H300V200Z', strength: 0.7 },
 			{ d: 'M150 200Q250 160 330 166T420 172V200Z', strength: 0.7 },
@@ -562,7 +562,8 @@ export const OTHER: Record<ThemeId, Scene> = {
 					leaf(358, 179, 7),
 				strength: 1,
 				cut: true,
-				tap: 'burst'
+				tap: 'burst',
+				fx: 'none'
 			},
 			{
 				d:
