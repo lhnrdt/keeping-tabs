@@ -3,13 +3,15 @@ import type { Cookies } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import { cookieName, cookieMaxAge } from '#lib/paraglide/runtime.js';
 import {
-	ACCENT_COOKIE,
+	COLORS_COOKIE,
 	DISPLAY_CURRENCY_COOKIE,
+	SCENERY_COOKIE,
 	LOCALE_COOKIE,
 	THEME_COOKIE,
 	UNITS_COOKIE,
-	type Accent,
+	type Colors,
 	type Locale,
+	type Scenery,
 	type Theme,
 	type Units
 } from '#lib/settings.ts';
@@ -26,7 +28,8 @@ export async function saveSettings(
 		name?: string;
 		locale?: Locale;
 		theme?: Theme;
-		accent?: Accent;
+		accent?: Scenery;
+		colors?: Colors;
 		units?: Units;
 		displayCurrency?: string | null;
 		avatar?: string;
@@ -48,9 +51,13 @@ export function setLocaleCookie(cookies: Cookies, locale: Locale) {
 export const setThemeCookie = (cookies: Cookies, theme: Theme) =>
 	cookies.set(THEME_COOKIE, theme, { ...COOKIE_OPTIONS, httpOnly: false });
 
-/** Makes this browser use a color theme; the page script reads it before first paint */
-export const setAccentCookie = (cookies: Cookies, accent: Accent) =>
-	cookies.set(ACCENT_COOKIE, accent, { ...COOKIE_OPTIONS, httpOnly: false });
+/** Makes this browser show a scenery */
+export const setSceneryCookie = (cookies: Cookies, scenery: Scenery) =>
+	cookies.set(SCENERY_COOKIE, scenery, { ...COOKIE_OPTIONS, httpOnly: true });
+
+/** Makes this browser use a theme's colours, or the scenery's own */
+export const setColorsCookie = (cookies: Cookies, colors: Colors) =>
+	cookies.set(COLORS_COOKIE, colors, { ...COOKIE_OPTIONS, httpOnly: true });
 
 export const setUnitsCookie = (cookies: Cookies, units: Units) =>
 	cookies.set(UNITS_COOKIE, units, { ...COOKIE_OPTIONS, httpOnly: true });
@@ -83,7 +90,8 @@ export const checkSettingsAgain = (cookies: Cookies) =>
 export function applySettings(cookies: Cookies, person: Person | undefined): Locale | null {
 	if (!person) return null;
 	if (person.theme && !cookies.get(THEME_COOKIE)) setThemeCookie(cookies, person.theme);
-	if (person.accent && !cookies.get(ACCENT_COOKIE)) setAccentCookie(cookies, person.accent);
+	if (person.accent && !cookies.get(SCENERY_COOKIE)) setSceneryCookie(cookies, person.accent);
+	if (person.colors && !cookies.get(COLORS_COOKIE)) setColorsCookie(cookies, person.colors);
 	if (person.units && !cookies.get(UNITS_COOKIE)) setUnitsCookie(cookies, person.units);
 	if (person.displayCurrency && !cookies.get(DISPLAY_CURRENCY_COOKIE)) {
 		setDisplayCurrencyCookie(cookies, person.displayCurrency);

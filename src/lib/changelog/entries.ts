@@ -13,6 +13,17 @@ export type ChangelogEntry = {
 /** Newest first */
 export const CHANGELOG: ChangelogEntry[] = [
 	{
+		version: '0.20.0',
+		date: '',
+		items: [
+			{
+				icon: 'palette',
+				en: 'Choose the scenery and the colours separately in Settings: a forest in autumn colours, the coast in birch black and white. Or let the scenery change every day.',
+				de: 'Wähl Landschaft und Farben in den Einstellungen getrennt: einen Wald in Herbstfarben, die Küste in Birken-Schwarzweiß. Oder lass die Landschaft jeden Tag wechseln.'
+			}
+		]
+	},
+	{
 		version: '0.19.0',
 		date: '2026-11-07',
 		items: [

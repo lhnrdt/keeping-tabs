@@ -1,14 +1,16 @@
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
-import type { Accent, Theme } from '#lib/settings.ts';
+import type { Theme } from '#lib/settings.ts';
+import type { Look } from '#lib/themes/look.ts';
+import type { ThemeId } from '#lib/themes/palettes.ts';
 import type { Db } from '#lib/server/db/index.ts';
 
 declare global {
 	interface Window {
 		/** Switches the theme without reloading (defined by the page script in app.html) */
 		applyTheme?: (theme: Theme) => void;
-		/** Switches the color theme without reloading (app.html) */
-		applyAccent?: (accent: Accent) => void;
+		/** Switches the colours without reloading (app.html) */
+		applyAccent?: (accent: ThemeId) => void;
 	}
 
 	namespace App {
@@ -19,6 +21,8 @@ declare global {
 			deviceKey: string;
 			/** An encrypted group's history: who this request's changes were by, sealed (#110) */
 			sealActivity?: { groupId: string; memberId: string; sealed: string };
+			/** The scenery and colours this browser shows today (#332) */
+			look: Look;
 		}
 		// interface PageData {}
 		// interface PageState {}

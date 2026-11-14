@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="%paraglide.lang%" dir="%paraglide.dir%">
+<html lang="%paraglide.lang%" dir="%paraglide.dir%" data-accent="%kt.colors%">
 	<head>
 		<meta charset="utf-8" />
 		<meta
@@ -46,13 +46,17 @@
 					chosen = theme === 'system' ? undefined : theme;
 					apply();
 				};
-				// The color theme (#60), from its cookie; the default (forest) needs no attribute
+				// The colours (#60, #332) come with the page; settings switch them right away
 				window.applyAccent = (accent) => {
-					if (accent && accent !== 'forest') document.documentElement.dataset.accent = accent;
-					else delete document.documentElement.dataset.accent;
+					document.documentElement.dataset.accent = accent;
 					apply();
 				};
-				window.applyAccent(/(?:^|; )kt-accent=([a-z]+)/.exec(document.cookie)?.[1]);
+				// Which day it is here, for a scenery that changes every day (#332)
+				const zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+				if (zone && !document.cookie.includes('kt-tz=' + encodeURIComponent(zone))) {
+					document.cookie =
+						'kt-tz=' + encodeURIComponent(zone) + '; path=/; max-age=31536000; samesite=lax';
+				}
 				addEventListener('load', apply);
 			})();
 		</script>

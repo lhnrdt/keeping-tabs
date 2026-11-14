@@ -6,35 +6,29 @@ import { forgetDeviceKey } from '#lib/server/device.ts';
 import { eraseIdentity } from '#lib/server/erase-identity.ts';
 import { getLocale } from '#lib/paraglide/runtime.js';
 import { safePath } from '#lib/safe-redirect.ts';
-import {
-	ACCENT_COOKIE,
-	DEFAULT_ACCENT,
-	isAccent,
-	isLocale,
-	isTheme,
-	isUnits,
-	THEME_COOKIE
-} from '#lib/settings.ts';
+import { isColors, isLocale, isScenery, isTheme, isUnits, THEME_COOKIE } from '#lib/settings.ts';
 import { listDevices, logOutDevice } from '#lib/server/devices.ts';
 import { countPasskeys } from '#lib/server/passkeys.ts';
 import { findPerson, hasRecoveryKey } from '#lib/server/people.ts';
 import {
 	checkSettingsAgain,
 	saveSettings,
-	setAccentCookie,
 	setDisplayCurrencyCookie,
 	setLocaleCookie,
+	setColorsCookie,
+	setSceneryCookie,
 	setThemeCookie,
 	setUnitsCookie
 } from '#lib/server/settings.ts';
 import { mutedKinds, pushPublicKey } from '#lib/server/push.ts';
+import { chosenLook } from '#lib/server/look.ts';
 import { RATE_CURRENCIES } from '#lib/expense/exchange.ts';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, cookies }) => {
+	const chosen = chosenLook(cookies);
 	const person = await findPerson(locals.db, locals.deviceKey);
 	const theme = cookies.get(THEME_COOKIE);
-	const accent = cookies.get(ACCENT_COOKIE);
 	return {
 		personId: person?.id ?? null,
 		name: person?.name ?? '',
@@ -49,7 +43,9 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
 			: { deviceCount: 0, backedUp: false }),
 		locale: getLocale(),
 		theme: isTheme(theme) ? theme : (person?.theme ?? 'system'),
-		accent: isAccent(accent) ? accent : (person?.accent ?? DEFAULT_ACCENT),
+		// The scenery and colours (#332), apart
+		scenery: chosen.scenery,
+		colors: chosen.colors,
 		avatar: person?.avatar ?? null,
 		// Notifications (#56), when this environment has its keys
 		pushPublicKey: pushPublicKey(),
@@ -60,15 +56,25 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
 // Each setting saves on its own as soon as it changes (S-3). Language and theme are kept
 // with the person when there is one, and in this browser's cookies either way.
 export const actions: Actions = {
-	accent: async ({ locals, request, cookies }) => {
-		const accent = (await request.formData()).get('accent');
-		if (!isAccent(accent)) {
-			return fail(400, { setting: 'accent', error: 'settings_invalid' as ErrorCode });
+	scenery: async ({ locals, request, cookies }) => {
+		const scenery = (await request.formData()).get('scenery');
+		if (!isScenery(scenery)) {
+			return fail(400, { setting: 'scenery', error: 'settings_invalid' as ErrorCode });
 		}
 		const person = await findPerson(locals.db, locals.deviceKey);
-		if (person) await saveSettings(locals.db, person.id, { accent });
-		setAccentCookie(cookies, accent);
-		return { setting: 'accent' };
+		if (person) await saveSettings(locals.db, person.id, { accent: scenery });
+		setSceneryCookie(cookies, scenery);
+		return { setting: 'scenery' };
+	},
+	colors: async ({ locals, request, cookies }) => {
+		const colors = (await request.formData()).get('colors');
+		if (!isColors(colors)) {
+			return fail(400, { setting: 'colors', error: 'settings_invalid' as ErrorCode });
+		}
+		const person = await findPerson(locals.db, locals.deviceKey);
+		if (person) await saveSettings(locals.db, person.id, { colors });
+		setColorsCookie(cookies, colors);
+		return { setting: 'colors' };
 	},
 
 	theme: async ({ locals, request, cookies }) => {
