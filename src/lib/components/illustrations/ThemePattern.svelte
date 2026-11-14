@@ -200,7 +200,7 @@
 	{#snippet parts(front: boolean)}
 		{#each layers as layer, l (l)}
 			{@const { scene, moment } = layer}
-			<g class={moment && celebrate ? 'scene-celebrate' : undefined}>
+			<g class={moment && celebrate && !front ? 'scene-celebrate' : undefined}>
 				{#each scene.shapes.filter((shape) => drives(shape.tap) === front) as shape, i (i)}
 					<g>
 						<g
