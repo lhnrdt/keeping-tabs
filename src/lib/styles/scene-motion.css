@@ -76,7 +76,8 @@ svg.scene-layer {
 	animation: scene-turn 24s linear infinite;
 }
 .scene-orbit {
-	transform: rotate(calc(var(--orbit-turn) + var(--orbit-tap))) translate(var(--hang-x), var(--hang-y))
+	transform: rotate(calc(var(--orbit-turn) + var(--orbit-tap)))
+		translate(var(--hang-x), var(--hang-y))
 		rotate(calc(-1 * (var(--orbit-turn) + var(--orbit-tap))))
 		translate(calc(-1 * var(--hang-x)), calc(-1 * var(--hang-y)));
 	animation: scene-orbit 24s linear infinite;
