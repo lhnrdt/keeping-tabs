@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { takeMoment } from '#lib/motion/moments.ts';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { BlockTitle, List, ListItem } from 'konsta/svelte';
@@ -30,9 +31,23 @@
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();
+	/** Once the page has come in, so the action is seen */
+	const MOMENT_DELAY_MS = 350;
 
 	const tab = $derived(currentTab(page.url));
 	const errorFor = (action: string) => (form?.action === action ? form.error : undefined);
+
+	// Just added, paid or created: the scene plays its action once the page is in, and the new
+	// entry glows (#291)
+	let play = $state(0);
+	let fresh = $state<string | undefined>();
+	onMount(() => {
+		const moment = takeMoment();
+		if (!moment) return;
+		fresh = moment.id;
+		const later = setTimeout(() => play++, MOMENT_DELAY_MS);
+		return () => clearTimeout(later);
+	});
 
 	// Fetch the insights' charts while idle, so the tab opens without waiting
 	onMount(() => warmUp(loadGroupInsights));
@@ -61,6 +76,7 @@
 			members={data.members}
 			balances={data.balances}
 			transfers={data.transfers}
+			{play}
 		/>
 	{/snippet}
 
@@ -82,6 +98,7 @@
 						hasMore={data.hasMore}
 						query={data.query}
 						searchHere={Boolean(data.group.keyId || data.group.transitionKey)}
+						{fresh}
 					/>
 				{/key}
 				<FloatingLink

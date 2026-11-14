@@ -1,0 +1,42 @@
+/*
+ * Everyday moments (#291): what was just added comes in with a soft glow of the accent that fades
+ * as it settles, a little from below. None of it for anyone who asks for less motion.
+ */
+.just-added {
+	position: relative;
+}
+.just-added::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	pointer-events: none;
+	background: var(--color-accent-soft);
+	opacity: 0;
+}
+:where(.dark) .just-added::after {
+	background: var(--color-accent-soft-night);
+}
+@media (prefers-reduced-motion: no-preference) {
+	.just-added {
+		animation: just-added-rise 600ms var(--ease-calm) both;
+	}
+	.just-added::after {
+		animation: just-added-glow 1800ms var(--ease-calm) both;
+	}
+}
+@keyframes just-added-rise {
+	from {
+		transform: translateY(0.5rem);
+		opacity: 0;
+	}
+}
+@keyframes just-added-glow {
+	0%,
+	25% {
+		opacity: 0.7;
+	}
+	100% {
+		opacity: 0;
+	}
+}

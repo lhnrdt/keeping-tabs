@@ -21,9 +21,11 @@
 		balances: Record<string, number>;
 		/** The group's payments to settle up */
 		transfers: Transfer[];
+		/** Raised when something was just done here: the scene answers it (#291) */
+		play?: number;
 	};
 
-	let { group, members, balances, transfers }: Props = $props();
+	let { group, members, balances, transfers, play = 0 }: Props = $props();
 
 	const identity = useIdentity();
 	const names = $derived(namesById(members));
@@ -52,7 +54,7 @@
 		group.tint
 	)} relative mx-4 mt-2 overflow-hidden rounded-3xl bg-(--tint-bg) px-5 pt-5 pb-6 text-(--tint-fg)"
 >
-	<ThemePattern kind={group.kind} settled={myBalance === 0} {celebrate} />
+	<ThemePattern kind={group.kind} settled={myBalance === 0} {celebrate} {play} />
 	<div class="relative">
 		<Icon name={kindIcons[group.kind]} size={28} />
 		<h1 class="font-display text-4xl leading-tight font-semibold">{group.name}</h1>
