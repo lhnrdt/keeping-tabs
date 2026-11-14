@@ -401,9 +401,16 @@ export const FOOD: Record<ThemeId, Scene> = {
 					'M274 134l15-10 3 4-15 11Z' +
 					rect(244, 115, 26, 5) +
 					disc(257, 112, 3.5),
-				strength: 0.9
+				strength: 0.9,
+				tap: 'act-pour',
+				origin: [274, 170]
 			},
-			{ d: 'M240 136q-12 0-12 12t12 12v-5q-7 0-7-7t7-7Z', strength: 0.9 },
+			{
+				d: 'M240 136q-12 0-12 12t12 12v-5q-7 0-7-7t7-7Z',
+				strength: 0.9,
+				tap: 'act-pour',
+				origin: [274, 170]
+			},
 			{
 				d:
 					rounded(298, 151, 20, 18, 4) +
@@ -422,8 +429,7 @@ export const FOOD: Record<ThemeId, Scene> = {
 					disc(388, 162, 7.5) +
 					disc(367, 150, 7.5) +
 					disc(381, 150, 7.5),
-				strength: 0.85,
-				tap: 'act-settle'
+				strength: 0.85
 			},
 			{
 				d:
@@ -553,11 +559,11 @@ export const FOOD: Record<ThemeId, Scene> = {
 					limb(383.08, 146.23, 384.77, 147.6, 1.1) +
 					limb(384.77, 147.6, 385.62, 149.69, 1.1),
 				strength: 1,
-				cut: true,
-				tap: 'act-settle'
+				cut: true
 			}
 		],
 		lines: [
+			{ d: 'M305 133q2 8 3 18', strength: 0.8, tap: 'act-stream' },
 			{
 				d: steam(292, 118, 22) + steam(308, 146, 18) + steam(336, 146, 18),
 				strength: 0.5,

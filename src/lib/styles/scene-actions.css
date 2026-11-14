@@ -675,3 +675,35 @@
 		transform: translate(calc(var(--dir, 1) * 2px), -4px);
 	}
 }
+
+/* Fika: the pot tips forward on its base, the coffee runs into the cup, and it's set back */
+.scene-acting .tap-act-pour {
+	animation: act-pour 2.4s var(--ease-in-out-sine);
+}
+.tap-act-stream {
+	opacity: 0;
+}
+.scene-acting .tap-act-stream {
+	transform-origin: center top;
+	animation: act-stream 2.4s linear;
+}
+@keyframes act-pour {
+	25%,
+	65% {
+		transform: rotate(18deg);
+	}
+}
+@keyframes act-stream {
+	24% {
+		opacity: 0;
+		transform: scaleY(0);
+	}
+	30%,
+	62% {
+		opacity: 1;
+		transform: none;
+	}
+	68% {
+		opacity: 0;
+	}
+}
