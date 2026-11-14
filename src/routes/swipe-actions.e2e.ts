@@ -12,12 +12,17 @@ async function addExpense(page: Page, title: string, amount: string) {
 /** As a finger would: the row scrolls sideways and snaps open, until its action is there (the
  * list may still be redrawing after the last change, which shuts it again) */
 const swipeOpen = (row: Locator, action: string) =>
+	row
+		.locator('.swipe-track')
+		.evaluate((track) => track.scrollTo({ left: track.scrollWidth }))
+		.then(() => expect(row.getByTitle(action)).toBeInViewport({ timeout: 1000 }));
+
+/** Swiped open and the action tapped, again if the row was redrawn in between */
+const swipeAndTap = (row: Locator, action: string) =>
 	expect(async () => {
-		await row
-			.locator('.swipe-track')
-			.evaluate((track) => track.scrollTo({ left: track.scrollWidth }));
-		await expect(row.getByTitle(action)).toBeInViewport({ timeout: 1000 });
-	}).toPass({ timeout: 10_000 });
+		await swipeOpen(row, action);
+		await row.getByTitle(action).click({ timeout: 2000 });
+	}).toPass({ timeout: 20_000 });
 
 test('swipe an entry for its quick actions (#323)', async ({ page }) => {
 	test.setTimeout(60_000);
@@ -29,17 +34,15 @@ test('swipe an entry for its quick actions (#323)', async ({ page }) => {
 	const bread = page.locator('[data-entry]').filter({ hasText: 'Bread' });
 
 	// Open, a tap on the row shuts it again instead of opening the expense
-	await swipeOpen(bread, 'Edit expense');
+	await expect(() => swipeOpen(bread, 'Edit expense')).toPass({ timeout: 20_000 });
 	await bread.getByRole('link', { name: /Bread/ }).click();
 	await expect(bread.getByTitle('Edit expense')).not.toBeInViewport();
 	await expect(page).toHaveURL(/\/g\/[^/]+$/);
 
 	// The same actions as pressing and holding: delete, right there
-	await swipeOpen(pizza, 'Delete expense');
-	await pizza.getByTitle('Delete expense').click();
+	await swipeAndTap(pizza, 'Delete expense');
 	await expect(pizza).toHaveCount(0);
 
-	await swipeOpen(bread, 'Edit expense');
-	await bread.getByTitle('Edit expense').click();
+	await swipeAndTap(bread, 'Edit expense');
 	await expect(page.getByLabel('What was it for?')).toHaveValue('Bread');
 });
