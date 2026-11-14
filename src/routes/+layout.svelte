@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { adopt } from '#lib/onboarding/seen.ts';
 	import { morphFrom, morphTo } from '#lib/motion/morph.ts';
 	import { followKept } from '#lib/offline/follow-kept.ts';
 	import { applyLook } from '#lib/themes/apply-look.ts';
@@ -40,6 +41,8 @@
 
 	onMount(refreshOnReturn);
 	onMount(followKept);
+	// The onboarding once per person: what their other devices have seen counts here too (#331)
+	$effect(() => adopt(data.onboarding));
 	// No browser menu on a long press or right click, except where text can be typed or copied, and
 	// no pinching to zoom
 	onMount(() => {

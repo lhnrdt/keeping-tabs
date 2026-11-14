@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { acceptNote, enterPassword, keepPlain } from './e2e-helpers';
+import { acceptNote, enterPassword, keepPlain, open, openFold } from './e2e-helpers';
 
 /** As a real browser: the onboarding stays quiet for automated ones */
 const asPerson = (page: Page) =>
@@ -101,4 +101,33 @@ test('a tip comes once the tours are done, when there is an entry (#331)', async
 	await page.reload();
 	await page.locator('.driver-hint').click();
 	await expect(bubble(page)).toContainText('Swipe an entry to the left');
+});
+
+test('once per person: a device linked later doesn’t show it again (#331)', async ({
+	page,
+	browser
+}) => {
+	test.setTimeout(90_000);
+	await firstVisit(page);
+	await bubble(page).getByRole('button', { name: 'Not now' }).click();
+	// Someone, once they have a group
+	await page.goto('/new');
+	await page.getByLabel('Group name').fill('Flat');
+	await page.getByLabel('Your name').fill('Anna');
+	await keepPlain(page);
+	await page.getByRole('button', { name: 'Create group' }).click();
+	await expect(page.getByTestId('identity')).toHaveText('Anna');
+
+	await open(page, '/you/devices');
+	await openFold(page, 'Add another device');
+	await page.getByRole('button', { name: 'Create link' }).click();
+	const link = (await page.getByLabel('One-time link').inputValue()).trim();
+	const laptop = await (await browser.newContext()).newPage();
+	await asPerson(laptop);
+	await laptop.goto(link);
+	await laptop.getByRole('button', { name: 'Use this device' }).click();
+	await expect(laptop).toHaveURL(/\/$/);
+	await laptop.waitForLoadState('networkidle');
+	await laptop.waitForTimeout(1500);
+	await expect(bubble(laptop)).toHaveCount(0);
 });
