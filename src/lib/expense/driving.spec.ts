@@ -65,7 +65,8 @@ describe('drivingOf', () => {
 		expect(driving).toEqual({
 			odometerM: 13_000_000,
 			drivenM: 1_000_000,
-			centsPerKm: 10,
+			// All of it: both fill-ups and what was paid in between
+			centsPerKm: 17,
 			litresPer100Km: 5,
 			centsPerLitre: 167
 		});
@@ -83,6 +84,20 @@ describe('drivingOf', () => {
 		expect(driving?.odometerM).toBe(12_500_000);
 		expect(driving?.drivenM).toBe(500_000);
 		expect(driving?.litresPer100Km).toBe(5);
+	});
+
+	it('counts all of the period’s costs per km, also those paid before the first reading or after the last', () => {
+		const driving = drivingOf(
+			[
+				{ date: '2026-10-02', amountCents: 30_000 }, // insurance, before any reading
+				reading('2026-10-05', 12_000, 6_000, 40),
+				reading('2026-10-25', 13_000, 7_000, 45),
+				{ date: '2026-10-28', amountCents: 7_000 } // a repair, after the last
+			],
+			{ from: '2026-10-01', to: '2026-10-31' }
+		);
+		expect(driving?.drivenM).toBe(1_000_000);
+		expect(driving?.centsPerKm).toBe(50);
 	});
 
 	it('does not go negative on a mistyped reading', () => {
