@@ -6,6 +6,7 @@ import { invalidateAll } from '$app/navigation';
 import { resolve } from '$app/paths';
 import type { ErrorCode } from '#lib/errors.ts';
 import { announceExpense } from '#lib/expense/announce.ts';
+import { announceEvent } from '#lib/push/announce-event.ts';
 import { wantFresh } from './freshness';
 import { refreshReady } from './ready';
 import { drop, markFailed, pendingItems } from './outbox';
@@ -24,7 +25,7 @@ async function send(item: ReturnType<typeof pendingItems>[number]) {
 		// Saved instantly and the page left right after: it still goes out
 		keepalive: true
 	});
-	return deserialize(await response.text());
+	return { result: deserialize(await response.text()), status: response.status };
 }
 
 /** Tries everything waiting; true when something reached the server */
@@ -57,9 +58,9 @@ export async function flushOutbox() {
 async function sendAll() {
 	const reached = new Set<string>();
 	for (const item of pendingItems().filter((each) => !each.failed)) {
-		let result;
+		let result, status;
 		try {
-			result = await send(item);
+			({ result, status } = await send(item));
 		} catch {
 			break; // Still offline: try again later
 		}
@@ -67,10 +68,15 @@ async function sendAll() {
 			drop(item.id);
 			reached.add(item.token);
 			if ((item.kind ?? 'add') === 'add') void announceExpense(item.token, item.id);
+			else if (item.announce) announceEvent(item.announce, item.token);
 		} else if (result.type === 'failure') {
 			const error = (result.data as { error?: ErrorCode } | undefined)?.error;
 			markFailed(item.id, error ?? 'amount_invalid');
-		} else if (result.type === 'error' && result.status === 409) {
+		} else if (result.type === 'error' && status === 404) {
+			// Deleted meanwhile, from another device: the deletion wins (#347)
+			drop(item.id);
+			reached.add(item.token);
+		} else if (result.type === 'error' && status === 409) {
 			// Kept from before its group was encrypted: it can't go as it is, and must not wait forever
 			markFailed(item.id, 'offline_group_encrypted');
 		}
