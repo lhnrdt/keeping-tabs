@@ -43,16 +43,26 @@ export async function choose(scope: Page | Locator, picker: string, option: stri
 	await expect(scope.getByRole('radio', { name: option, exact: true })).toBeChecked();
 }
 
-/** The people sharing an equal split, opened from its one-line summary. */
+/** The people sharing an equal split ("Who is it for?"), one chip each. */
 export async function participants(page: Page) {
-	const summary = page.getByRole('button').filter({ has: page.getByTestId('split-between') });
-	if ((await summary.getAttribute('aria-expanded')) !== 'true') await summary.click();
-	return page.getByRole('group', { name: 'Split equally between' });
+	return page.getByRole('group', { name: 'Who is it for?' });
 }
 
-/** Picks how an expense is split. */
+/** Picks how an expense is split ("How is it split?"). */
 export const splitBy = (page: Page, mode: string) =>
-	page.getByLabel('Split', { exact: true }).selectOption({ label: mode });
+	page.getByRole('group', { name: 'How is it split?' }).getByText(mode, { exact: true }).click();
+
+/** Picks who paid ("Who paid?"). */
+export async function paidBy(page: Page, who: string) {
+	// Folded to "Me" while it's you: the others a tap away
+	const someoneElse = page.getByRole('button', { name: 'Someone else' });
+	if (await someoneElse.isVisible()) await someoneElse.click();
+	await page
+		.getByRole('group', { name: 'Who paid?' })
+		.locator('label')
+		.filter({ has: page.getByRole('radio', { name: who, exact: true }) })
+		.click();
+}
 
 /**
  * Most tests look at what the server has, so their groups stay plain: only possible in tests

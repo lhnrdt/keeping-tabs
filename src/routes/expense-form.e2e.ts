@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { createGroup, participants } from './e2e-helpers';
 
-test('the expense form: a folded split line, an automatic category, quick dates and a note', async ({
+test('the expense form: who paid, how it’s split and who it’s for, an automatic category, quick dates and a note', async ({
 	page
 }) => {
 	const groupUrl = await createGroup(page, 'Cabin', 'Anna', ['Ben', 'Cara']);
@@ -9,10 +9,12 @@ test('the expense form: a folded split line, an automatic category, quick dates 
 	await page.getByLabel('What was it for?').fill('Taxi home');
 	await page.getByLabel('Amount (€)').fill('30');
 
-	// Shared by everyone, in one line; leaving someone out shows in it
-	await expect(page.getByTestId('split-between')).toHaveText('Everyone · €10.00 each');
-	await (await participants(page)).getByText('Cara').click();
-	await expect(page.getByTestId('split-between')).toHaveText('Anna and Ben · €15.00 each');
+	// For everyone at first, each with their share; leaving someone out shares it among the rest
+	const forWhom = await participants(page);
+	await expect(forWhom).toContainText(/Anna\s*€10\.00/);
+	await forWhom.getByText('Cara').click();
+	await expect(forWhom).toContainText(/Anna\s*€15\.00/);
+	await expect(page.getByRole('checkbox', { name: /Cara/ })).not.toBeChecked();
 
 	// The category follows the title until one is chosen, and can go back to that
 	const category = page.getByRole('group', { name: 'Category' });
@@ -36,10 +38,25 @@ test('the expense form: a folded split line, an automatic category, quick dates 
 
 	// Edited: as saved, the note open
 	await page.getByRole('link', { name: /Taxi home/ }).click();
-	await expect(page.getByTestId('split-between')).toHaveText('Anna and Ben · €15.00 each');
+	await expect(await participants(page)).toContainText(/Ben\s*€15\.00/);
+	await expect(page.getByRole('checkbox', { name: /Cara/ })).not.toBeChecked();
 	await expect(page.getByLabel('Note', { exact: true })).toHaveValue('From the station');
 	await expect(page.getByRole('button', { name: 'Yesterday' })).toHaveAttribute(
 		'aria-pressed',
 		'true'
 	);
+});
+
+test('a big group picks who paid from a dropdown instead of a long row of chips', async ({
+	page
+}) => {
+	await createGroup(page, 'Team', 'Anna', ['Ben', 'Cara', 'Dan', 'Eva', 'Finn', 'Gus']);
+	await page.getByRole('link', { name: 'Add expense' }).click();
+	// You paid, folded to one line; someone else: all of them, as a dropdown here
+	await page.getByRole('button', { name: 'Someone else' }).click();
+	const whoPaid = page.getByRole('combobox', { name: 'Who paid?' });
+	await expect(whoPaid).toBeVisible();
+	await expect(whoPaid.locator('option').first()).toHaveText('Me');
+	// How it's split stays as chips
+	await expect(page.getByRole('radio', { name: 'Equally' })).toBeChecked();
 });

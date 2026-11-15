@@ -30,7 +30,7 @@ test('a group remembers a split for its new expenses (#41)', async ({ page }) =>
 	await page.getByRole('button', { name: 'Save' }).click();
 	await expect(details).toContainText('Anna 2 · Ben 1');
 	await open(page, `${groupUrl}/expenses/new`);
-	await expect(page.getByLabel('Split', { exact: true })).toHaveValue('shares');
+	await expect(page.getByRole('radio', { name: 'Parts' })).toBeChecked();
 	await expect(page.getByLabel('Parts for Anna')).toHaveValue('2');
 
 	// And back to equal
@@ -39,7 +39,7 @@ test('a group remembers a split for its new expenses (#41)', async ({ page }) =>
 	await page.getByRole('button', { name: 'Save' }).click();
 	await expect(details).toContainText('Equally');
 	await open(page, `${groupUrl}/expenses/new`);
-	await expect(page.getByLabel('Split', { exact: true })).toHaveValue('equal');
+	await expect(page.getByRole('radio', { name: 'Equally' })).toBeChecked();
 });
 
 test('an encrypted group’s split for new expenses is set the same way (#306)', async ({ page }) => {
