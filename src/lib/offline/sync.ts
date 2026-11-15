@@ -38,7 +38,7 @@ export async function flushOutbox() {
 			if (result.type === 'success' || result.type === 'redirect') {
 				drop(item.id);
 				sent = true;
-				void announceExpense(item.token, item.id);
+				if ((item.kind ?? 'add') === 'add') void announceExpense(item.token, item.id);
 			} else if (result.type === 'failure') {
 				const error = (result.data as { error?: ErrorCode } | undefined)?.error;
 				markFailed(item.id, error ?? 'amount_invalid');

@@ -43,8 +43,8 @@
 	<List strong inset class="!mt-0 !mb-4" role="region" aria-label={m.pending_title()}>
 		{#each items as item (item.id)}
 			<ListItem
-				title={item.title}
-				after={amountOf(item)}
+				title={item.title || (item.kind === 'pay' ? m.pending_payment() : '')}
+				after={item.amount ? amountOf(item) : undefined}
 				data-entry={item.id}
 				style={transitionName('expense', item.id)}
 			>
@@ -76,7 +76,10 @@
 						>
 					{:else}
 						<span class="text-sm text-muted" aria-live="polite"
-							>{online ? m.pending_syncing() : m.pending_waiting()}</span
+							>{#if item.kind === 'edit'}{m.pending_changed()} ·
+							{:else if item.kind === 'delete'}{m.pending_deleted()} ·
+							{:else if item.kind === 'pay'}{m.pending_payment()} ·
+							{/if}{online ? m.pending_syncing() : m.pending_waiting()}</span
 						>
 					{/if}
 				{/snippet}

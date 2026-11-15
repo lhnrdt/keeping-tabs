@@ -1,10 +1,17 @@
-// Expenses added while the connection was gone (#55): kept on this device until they reach
-// the server. Storage can be unavailable; then nothing is kept and the form says so as before.
+// Changes made while the connection was gone (#55, #347): new expenses, edits, deletions and
+// payments, kept on this device until they reach the server, in the order they were made.
+// Storage can be unavailable; then nothing is kept and the form says so as before.
 import type { ErrorCode } from '#lib/errors.ts';
 
+/** What a kept change does: adds an expense (the default), changes or deletes one, records a payment */
+export type PendingKind = 'add' | 'edit' | 'delete' | 'pay';
+
 export type Pending = {
-	/** Also the expense's id on the server, so sending twice can't add it twice */
+	/** A new entry's id on the server too, so sending twice can't add it twice; else kind:entry */
 	id: string;
+	kind?: PendingKind;
+	/** The entry an edit or deletion is about */
+	target?: string;
 	/** The group's link token, to show it in its list */
 	token: string;
 	/** Where the form posts, e.g. /g/…/expenses/new?/save */
@@ -44,9 +51,26 @@ function write(items: Pending[]) {
 export const pendingItems = () => read();
 export const pendingFor = (token: string) => read().filter((item) => item.token === token);
 
-/** Keeps it; false when this device can't keep anything */
+/** The id a change is kept under: a later edit of the same entry replaces the earlier one */
+export const pendingId = (kind: PendingKind, target: string) => `${kind}:${target}`;
+
+/**
+ * Keeps it; false when this device can't keep anything. Deleting what never reached the server
+ * just forgets it, and its edits; deleting what did drops the edits waiting for it.
+ */
 export function keep(item: Pending) {
-	write([...read().filter((other) => other.id !== item.id), item]);
+	const others = read().filter((other) => other.id !== item.id);
+	if (item.kind === 'delete' && item.target) {
+		const waiting = others.find((other) => other.id === item.target);
+		const rest = others.filter((other) => other.id !== item.target && other.target !== item.target);
+		if (waiting) {
+			write(rest);
+			return true;
+		}
+		write([...rest, item]);
+	} else {
+		write([...others, item]);
+	}
 	return read().some((other) => other.id === item.id);
 }
 
