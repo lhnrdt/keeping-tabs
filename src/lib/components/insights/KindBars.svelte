@@ -1,7 +1,6 @@
 <script lang="ts">
 	// What kind of costs (#167, #188): fixed, everyday, occasional, big one-offs, one bar each
-	// (LayerChart) with the amount and share written beside it; what each kind means below.
-	import { BarChart } from 'layerchart';
+	// as a bar under its name, with the amount and share; what each kind means below.
 	import { shownAmount } from '#lib/shown-money.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
@@ -22,31 +21,23 @@
 </script>
 
 <div class="mx-4 rounded-2xl bg-surface px-4 py-3 dark:bg-surface-night">
-	<div style:height="{data.length * 44}px" role="img" aria-label={m.insights_kinds()}>
-		<BarChart
-			{data}
-			x="amount"
-			y="label"
-			orientation="horizontal"
-			bandPadding={0.45}
-			axis="y"
-			grid={false}
-			rule={false}
-			tooltipContext={false}
-			labels={{
-				value: 'text',
-				class: 'fill-ink text-xs dark:fill-ink-night'
-			}}
-			props={{
-				bars: { strokeWidth: 0 },
-				yAxis: {
-					tickMarks: false,
-					tickLabelProps: { class: 'fill-ink text-sm font-medium dark:fill-ink-night' }
-				}
-			}}
-			padding={{ left: 92, right: 112 }}
-		/>
-	</div>
+	<!-- Each kind's name and what it came to, its share as a bar below: fits any language's names -->
+	<ul class="flex flex-col gap-3 py-1" aria-hidden="true">
+		{#each data as row (row.kind)}
+			<li class="flex flex-col gap-1.5">
+				<span class="flex items-baseline justify-between gap-3 text-sm">
+					<span class="font-medium">{row.label}</span>
+					<span class="text-xs tabular-nums">{row.text}</span>
+				</span>
+				<span class="h-2 rounded-full bg-current/10">
+					<span
+						class="block h-full rounded-full bg-accent dark:bg-accent-night"
+						style:width="{Math.max(1.5, row.share * 100)}%"
+					></span>
+				</span>
+			</li>
+		{/each}
+	</ul>
 	<dl class="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-xs">
 		{#each rows as row (row.kind)}
 			<dt class="font-medium">{kindLabels[row.kind]()}</dt>
