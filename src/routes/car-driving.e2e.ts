@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { choose, createGroup, open } from './e2e-helpers';
+import { choose, createGroup, open, paidBy } from './e2e-helpers';
 
 test('a car group notes the odometer and fuel with its expenses and sums them up', async ({
 	page
@@ -69,7 +69,7 @@ test('a car group keeps costs everyone already paid, without anyone owing for th
 	await open(page, `${groupUrl}/expenses/new`);
 	await page.getByLabel('What was it for?').fill('Insurance');
 	await page.getByLabel('Amount (€)').fill('300');
-	await page.getByLabel('Paid by').selectOption({ label: 'Everyone, already paid' });
+	await paidBy(page, 'Everyone, already paid');
 	await page.getByLabel('Repeats').selectOption({ label: 'Every 6 months' });
 	await page.getByRole('button', { name: 'Add expense' }).click();
 	await expect(page).toHaveURL(groupUrl);
@@ -86,5 +86,5 @@ test('a car group keeps costs everyone already paid, without anyone owing for th
 	await expect(page.locator('body')).toContainText('Every 6 months');
 	await open(page, groupUrl);
 	await row.click();
-	await expect(page.getByLabel('Paid by')).toHaveValue('each');
+	await expect(page.getByRole('radio', { name: 'Everyone, already paid' })).toBeChecked();
 });

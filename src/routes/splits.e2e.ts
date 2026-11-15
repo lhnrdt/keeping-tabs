@@ -40,7 +40,7 @@ test('split by percentages, with a live remainder, and edit it again', async ({ 
 
 	await page.goto(groupUrl);
 	await page.getByRole('link', { name: /Rent/ }).click();
-	await expect(page.getByLabel('Split', { exact: true })).toHaveValue('percent');
+	await expect(page.getByRole('radio', { name: 'Percent' })).toBeChecked();
 	await expect(page.getByLabel('Percent for Ben')).toHaveValue('60');
 });
 

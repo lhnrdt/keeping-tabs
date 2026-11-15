@@ -143,17 +143,16 @@ describe('insightsOf', () => {
 	});
 
 	it('leaves monthly rent out of the biggest expenses, and sums up the kinds (#167)', () => {
-		const rent = ['2026-05', '2026-06', '2026-07'].map((month) => ({
-			...expense(`${month}-01`, 150000),
-			title: 'Miete'
-		}));
+		const rent = ['2026-05', '2026-06', '2026-07'].map((month) =>
+			expense(`${month}-01`, 150000, 'rent')
+		);
 		const result = insightsOf(
 			[...rent, expense('2026-06-12', 4000), expense('2026-06-20', 90000)],
 			MEMBERS,
 			null
 		);
 		expect(result.biggest.map(({ amount }) => amount)).toEqual([90000, 4000]);
-		expect(result.fixed.map(({ title }) => title)).toEqual(['Miete']);
+		expect(result.fixed.map(({ category }) => category)).toEqual(['rent']);
 		expect(result.fixedPerMonth).toBe(150000);
 		expect(result.byKind.find(({ kind }) => kind === 'fixed')?.amount).toBe(450000);
 	});

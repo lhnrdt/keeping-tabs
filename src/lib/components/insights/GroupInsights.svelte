@@ -21,10 +21,13 @@
 	import HowOften from './HowOften.svelte';
 	import OverTimeChart from './OverTimeChart.svelte';
 	import PeriodPicker from './PeriodPicker.svelte';
-	import Places from './Places.svelte';
+	import InsightsSkeleton from './InsightsSkeleton.svelte';
+	import { navigating, page } from '$app/state';
+	import CarCosts from './CarCosts.svelte';
 	import PositionChart from './PositionChart.svelte';
 	import Recap from './Recap.svelte';
 	import { sectionTitles } from './section-texts';
+	import { SECTION_ICONS } from '#lib/insights/insight-icons.ts';
 	import Settling from './Settling.svelte';
 	import StatTiles from './StatTiles.svelte';
 	import WhoPays from './WhoPays.svelte';
@@ -51,6 +54,19 @@
 	const layout = $derived(LAYOUTS[group.kind]);
 	// The group's own choice, else what suits its type (#174)
 	const chosen = $derived(sectionsFor(group.kind, group.insightSections));
+
+	// Another period on its way (#184): its outline after a moment, not the old numbers
+	const SKELETON_AFTER_MS = 120;
+	let switching = $state(false);
+	$effect(() => {
+		const to = navigating.to?.url;
+		if (!to || to.pathname !== page.url.pathname || to.searchParams.get('tab') !== 'insights') {
+			switching = false;
+			return;
+		}
+		const timer = setTimeout(() => (switching = true), SKELETON_AFTER_MS);
+		return () => clearTimeout(timer);
+	});
 	const names = $derived(namesById(everyone));
 	// Whether a section has something to show; who-pays ones need two people to compare
 	const hasData: Record<Section, () => boolean> = {
@@ -61,7 +77,6 @@
 		categories: () => true,
 		kinds: () => insights.byKind.length > 1,
 		kindMonths: () => insights.kindMonths.length > 1,
-		places: () => insights.places.length > 0,
 		fixedCosts: () => insights.fixed.length > 0,
 		driving: () => insights.driving !== null,
 		biggest: () => true,
@@ -79,12 +94,18 @@
 {:else}
 	<PeriodPicker period={insights.period} span={insights.span} {today} token={group.shareToken} />
 {/if}
-{#if insights.span && insights.count === 0}
+{#if switching}
+	<InsightsSkeleton />
+{:else if insights.span && insights.count === 0}
 	<EmptyState text={m.period_empty()} />
 {:else if insights.span}
 	<div class="pt-4"><StatTiles {insights} currency={group.currency} tiles={layout.tiles} /></div>
 	{#each shown as section (section)}
-		<BlockTitle class="!mb-2">{sectionTitles[section]()}</BlockTitle>
+		<BlockTitle class="!mb-2 !justify-start gap-2"
+			><Icon name={SECTION_ICONS[section]} size={18} class="opacity-70" />{sectionTitles[
+				section
+			]()}</BlockTitle
+		>
 		{#if section === 'recap' && insights.recap}
 			<Recap recap={insights.recap} name={group.name} currency={group.currency} />
 		{:else if section === 'budget'}
@@ -106,14 +127,21 @@
 			/>
 		{:else if section === 'kindMonths'}
 			<KindMonths months={insights.kindMonths} currency={group.currency} />
-		{:else if section === 'places'}
-			<Places places={insights.places} currency={group.currency} />
 		{:else if section === 'kinds'}
 			<KindBars rows={insights.byKind} currency={group.currency} />
 		{:else if section === 'fixedCosts'}
 			<FixedCosts rows={insights.fixed} currency={group.currency} />
 		{:else if section === 'driving' && insights.driving}
 			<DrivingStats driving={insights.driving} currency={group.currency} />
+			{#if insights.car.perKm.length > 1 || insights.car.monthly}
+				<div class="mt-3">
+					<CarCosts
+						perKm={insights.car.perKm}
+						monthly={insights.car.monthly}
+						currency={group.currency}
+					/>
+				</div>
+			{/if}
 		{:else if section === 'myPosition' && insights.position}
 			<PositionChart points={insights.position} currency={group.currency} />
 		{:else if section === 'settling'}

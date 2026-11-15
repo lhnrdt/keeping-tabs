@@ -2,6 +2,8 @@
 	// Adding or editing an expense, in the order it's thought of: what it was, how much, who
 	// paid and how it's split, then category and when. One flat form without cards; the save
 	// button stays at the bottom of the screen (GroupForm).
+	import Avatar from '#lib/components/Avatar.svelte';
+	import type { IconName } from '#lib/icons.ts';
 	import { resolve } from '$app/paths';
 	import PlainField from '#lib/components/fields/PlainField.svelte';
 	import CategoryPicker from '#lib/components/pickers/CategoryPicker.svelte';
@@ -28,7 +30,8 @@
 	import AmountCurrencyField from './AmountCurrencyField.svelte';
 	import DateChips from './DateChips.svelte';
 	import DrivingFields from './DrivingFields.svelte';
-	import ParticipantChecklist from './ParticipantChecklist.svelte';
+	import ChoiceChips from './ChoiceChips.svelte';
+	import ParticipantChips from './ParticipantChips.svelte';
 	import ItemSplit from './ItemSplit.svelte';
 	import NewExpensePhotos from './NewExpensePhotos.svelte';
 	import PayerAmounts from './PayerAmounts.svelte';
@@ -113,6 +116,8 @@
 	let date = $state(initial().date);
 	let converted = $state('');
 	let payer = $state(initial().paidBy || identity.memberId || initial().firstMember);
+	/** Someone else paid: all of them to choose from */
+	let choosingPayer = $state(false);
 	let mode = $state<SplitMode | typeof ITEMS_MODE>(
 		initial().splitMode === ITEMS_MODE
 			? ITEMS_MODE
@@ -148,6 +153,15 @@
 		return missing ? expensePage() : undefined;
 	}
 
+	/** Up to six people as chips (and "Several people", "Everyone, already paid"); more, a dropdown */
+	const PAYER_CHIPS_UP_TO = 8;
+	const modeIcons: Record<SplitMode, IconName> = {
+		equal: 'splitEqual',
+		exact: 'splitExact',
+		percent: 'splitPercent',
+		shares: 'splitShares',
+		adjust: 'splitAdjust'
+	};
 	const modeLabels: Record<SplitMode, () => string> = {
 		equal: m.split_equal,
 		exact: m.split_exact,
@@ -186,36 +200,72 @@
 			<DrivingFields odometer={values.odometer ?? ''} litres={values.litres ?? ''} />
 		{/if}
 
-		<div class="grid grid-cols-2 gap-2.5">
-			<PlainField label={m.field_paid_by()} icon="paidBy" arrow tour="expense-paid-by">
-				{#snippet children(id)}
-					<select {id} name="paidBy" bind:value={payer}>
-						{#each members as member (member.id)}
-							<option value={member.id}>{member.name}</option>
-						{/each}
-						<option value={SEVERAL_PAYERS}>{m.payers_several()}</option>
-						<option value={PAID_BY_EACH}>{m.payers_each()}</option>
-					</select>
-				{/snippet}
-			</PlainField>
-			<PlainField label={m.field_split()} arrow tour="expense-split">
-				{#snippet children(id)}
-					<select {id} name="splitMode" bind:value={mode}>
-						{#each SPLIT_MODES as option (option)}
-							<option value={option}>{modeLabels[option]()}</option>
-						{/each}
-						<option value={ITEMS_MODE}>{m.split_items()}</option>
-					</select>
-				{/snippet}
-			</PlainField>
-		</div>
-
+		<!-- Three questions, each a tap: who paid, how it's split, who it's for -->
+		{#if payer === identity.memberId && !choosingPayer}
+			<!-- Most often you paid: that's one line, the others a tap away -->
+			{@const you = members.find((member) => member.id === identity.memberId)}
+			<div class="flex flex-col gap-2" data-tour="expense-paid-by">
+				<span class="field-label">{m.form_who_paid()}</span>
+				<div class="flex items-center gap-3">
+					<input type="hidden" name="paidBy" value={payer} />
+					<span
+						class="flex h-10 items-center gap-2 rounded-full border border-accent bg-accent-soft/50 ps-1 pe-3.5 text-sm font-medium dark:border-accent-night dark:bg-accent-soft-night/50"
+					>
+						{#if you}<Avatar id={you.avatarId} name={you.name} avatar={you.avatar} size="sm" />{/if}
+						{m.form_me()}
+					</span>
+					<button
+						type="button"
+						class="min-h-10 px-1 text-sm font-medium text-accent dark:text-accent-night"
+						onclick={() => (choosingPayer = true)}>{m.form_someone_else()}</button
+					>
+				</div>
+			</div>
+		{:else}
+			<ChoiceChips
+				name="paidBy"
+				legend={m.form_who_paid()}
+				bind:value={payer}
+				tour="expense-paid-by"
+				chipsUpTo={PAYER_CHIPS_UP_TO}
+				options={[
+					// You as "Me", first: most often you're the one who paid
+					...members
+						.map((member) => ({
+							value: member.id,
+							label: member.id === identity.memberId ? m.form_me() : member.name,
+							person: member
+						}))
+						.toSorted(
+							(a, b) =>
+								Number(b.value === identity.memberId) - Number(a.value === identity.memberId)
+						),
+					{ value: SEVERAL_PAYERS, label: m.payers_several(), icon: 'severalPayers' },
+					{ value: PAID_BY_EACH, label: m.payers_each() }
+				]}
+			/>
+		{/if}
 		{#if payer === SEVERAL_PAYERS}
 			<div transition:calmSlide>
 				<PayerAmounts {members} {currency} amount={converted} initial={values.payers ?? {}} />
 			</div>
 		{/if}
-		<div class="flex flex-col gap-4" data-tour="expense-for">
+		<ChoiceChips
+			name="splitMode"
+			legend={m.form_how_split()}
+			bind:value={mode}
+			tour="expense-split"
+			options={[
+				...SPLIT_MODES.map((option) => ({
+					value: option,
+					label: modeLabels[option](),
+					icon: modeIcons[option]
+				})),
+				{ value: ITEMS_MODE, label: m.split_items(), icon: 'splitItems' as const }
+			]}
+		/>
+		<section class="flex flex-col gap-4" data-tour="expense-for" aria-labelledby="who-for">
+			<h3 id="who-for" class="field-label -mb-2">{m.form_who_for()}</h3>
 			{#if mode === ITEMS_MODE}
 				<ItemSplit
 					{members}
@@ -226,11 +276,12 @@
 					initial={values.items ?? ''}
 				/>
 			{:else if mode === 'equal'}
-				<ParticipantChecklist
+				<ParticipantChips
 					{members}
 					selected={values.participants}
 					amount={converted}
 					{currency}
+					legend={m.form_who_for()}
 				/>
 			{:else}
 				<SplitInputs
@@ -255,7 +306,7 @@
 					</label>
 				{/if}
 			{/if}
-		</div>
+		</section>
 
 		<CategoryPicker value={values.category} {title} learned={learnCategories(chosen)} {kind} />
 		<DateChips bind:date />

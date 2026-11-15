@@ -21,6 +21,7 @@ export const categoryIcons: Record<ExpenseCategory, IconName> = {
 	tolls: 'categoryTolls',
 	repairs: 'categoryRepairs',
 	insurance: 'categoryInsurance',
+	purchase: 'categoryPurchase',
 	rent: 'categoryRent',
 	utilities: 'categoryUtilities',
 	internet: 'categoryInternet'
@@ -43,6 +44,7 @@ export const categoryLabels: Record<ExpenseCategory, () => string> = {
 	tolls: m.category_tolls,
 	repairs: m.category_repairs,
 	insurance: m.category_insurance,
+	purchase: m.category_purchase,
 	rent: m.category_rent,
 	utilities: m.category_utilities,
 	internet: m.category_internet

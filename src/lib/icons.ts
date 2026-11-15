@@ -3,6 +3,21 @@ import IconAccessible from '@tabler/icons-svelte-runes/icons/accessible';
 import IconBell from '@tabler/icons-svelte-runes/icons/bell';
 import IconLanguage from '@tabler/icons-svelte-runes/icons/language';
 import IconPalette from '@tabler/icons-svelte-runes/icons/palette';
+import IconChartDonut from '@tabler/icons-svelte-runes/icons/chart-donut';
+import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
+import IconBasket from '@tabler/icons-svelte-runes/icons/basket';
+import IconPackage from '@tabler/icons-svelte-runes/icons/package';
+import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
+import IconArrowsExchange from '@tabler/icons-svelte-runes/icons/arrows-exchange';
+import IconCalendarMonth from '@tabler/icons-svelte-runes/icons/calendar-month';
+import IconClock from '@tabler/icons-svelte-runes/icons/clock';
+import IconEqual from '@tabler/icons-svelte-runes/icons/equal';
+import IconCoins from '@tabler/icons-svelte-runes/icons/coins';
+import IconPercentage from '@tabler/icons-svelte-runes/icons/percentage';
+import IconChartPie from '@tabler/icons-svelte-runes/icons/chart-pie';
+import IconPlusMinus from '@tabler/icons-svelte-runes/icons/plus-minus';
+import IconListDetails from '@tabler/icons-svelte-runes/icons/list-details';
+import IconUsers from '@tabler/icons-svelte-runes/icons/users';
 import IconCloudOff from '@tabler/icons-svelte-runes/icons/cloud-off';
 import IconColorPicker from '@tabler/icons-svelte-runes/icons/color-picker';
 import IconBed from '@tabler/icons-svelte-runes/icons/bed';
@@ -66,6 +81,7 @@ import IconGasStation from '@tabler/icons-svelte-runes/icons/gas-station';
 import IconKey from '@tabler/icons-svelte-runes/icons/key';
 import IconParking from '@tabler/icons-svelte-runes/icons/parking';
 import IconRoad from '@tabler/icons-svelte-runes/icons/road';
+import IconCarGarage from '@tabler/icons-svelte-runes/icons/car-garage';
 import IconShieldCheck from '@tabler/icons-svelte-runes/icons/shield-check';
 import IconTool from '@tabler/icons-svelte-runes/icons/tool';
 import IconWifi from '@tabler/icons-svelte-runes/icons/wifi';
@@ -117,6 +133,25 @@ export const icons = {
 	notifications: IconBell,
 	fast: IconBolt,
 	palette: IconPalette,
+	/** The insights' sections, tiles and kinds of costs */
+	byCategory: IconChartDonut,
+	budget: IconWallet,
+	trend: IconTrendingUp,
+	everyday: IconBasket,
+	bigOneOff: IconPackage,
+	overTime: IconChartLine,
+	settling: IconArrowsExchange,
+	you: IconUser,
+	month: IconCalendarMonth,
+	often: IconClock,
+	/** How an expense is split, and several people paying */
+	splitEqual: IconEqual,
+	splitExact: IconCoins,
+	splitPercent: IconPercentage,
+	splitShares: IconChartPie,
+	splitAdjust: IconPlusMinus,
+	splitItems: IconListDetails,
+	severalPayers: IconUsers,
 	offline: IconCloudOff,
 	pickColor: IconColorPicker,
 	accessible: IconAccessible,
@@ -154,6 +189,8 @@ export const icons = {
 	categoryTolls: IconRoad,
 	categoryRepairs: IconTool,
 	categoryInsurance: IconShieldCheck,
+	/** Buying the car itself */
+	categoryPurchase: IconCarGarage,
 	categoryRent: IconKey,
 	categoryUtilities: IconBolt,
 	categoryInternet: IconWifi,
