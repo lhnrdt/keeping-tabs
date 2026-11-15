@@ -21,6 +21,8 @@
 	import HowOften from './HowOften.svelte';
 	import OverTimeChart from './OverTimeChart.svelte';
 	import PeriodPicker from './PeriodPicker.svelte';
+	import InsightsSkeleton from './InsightsSkeleton.svelte';
+	import { navigating, page } from '$app/state';
 	import PositionChart from './PositionChart.svelte';
 	import Recap from './Recap.svelte';
 	import { sectionTitles } from './section-texts';
@@ -50,6 +52,19 @@
 	const layout = $derived(LAYOUTS[group.kind]);
 	// The group's own choice, else what suits its type (#174)
 	const chosen = $derived(sectionsFor(group.kind, group.insightSections));
+
+	// Another period on its way (#184): its outline after a moment, not the old numbers
+	const SKELETON_AFTER_MS = 120;
+	let switching = $state(false);
+	$effect(() => {
+		const to = navigating.to?.url;
+		if (!to || to.pathname !== page.url.pathname || to.searchParams.get('tab') !== 'insights') {
+			switching = false;
+			return;
+		}
+		const timer = setTimeout(() => (switching = true), SKELETON_AFTER_MS);
+		return () => clearTimeout(timer);
+	});
 	const names = $derived(namesById(everyone));
 	// Whether a section has something to show; who-pays ones need two people to compare
 	const hasData: Record<Section, () => boolean> = {
@@ -77,7 +92,9 @@
 {:else}
 	<PeriodPicker period={insights.period} span={insights.span} {today} token={group.shareToken} />
 {/if}
-{#if insights.span && insights.count === 0}
+{#if switching}
+	<InsightsSkeleton />
+{:else if insights.span && insights.count === 0}
 	<EmptyState text={m.period_empty()} />
 {:else if insights.span}
 	<div class="pt-4"><StatTiles {insights} currency={group.currency} tiles={layout.tiles} /></div>
