@@ -21,7 +21,6 @@
 	import HowOften from './HowOften.svelte';
 	import OverTimeChart from './OverTimeChart.svelte';
 	import PeriodPicker from './PeriodPicker.svelte';
-	import Places from './Places.svelte';
 	import PositionChart from './PositionChart.svelte';
 	import Recap from './Recap.svelte';
 	import { sectionTitles } from './section-texts';
@@ -61,7 +60,6 @@
 		categories: () => true,
 		kinds: () => insights.byKind.length > 1,
 		kindMonths: () => insights.kindMonths.length > 1,
-		places: () => insights.places.length > 0,
 		fixedCosts: () => insights.fixed.length > 0,
 		driving: () => insights.driving !== null,
 		biggest: () => true,
@@ -106,8 +104,6 @@
 			/>
 		{:else if section === 'kindMonths'}
 			<KindMonths months={insights.kindMonths} currency={group.currency} />
-		{:else if section === 'places'}
-			<Places places={insights.places} currency={group.currency} />
 		{:else if section === 'kinds'}
 			<KindBars rows={insights.byKind} currency={group.currency} />
 		{:else if section === 'fixedCosts'}

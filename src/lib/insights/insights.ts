@@ -13,7 +13,6 @@ import {
 } from './expense-kinds';
 import { highlightsOf, type Highlight } from './highlights';
 import { kindsByMonth, type KindMonth } from './kind-months';
-import { MAX_PLACES, placesOf, type Place } from './places';
 import { seriesCategories, slicesOf, type Slice } from './category-slices';
 import { inRange, soFarRange, type DateRange } from './period';
 import { owingSince, paidBack, positionOverTime, positionWithin, type Point } from './standing';
@@ -92,8 +91,6 @@ export type Insights = {
 	byMember: MemberSpend[];
 	/** A few friendly facts, when the data makes them true (#162) */
 	highlights: Highlight[];
-	/** Titles used again and again, most often first (#169) */
-	places: Place[];
 	/** Each month by kind of cost, for groups that run month by month (#169) */
 	kindMonths: KindMonth[];
 };
@@ -336,7 +333,6 @@ export function insightsOf(
 		},
 		byMember: members,
 		highlights: highlightsOf(expenses, kinds, memberIds.length),
-		places: placesOf(expenses, kinds).slice(0, MAX_PLACES),
 		kindMonths: kindsByMonth(expenses, kinds, range)
 	};
 }
