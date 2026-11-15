@@ -55,6 +55,22 @@ describe('fixedCosts (#167)', () => {
 		expect(costs[0].average).toBe(165000);
 	});
 
+	it('spreads a cost paid every few months over the months until the next', () => {
+		const [twice] = fixedCosts([
+			expense('2026-01-10', 'insurance', 30000),
+			expense('2026-07-10', 'insurance', 30000)
+		]);
+		expect(twice.everyMonths).toBe(6);
+		// €600 over January to December
+		expect(twice.average).toBe(5000);
+		// Paid once: insurance usually covers a year
+		const [once] = fixedCosts([expense('2026-01-10', 'insurance', 30000)]);
+		expect(once.everyMonths).toBe(12);
+		expect(once.average).toBe(2500);
+		// Monthly ones stay as they were
+		expect(costs[0].everyMonths).toBe(1);
+	});
+
 	it('compares the latest month with the one before', () => {
 		expect(costs[1].latest).toBe(7800 + 5 * 240);
 		expect(costs[1].previous).toBe(7800 + 4 * 240);

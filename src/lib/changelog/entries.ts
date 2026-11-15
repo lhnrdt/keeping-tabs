@@ -17,6 +17,11 @@ export const CHANGELOG: ChangelogEntry[] = [
 		date: '',
 		items: [
 			{
+				icon: 'repeats',
+				en: 'Fixed costs paid every few months, like insurance every 6 months, are spread over those months instead of counting in full as a monthly cost.',
+				de: 'Fixkosten, die alle paar Monate anfallen, etwa eine Versicherung alle 6 Monate, werden auf diese Monate verteilt, statt voll als monatliche Kosten zu zählen.'
+			},
+			{
 				icon: 'kindCar',
 				en: 'The car insights remember whether you look at them with or without the purchase price.',
 				de: 'Die Auto-Insights merken sich, ob du sie mit oder ohne Kaufpreis ansiehst.'
