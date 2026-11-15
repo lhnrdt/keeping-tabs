@@ -6,6 +6,7 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import type { Snippet } from 'svelte';
+	import type { ListEntry } from '#lib/server/expense-entries.ts';
 	import FormError from '#lib/components/FormError.svelte';
 	import StickySubmit from '#lib/components/StickySubmit.svelte';
 	import SubmitButton from '#lib/components/SubmitButton.svelte';
@@ -32,6 +33,8 @@
 		moment?: Moment;
 		/** What it is when kept offline, if not a new expense: an edit of an entry, a payment (#347) */
 		pendingAs?: { kind: PendingKind; target?: string };
+		/** A new entry's row for the list while it waits, from what was typed (#347) */
+		preview?: (typed: FormData, id: string) => ListEntry | undefined;
 		children: Snippet;
 	};
 
@@ -45,6 +48,7 @@
 		onSaved,
 		moment,
 		pendingAs,
+		preview,
 		children
 	}: Props = $props();
 
@@ -65,10 +69,11 @@
 				][];
 				const field = (name: string) => String(typed.get(name) ?? '');
 				const kind = pendingAs?.kind ?? 'add';
+				const id = pendingAs?.target
+					? pendingId(kind, pendingAs.target)
+					: field('clientId') || crypto.randomUUID();
 				const kept = keep({
-					id: pendingAs?.target
-						? pendingId(kind, pendingAs.target)
-						: field('clientId') || crypto.randomUUID(),
+					id,
 					kind,
 					target: pendingAs?.target,
 					token: offlineToken,
@@ -78,7 +83,8 @@
 					amount: field('amount'),
 					currency: field('currency'),
 					date: field('date'),
-					addedAt: Date.now()
+					addedAt: Date.now(),
+					preview: preview?.(typed, id)
 				});
 				if (kept) {
 					if (moment) cueMoment(moment);
