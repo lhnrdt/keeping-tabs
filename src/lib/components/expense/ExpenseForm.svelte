@@ -103,8 +103,8 @@
 		expenseId,
 		balances
 	}: Props = $props();
-	// The new expense's row in the list while it goes out (#347); none when it can't tell yet,
-	// like an amount in another currency, whose rate only the server has
+	// The expense's row in the list while it goes out, new or changed (#347); none when it can't
+	// tell yet, like an amount in another currency, whose rate only the server has
 	function previewOf(typed: FormData, id: string) {
 		const memberIds = members.map((member) => member.id);
 		const parsed = parseExpense(expenseValues(typed, ''), {
@@ -210,8 +210,8 @@
 	sealRow={expenseId ?? clientId}
 	announce={expenseId ? 'changed' : undefined}
 	moment={expenseId ? undefined : { kind: 'added', id: clientId }}
-	preview={expenseId ? undefined : previewOf}
-	instantly={expenseId ? undefined : savesInstantly}
+	preview={previewOf}
+	instantly={savesInstantly}
 	onSaved={offlineToken && !expenseId ? afterSaving : undefined}
 >
 	{#if offlineToken && !expenseId}<input type="hidden" name="clientId" value={clientId} />{/if}
