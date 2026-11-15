@@ -131,7 +131,7 @@
 		{:else if section === 'fixedCosts'}
 			<FixedCosts rows={insights.fixed} currency={group.currency} />
 		{:else if section === 'driving' && insights.car.withPurchase.driving}
-			<CarInsights car={insights.car} currency={group.currency} />
+			<CarInsights car={insights.car} currency={group.currency} groupId={group.shareToken} />
 		{:else if section === 'myPosition' && insights.position}
 			<PositionChart points={insights.position} currency={group.currency} />
 		{:else if section === 'settling'}

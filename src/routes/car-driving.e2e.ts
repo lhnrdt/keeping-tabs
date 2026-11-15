@@ -123,4 +123,9 @@ test('one switch leaves the purchase out of the cost per km and the monthly cost
 	await expect(withPurchase).not.toBeChecked();
 	await expect(driving).toContainText('€0.10');
 	await expect(page.getByTestId('car-costs')).toContainText('€100.00');
+
+	// Remembered on this device: still without it next time
+	await page.reload();
+	await expect(withPurchase).not.toBeChecked();
+	await expect(driving).toContainText('€0.10');
 });
