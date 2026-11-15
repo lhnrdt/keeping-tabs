@@ -1,12 +1,12 @@
 import { expect, test } from '@playwright/test';
-import { createGroup } from './e2e-helpers';
+import { createGroup, splitBy } from './e2e-helpers';
 
 test('split a receipt by who had what, with the tip in proportion (#53)', async ({ page }) => {
 	const groupUrl = await createGroup(page, 'Dinner club', 'Anna', ['Ben', 'Cara']);
 	await page.getByRole('link', { name: 'Add expense' }).click();
 	await page.getByLabel('What was it for?').fill('Restaurant');
 	await page.getByLabel('Amount (€)').fill('33');
-	await page.getByLabel('Split', { exact: true }).selectOption({ label: 'By item' });
+	await splitBy(page, 'By item');
 
 	await page.getByLabel('Item 1', { exact: true }).fill('Steak');
 	await page.getByLabel('Price of item 1').fill('20');
@@ -28,7 +28,7 @@ test('split a receipt by who had what, with the tip in proportion (#53)', async 
 
 	// Edited the same way
 	await page.getByRole('link', { name: /Restaurant/ }).click();
-	await expect(page.getByLabel('Split', { exact: true })).toHaveValue('items');
+	await expect(page.getByRole('radio', { name: 'By item' })).toBeChecked();
 	await expect(page.getByLabel('Item 2', { exact: true })).toHaveValue('Wine');
 	await expect(page.getByLabel('Price of item 1')).toHaveValue('20.00');
 	await expect(

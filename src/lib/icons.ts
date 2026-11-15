@@ -3,6 +3,13 @@ import IconAccessible from '@tabler/icons-svelte-runes/icons/accessible';
 import IconBell from '@tabler/icons-svelte-runes/icons/bell';
 import IconLanguage from '@tabler/icons-svelte-runes/icons/language';
 import IconPalette from '@tabler/icons-svelte-runes/icons/palette';
+import IconEqual from '@tabler/icons-svelte-runes/icons/equal';
+import IconCoins from '@tabler/icons-svelte-runes/icons/coins';
+import IconPercentage from '@tabler/icons-svelte-runes/icons/percentage';
+import IconChartPie from '@tabler/icons-svelte-runes/icons/chart-pie';
+import IconPlusMinus from '@tabler/icons-svelte-runes/icons/plus-minus';
+import IconListDetails from '@tabler/icons-svelte-runes/icons/list-details';
+import IconUsers from '@tabler/icons-svelte-runes/icons/users';
 import IconCloudOff from '@tabler/icons-svelte-runes/icons/cloud-off';
 import IconColorPicker from '@tabler/icons-svelte-runes/icons/color-picker';
 import IconBed from '@tabler/icons-svelte-runes/icons/bed';
@@ -117,6 +124,14 @@ export const icons = {
 	notifications: IconBell,
 	fast: IconBolt,
 	palette: IconPalette,
+	/** How an expense is split, and several people paying */
+	splitEqual: IconEqual,
+	splitExact: IconCoins,
+	splitPercent: IconPercentage,
+	splitShares: IconChartPie,
+	splitAdjust: IconPlusMinus,
+	splitItems: IconListDetails,
+	severalPayers: IconUsers,
 	offline: IconCloudOff,
 	pickColor: IconColorPicker,
 	accessible: IconAccessible,
