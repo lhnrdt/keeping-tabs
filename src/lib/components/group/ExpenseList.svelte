@@ -79,10 +79,20 @@
 	const previews = $derived(
 		waiting.items.flatMap((item) => (item.preview && !item.failed ? [item.preview] : []))
 	);
+	// Only new ones join the list; a change shows on the entry it's about, if that's still there
+	const additions = $derived(
+		waiting.items.flatMap((item) =>
+			(item.kind ?? 'add') === 'add' && item.preview && !item.failed ? [item.preview] : []
+		)
+	);
 	const pending = $derived(new Set(previews.map((entry) => entry.id)));
 	const loaded = $derived.by(() => {
-		const known = uniqueById([...entries, ...older.items]);
-		const added = previews.filter((entry) => !known.some((other) => other.id === entry.id));
+		// Changed here: as changed, its comments and receipts as they were
+		const known = uniqueById([...entries, ...older.items]).map((entry) => {
+			const changed = previews.find((preview) => preview.id === entry.id);
+			return changed ? { ...changed, comments: entry.comments, receipts: entry.receipts } : entry;
+		});
+		const added = additions.filter((entry) => !known.some((other) => other.id === entry.id));
 		// Newest first, as the server sorts them; a new one goes before others of its day
 		const all = added.length
 			? [...added, ...known].sort((a, b) => b.date.localeCompare(a.date))

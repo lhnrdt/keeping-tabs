@@ -108,8 +108,14 @@ test('offline, an expense is changed, another deleted and a payment recorded, al
 	await page.getByLabel('Amount (€)').fill('6');
 	await page.getByRole('button', { name: 'Save' }).click();
 	await expect(page).toHaveURL(groupUrl);
+	// As changed, in its place, until it's through
+	const bread = page
+		.getByRole('region', { name: 'Expenses' })
+		.getByRole('listitem')
+		.filter({ hasText: 'Bread' });
+	await expect(bread).toContainText('Not synced yet');
+	await expect(bread).toContainText('you lent €3.00');
 	const pending = page.getByRole('region', { name: 'Not synced yet' });
-	await expect(pending).toContainText('Changed');
 
 	await page.getByRole('link', { name: /Milk/ }).click({ button: 'right' });
 	await page.getByRole('dialog').getByRole('button', { name: 'Delete expense' }).click();
@@ -151,4 +157,40 @@ test('a comment written offline waits under its expense and goes out once online
 	await expect(comments.getByText('Was the tip included?')).toHaveCount(1);
 	await page.reload();
 	await expect(comments.getByText('Was the tip included?')).toHaveCount(1);
+});
+
+test('an expense changed offline but deleted on another device meanwhile stays deleted (#347)', async ({
+	page,
+	context
+}) => {
+	const groupUrl = await createGroup(page, 'Flat', 'Anna', ['Ben']);
+	await page.getByRole('link', { name: 'Add expense' }).click();
+	await page.getByLabel('What was it for?').fill('Bread');
+	await page.getByLabel('Amount (€)').fill('4');
+	await page.getByRole('button', { name: 'Add expense' }).click();
+	await page.getByRole('link', { name: /Bread/ }).click();
+	await expect(page).toHaveURL(/\/expenses\//);
+	const expenseUrl = page.url();
+
+	await context.setOffline(true);
+	await page.getByLabel('Amount (€)').fill('6');
+	await page.getByRole('button', { name: 'Save' }).click();
+	await expect(page).toHaveURL(groupUrl);
+
+	// Meanwhile, another device deletes it (outside this browser's connection)
+	const deleted = await page.request.post(`${expenseUrl}?/delete`, {
+		headers: {
+			origin: new URL(groupUrl).origin,
+			accept: 'application/json',
+			'x-sveltekit-action': 'true'
+		},
+		form: {}
+	});
+	expect(deleted.status(), await deleted.text()).toBeLessThan(400);
+
+	// Online again: the change has nothing to change, and nothing waits forever
+	await context.setOffline(false);
+	await expect(page.getByText('Not synced yet')).toHaveCount(0, { timeout: 20_000 });
+	await page.reload();
+	await expect(page.getByRole('link', { name: /Bread/ })).toHaveCount(0);
 });

@@ -87,7 +87,8 @@
 			currency: field('currency'),
 			date: field('date'),
 			addedAt: Date.now(),
-			preview: preview?.(typed, id)
+			preview: preview?.(typed, pendingAs?.target ?? id),
+			announce
 		});
 		if (!kept) return false;
 		// On its way before the page changes

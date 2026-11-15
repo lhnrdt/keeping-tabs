@@ -28,7 +28,9 @@ export type Pending = {
 	currency?: string;
 	date: string;
 	addedAt: number;
-	/** A new expense as the list shows it, made on the device: in its place in the list meanwhile */
+	/** What to tell the group once it's through (#267), as the form says, e.g. "changed" */
+	announce?: string;
+	/** The expense as the list shows it, new or changed, made on the device: in the list meanwhile */
 	preview?: ListEntry;
 	/** The server said no (e.g. someone left the group): shown, to remove by hand */
 	failed?: ErrorCode;
