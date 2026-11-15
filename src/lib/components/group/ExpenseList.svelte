@@ -82,7 +82,9 @@
 	// Only new ones join the list; a change shows on the entry it's about, if that's still there
 	const additions = $derived(
 		waiting.items.flatMap((item) =>
-			(item.kind ?? 'add') === 'add' && item.preview && !item.failed ? [item.preview] : []
+			['add', 'pay'].includes(item.kind ?? 'add') && item.preview && !item.failed
+				? [item.preview]
+				: []
 		)
 	);
 	const pending = $derived(new Set(previews.map((entry) => entry.id)));
@@ -215,16 +217,26 @@
 						<!-- Money that changed hands, not something bought: not in a card with the expenses -->
 						<ul class="mx-4">
 							<SwipeRow
-								items={menuItems(payment)}
+								items={pending.has(payment.id) ? [] : menuItems(payment)}
 								class={glow(payment.id)}
 								style={transitionName('expense', payment.id)}
 								data-entry={payment.id}
 							>
 								<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- resolved in hrefOf -->
+								<!-- Not on the server yet: no screen of its own to open (#347) -->
 								<a
-									href={hrefOf(payment)}
-									aria-label={`${titleOf(payment)}, ${subtitleOf(payment)}`}
-									class="flex min-h-10 items-center gap-3 px-2 text-xs text-muted active:opacity-70"
+									href={pending.has(payment.id) ? undefined : hrefOf(payment)}
+									aria-label={[
+										titleOf(payment),
+										subtitleOf(payment),
+										pending.has(payment.id) && m.pending_title()
+									]
+										.filter(Boolean)
+										.join(', ')}
+									class={[
+										'flex min-h-10 items-center gap-3 px-2 text-xs text-muted active:opacity-70',
+										pending.has(payment.id) && 'opacity-60'
+									]}
 								>
 									<span class="h-px flex-1 bg-current/15"></span>
 									<Icon name="payment" size={14} />

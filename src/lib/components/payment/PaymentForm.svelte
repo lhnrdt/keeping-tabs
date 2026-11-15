@@ -9,6 +9,11 @@
 	import { useIdentity } from '#lib/group/identity.svelte.ts';
 	import { calmSlide } from '#lib/motion/calm.ts';
 	import { m } from '#lib/paraglide/messages.js';
+	import { paymentValues } from '#lib/expense/form-values.ts';
+	import { previewPayment } from '#lib/offline/preview.ts';
+	import { parsePayment } from '#lib/validation.ts';
+	import { groupTabUrl } from '#lib/group/tabs.ts';
+	import { resolve } from '$app/paths';
 
 	type Props = {
 		members: Member[];
@@ -35,6 +40,15 @@
 			?.paymentDetails
 	);
 	const toName = $derived(members.find((member) => member.id === to)?.name ?? '');
+
+	// Its row in the list while it goes out (#347): saved on the device at once, when it's valid
+	function previewOf(typed: FormData, id: string) {
+		const parsed = parsePayment(paymentValues(typed), {
+			memberIds: members.map((member) => member.id),
+			currency
+		});
+		return parsed.ok ? previewPayment(id, parsed.value) : undefined;
+	}
 </script>
 
 <GroupForm
@@ -46,6 +60,9 @@
 	moment={paymentId ? undefined : { kind: 'paid', id: clientId }}
 	offlineToken={token}
 	pendingAs={paymentId ? { kind: 'edit', target: paymentId } : { kind: 'pay' }}
+	landing={token ? groupTabUrl(resolve('/g/[token]', { token }), 'balances') : undefined}
+	preview={previewOf}
+	instantly={(typed) => previewOf(typed, clientId) !== undefined}
 >
 	<input type="hidden" name="clientId" value={paymentId ? '' : clientId} />
 	<div class="page-sections">
