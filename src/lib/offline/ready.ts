@@ -6,3 +6,9 @@ export function keepReady(urls: string[]) {
 	if (!navigator.onLine) return;
 	navigator.serviceWorker?.controller?.postMessage({ type: 'warm', urls });
 }
+
+/** Tells the service worker these screens changed: its kept copies are brought up to date */
+export function refreshReady(urls: string[]) {
+	if (!navigator.onLine || urls.length === 0) return;
+	navigator.serviceWorker?.controller?.postMessage({ type: 'refresh', urls });
+}
