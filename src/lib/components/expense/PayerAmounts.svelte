@@ -37,7 +37,7 @@
 					name={`paid.${member.id}`}
 					inputmode="decimal"
 					autocomplete="off"
-					placeholder="0"
+					placeholder={money(0)}
 					aria-label={m.payer_paid({ name: member.name })}
 					bind:value={typed[member.id]}
 				/>
