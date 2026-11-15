@@ -179,7 +179,7 @@
 	"kind_everyday": "Alltag",
 	"kind_occasional": "Ab und zu",
 	"kind_big": "Große Einzelposten",
-	"kind_fixed_hint": "Monatlich, in gleicher Höhe",
+	"kind_fixed_hint": "Miete, Nebenkosten, Internet, Versicherung",
 	"kind_everyday_hint": "Klein und häufig",
 	"kind_occasional_hint": "Hin und wieder",
 	"kind_big_hint": "Selten und groß",

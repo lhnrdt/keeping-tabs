@@ -7,6 +7,8 @@
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import type { KindShare } from '#lib/insights/insights.ts';
 	import { kindHints, kindLabels } from './kind-texts';
+	import { KIND_ICONS } from '#lib/insights/insight-icons.ts';
+	import Icon from '#lib/components/Icon.svelte';
 
 	let { rows, currency }: { rows: KindShare[]; currency: string } = $props();
 
@@ -49,7 +51,9 @@
 	</div>
 	<dl class="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-xs">
 		{#each rows as row (row.kind)}
-			<dt class="font-medium">{kindLabels[row.kind]()}</dt>
+			<dt class="flex items-center gap-1.5 font-medium">
+				<Icon name={KIND_ICONS[row.kind]} size={14} class="opacity-70" />{kindLabels[row.kind]()}
+			</dt>
 			<dd class="text-muted">{kindHints[row.kind]()}</dd>
 		{/each}
 	</dl>

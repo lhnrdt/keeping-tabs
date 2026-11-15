@@ -24,6 +24,7 @@
 	import PositionChart from './PositionChart.svelte';
 	import Recap from './Recap.svelte';
 	import { sectionTitles } from './section-texts';
+	import { SECTION_ICONS } from '#lib/insights/insight-icons.ts';
 	import Settling from './Settling.svelte';
 	import StatTiles from './StatTiles.svelte';
 	import WhoPays from './WhoPays.svelte';
@@ -82,7 +83,11 @@
 {:else if insights.span}
 	<div class="pt-4"><StatTiles {insights} currency={group.currency} tiles={layout.tiles} /></div>
 	{#each shown as section (section)}
-		<BlockTitle class="!mb-2">{sectionTitles[section]()}</BlockTitle>
+		<BlockTitle class="!mb-2 !justify-start gap-2"
+			><Icon name={SECTION_ICONS[section]} size={18} class="opacity-70" />{sectionTitles[
+				section
+			]()}</BlockTitle
+		>
 		{#if section === 'recap' && insights.recap}
 			<Recap recap={insights.recap} name={group.name} currency={group.currency} />
 		{:else if section === 'budget'}
