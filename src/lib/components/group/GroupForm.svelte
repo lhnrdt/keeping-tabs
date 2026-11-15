@@ -1,19 +1,22 @@
 <script lang="ts">
 	// Shell for a full-screen group form: error and pending submit button. A form that can
 	// wait for the connection (#55) is kept on the device when sending fails for lack of one,
-	// and the group shows it until it's through.
+	// and the group shows it until it's through. One that can be saved instantly is kept on the
+	// device right away, online too, and goes out in the background (#347).
 	import { enhance, type SubmitFunction } from '$app/forms';
-	import { goto } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import type { Snippet } from 'svelte';
+	import type { ListEntry } from '#lib/server/expense-entries.ts';
 	import FormError from '#lib/components/FormError.svelte';
 	import StickySubmit from '#lib/components/StickySubmit.svelte';
 	import SubmitButton from '#lib/components/SubmitButton.svelte';
 	import type { ErrorCode } from '#lib/errors.ts';
 	import { Submission } from '#lib/forms/submission.svelte.ts';
 	import { sealing } from '#lib/crypto/seal-form.ts';
-	import { keep, pendingId, type PendingKind } from '#lib/offline/outbox.ts';
+	import { keep, pendingId, type PendingKind, unreachable } from '#lib/offline/outbox.ts';
 	import { cueMoment, type Moment } from '#lib/motion/moments.ts';
+	import { flushOutbox } from '#lib/offline/sync.ts';
 
 	type Props = {
 		error?: ErrorCode;
@@ -32,6 +35,12 @@
 		moment?: Moment;
 		/** What it is when kept offline, if not a new expense: an edit of an entry, a payment (#347) */
 		pendingAs?: { kind: PendingKind; target?: string };
+		/** A new entry's row for the list while it waits, from what was typed (#347) */
+		preview?: (typed: FormData, id: string) => ListEntry | undefined;
+		/** Whether this one is saved on the device at once and sent in the background (#347) */
+		instantly?: (typed: FormData) => boolean;
+		/** Where it goes once kept on the device, as the server would send it; the group's list */
+		landing?: string;
 		children: Snippet;
 	};
 
@@ -45,16 +54,69 @@
 		onSaved,
 		moment,
 		pendingAs,
+		preview,
+		instantly,
+		landing,
 		children
 	}: Props = $props();
 
 	const submission = new Submission();
 	let typed = new FormData();
+	let direct = false;
 
-	/** The request never reached the server (no connection), as opposed to it saying no */
-	const unreachable = (failure: unknown) => failure instanceof TypeError || !navigator.onLine;
+	/**
+	 * Keeps it on the device, to go out in the background (at once with `send`); false when that
+	 * isn't possible
+	 */
+	async function keepHere(input: Parameters<SubmitFunction>[0], token: string, send = false) {
+		const fields = [...input.formData].map(([key, value]) => [key, String(value)]) as [
+			string,
+			string
+		][];
+		const field = (name: string) => String(typed.get(name) ?? '');
+		const kind = pendingAs?.kind ?? 'add';
+		const id = pendingAs?.target
+			? pendingId(kind, pendingAs.target)
+			: field('clientId') || crypto.randomUUID();
+		const kept = keep({
+			id,
+			kind,
+			target: pendingAs?.target,
+			token,
+			action: input.action.href,
+			fields,
+			title: field('title'),
+			amount: field('amount'),
+			currency: field('currency'),
+			date: field('date'),
+			addedAt: Date.now(),
+			preview: preview?.(typed, pendingAs?.target ?? id),
+			announce
+		});
+		if (!kept) return false;
+		// On its way before the page changes
+		const sending = send ? flushOutbox() : undefined;
+		if (moment) cueMoment(moment);
+		submission.pending = false;
+		// eslint-disable-next-line svelte/no-navigation-without-resolve -- resolved here or by the caller
+		await goto(landing ?? resolve('/g/[token]', { token }));
+		// Through while the page was changing, which came with what was there before
+		if (await sending) await invalidateAll();
+		return true;
+	}
 
 	const submit: SubmitFunction = (input) => {
+		// Saved on the device at once, online or not, and sent in the background (#347)
+		if (offlineToken && !direct && instantly?.(typed)) {
+			input.cancel();
+			void keepHere(input, offlineToken, true).then((kept) => {
+				if (kept) return;
+				// This device can't keep it: sent the usual way
+				direct = true;
+				input.formElement.requestSubmit();
+			});
+			return;
+		}
 		const after = submission.enhance(input) as Exclude<
 			ReturnType<SubmitFunction>,
 			Promise<unknown>
@@ -62,33 +124,7 @@
 		return async (options) => {
 			const { result } = options;
 			if (offlineToken && result.type === 'error' && unreachable(result.error)) {
-				const fields = [...input.formData].map(([key, value]) => [key, String(value)]) as [
-					string,
-					string
-				][];
-				const field = (name: string) => String(typed.get(name) ?? '');
-				const kind = pendingAs?.kind ?? 'add';
-				const kept = keep({
-					id: pendingAs?.target
-						? pendingId(kind, pendingAs.target)
-						: field('clientId') || crypto.randomUUID(),
-					kind,
-					target: pendingAs?.target,
-					token: offlineToken,
-					action: input.action.href,
-					fields,
-					title: field('title'),
-					amount: field('amount'),
-					currency: field('currency'),
-					date: field('date'),
-					addedAt: Date.now()
-				});
-				if (kept) {
-					if (moment) cueMoment(moment);
-					submission.pending = false;
-					await goto(resolve('/g/[token]', { token: offlineToken }));
-					return;
-				}
+				if (await keepHere(input, offlineToken)) return;
 			}
 			if (result.type === 'redirect' && moment) cueMoment(moment);
 			if (result.type === 'redirect' && onSaved) {

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { List, ListItem } from 'konsta/svelte';
@@ -10,7 +9,7 @@
 	import { entryOf, longPress } from '#lib/actions/long-press.ts';
 	import EntryMenu, { type MenuItem } from '#lib/components/EntryMenu.svelte';
 	import SwipeRow from '#lib/components/SwipeRow.svelte';
-	import { onOutboxChange, pendingFor } from '#lib/offline/outbox.ts';
+	import { watchPending } from '#lib/offline/pending.svelte.ts';
 
 	import { categoryIcons } from '#lib/expense/category-style.ts';
 	import { formatDistance, formatFuel } from '#lib/expense/driving.ts';
@@ -67,21 +66,41 @@
 		(offset) =>
 			`${resolve('/g/[token]/entries', { token })}?${new URLSearchParams({ offset: String(offset), q: query })}`
 	);
-	// Deleted on this device and waiting for the connection: gone from the list already (#347)
-	let deleting = $state(new Set<string>());
-	onMount(() => {
-		const refresh = () =>
-			(deleting = new Set(
-				pendingFor(token)
-					.filter((item) => item.kind === 'delete' && item.target)
-					.map((item) => item.target!)
-			));
-		refresh();
-		return onOutboxChange(refresh);
-	});
-	const loaded = $derived(
-		uniqueById([...entries, ...older.items]).filter((entry) => !deleting.has(entry.id))
+	// What's on this device and not on the server yet (#347): deleted ones are gone from the list
+	// already, new ones are in their place, marked as not synced
+	const waiting = watchPending((items) => items.filter((item) => item.token === token));
+	const deleting = $derived(
+		new Set(
+			waiting.items
+				.filter((item) => item.kind === 'delete' && item.target)
+				.map((item) => item.target!)
+		)
 	);
+	const previews = $derived(
+		waiting.items.flatMap((item) => (item.preview && !item.failed ? [item.preview] : []))
+	);
+	// Only new ones join the list; a change shows on the entry it's about, if that's still there
+	const additions = $derived(
+		waiting.items.flatMap((item) =>
+			['add', 'pay'].includes(item.kind ?? 'add') && item.preview && !item.failed
+				? [item.preview]
+				: []
+		)
+	);
+	const pending = $derived(new Set(previews.map((entry) => entry.id)));
+	const loaded = $derived.by(() => {
+		// Changed here: as changed, its comments and receipts as they were
+		const known = uniqueById([...entries, ...older.items]).map((entry) => {
+			const changed = previews.find((preview) => preview.id === entry.id);
+			return changed ? { ...changed, comments: entry.comments, receipts: entry.receipts } : entry;
+		});
+		const added = additions.filter((entry) => !known.some((other) => other.id === entry.id));
+		// Newest first, as the server sorts them; a new one goes before others of its day
+		const all = added.length
+			? [...added, ...known].sort((a, b) => b.date.localeCompare(a.date))
+			: known;
+		return all.filter((entry) => !deleting.has(entry.id));
+	});
 	const wanted = $derived(query.trim().toLocaleLowerCase());
 	const expenses = $derived(
 		searchHere && wanted
@@ -129,6 +148,7 @@
 		entry.type === 'payment'
 			? formatDate(entry.date)
 			: [
+					pending.has(entry.id) && m.pending_title(),
 					formatDate(entry.date),
 					paidLine(entry),
 					entry.odometerM && formatDistance(entry.odometerM, getLocale(), page.data.units),
@@ -197,16 +217,26 @@
 						<!-- Money that changed hands, not something bought: not in a card with the expenses -->
 						<ul class="mx-4">
 							<SwipeRow
-								items={menuItems(payment)}
+								items={pending.has(payment.id) ? [] : menuItems(payment)}
 								class={glow(payment.id)}
 								style={transitionName('expense', payment.id)}
 								data-entry={payment.id}
 							>
 								<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- resolved in hrefOf -->
+								<!-- Not on the server yet: no screen of its own to open (#347) -->
 								<a
-									href={hrefOf(payment)}
-									aria-label={`${titleOf(payment)}, ${subtitleOf(payment)}`}
-									class="flex min-h-10 items-center gap-3 px-2 text-xs text-muted active:opacity-70"
+									href={pending.has(payment.id) ? undefined : hrefOf(payment)}
+									aria-label={[
+										titleOf(payment),
+										subtitleOf(payment),
+										pending.has(payment.id) && m.pending_title()
+									]
+										.filter(Boolean)
+										.join(', ')}
+									class={[
+										'flex min-h-10 items-center gap-3 px-2 text-xs text-muted active:opacity-70',
+										pending.has(payment.id) && 'opacity-60'
+									]}
 								>
 									<span class="h-px flex-1 bg-current/15"></span>
 									<Icon name="payment" size={14} />
@@ -222,15 +252,15 @@
 						<List strong inset class="!my-0">
 							{#each run as expense (expense.id)}
 								<SwipeRow
-									items={menuItems(expense)}
+									items={pending.has(expense.id) ? [] : menuItems(expense)}
 									class={glow(expense.id)}
 									style={transitionName('expense', expense.id)}
 									data-entry={expense.id}
 								>
 									<ListItem
 										component="div"
-										link
-										href={hrefOf(expense)}
+										link={!pending.has(expense.id)}
+										href={pending.has(expense.id) ? undefined : hrefOf(expense)}
 										title={titleOf(expense)}
 										subtitle={subtitleOf(expense)}
 									>

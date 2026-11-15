@@ -25,8 +25,10 @@ export type FixedCost = {
 	category: ExpenseCategory;
 	/** Per month, oldest first: the amount that month (0 when there was none) */
 	months: { month: string; amount: number }[];
-	/** Average over the months there was some */
+	/** What it comes to a month: each payment spread over the months until the next */
 	average: number;
+	/** How often it's paid, in months: the usual gap between payments, or a guess for one alone */
+	everyMonths: number;
 	/** The latest month's amount */
 	latest: number;
 	/** The month before's, if there was one */
@@ -41,6 +43,21 @@ const median = (values: readonly number[]) => {
 };
 
 const monthOf = (date: string) => date.slice(0, 7);
+
+/** Paid once so far: insurance usually covers a year, the others a month */
+const ONE_PAYMENT_COVERS: Partial<Record<ExpenseCategory, number>> = { insurance: 12 };
+
+const monthIndex = (month: string) => {
+	const [year, number] = month.split('-').map(Number);
+	return year * 12 + number - 1;
+};
+
+/** The usual number of months between the months with a payment */
+function usualGap(category: ExpenseCategory, paidMonths: readonly string[]) {
+	if (paidMonths.length < 2) return ONE_PAYMENT_COVERS[category] ?? 1;
+	const gaps = paidMonths.slice(1).map((month, i) => monthIndex(month) - monthIndex(paidMonths[i]));
+	return Math.max(1, Math.round(median(gaps)));
+}
 const isFixed = (expense: Expense) => FIXED_CATEGORIES.has(expense.category);
 
 /** Each expense's kind, by id */
@@ -71,11 +88,15 @@ export function fixedCosts(expenses: readonly Expense[]): FixedCost[] {
 		for (let month = sorted[0]; month <= sorted.at(-1)!; month = nextMonth(month)) {
 			months.push({ month, amount: sums.get(month) ?? 0 });
 		}
-		const amounts = [...sums.values()];
+		const total = [...sums.values()].reduce((sum, amount) => sum + amount, 0);
+		// Every 6 months, say: the last payment covers the 6 from its month on too
+		const everyMonths = usualGap(category, sorted);
+		const covered = months.length + everyMonths - 1;
 		costs.push({
 			category,
 			months,
-			average: Math.round(amounts.reduce((sum, amount) => sum + amount, 0) / amounts.length),
+			average: Math.round(total / covered),
+			everyMonths,
 			latest: sums.get(sorted.at(-1)!)!,
 			previous: sorted.length > 1 ? sums.get(sorted.at(-2)!)! : null
 		});

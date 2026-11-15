@@ -23,7 +23,9 @@
 	import type { Frequency } from '#lib/expense/recurrence.ts';
 	import { ITEMS_MODE } from '#lib/split/items.ts';
 	import { isSplitMode, SPLIT_MODES, type SplitMode } from '#lib/split/modes.ts';
-	import { SEVERAL_PAYERS } from '#lib/validation.ts';
+	import { parseExpense, SEVERAL_PAYERS } from '#lib/validation.ts';
+	import { expenseValues } from '#lib/expense/form-values.ts';
+	import { previewEntry } from '#lib/offline/preview.ts';
 	import { PAID_BY_EACH } from '#lib/expense/paid-by-each.ts';
 	import { frequencyLabels } from '#lib/expense/frequency-labels.ts';
 	import { FREQUENCIES } from '#lib/expense/recurrence.ts';
@@ -101,6 +103,21 @@
 		expenseId,
 		balances
 	}: Props = $props();
+	// The expense's row in the list while it goes out, new or changed (#347); none when it can't
+	// tell yet, like an amount in another currency, whose rate only the server has
+	function previewOf(typed: FormData, id: string) {
+		const memberIds = members.map((member) => member.id);
+		const parsed = parseExpense(expenseValues(typed, ''), {
+			memberIds,
+			currency,
+			centOrder: cents
+		});
+		return parsed.ok ? previewEntry(id, parsed.value, identity.memberId) : undefined;
+	}
+	// Saved on the device at once when its row can be shown and nothing needs the server first,
+	// like the photos, which go up once it's there
+	const savesInstantly = (typed: FormData) =>
+		photos.length === 0 && previewOf(typed, clientId) !== undefined;
 	const cents = $derived(
 		centOrder(
 			members.map((member) => member.id),
@@ -193,6 +210,8 @@
 	sealRow={expenseId ?? clientId}
 	announce={expenseId ? 'changed' : undefined}
 	moment={expenseId ? undefined : { kind: 'added', id: clientId }}
+	preview={previewOf}
+	instantly={savesInstantly}
 	onSaved={offlineToken && !expenseId ? afterSaving : undefined}
 >
 	{#if offlineToken && !expenseId}<input type="hidden" name="clientId" value={clientId} />{/if}

@@ -13,6 +13,47 @@ export type ChangelogEntry = {
 /** Newest first */
 export const CHANGELOG: ChangelogEntry[] = [
 	{
+		version: '0.24.0',
+		date: '2026-11-15',
+		items: [
+			{
+				icon: 'repeats',
+				en: 'Fixed costs paid every few months, like insurance every 6 months, are spread over those months instead of counting in full as a monthly cost.',
+				de: 'Fixkosten, die alle paar Monate anfallen, etwa eine Versicherung alle 6 Monate, werden auf diese Monate verteilt, statt voll als monatliche Kosten zu zählen.'
+			},
+			{
+				icon: 'kindCar',
+				en: 'The car insights remember whether you look at them with or without the purchase price.',
+				de: 'Die Auto-Insights merken sich, ob du sie mit oder ohne Kaufpreis ansiehst.'
+			},
+			{
+				icon: 'payment',
+				en: 'Recording a payment or settling up is instant too: it’s there the moment you save, and goes out in the background.',
+				de: 'Auch eine Zahlung einzutragen oder auszugleichen geht sofort: Sie ist beim Speichern da und wird im Hintergrund gesendet.'
+			},
+			{
+				icon: 'edit',
+				en: 'Changing an expense doesn’t wait for the server either, and a change to something someone else deleted meanwhile is dropped: deleting wins.',
+				de: 'Auch Änderungen an einer Ausgabe warten nicht mehr auf den Server, und eine Änderung an etwas, das inzwischen jemand gelöscht hat, verfällt: Löschen gewinnt.'
+			},
+			{
+				icon: 'expense',
+				en: 'Adding an expense no longer waits for the server: it’s in the list the moment you save, and goes out in the background.',
+				de: 'Eine Ausgabe einzutragen wartet nicht mehr auf den Server: Sie steht sofort beim Speichern in der Liste und wird im Hintergrund gesendet.'
+			},
+			{
+				icon: 'offline',
+				en: 'An expense added without a connection shows in its place in the list right away, marked as not synced yet.',
+				de: 'Eine Ausgabe, die ohne Verbindung eingetragen wird, steht sofort an ihrem Platz in der Liste, markiert als noch nicht synchronisiert.'
+			},
+			{
+				icon: 'offline',
+				en: 'Comments work without a connection too: they wait on your phone under the expense and are sent once you’re online.',
+				de: 'Kommentare gehen jetzt auch ohne Verbindung: Sie warten auf deinem Handy unter der Ausgabe und werden gesendet, sobald du online bist.'
+			}
+		]
+	},
+	{
 		version: '0.23.0',
 		date: '2026-11-15',
 		items: [

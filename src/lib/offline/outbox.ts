@@ -1,16 +1,20 @@
-// Changes made while the connection was gone (#55, #347): new expenses, edits, deletions and
-// payments, kept on this device until they reach the server, in the order they were made.
+// Changes made while the connection was gone (#55, #347): new expenses, edits, deletions,
+// payments and comments, kept on this device until they reach the server, in the order they were made.
 // Storage can be unavailable; then nothing is kept and the form says so as before.
 import type { ErrorCode } from '#lib/errors.ts';
+import type { ListEntry } from '#lib/server/expense-entries.ts';
 
-/** What a kept change does: adds an expense (the default), changes or deletes one, records a payment */
-export type PendingKind = 'add' | 'edit' | 'delete' | 'pay';
+/**
+ * What a kept change does: adds an expense (the default), changes or deletes one, records a
+ * payment, or writes a comment under one
+ */
+export type PendingKind = 'add' | 'edit' | 'delete' | 'pay' | 'comment';
 
 export type Pending = {
 	/** A new entry's id on the server too, so sending twice can't add it twice; else kind:entry */
 	id: string;
 	kind?: PendingKind;
-	/** The entry an edit or deletion is about */
+	/** The entry an edit, deletion or comment is about */
 	target?: string;
 	/** The group's link token, to show it in its list */
 	token: string;
@@ -24,6 +28,10 @@ export type Pending = {
 	currency?: string;
 	date: string;
 	addedAt: number;
+	/** What to tell the group once it's through (#267), as the form says, e.g. "changed" */
+	announce?: string;
+	/** The expense as the list shows it, new or changed, made on the device: in the list meanwhile */
+	preview?: ListEntry;
 	/** The server said no (e.g. someone left the group): shown, to remove by hand */
 	failed?: ErrorCode;
 };
@@ -47,6 +55,9 @@ function write(items: Pending[]) {
 	}
 	for (const listener of listeners) listener();
 }
+
+/** The request never reached the server (no connection), as opposed to it saying no */
+export const unreachable = (failure: unknown) => failure instanceof TypeError || !navigator.onLine;
 
 export const pendingItems = () => read();
 export const pendingFor = (token: string) => read().filter((item) => item.token === token);

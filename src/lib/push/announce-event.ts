@@ -4,8 +4,11 @@
 import { resolve } from '$app/paths';
 import { page } from '$app/state';
 
-export function announceEvent(event: string) {
-	const token: string | undefined = page.data.group?.shareToken;
+/** For this page's group, or the one with `token` (a change sent later from the outbox) */
+export function announceEvent(
+	event: string,
+	token: string | undefined = page.data.group?.shareToken
+) {
 	if (!token) return;
 	const body = new FormData();
 	body.set('event', event);

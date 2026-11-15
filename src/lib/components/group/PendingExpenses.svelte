@@ -3,33 +3,25 @@
 	// marked as not synced, with what happens next (synced once online, or syncing now); one the
 	// server refused says why and can be removed.
 	import { List, ListItem, Preloader } from 'konsta/svelte';
-	import { onMount } from 'svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import { errorMessage } from '#lib/errors.ts';
 	import { formatAmount, parseAmount } from '#lib/money.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
-	import { drop, onOutboxChange, pendingFor, type Pending } from '#lib/offline/outbox.ts';
+	import { drop, type Pending } from '#lib/offline/outbox.ts';
+	import { watchPending } from '#lib/offline/pending.svelte.ts';
 	import { transitionName } from '#lib/motion/in-place-transition.ts';
 
 	let { token, currency }: { token: string; currency: string } = $props();
 
-	let items = $state<Pending[]>([]);
-	let online = $state(true);
-	onMount(() => {
-		const refresh = () => (items = pendingFor(token));
-		const connection = () => (online = navigator.onLine);
-		refresh();
-		connection();
-		window.addEventListener('online', connection);
-		window.addEventListener('offline', connection);
-		const stop = onOutboxChange(refresh);
-		return () => {
-			stop();
-			window.removeEventListener('online', connection);
-			window.removeEventListener('offline', connection);
-		};
-	});
+	// Comments wait under their expense instead, and a new expense with its row in the list there
+	const pending = watchPending((items) =>
+		items.filter(
+			(item) => item.token === token && item.kind !== 'comment' && !(item.preview && !item.failed)
+		)
+	);
+	const items = $derived(pending.items);
+	const online = $derived(pending.online);
 
 	/** As typed, shown like any amount */
 	const amountOf = (item: Pending) => {
