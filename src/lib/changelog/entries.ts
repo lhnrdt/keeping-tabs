@@ -13,6 +13,17 @@ export type ChangelogEntry = {
 /** Newest first */
 export const CHANGELOG: ChangelogEntry[] = [
 	{
+		version: '0.21.1',
+		date: '2026-11-15',
+		items: [
+			{
+				icon: 'kindCar',
+				en: 'A car’s cost per km now counts all of its costs, insurance, tax and repairs included.',
+				de: 'Die Kosten pro km eines Autos zählen jetzt alle seine Kosten mit, auch Versicherung, Steuer und Reparaturen.'
+			}
+		]
+	},
+	{
 		version: '0.21.0',
 		date: '2026-11-14',
 		items: [
