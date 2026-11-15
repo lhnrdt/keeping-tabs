@@ -17,6 +17,11 @@ export const CHANGELOG: ChangelogEntry[] = [
 		date: '',
 		items: [
 			{
+				icon: 'kindCar',
+				en: 'In car groups, one switch leaves the purchase price out of the cost per km, its course over time and the monthly cost.',
+				de: 'In Autogruppen nimmt ein Schalter den Kaufpreis aus den Kosten pro km, ihrem Verlauf und den monatlichen Kosten heraus.'
+			},
+			{
 				icon: 'splitEqual',
 				en: 'A cent that doesn’t split evenly goes to whoever owes the least right now, so over time nobody keeps paying the extra cents.',
 				de: 'Ein Cent, der sich nicht gleichmäßig teilen lässt, geht an die Person, die gerade am wenigsten schuldet. So zahlt auf Dauer niemand immer die zusätzlichen Cents.'
