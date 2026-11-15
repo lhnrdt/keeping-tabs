@@ -42,11 +42,13 @@
 						name: names.get(row.paidBy) ?? '?'
 					})}
 				</span>
-				<span
-					class="mt-2 h-1 self-center rounded-r bg-accent dark:bg-accent-night"
-					style:width="{Math.max(4, (row.amount / largest) * 100)}%"
-					aria-hidden="true"
-				></span>
+				<!-- Its size against the biggest, across the row on a faint track -->
+				<span class="col-span-2 mt-2 h-1 rounded-full bg-current/10" aria-hidden="true">
+					<span
+						class="block h-full rounded-full bg-accent dark:bg-accent-night"
+						style:width="{Math.max(1.5, (row.amount / largest) * 100)}%"
+					></span>
+				</span>
 			</a>
 		</li>
 	{/each}
