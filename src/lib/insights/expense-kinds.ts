@@ -1,30 +1,35 @@
-// What kind of cost each expense is (#167): fixed (recurring), everyday (small, frequent),
-// occasional, or a big one-off. Derived from the group's own expenses, nothing to set up.
-import { normalizeTitle } from '#lib/expense/normalize.ts';
+// What kind of cost each expense is (#167): fixed (rent, utilities, internet, insurance), everyday
+// (small and frequent), occasional, or a big one-off. From what's certain about each expense, its
+// category and its amount, never from its title: the same thing is written many ways ("Rewe",
+// "Einkaufen", "Rwe"), and a typo mustn't change what an insight says.
+import type { ExpenseCategory } from '#lib/expense/categories.ts';
 
 export const KINDS = ['fixed', 'everyday', 'occasional', 'big'] as const;
 export type Kind = (typeof KINDS)[number];
 
-type Expense = { id: string; title: string; amountCents: number; date: string };
+type Expense = { id: string; amountCents: number; date: string; category: ExpenseCategory };
 
-/** Fixed: the same title in at least this many different months… */
-const FIXED_MIN_MONTHS = 3;
-/** …at amounts within this much of their median */
-const FIXED_TOLERANCE = 0.25;
+/** What's paid regularly whatever it's called: these categories are fixed costs */
+export const FIXED_CATEGORIES: ReadonlySet<ExpenseCategory> = new Set([
+	'rent',
+	'utilities',
+	'internet',
+	'insurance'
+]);
 /** Big one-off: at least this many times the group's median expense */
 const BIG_FACTOR = 3;
 /** Everyday: at most this many times the median */
 const EVERYDAY_FACTOR = 2;
 
 export type FixedCost = {
-	/** The title as last used */
-	title: string;
-	/** Per month, oldest first: the amount that month (0 when it didn't occur) */
+	category: ExpenseCategory;
+	/** Per month, oldest first: the amount that month (0 when there was none) */
 	months: { month: string; amount: number }[];
-	/** Average over the months it occurred */
+	/** Average over the months there was some */
 	average: number;
+	/** The latest month's amount */
 	latest: number;
-	/** The latest amount against the one before, if there is one */
+	/** The month before's, if there was one */
 	previous: number | null;
 };
 
@@ -36,38 +41,15 @@ const median = (values: readonly number[]) => {
 };
 
 const monthOf = (date: string) => date.slice(0, 7);
-
-/** Titles that recur monthly at a steady amount, with their expenses (oldest first) */
-function recurring(expenses: readonly Expense[]) {
-	const byTitle = Map.groupBy(expenses, (expense) => normalizeTitle(expense.title));
-	const fixed = new Map<string, Expense[]>();
-	for (const [key, group] of byTitle) {
-		if (!key) continue;
-		const months = new Set(group.map((expense) => monthOf(expense.date)));
-		if (months.size < FIXED_MIN_MONTHS) continue;
-		// About once a month, not a dozen times
-		if (group.length > months.size * 1.5) continue;
-		const typical = median(group.map((expense) => expense.amountCents));
-		const steady = group.every(
-			(expense) => Math.abs(expense.amountCents - typical) <= typical * FIXED_TOLERANCE
-		);
-		if (steady)
-			fixed.set(
-				key,
-				group.toSorted((a, b) => a.date.localeCompare(b.date))
-			);
-	}
-	return fixed;
-}
+const isFixed = (expense: Expense) => FIXED_CATEGORIES.has(expense.category);
 
 /** Each expense's kind, by id */
 export function kindsOf(expenses: readonly Expense[]): Map<string, Kind> {
-	const fixed = recurring(expenses);
-	const fixedIds = new Set([...fixed.values()].flat().map((expense) => expense.id));
-	const typical = median(expenses.map((expense) => expense.amountCents));
+	// What's typical among the rest: fixed costs like rent would make everything else look small
+	const typical = median(expenses.filter((expense) => !isFixed(expense)).map((e) => e.amountCents));
 	return new Map(
 		expenses.map((expense) => {
-			if (fixedIds.has(expense.id)) return [expense.id, 'fixed'];
+			if (isFixed(expense)) return [expense.id, 'fixed'];
 			if (expense.amountCents >= typical * BIG_FACTOR) return [expense.id, 'big'];
 			if (expense.amountCents <= typical * EVERYDAY_FACTOR) return [expense.id, 'everyday'];
 			return [expense.id, 'occasional'];
@@ -75,28 +57,27 @@ export function kindsOf(expenses: readonly Expense[]): Map<string, Kind> {
 	);
 }
 
-/** The recurring costs, largest first, each with its months from first to last */
+/** The fixed costs per category, largest first, each with its months from first to last */
 export function fixedCosts(expenses: readonly Expense[]): FixedCost[] {
 	const costs: FixedCost[] = [];
-	for (const group of recurring(expenses).values()) {
+	for (const [category, group] of Map.groupBy(expenses.filter(isFixed), (e) => e.category)) {
 		const sums = new Map<string, number>();
 		for (const expense of group) {
 			const month = monthOf(expense.date);
 			sums.set(month, (sums.get(month) ?? 0) + expense.amountCents);
 		}
-		const first = monthOf(group[0].date);
-		const last = monthOf(group.at(-1)!.date);
+		const sorted = [...sums.keys()].sort();
 		const months: FixedCost['months'] = [];
-		for (let month = first; month <= last; month = nextMonth(month)) {
+		for (let month = sorted[0]; month <= sorted.at(-1)!; month = nextMonth(month)) {
 			months.push({ month, amount: sums.get(month) ?? 0 });
 		}
 		const amounts = [...sums.values()];
 		costs.push({
-			title: group.at(-1)!.title,
+			category,
 			months,
 			average: Math.round(amounts.reduce((sum, amount) => sum + amount, 0) / amounts.length),
-			latest: group.at(-1)!.amountCents,
-			previous: group.length > 1 ? group.at(-2)!.amountCents : null
+			latest: sums.get(sorted.at(-1)!)!,
+			previous: sorted.length > 1 ? sums.get(sorted.at(-2)!)! : null
 		});
 	}
 	return costs.sort((a, b) => b.average - a.average);
