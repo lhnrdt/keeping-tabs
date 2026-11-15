@@ -87,6 +87,18 @@ export const KEYWORDS: [Exclude<ExpenseCategory, 'other'>, string[]][] = [
 	],
 	['insurance', ['huk', 'allianz', 'kfz steuer', 'versicherung', 'insurance', 'haftpflicht']],
 	[
+		'purchase',
+		[
+			'autokauf',
+			'fahrzeugkauf',
+			'kaufpreis',
+			'car purchase',
+			'gebrauchtwagen',
+			'neuwagen',
+			'anzahlung'
+		]
+	],
+	[
 		'transport',
 		[
 			'taxi',

@@ -18,6 +18,7 @@ export const EXPENSE_CATEGORIES = [
 	'tolls',
 	'repairs',
 	'insurance',
+	'purchase',
 	'rent',
 	'utilities',
 	'internet'
@@ -58,7 +59,7 @@ const BY_GROUP_KIND: Record<GroupKind, readonly ExpenseCategory[]> = {
 	friends: ['dining', 'drinks', 'fun', 'groceries', 'transport', 'gifts'],
 	food: ['groceries', 'dining', 'drinks'],
 	event: ['dining', 'drinks', 'fun', 'lodging', 'transport', 'gifts', 'shopping'],
-	car: ['fuel', 'parking', 'tolls', 'repairs', 'insurance', 'transport']
+	car: ['fuel', 'parking', 'tolls', 'repairs', 'insurance', 'purchase', 'transport']
 };
 
 /**
