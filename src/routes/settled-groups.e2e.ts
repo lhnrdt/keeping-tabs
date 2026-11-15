@@ -28,6 +28,8 @@ test('groups settled and quiet for a month fold away on the start screen (#46)',
 	await page.getByRole('region', { name: 'Settle up' }).getByRole('link').first().click();
 	await page.getByLabel('Date').fill(daysAgo(59));
 	await page.getByRole('button', { name: 'Record payment' }).click();
+	// Saved on the device at once; through to the server once it's settled here
+	await expect(page.getByRole('status')).toHaveText('All settled. Nice and easy.');
 	await open(page, '/');
 	await expect(page.getByRole('link', { name: /Old trip/ })).toBeHidden();
 	await page.getByText('Settled groups (1)').click();

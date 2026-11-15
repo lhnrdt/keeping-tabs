@@ -17,6 +17,11 @@ export const CHANGELOG: ChangelogEntry[] = [
 		date: '',
 		items: [
 			{
+				icon: 'payment',
+				en: 'Recording a payment or settling up is instant too: it’s there the moment you save, and goes out in the background.',
+				de: 'Auch eine Zahlung einzutragen oder auszugleichen geht sofort: Sie ist beim Speichern da und wird im Hintergrund gesendet.'
+			},
+			{
 				icon: 'edit',
 				en: 'Changing an expense doesn’t wait for the server either, and a change to something someone else deleted meanwhile is dropped: deleting wins.',
 				de: 'Auch Änderungen an einer Ausgabe warten nicht mehr auf den Server, und eine Änderung an etwas, das inzwischen jemand gelöscht hat, verfällt: Löschen gewinnt.'

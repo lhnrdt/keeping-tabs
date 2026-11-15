@@ -39,6 +39,8 @@
 		preview?: (typed: FormData, id: string) => ListEntry | undefined;
 		/** Whether this one is saved on the device at once and sent in the background (#347) */
 		instantly?: (typed: FormData) => boolean;
+		/** Where it goes once kept on the device, as the server would send it; the group's list */
+		landing?: string;
 		children: Snippet;
 	};
 
@@ -54,6 +56,7 @@
 		pendingAs,
 		preview,
 		instantly,
+		landing,
 		children
 	}: Props = $props();
 
@@ -95,7 +98,8 @@
 		const sending = send ? flushOutbox() : undefined;
 		if (moment) cueMoment(moment);
 		submission.pending = false;
-		await goto(resolve('/g/[token]', { token }));
+		// eslint-disable-next-line svelte/no-navigation-without-resolve -- resolved here or by the caller
+		await goto(landing ?? resolve('/g/[token]', { token }));
 		// Through while the page was changing, which came with what was there before
 		if (await sending) await invalidateAll();
 		return true;
