@@ -17,6 +17,11 @@ export const CHANGELOG: ChangelogEntry[] = [
 		date: '',
 		items: [
 			{
+				icon: 'edit',
+				en: 'Changing an expense doesn’t wait for the server either, and a change to something someone else deleted meanwhile is dropped: deleting wins.',
+				de: 'Auch Änderungen an einer Ausgabe warten nicht mehr auf den Server, und eine Änderung an etwas, das inzwischen jemand gelöscht hat, verfällt: Löschen gewinnt.'
+			},
+			{
 				icon: 'expense',
 				en: 'Adding an expense no longer waits for the server: it’s in the list the moment you save, and goes out in the background.',
 				de: 'Eine Ausgabe einzutragen wartet nicht mehr auf den Server: Sie steht sofort beim Speichern in der Liste und wird im Hintergrund gesendet.'
