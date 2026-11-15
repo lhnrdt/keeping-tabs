@@ -81,6 +81,7 @@ import IconGasStation from '@tabler/icons-svelte-runes/icons/gas-station';
 import IconKey from '@tabler/icons-svelte-runes/icons/key';
 import IconParking from '@tabler/icons-svelte-runes/icons/parking';
 import IconRoad from '@tabler/icons-svelte-runes/icons/road';
+import IconCarGarage from '@tabler/icons-svelte-runes/icons/car-garage';
 import IconShieldCheck from '@tabler/icons-svelte-runes/icons/shield-check';
 import IconTool from '@tabler/icons-svelte-runes/icons/tool';
 import IconWifi from '@tabler/icons-svelte-runes/icons/wifi';
@@ -188,6 +189,8 @@ export const icons = {
 	categoryTolls: IconRoad,
 	categoryRepairs: IconTool,
 	categoryInsurance: IconShieldCheck,
+	/** Buying the car itself */
+	categoryPurchase: IconCarGarage,
 	categoryRent: IconKey,
 	categoryUtilities: IconBolt,
 	categoryInternet: IconWifi,

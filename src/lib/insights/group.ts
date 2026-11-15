@@ -1,5 +1,6 @@
 // Insights for a group's entries (#161): each expense in its category as the app shows it,
 // chosen by hand or guessed from its title the way the group taught it.
+import { costPerKmOverTime, monthlyCost } from '#lib/expense/car-costs.ts';
 import { drivingOf, type DrivingEntry } from '#lib/expense/driving.ts';
 import { learnCategories, categoryOf } from '#lib/expense/learned.ts';
 import type { ExpenseCategory } from '#lib/expense/categories.ts';
@@ -43,6 +44,14 @@ export function groupInsights(
 			entries.filter((entry) => entry.type === 'expense'),
 			periodRange(period)
 		),
+		/** What the car costs over time, from all of its history (#366) */
+		car: {
+			perKm: costPerKmOverTime(categorized.filter((entry) => entry.type === 'expense')),
+			monthly: monthlyCost(
+				categorized.filter((entry) => entry.type === 'expense'),
+				today
+			)
+		},
 		/** From the first expense to the last, for stepping between periods */
 		span: (whole.first && whole.last
 			? { from: whole.first, to: whole.last }

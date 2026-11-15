@@ -23,6 +23,7 @@
 	import PeriodPicker from './PeriodPicker.svelte';
 	import InsightsSkeleton from './InsightsSkeleton.svelte';
 	import { navigating, page } from '$app/state';
+	import CarCosts from './CarCosts.svelte';
 	import PositionChart from './PositionChart.svelte';
 	import Recap from './Recap.svelte';
 	import { sectionTitles } from './section-texts';
@@ -132,6 +133,15 @@
 			<FixedCosts rows={insights.fixed} currency={group.currency} />
 		{:else if section === 'driving' && insights.driving}
 			<DrivingStats driving={insights.driving} currency={group.currency} />
+			{#if insights.car.perKm.length > 1 || insights.car.monthly}
+				<div class="mt-3">
+					<CarCosts
+						perKm={insights.car.perKm}
+						monthly={insights.car.monthly}
+						currency={group.currency}
+					/>
+				</div>
+			{/if}
 		{:else if section === 'myPosition' && insights.position}
 			<PositionChart points={insights.position} currency={group.currency} />
 		{:else if section === 'settling'}
