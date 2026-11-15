@@ -14,7 +14,7 @@ export type ChangelogEntry = {
 export const CHANGELOG: ChangelogEntry[] = [
 	{
 		version: '0.24.0',
-		date: '',
+		date: '2026-11-15',
 		items: [
 			{
 				icon: 'repeats',
