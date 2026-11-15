@@ -41,7 +41,8 @@ test('a car group notes the odometer and fuel with its expenses and sums them up
 	const driving = page.getByTestId('driving');
 	await expect(driving).toContainText('13,000 km');
 	await expect(driving).toContainText('1,000 km');
-	await expect(driving).toContainText('€0.08');
+	// All of the cost per km: both fill-ups, €150 over 1,000 km
+	await expect(driving).toContainText('€0.15');
 	await expect(driving).toContainText('5 l');
 	await expect(driving).toContainText('€1.67');
 
