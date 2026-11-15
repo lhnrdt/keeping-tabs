@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { List, ListItem } from 'konsta/svelte';
@@ -9,6 +10,7 @@
 	import { entryOf, longPress } from '#lib/actions/long-press.ts';
 	import EntryMenu, { type MenuItem } from '#lib/components/EntryMenu.svelte';
 	import SwipeRow from '#lib/components/SwipeRow.svelte';
+	import { onOutboxChange, pendingFor } from '#lib/offline/outbox.ts';
 
 	import { categoryIcons } from '#lib/expense/category-style.ts';
 	import { formatDistance, formatFuel } from '#lib/expense/driving.ts';
@@ -65,7 +67,21 @@
 		(offset) =>
 			`${resolve('/g/[token]/entries', { token })}?${new URLSearchParams({ offset: String(offset), q: query })}`
 	);
-	const loaded = $derived(uniqueById([...entries, ...older.items]));
+	// Deleted on this device and waiting for the connection: gone from the list already (#347)
+	let deleting = $state(new Set<string>());
+	onMount(() => {
+		const refresh = () =>
+			(deleting = new Set(
+				pendingFor(token)
+					.filter((item) => item.kind === 'delete' && item.target)
+					.map((item) => item.target!)
+			));
+		refresh();
+		return onOutboxChange(refresh);
+	});
+	const loaded = $derived(
+		uniqueById([...entries, ...older.items]).filter((entry) => !deleting.has(entry.id))
+	);
 	const wanted = $derived(query.trim().toLocaleLowerCase());
 	const expenses = $derived(
 		searchHere && wanted
@@ -156,6 +172,7 @@
 				label: payment ? m.delete_payment() : m.delete_expense(),
 				action: `${hrefOf(entry)}?/delete`,
 				announce: payment ? undefined : 'changed',
+				offline: { token, kind: 'delete', target: entry.id, title: titleOf(entry) },
 				destructive: true,
 				icon: 'delete'
 			}
