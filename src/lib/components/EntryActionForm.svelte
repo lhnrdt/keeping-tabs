@@ -5,15 +5,11 @@
 	import { enhance, type SubmitFunction } from '$app/forms';
 	import type { Snippet } from 'svelte';
 	import { sealing } from '#lib/crypto/seal-form.ts';
-	import { keep } from '#lib/offline/outbox.ts';
-	import { pendingId } from '#lib/offline/outbox.ts';
+	import { keep, pendingId, unreachable } from '#lib/offline/outbox.ts';
 	import type { MenuItem } from './EntryMenu.svelte';
 
 	type Props = { item: MenuItem; onDone: () => void; class?: string; children: Snippet };
 	let { item, onDone, class: className, children }: Props = $props();
-
-	/** The request never reached the server (no connection), as opposed to it saying no */
-	const unreachable = (failure: unknown) => failure instanceof TypeError || !navigator.onLine;
 
 	const submit: SubmitFunction =
 		(input) =>
