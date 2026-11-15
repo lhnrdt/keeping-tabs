@@ -54,12 +54,6 @@
 					date: date(highlight.date),
 					amount: money(highlight.amount)
 				});
-			case 'place':
-				return m.highlight_place({
-					title: highlight.title,
-					count: highlight.times,
-					amount: money(highlight.amount)
-				});
 			case 'mostOften':
 				return m.highlight_most_often({
 					name: names.get(highlight.memberId) ?? '?',
@@ -78,7 +72,6 @@
 
 	const icons: Record<Exclude<Highlight['kind'], 'topCategory' | 'mostOften'>, IconName> = {
 		busiestDay: 'day',
-		place: 'place',
 		streak: 'streak',
 		weekday: 'day'
 	};

@@ -55,26 +55,6 @@ describe('highlightsOf', () => {
 		});
 	});
 
-	it('finds a favourite place, not a fixed cost', () => {
-		const rows = [
-			expense('2026-08-01', 'Rewe', 3000),
-			expense('2026-08-08', 'rewe', 2000),
-			expense('2026-08-15', 'REWE!', 4000),
-			...['2026-06-01', '2026-07-01', '2026-08-01', '2026-09-01'].map((date) =>
-				expense(date, 'Miete', 100000)
-			)
-		];
-		const fixed = new Map(
-			rows.filter((row) => row.title === 'Miete').map((row) => [row.id, 'fixed' as Kind])
-		);
-		expect(highlightsOf(rows, fixed, 2)).toContainEqual({
-			kind: 'place',
-			title: 'REWE!',
-			times: 3,
-			amount: 9000
-		});
-	});
-
 	it('names who pays most often, among several', () => {
 		const rows = [
 			expense('2026-08-01', 'A', 1000, 'ben'),

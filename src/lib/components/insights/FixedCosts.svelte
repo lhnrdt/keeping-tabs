@@ -1,5 +1,5 @@
 <script lang="ts">
-	// The recurring costs (#167, #188): each with its monthly average, a sparkline of its
+	// The fixed costs per category (#167, #188): each with its monthly average, a sparkline of its
 	// months on its own scale (LayerChart), and how the latest compares to the one before
 	// (arrow, percent and words).
 	import { LineChart } from 'layerchart';
@@ -7,6 +7,8 @@
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import type { FixedCost } from '#lib/insights/expense-kinds.ts';
+	import { categoryIcons, categoryLabels } from '#lib/expense/category-style.ts';
+	import IconBadge from '#lib/components/IconBadge.svelte';
 
 	let { rows, currency }: { rows: FixedCost[]; currency: string } = $props();
 
@@ -28,13 +30,14 @@
 	class="mx-4 rounded-2xl bg-surface px-4 py-1 dark:bg-surface-night"
 	aria-label={m.insights_fixed()}
 >
-	{#each rows as cost (cost.title)}
+	{#each rows as cost (cost.category)}
 		{@const delta = change(cost)}
 		<li
-			class="grid grid-cols-[1fr_auto_auto] items-center gap-3 border-b border-ink/5 py-3 last:border-0 dark:border-ink-night/10"
+			class="grid grid-cols-[auto_1fr_auto_auto] items-center gap-3 border-b border-ink/5 py-3 last:border-0 dark:border-ink-night/10"
 		>
+			<IconBadge name={categoryIcons[cost.category]} />
 			<span class="min-w-0">
-				<span class="block truncate font-medium">{cost.title}</span>
+				<span class="block truncate font-medium">{categoryLabels[cost.category]()}</span>
 				<span class="block text-sm text-muted"
 					>{m.kind_per_month({ amount: money(cost.average) })}</span
 				>

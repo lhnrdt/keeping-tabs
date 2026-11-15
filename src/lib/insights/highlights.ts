@@ -2,7 +2,6 @@
 // and worth telling. Most telling first, at most MAX_HIGHLIGHTS.
 import type { ExpenseCategory } from '#lib/expense/categories.ts';
 import type { Kind } from './expense-kinds';
-import { placesOf } from './places';
 
 type Expense = {
 	id: string;
@@ -16,7 +15,6 @@ type Expense = {
 export type Highlight =
 	| { kind: 'topCategory'; category: ExpenseCategory; share: number }
 	| { kind: 'busiestDay'; date: string; amount: number }
-	| { kind: 'place'; title: string; times: number; amount: number }
 	| { kind: 'mostOften'; memberId: string; times: number; count: number }
 	| { kind: 'streak'; days: number; from: string }
 	/** 0 = Monday … 6 = Sunday */
@@ -81,11 +79,6 @@ function busiestDay(expenses: readonly Expense[], total: number): Highlight | nu
 	return { kind: 'busiestDay', date: top[0], amount: top[1] };
 }
 
-function place(expenses: readonly Expense[], kinds: ReadonlyMap<string, Kind>): Highlight | null {
-	const [top] = placesOf(expenses, kinds);
-	return top ? { kind: 'place', ...top } : null;
-}
-
 function mostOften(expenses: readonly Expense[], memberCount: number): Highlight | null {
 	if (memberCount < 2 || expenses.length < MOST_OFTEN_MIN_COUNT) return null;
 	const top = leader(
@@ -137,7 +130,6 @@ export function highlightsOf(
 	return [
 		topCategory(expenses, total),
 		busiestDay(expenses, total),
-		place(expenses, kinds),
 		mostOften(expenses, memberCount),
 		streak(expenses),
 		weekday(expenses, total)
