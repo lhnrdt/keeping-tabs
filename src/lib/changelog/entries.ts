@@ -18,6 +18,11 @@ export const CHANGELOG: ChangelogEntry[] = [
 		items: [
 			{
 				icon: 'offline',
+				en: 'An expense added without a connection shows in its place in the list right away, marked as not synced yet.',
+				de: 'Eine Ausgabe, die ohne Verbindung eingetragen wird, steht sofort an ihrem Platz in der Liste, markiert als noch nicht synchronisiert.'
+			},
+			{
+				icon: 'offline',
 				en: 'Comments work without a connection too: they wait on your phone under the expense and are sent once you’re online.',
 				de: 'Kommentare gehen jetzt auch ohne Verbindung: Sie warten auf deinem Handy unter der Ausgabe und werden gesendet, sobald du online bist.'
 			}
