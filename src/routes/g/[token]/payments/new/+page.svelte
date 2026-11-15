@@ -36,6 +36,7 @@
 	back={{ href: resolve('/g/[token]', { token: data.group.shareToken }), label: data.group.name }}
 >
 	<PaymentForm
+		token={data.group.shareToken}
 		members={data.members}
 		currency={data.group.currency}
 		{values}

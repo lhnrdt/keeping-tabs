@@ -13,6 +13,27 @@ export type ChangelogEntry = {
 /** Newest first */
 export const CHANGELOG: ChangelogEntry[] = [
 	{
+		version: '0.23.0',
+		date: '2026-11-15',
+		items: [
+			{
+				icon: 'kindCar',
+				en: 'In car groups, one switch leaves the purchase price out of the cost per km, its course over time and the monthly cost.',
+				de: 'In Autogruppen nimmt ein Schalter den Kaufpreis aus den Kosten pro km, ihrem Verlauf und den monatlichen Kosten heraus.'
+			},
+			{
+				icon: 'kindCar',
+				en: 'Car groups also show how far the car goes in a year on average, and how much of its cost goes on fuel.',
+				de: 'Autogruppen zeigen außerdem, wie weit das Auto im Schnitt pro Jahr fährt und wie viel der Kosten auf Sprit entfällt.'
+			},
+			{
+				icon: 'splitEqual',
+				en: 'A cent that doesn’t split evenly goes to whoever owes the least right now, so over time nobody keeps paying the extra cents.',
+				de: 'Ein Cent, der sich nicht gleichmäßig teilen lässt, geht an die Person, die gerade am wenigsten schuldet. So zahlt auf Dauer niemand immer die zusätzlichen Cents.'
+			}
+		]
+	},
+	{
 		version: '0.22.0',
 		date: '2026-11-15',
 		items: [

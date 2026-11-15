@@ -4,6 +4,7 @@ import { formatRate } from '#lib/expense/exchange.ts';
 import { expenseValues, paymentValues } from '#lib/expense/form-values.ts';
 import { SEALED_AMOUNT, sealedInput } from '#lib/expense/sealed-details.ts';
 import { m } from '#lib/paraglide/messages.js';
+import { centOrder } from '#lib/split/cent-order.ts';
 import { defaultFrom } from '#lib/split/default-split.ts';
 import {
 	parseDate,
@@ -12,6 +13,7 @@ import {
 	type ExpenseInput,
 	type Result
 } from '#lib/validation.ts';
+import { groupBalances } from './balances';
 import type { Db } from './db';
 import { placeholderMember } from './encryption-handover';
 import { listMembers, setDefaultSplit, setGroupDetails } from './groups';
@@ -27,10 +29,13 @@ async function validate<V, T>(
 	db: Db,
 	group: Group,
 	values: V,
-	parse: (values: V, group: { memberIds: string[]; currency: string }) => Result<T>
+	parse: (
+		values: V,
+		group: { memberIds: string[]; currency: string }
+	) => Result<T> | Promise<Result<T>>
 ) {
 	const members = await listMembers(db, group.id);
-	const result = parse(values, {
+	const result = await parse(values, {
 		memberIds: members.map((member) => member.id),
 		currency: group.currency
 	});
@@ -79,7 +84,12 @@ export async function readExpenseForm(db: Db, group: Group, form: FormData, acto
 			})
 		};
 	}
-	return validate(db, group, expenseValues(form, await rateOf(group, form)), parseExpense);
+	const values = expenseValues(form, await rateOf(group, form));
+	return validate(db, group, values, async (values, split) => {
+		// An odd cent goes to whoever owes the least right now
+		const balances = await groupBalances(db, group.id, split.memberIds);
+		return parseExpense(values, { ...split, centOrder: centOrder(split.memberIds, balances) });
+	});
 }
 
 export async function readPaymentForm(db: Db, group: Group, form: FormData, actorId: string) {

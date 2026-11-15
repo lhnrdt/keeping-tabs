@@ -45,6 +45,9 @@ test('a car group notes the odometer and fuel with its expenses and sums them up
 	await expect(driving).toContainText('€0.15');
 	await expect(driving).toContainText('5 l');
 	await expect(driving).toContainText('€1.67');
+	// So far it all went on fuel; readings on one day say nothing about a year yet
+	await expect(driving).toContainText(/Spent on fuel\s*100%/);
+	await expect(driving).not.toContainText('a year on average');
 
 	// Both are optional: an expense without them goes through
 	await open(page, `${groupUrl}/expenses/new`);
@@ -87,4 +90,37 @@ test('a car group keeps costs everyone already paid, without anyone owing for th
 	await open(page, groupUrl);
 	await row.click();
 	await expect(page.getByRole('radio', { name: 'Everyone, already paid' })).toBeChecked();
+});
+
+test('one switch leaves the purchase out of the cost per km and the monthly cost', async ({
+	page
+}) => {
+	const groupUrl = await createGroup(page, 'New car', 'Anna', ['Ben']);
+	await open(page, `${groupUrl}?tab=group`);
+	await page.getByRole('link', { name: 'Edit group' }).click();
+	await choose(page, 'Type', 'Car');
+	await page.getByRole('button', { name: 'Save' }).click();
+	await expect(page).toHaveURL(/tab=group/);
+
+	const add = async (title: string, amount: string, km: string, category?: string) => {
+		await open(page, `${groupUrl}/expenses/new`);
+		await page.getByLabel('What was it for?').fill(title);
+		await page.getByLabel('Amount (€)').fill(amount);
+		await page.getByLabel('Odometer').fill(km);
+		if (category) await choose(page, 'Category', category);
+		await page.getByRole('button', { name: 'Add expense' }).click();
+		await expect(page).toHaveURL(groupUrl);
+	};
+	await add('Bought it', '10000', '50000', 'Purchase');
+	await add('Fuel', '100', '51000');
+
+	await open(page, `${groupUrl}?tab=insights`);
+	const driving = page.getByTestId('driving');
+	// €10,100 over 1,000 km
+	await expect(driving).toContainText('€10.10');
+	const withPurchase = page.getByRole('checkbox', { name: 'Including the purchase price' });
+	await page.locator('label').filter({ has: withPurchase }).click();
+	await expect(withPurchase).not.toBeChecked();
+	await expect(driving).toContainText('€0.10');
+	await expect(page.getByTestId('car-costs')).toContainText('€100.00');
 });

@@ -31,6 +31,7 @@
 	import DateChips from './DateChips.svelte';
 	import DrivingFields from './DrivingFields.svelte';
 	import ChoiceChips from './ChoiceChips.svelte';
+	import { centOrder } from '#lib/split/cent-order.ts';
 	import ParticipantChips from './ParticipantChips.svelte';
 	import ItemSplit from './ItemSplit.svelte';
 	import NewExpensePhotos from './NewExpensePhotos.svelte';
@@ -77,8 +78,12 @@
 		kind: GroupKind;
 		/** A new expense waits on the device when the connection is gone (#55) */
 		offlineToken?: string;
+		/** The group's link token, so an edit can wait for the connection too (#347) */
+		token?: string;
 		/** The expense being edited; a new one gets its id here */
 		expenseId?: string;
+		/** Everyone's balance by member id: an odd cent shows with whoever owes the least */
+		balances?: Record<string, number> | null;
 	};
 
 	let {
@@ -92,8 +97,16 @@
 		repeats,
 		kind,
 		offlineToken,
-		expenseId
+		token,
+		expenseId,
+		balances
 	}: Props = $props();
+	const cents = $derived(
+		centOrder(
+			members.map((member) => member.id),
+			balances ?? undefined
+		)
+	);
 	// Its id, made here: sending it again after a lost connection can't add it twice (#55)
 	const clientId = crypto.randomUUID();
 
@@ -174,14 +187,15 @@
 <GroupForm
 	{error}
 	{submitLabel}
-	{offlineToken}
+	offlineToken={offlineToken ?? (expenseId ? token : undefined)}
+	pendingAs={expenseId ? { kind: 'edit', target: expenseId } : undefined}
 	sealed={['title', 'notes', 'items']}
 	sealRow={expenseId ?? clientId}
 	announce={expenseId ? 'changed' : undefined}
 	moment={expenseId ? undefined : { kind: 'added', id: clientId }}
-	onSaved={offlineToken ? afterSaving : undefined}
+	onSaved={offlineToken && !expenseId ? afterSaving : undefined}
 >
-	{#if offlineToken}<input type="hidden" name="clientId" value={clientId} />{/if}
+	{#if offlineToken && !expenseId}<input type="hidden" name="clientId" value={clientId} />{/if}
 	<div class="flex flex-col gap-4 px-4 pt-2 pb-4">
 		<div data-tour="expense-what"><TitleNoteField bind:title notes={values.notes} /></div>
 		<div data-tour="expense-amount">
@@ -281,6 +295,7 @@
 					selected={values.participants}
 					amount={converted}
 					{currency}
+					centOrder={cents}
 					legend={m.form_who_for()}
 				/>
 			{:else}
@@ -289,6 +304,7 @@
 					{members}
 					{currency}
 					amount={converted}
+					centOrder={cents}
 					initial={{
 						mode: isSplitMode(values.splitMode) ? values.splitMode : 'equal',
 						inputs: values.inputs
@@ -310,7 +326,9 @@
 
 		<CategoryPicker value={values.category} {title} learned={learnCategories(chosen)} {kind} />
 		<DateChips bind:date />
-		{#if offlineToken}<NewExpensePhotos onchange={(chosen) => (photos = chosen)} />{/if}
+		{#if offlineToken && !expenseId}<NewExpensePhotos
+				onchange={(chosen) => (photos = chosen)}
+			/>{/if}
 		{#if canRepeat || repeats}
 			<PlainField label={m.field_repeats()} icon="repeats" arrow>
 				{#snippet children(id)}

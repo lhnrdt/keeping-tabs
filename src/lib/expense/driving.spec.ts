@@ -52,7 +52,9 @@ describe('drivingOf', () => {
 			drivenM: 0,
 			centsPerKm: null,
 			litresPer100Km: null,
-			centsPerLitre: null
+			centsPerLitre: null,
+			metresPerYear: null,
+			fuelShare: null
 		});
 	});
 
@@ -68,7 +70,11 @@ describe('drivingOf', () => {
 			// All of it: both fill-ups and what was paid in between
 			centsPerKm: 17,
 			litresPer100Km: 5,
-			centsPerLitre: 167
+			centsPerLitre: 167,
+			// 19 days of readings say too little about a year
+			metresPerYear: null,
+			// 150 of the 170 spent went on fuel
+			fuelShare: 15_000 / 17_000
 		});
 	});
 
@@ -98,6 +104,14 @@ describe('drivingOf', () => {
 		);
 		expect(driving?.drivenM).toBe(1_000_000);
 		expect(driving?.centsPerKm).toBe(50);
+	});
+
+	it('scales the km driven to a year, over all readings whatever the period', () => {
+		const driving = drivingOf(
+			[reading('2025-01-01', 10_000), reading('2025-07-02', 15_000), reading('2026-01-01', 22_000)],
+			{ from: '2025-07-01', to: '2025-07-31' }
+		);
+		expect(driving?.metresPerYear).toBe(12_000_000);
 	});
 
 	it('does not go negative on a mistyped reading', () => {

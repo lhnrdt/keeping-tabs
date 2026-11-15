@@ -13,7 +13,7 @@
 	import Budget from './Budget.svelte';
 	import BiggestList from './BiggestList.svelte';
 	import CategoryDonut from './CategoryDonut.svelte';
-	import DrivingStats from './DrivingStats.svelte';
+	import CarInsights from './CarInsights.svelte';
 	import FixedCosts from './FixedCosts.svelte';
 	import KindBars from './KindBars.svelte';
 	import KindMonths from './KindMonths.svelte';
@@ -23,7 +23,6 @@
 	import PeriodPicker from './PeriodPicker.svelte';
 	import InsightsSkeleton from './InsightsSkeleton.svelte';
 	import { navigating, page } from '$app/state';
-	import CarCosts from './CarCosts.svelte';
 	import PositionChart from './PositionChart.svelte';
 	import Recap from './Recap.svelte';
 	import { sectionTitles } from './section-texts';
@@ -78,7 +77,7 @@
 		kinds: () => insights.byKind.length > 1,
 		kindMonths: () => insights.kindMonths.length > 1,
 		fixedCosts: () => insights.fixed.length > 0,
-		driving: () => insights.driving !== null,
+		driving: () => insights.car.withPurchase.driving !== null,
 		biggest: () => true,
 		whoPays: () => insights.byMember.length > 1,
 		howOften: () => insights.byMember.length > 1,
@@ -131,17 +130,8 @@
 			<KindBars rows={insights.byKind} currency={group.currency} />
 		{:else if section === 'fixedCosts'}
 			<FixedCosts rows={insights.fixed} currency={group.currency} />
-		{:else if section === 'driving' && insights.driving}
-			<DrivingStats driving={insights.driving} currency={group.currency} />
-			{#if insights.car.perKm.length > 1 || insights.car.monthly}
-				<div class="mt-3">
-					<CarCosts
-						perKm={insights.car.perKm}
-						monthly={insights.car.monthly}
-						currency={group.currency}
-					/>
-				</div>
-			{/if}
+		{:else if section === 'driving' && insights.car.withPurchase.driving}
+			<CarInsights car={insights.car} currency={group.currency} />
 		{:else if section === 'myPosition' && insights.position}
 			<PositionChart points={insights.position} currency={group.currency} />
 		{:else if section === 'settling'}

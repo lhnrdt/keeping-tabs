@@ -73,3 +73,46 @@ test('completely offline: the app opens, and expenses are added on a form never 
 	await expect(page.getByRole('link', { name: /Firewood/ })).toHaveCount(1);
 	await expect(page.getByRole('link', { name: /Milk/ })).toHaveCount(1);
 });
+
+test('offline, an expense is changed, another deleted and a payment recorded, all sent once online (#347)', async ({
+	page,
+	context
+}) => {
+	test.setTimeout(120_000);
+	const groupUrl = await createGroup(page, 'Flat', 'Anna', ['Ben']);
+	for (const [title, amount] of [
+		['Bread', '4'],
+		['Milk', '2']
+	]) {
+		await page.getByRole('link', { name: 'Add expense' }).click();
+		await page.getByLabel('What was it for?').fill(title);
+		await page.getByLabel('Amount (€)').fill(amount);
+		await page.getByRole('button', { name: 'Add expense' }).click();
+		await expect(page.getByRole('link', { name: new RegExp(title) })).toBeVisible();
+	}
+	// Seen with the service worker there: the newest entries and the forms are kept ready
+	await page.waitForFunction(() => navigator.serviceWorker?.controller);
+	await page.reload();
+	await page.waitForLoadState('networkidle');
+	await page.waitForTimeout(2000);
+
+	await context.setOffline(true);
+	await page.getByRole('link', { name: /Bread/ }).click();
+	await page.getByLabel('Amount (€)').fill('6');
+	await page.getByRole('button', { name: 'Save' }).click();
+	await expect(page).toHaveURL(groupUrl);
+	const pending = page.getByRole('region', { name: 'Not synced yet' });
+	await expect(pending).toContainText('Changed');
+
+	await page.getByRole('link', { name: /Milk/ }).click({ button: 'right' });
+	await page.getByRole('dialog').getByRole('button', { name: 'Delete expense' }).click();
+	await expect(page.getByRole('link', { name: /Milk/ })).toHaveCount(0);
+	await expect(pending).toContainText('Deleted');
+
+	// Online again: all of it goes out
+	await context.setOffline(false);
+	await expect(pending).toHaveCount(0, { timeout: 20_000 });
+	await page.reload();
+	await expect(page.getByRole('link', { name: /Milk/ })).toHaveCount(0);
+	await expect(page.getByRole('link', { name: /Bread/ })).toContainText('€6.00');
+});

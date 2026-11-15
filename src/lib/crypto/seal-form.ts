@@ -15,6 +15,7 @@ import {
 import type { GroupKind } from '#lib/group/kinds.ts';
 import { choiceToStore, isSection } from '#lib/insights/sections.ts';
 import { parseAmount } from '#lib/money.ts';
+import { centOrder } from '#lib/split/cent-order.ts';
 import { defaultFrom } from '#lib/split/default-split.ts';
 import { keptEqualShares } from '#lib/split/kept-cents.ts';
 import { parseDefaultSplitForm } from '#lib/split/default-split-form.ts';
@@ -95,7 +96,14 @@ const leaveOnly = (form: FormData, kept: readonly string[]) => {
  */
 async function sealExpense(form: FormData, key: string, row: string): Promise<Refusal | null> {
 	const values = expenseValues(form, String(form.get('rate') ?? ''));
-	const parsed = parseExpense(values, { memberIds: groupMemberIds(), currency: groupCurrency() });
+	const memberIds = groupMemberIds();
+	// An odd cent goes to whoever owes the least, from the balances worked out here
+	const balances = page.data.balances as Record<string, number> | undefined;
+	const parsed = parseExpense(values, {
+		memberIds,
+		currency: groupCurrency(),
+		centOrder: centOrder(memberIds, balances)
+	});
 	if (!parsed.ok) return { error: parsed.error, values };
 	// Editing: an unchanged equal split keeps its cents where they were (#303)
 	const before = page.data.expense as

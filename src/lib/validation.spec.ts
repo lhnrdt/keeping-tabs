@@ -241,6 +241,27 @@ describe('parseSplit', () => {
 	const split = (splitMode: string, inputs: Record<string, string>) =>
 		parseSplit({ splitMode, participants: [], inputs }, 3000, group);
 
+	it('gives an odd cent to whoever owes the least, keeping the group order', () => {
+		const three = { memberIds: ['a', 'b', 'c'], currency: 'EUR' };
+		const equal = (centOrder?: string[]) =>
+			parseSplit({ splitMode: 'equal', participants: ['a', 'b', 'c'], inputs: {} }, 1000, {
+				...three,
+				centOrder
+			});
+		const cents = (result: ReturnType<typeof equal>) =>
+			result.ok ? result.value.shares.map((share) => [share.memberId, share.shareCents]) : [];
+		expect(cents(equal())).toEqual([
+			['a', 334],
+			['b', 333],
+			['c', 333]
+		]);
+		expect(cents(equal(['c', 'a', 'b']))).toEqual([
+			['a', 333],
+			['b', 333],
+			['c', 334]
+		]);
+	});
+
 	it("reads each member's input for the mode", () => {
 		expect(split('percent', { a: '25', b: '75' })).toEqual({
 			ok: true,

@@ -1,16 +1,16 @@
 <script lang="ts">
 	// What the car costs over time (#366): per km month by month, which falls as the purchase and
-	// the yearly costs spread over more km, from then to now; and what it costs a month on average,
-	// with or without its purchase. The table below is for screen readers.
+	// the yearly costs spread over more km, from then to now; and what it costs a month on average.
+	// The table below is for screen readers.
 	import { page } from '$app/state';
 	import { LineChart } from 'layerchart';
-	import type { CostPerKm, MonthlyCost } from '#lib/expense/car-costs.ts';
+	import type { CostPerKm } from '#lib/expense/car-costs.ts';
 	import { perDistance } from '#lib/expense/driving.ts';
 	import { shownAmount } from '#lib/shown-money.ts';
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 
-	type Props = { perKm: CostPerKm[]; monthly: MonthlyCost | null; currency: string };
+	type Props = { perKm: CostPerKm[]; monthly: number | null; currency: string };
 	let { perKm, monthly, currency }: Props = $props();
 
 	const units = $derived(page.data.units);
@@ -24,7 +24,6 @@
 	});
 	const label = (iso: string) => month.format(new Date(`${iso}-01T00:00:00Z`));
 
-	let withPurchase = $state(true);
 	const points = $derived(perKm.map((point) => ({ ...point, cost: perUnit(point) })));
 </script>
 
@@ -68,24 +67,12 @@
 			</table>
 		</div>
 	{/if}
-	{#if monthly}
+	{#if monthly !== null}
 		<div class="flex flex-col gap-2 border-t border-current/10 pt-3 first:border-0 first:pt-0">
 			<p class="flex items-baseline justify-between text-sm">
 				<span class="text-muted">{m.car_monthly_cost()}</span>
-				<span class="text-base font-semibold tabular-nums"
-					>{money(withPurchase ? monthly.all : monthly.running)}</span
-				>
+				<span class="text-base font-semibold tabular-nums">{money(monthly)}</span>
 			</p>
-			{#if monthly.purchase}
-				<label class="flex cursor-pointer items-center justify-end gap-2 text-sm text-muted">
-					<input
-						type="checkbox"
-						class="size-[18px] accent-accent dark:accent-accent-night"
-						bind:checked={withPurchase}
-					/>
-					{m.car_monthly_with_purchase()}
-				</label>
-			{/if}
 		</div>
 	{/if}
 </div>

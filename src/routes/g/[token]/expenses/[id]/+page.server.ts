@@ -3,6 +3,7 @@ import { resolve } from '$app/paths';
 import { undoUrl } from '#lib/group/tabs.ts';
 import { m } from '#lib/paraglide/messages.js';
 import { addComment, deleteComment, listComments } from '#lib/server/comments.ts';
+import { balancesFor } from '#lib/server/balances.ts';
 import { formContext } from '#lib/server/context.ts';
 import { readExpenseForm, rememberDefaultSplit } from '#lib/server/group-forms.ts';
 import {
@@ -19,15 +20,16 @@ import { keptEqualShares } from '#lib/split/kept-cents.ts';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, params, parent }) => {
-	const { group } = await parent();
-	const [expense, chosen, comments, receipts] = await Promise.all([
+	const { group, members } = await parent();
+	const [expense, chosen, comments, receipts, balances] = await Promise.all([
 		findExpense(locals.db, group.id, params.id),
 		listChosenCategories(locals.db, group.id),
 		listComments(locals.db, params.id),
-		listReceipts(locals.db, params.id)
+		listReceipts(locals.db, params.id),
+		balancesFor(locals.db, group, members)
 	]);
 	if (expense?.type !== 'expense') error(404, m.error_expense_not_found());
-	return { expense, chosen, comments, receipts };
+	return { expense, chosen, comments, receipts, balances };
 };
 
 export const actions: Actions = {

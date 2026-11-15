@@ -5,6 +5,7 @@
 	import type { GroupMember } from '#lib/group/members.ts';
 	import { formatAmount, parseAmount, splitEqual } from '#lib/money.ts';
 	import { getLocale } from '#lib/paraglide/runtime.js';
+	import { inOrder } from '#lib/split/cent-order.ts';
 
 	type Props = {
 		members: GroupMember[];
@@ -14,9 +15,11 @@
 		amount: string;
 		currency: string;
 		legend: string;
+		/** Who gets an odd cent first */
+		centOrder?: string[];
 	};
 
-	let { members, selected, amount, currency, legend }: Props = $props();
+	let { members, selected, amount, currency, legend, centOrder }: Props = $props();
 
 	let picked = $state((() => [...selected])());
 
@@ -27,7 +30,10 @@
 		return new Map(
 			splitEqual(
 				cents,
-				inside.map((member) => member.id)
+				inOrder(
+					inside.map((member) => member.id),
+					centOrder
+				)
 			).map((share) => [share.memberId, share.shareCents])
 		);
 	});

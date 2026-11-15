@@ -8,6 +8,7 @@ import type { Payer } from './expense/payers';
 import { PAID_BY_EACH, payersFromShares } from './expense/paid-by-each';
 import { parseAmount } from './money';
 import { ITEMS_MODE, itemShares, parseItems, type ExpenseItem } from './split/items';
+import { inOrder } from './split/cent-order';
 import { computeShares, type Share, type SplitEntry } from './split/compute';
 import { parseSplitInput } from './split/inputs';
 import { isSplitMode, type SplitMode } from './split/modes';
@@ -87,22 +88,31 @@ export function parseMemberNames(values: unknown[]): Result<string[]> {
 }
 
 /** How an expense is split (E-3): the mode and the resulting share of each member. */
+/** A group as a split needs it; `centOrder` is who gets an odd cent first, if not the group order */
+type SplitGroup = {
+	memberIds: readonly string[];
+	currency: string;
+	centOrder?: readonly string[];
+};
+
 export function parseSplit(
 	values: { splitMode: unknown; participants: unknown[]; inputs: Record<string, unknown> },
 	amountCents: number,
-	group: { memberIds: readonly string[]; currency: string }
+	group: SplitGroup
 ): Result<{ splitMode: SplitMode; shares: Share[] }> {
 	const splitMode = normalizeText(values.splitMode) || 'equal';
 	if (!isSplitMode(splitMode)) return { ok: false, error: 'split_mode_invalid' };
 
+	// In the cents' order, so an odd one goes to whoever owes the least
+	const order = inOrder(group.memberIds, group.centOrder);
 	const entries: SplitEntry[] = [];
 	if (splitMode === 'equal') {
 		const chosen = new Set(values.participants.map(normalizeText));
-		for (const memberId of group.memberIds) {
+		for (const memberId of order) {
 			if (chosen.has(memberId)) entries.push({ memberId, input: 0 });
 		}
 	} else {
-		for (const memberId of group.memberIds) {
+		for (const memberId of order) {
 			const text = normalizeText(values.inputs[memberId]);
 			const input = parseSplitInput(splitMode, text, group.currency);
 			if (input === null) return { ok: false, error: 'split_input_invalid' };
@@ -111,7 +121,12 @@ export function parseSplit(
 	}
 
 	const shares = computeShares(splitMode, amountCents, entries);
-	return shares.ok ? { ok: true, value: { splitMode, shares: shares.value } } : shares;
+	if (!shares.ok) return shares;
+	const place = (share: Share) => group.memberIds.indexOf(share.memberId);
+	return {
+		ok: true,
+		value: { splitMode, shares: [...shares.value].sort((a, b) => place(a) - place(b)) }
+	};
 }
 
 export type ExpenseInput = {
@@ -198,7 +213,7 @@ export function parseExpense(
 		/** With splitMode "items": the receipt's items as JSON (#53) */
 		items?: unknown;
 	},
-	group: { memberIds: readonly string[]; currency: string }
+	group: SplitGroup
 ): Result<ExpenseInput> {
 	const title = normalizeText(values.title);
 	if (!title) return { ok: false, error: 'expense_title_required' };
@@ -252,7 +267,7 @@ function parseExpenseSplit(
 	values: Parameters<typeof parseSplit>[0] & { items?: unknown },
 	amountCents: number,
 	original: Original | null,
-	group: { memberIds: readonly string[]; currency: string }
+	group: SplitGroup
 ): Result<{ splitMode: SplitMode; shares: Share[]; items: ExpenseItem[] | null }> {
 	if (normalizeText(values.splitMode) !== ITEMS_MODE) {
 		const split = parseSplit(values, amountCents, group);

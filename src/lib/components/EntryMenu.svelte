@@ -1,5 +1,6 @@
 <script lang="ts" module>
 	import type { IconName } from '#lib/icons.ts';
+	import type { PendingKind } from '#lib/offline/outbox.ts';
 
 	/** One thing to do with an entry: go somewhere, run something, or send a form action */
 	export type MenuItem = {
@@ -14,6 +15,8 @@
 		destructive?: boolean;
 		/** Also behind a swipe of the row (#323), shown as this */
 		icon?: IconName;
+		/** Kept on the device when there's no connection, and sent later (#347): what it's about */
+		offline?: { token: string; kind: PendingKind; target: string; title: string };
 	};
 </script>
 

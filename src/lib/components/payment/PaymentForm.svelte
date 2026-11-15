@@ -17,9 +17,11 @@
 		error?: ErrorCode;
 		submitLabel: string;
 		paymentId?: string;
+		/** The group's link token: without a connection, it waits on the device (#347) */
+		token?: string;
 	};
 
-	let { members, currency, values, error, submitLabel, paymentId }: Props = $props();
+	let { members, currency, values, error, submitLabel, paymentId, token }: Props = $props();
 	// Sealed for this row (#110): an edited one's, or a new one's, whose id is made here
 	const clientId = crypto.randomUUID();
 
@@ -42,6 +44,8 @@
 	sealRow={paymentId ?? clientId}
 	announce={paymentId ? undefined : 'payment'}
 	moment={paymentId ? undefined : { kind: 'paid', id: clientId }}
+	offlineToken={token}
+	pendingAs={paymentId ? { kind: 'edit', target: paymentId } : { kind: 'pay' }}
 >
 	<input type="hidden" name="clientId" value={paymentId ? '' : clientId} />
 	<div class="page-sections">

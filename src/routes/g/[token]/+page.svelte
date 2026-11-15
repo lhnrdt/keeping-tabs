@@ -32,6 +32,8 @@
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();
+	/** How many of the newest entries are kept ready to open offline */
+	const OFFLINE_ENTRIES = 10;
 	/** Once the page has come in, so the action is seen */
 	const MOMENT_DELAY_MS = 350;
 
@@ -54,9 +56,22 @@
 	});
 
 	// Without a connection later, an expense can still be added here, and the start screen opens
-	onMount(() =>
-		keepReady([resolve('/g/[token]/expenses/new', { token: data.group.shareToken }), resolve('/')])
-	);
+	onMount(() => {
+		const token = data.group.shareToken;
+		keepReady([
+			resolve('/g/[token]/expenses/new', { token }),
+			resolve('/g/[token]/payments/new', { token }),
+			resolve('/'),
+			// The newest entries, to change or look at without a connection (#347)
+			...data.entries
+				.slice(0, OFFLINE_ENTRIES)
+				.map((entry) =>
+					entry.type === 'payment'
+						? resolve('/g/[token]/payments/[id]', { token, id: entry.id })
+						: resolve('/g/[token]/expenses/[id]', { token, id: entry.id })
+				)
+		]);
+	});
 
 	// Fetch the insights' charts while idle, so the tab opens without waiting
 	onMount(() => warmUp(loadGroupInsights));
