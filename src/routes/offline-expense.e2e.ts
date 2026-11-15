@@ -16,15 +16,18 @@ test('an expense added without a connection waits on the device and goes out lat
 	await context.setOffline(true);
 	await page.getByRole('button', { name: 'Add expense' }).click();
 
-	// Back on the group, waiting with a spinner, nothing to type again
+	// Back on the group, in its place in the list already, marked as not synced
 	await expect(page).toHaveURL(groupUrl);
-	const pending = page.getByRole('region', { name: 'Not synced yet' });
-	await expect(pending).toContainText('Bread');
-	await expect(pending).toContainText('synced once you’re online');
+	const row = page
+		.getByRole('region', { name: 'Expenses' })
+		.getByRole('listitem')
+		.filter({ hasText: 'Bread' });
+	await expect(row).toContainText('Not synced yet');
+	await expect(row).toContainText('you lent €2.10');
 
-	// Online again: it goes out, once
+	// Online again: it goes out, once, and the same row is a link to it
 	await context.setOffline(false);
-	await expect(pending).toHaveCount(0, { timeout: 15_000 });
+	await expect(row).not.toContainText('Not synced yet', { timeout: 15_000 });
 	await expect(page.getByRole('link', { name: /Bread/ })).toHaveCount(1);
 	await page.reload();
 	await expect(page.getByRole('link', { name: /Bread/ })).toHaveCount(1);
@@ -62,14 +65,18 @@ test('completely offline: the app opens, and expenses are added on a form never 
 		await page.getByRole('button', { name: 'Add expense' }).click();
 		await expect(page).toHaveURL(groupUrl);
 	}
-	const pending = page.getByRole('region', { name: 'Not synced yet' });
-	await expect(pending).toContainText('Firewood');
-	await expect(pending).toContainText('€12.00');
-	await expect(pending).toContainText('Milk');
+	const expenses = page.getByRole('region', { name: 'Expenses' });
+	await expect(expenses.getByRole('listitem').filter({ hasText: 'Firewood' })).toContainText(
+		'Not synced yet'
+	);
+	await expect(expenses).toContainText('you lent €6.00');
+	await expect(expenses.getByRole('listitem').filter({ hasText: 'Milk' })).toContainText(
+		'Not synced yet'
+	);
 
 	// Online again: both go out, and the balance has them
 	await context.setOffline(false);
-	await expect(pending).toHaveCount(0, { timeout: 20_000 });
+	await expect(expenses).not.toContainText('Not synced yet', { timeout: 20_000 });
 	await expect(page.getByRole('link', { name: /Firewood/ })).toHaveCount(1);
 	await expect(page.getByRole('link', { name: /Milk/ })).toHaveCount(1);
 });

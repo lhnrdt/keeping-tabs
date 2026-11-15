@@ -14,9 +14,11 @@
 
 	let { token, currency }: { token: string; currency: string } = $props();
 
-	// Comments wait under their expense instead
+	// Comments wait under their expense instead, and a new expense with its row in the list there
 	const pending = watchPending((items) =>
-		items.filter((item) => item.token === token && item.kind !== 'comment')
+		items.filter(
+			(item) => item.token === token && item.kind !== 'comment' && !(item.preview && !item.failed)
+		)
 	);
 	const items = $derived(pending.items);
 	const online = $derived(pending.online);

@@ -2,6 +2,7 @@
 // payments and comments, kept on this device until they reach the server, in the order they were made.
 // Storage can be unavailable; then nothing is kept and the form says so as before.
 import type { ErrorCode } from '#lib/errors.ts';
+import type { ListEntry } from '#lib/server/expense-entries.ts';
 
 /**
  * What a kept change does: adds an expense (the default), changes or deletes one, records a
@@ -27,6 +28,8 @@ export type Pending = {
 	currency?: string;
 	date: string;
 	addedAt: number;
+	/** A new expense as the list shows it, made on the device: in its place in the list meanwhile */
+	preview?: ListEntry;
 	/** The server said no (e.g. someone left the group): shown, to remove by hand */
 	failed?: ErrorCode;
 };
