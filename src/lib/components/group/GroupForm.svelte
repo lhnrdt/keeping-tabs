@@ -4,7 +4,7 @@
 	// and the group shows it until it's through. One that can be saved instantly is kept on the
 	// device right away, online too, and goes out in the background (#347).
 	import { enhance, type SubmitFunction } from '$app/forms';
-	import { goto } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import type { Snippet } from 'svelte';
 	import type { ListEntry } from '#lib/server/expense-entries.ts';
@@ -91,10 +91,12 @@
 		});
 		if (!kept) return false;
 		// On its way before the page changes
-		if (send) void flushOutbox();
+		const sending = send ? flushOutbox() : undefined;
 		if (moment) cueMoment(moment);
 		submission.pending = false;
 		await goto(resolve('/g/[token]', { token }));
+		// Through while the page was changing, which came with what was there before
+		if (await sending) await invalidateAll();
 		return true;
 	}
 
