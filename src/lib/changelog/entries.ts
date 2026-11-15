@@ -13,6 +13,17 @@ export type ChangelogEntry = {
 /** Newest first */
 export const CHANGELOG: ChangelogEntry[] = [
 	{
+		version: '0.22.0',
+		date: '',
+		items: [
+			{
+				icon: 'expense',
+				en: 'Adding an expense asks three plain questions: who paid (you, unless you say otherwise), how it’s split, and who it’s for, each answered with a tap.',
+				de: 'Beim Eintragen einer Ausgabe gibt es drei einfache Fragen: Wer hat bezahlt (du, außer du sagst etwas anderes), wie wird geteilt und für wen ist es, jede mit einem Tipp beantwortet.'
+			}
+		]
+	},
+	{
 		version: '0.21.1',
 		date: '2026-11-15',
 		items: [
