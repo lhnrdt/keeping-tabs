@@ -92,6 +92,8 @@ test('an odd cent goes to whoever owes the least', async ({ page }) => {
 	await paidBy(page, 'Ben');
 	await page.getByRole('button', { name: 'Add expense' }).click();
 	await expect(page).toHaveURL(groupUrl);
+	// Through to the server, which the next form's balances come from
+	await expect(page.getByRole('link', { name: /Taxi/ })).toBeVisible();
 
 	// Now Ben owes the least (he's owed €6.67): the next odd cent is his, shown as typed
 	await addExpense(page, 'Snacks', '10');

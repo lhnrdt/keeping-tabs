@@ -17,6 +17,11 @@ export const CHANGELOG: ChangelogEntry[] = [
 		date: '',
 		items: [
 			{
+				icon: 'expense',
+				en: 'Adding an expense no longer waits for the server: it’s in the list the moment you save, and goes out in the background.',
+				de: 'Eine Ausgabe einzutragen wartet nicht mehr auf den Server: Sie steht sofort beim Speichern in der Liste und wird im Hintergrund gesendet.'
+			},
+			{
 				icon: 'offline',
 				en: 'An expense added without a connection shows in its place in the list right away, marked as not synced yet.',
 				de: 'Eine Ausgabe, die ohne Verbindung eingetragen wird, steht sofort an ihrem Platz in der Liste, markiert als noch nicht synchronisiert.'

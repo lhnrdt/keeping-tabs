@@ -4,7 +4,7 @@ import { self } from '$app/service-worker';
 import { APP_CACHE, fetchForCache, PAGES_CACHE, precached } from './caches';
 import './push';
 import { fromCache, keepFresh, keptFirst, networkFirst, strategyFor } from './respond';
-import { warm } from './warm';
+import { refreshKept, warm } from './warm';
 
 self.addEventListener('install', (event) => {
 	event.waitUntil(
@@ -29,11 +29,15 @@ self.addEventListener('activate', (event) => {
 	);
 });
 
-// The app says what comes next must be the server's, or which screens to have ready (#347)
+// The app says what comes next must be the server's, which screens to have ready, or which
+// kept ones changed (#347)
 self.addEventListener('message', (event) => {
 	if (event.data?.type === 'fresh') keepFresh();
 	if (event.data?.type === 'warm' && Array.isArray(event.data.urls)) {
 		event.waitUntil(warm(event.data.urls));
+	}
+	if (event.data?.type === 'refresh' && Array.isArray(event.data.urls)) {
+		event.waitUntil(refreshKept(event.data.urls));
 	}
 });
 

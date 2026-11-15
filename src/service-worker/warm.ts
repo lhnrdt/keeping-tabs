@@ -18,3 +18,27 @@ export async function warm(urls: string[]) {
 		})
 	).catch(() => {});
 }
+
+/**
+ * Brings every kept copy of these pages' data up to date, whichever parameters SvelteKit asked
+ * with, e.g. a group's after changes from this device reached the server
+ */
+export async function refreshKept(paths: string[]) {
+	const pages = await caches.open(PAGES_CACHE);
+	const kept = (await pages.keys()).filter((request) => {
+		const { pathname } = new URL(request.url);
+		return (
+			pathname.endsWith('/__data.json') &&
+			paths.some((path) => pathname === `${path.replace(/\/$/, '')}/__data.json`)
+		);
+	});
+	await Promise.all(
+		kept.map(async (request) => {
+			const response = await fetch(request.url, {
+				credentials: 'include',
+				headers: { accept: 'application/json' }
+			});
+			if (response.status === 200 && !response.redirected) await pages.put(request, response);
+		})
+	).catch(() => {});
+}
