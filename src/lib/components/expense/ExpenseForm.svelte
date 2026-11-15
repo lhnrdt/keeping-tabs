@@ -114,6 +114,10 @@
 		});
 		return parsed.ok ? previewEntry(id, parsed.value, identity.memberId) : undefined;
 	}
+	// Saved on the device at once when its row can be shown and nothing needs the server first,
+	// like the photos, which go up once it's there
+	const savesInstantly = (typed: FormData) =>
+		photos.length === 0 && previewOf(typed, clientId) !== undefined;
 	const cents = $derived(
 		centOrder(
 			members.map((member) => member.id),
@@ -207,6 +211,7 @@
 	announce={expenseId ? 'changed' : undefined}
 	moment={expenseId ? undefined : { kind: 'added', id: clientId }}
 	preview={expenseId ? undefined : previewOf}
+	instantly={expenseId ? undefined : savesInstantly}
 	onSaved={offlineToken && !expenseId ? afterSaving : undefined}
 >
 	{#if offlineToken && !expenseId}<input type="hidden" name="clientId" value={clientId} />{/if}
