@@ -31,6 +31,7 @@
 	import DateChips from './DateChips.svelte';
 	import DrivingFields from './DrivingFields.svelte';
 	import ChoiceChips from './ChoiceChips.svelte';
+	import { centOrder } from '#lib/split/cent-order.ts';
 	import ParticipantChips from './ParticipantChips.svelte';
 	import ItemSplit from './ItemSplit.svelte';
 	import NewExpensePhotos from './NewExpensePhotos.svelte';
@@ -81,6 +82,8 @@
 		token?: string;
 		/** The expense being edited; a new one gets its id here */
 		expenseId?: string;
+		/** Everyone's balance by member id: an odd cent shows with whoever owes the least */
+		balances?: Record<string, number> | null;
 	};
 
 	let {
@@ -95,8 +98,15 @@
 		kind,
 		offlineToken,
 		token,
-		expenseId
+		expenseId,
+		balances
 	}: Props = $props();
+	const cents = $derived(
+		centOrder(
+			members.map((member) => member.id),
+			balances ?? undefined
+		)
+	);
 	// Its id, made here: sending it again after a lost connection can't add it twice (#55)
 	const clientId = crypto.randomUUID();
 
@@ -285,6 +295,7 @@
 					selected={values.participants}
 					amount={converted}
 					{currency}
+					centOrder={cents}
 					legend={m.form_who_for()}
 				/>
 			{:else}
@@ -293,6 +304,7 @@
 					{members}
 					{currency}
 					amount={converted}
+					centOrder={cents}
 					initial={{
 						mode: isSplitMode(values.splitMode) ? values.splitMode : 'equal',
 						inputs: values.inputs

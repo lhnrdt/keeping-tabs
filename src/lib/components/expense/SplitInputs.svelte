@@ -11,6 +11,7 @@
 		splitProgress,
 		type SplitEntry
 	} from '#lib/split/compute.ts';
+	import { inOrder } from '#lib/split/cent-order.ts';
 	import { splitInputName } from '#lib/split/form.ts';
 	import { formatSplitInput, parseSplitInput } from '#lib/split/inputs.ts';
 	import { SPLIT_MODES, type SplitMode } from '#lib/split/modes.ts';
@@ -26,9 +27,11 @@
 		initial: { mode: SplitMode; inputs: Record<string, string> };
 		/** Each member's resulting amount below their name; not for a split without an amount */
 		amounts?: boolean;
+		/** Who gets an odd cent first */
+		centOrder?: string[];
 	};
 
-	let { mode, members, currency, amount, initial, amounts = true }: Props = $props();
+	let { mode, members, currency, amount, initial, amounts = true, centOrder }: Props = $props();
 
 	// Typed values per mode, so switching modes back and forth keeps them
 	const startWith = () =>
@@ -43,11 +46,16 @@
 
 	const amountCents = $derived(parseAmount(amount.trim(), currency));
 	const inputs = $derived(
-		members.map((member) => ({
-			memberId: member.id,
-			input: parseSplitInput(mode, texts[member.id] ?? '', currency)
+		inOrder(
+			members.map((member) => member.id),
+			centOrder
+		).map((memberId) => ({
+			memberId,
+			input: parseSplitInput(mode, texts[memberId] ?? '', currency)
 		}))
 	);
+	const inputOf = (memberId: string) =>
+		inputs.find((entry) => entry.memberId === memberId)?.input ?? null;
 	const valid = $derived(inputs.every((entry) => entry.input !== null));
 	const result = $derived(
 		valid && amountCents ? computeShares(mode, amountCents, inputs as SplitEntry[]) : undefined
@@ -94,8 +102,8 @@
 </script>
 
 <div class="-mt-1 flex flex-col">
-	{#each members as member, i (member.id)}
-		{@const share = shareOf(member.id, inputs[i].input)}
+	{#each members as member (member.id)}
+		{@const share = shareOf(member.id, inputOf(member.id))}
 		<div class="flex min-h-12 items-center gap-3">
 			<span class="flex flex-1 flex-col">
 				<span>{member.name}</span>

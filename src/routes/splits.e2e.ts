@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { splitBy, createGroup } from './e2e-helpers';
+import { splitBy, createGroup, paidBy, participants } from './e2e-helpers';
 
 const balanceOf = (page: Page, name: string) =>
 	page.getByRole('region', { name: 'Balances' }).getByRole('listitem').filter({ hasText: name });
@@ -82,4 +82,28 @@ test('split by amounts, parts and difference', async ({ page }) => {
 	await expect(balanceOf(page, 'Anna')).toContainText('€62.00');
 	await expect(balanceOf(page, 'Ben')).toContainText('€38.00');
 	await expect(balanceOf(page, 'Cara')).toContainText('€24.00');
+});
+
+test('an odd cent goes to whoever owes the least', async ({ page }) => {
+	const groupUrl = await createGroup(page, 'Trip', 'Anna', ['Ben', 'Cara']);
+
+	// All square: the first in the group gets it, so Anna's share is €3.34
+	await addExpense(page, 'Taxi', '10');
+	await paidBy(page, 'Ben');
+	await page.getByRole('button', { name: 'Add expense' }).click();
+	await expect(page).toHaveURL(groupUrl);
+
+	// Now Ben owes the least (he's owed €6.67): the next odd cent is his, shown as typed
+	await addExpense(page, 'Snacks', '10');
+	const chips = await participants(page);
+	await expect(chips.locator('label').filter({ hasText: 'Ben' })).toContainText('€3.34');
+	await expect(chips.locator('label').filter({ hasText: 'Anna' })).toContainText('€3.33');
+	await page.getByRole('button', { name: 'Add expense' }).click();
+	await expect(page).toHaveURL(groupUrl);
+
+	// Anna: −3.34 + 10 − 3.33; Ben: 10 − 3.33 − 3.34. Nobody kept paying the extra cents
+	await page.goto(`${groupUrl}?tab=balances`);
+	await expect(balanceOf(page, 'Anna')).toContainText('€3.33');
+	await expect(balanceOf(page, 'Ben')).toContainText('€3.33');
+	await expect(balanceOf(page, 'Cara')).toContainText('€6.66');
 });

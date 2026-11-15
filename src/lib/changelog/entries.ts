@@ -13,6 +13,17 @@ export type ChangelogEntry = {
 /** Newest first */
 export const CHANGELOG: ChangelogEntry[] = [
 	{
+		version: '0.23.0',
+		date: '',
+		items: [
+			{
+				icon: 'splitEqual',
+				en: 'A cent that doesn’t split evenly goes to whoever owes the least right now, so over time nobody keeps paying the extra cents.',
+				de: 'Ein Cent, der sich nicht gleichmäßig teilen lässt, geht an die Person, die gerade am wenigsten schuldet. So zahlt auf Dauer niemand immer die zusätzlichen Cents.'
+			}
+		]
+	},
+	{
 		version: '0.22.0',
 		date: '2026-11-15',
 		items: [

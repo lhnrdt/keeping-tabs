@@ -33,6 +33,7 @@
 		error={form && 'error' in form ? form.error : undefined}
 		submitLabel={m.save()}
 		kind={data.group.kind}
+		balances={data.balances}
 		expenseId={data.expense.id}
 		token={data.group.shareToken}
 	/>
