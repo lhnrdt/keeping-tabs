@@ -193,6 +193,7 @@
 	"kind_everyday_hint": "Klein und häufig",
 	"kind_occasional_hint": "Hin und wieder",
 	"kind_big_hint": "Selten und groß",
+	"kind_every_months": "alle {count} Monate",
 	"kind_per_month": "{amount} im Monat",
 	"kind_unchanged": "unverändert",
 	"insights_customize": "Insights anpassen",

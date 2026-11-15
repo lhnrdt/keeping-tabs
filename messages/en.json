@@ -193,6 +193,7 @@
 	"kind_everyday_hint": "Small and frequent",
 	"kind_occasional_hint": "Now and then",
 	"kind_big_hint": "Rare and large",
+	"kind_every_months": "every {count} months",
 	"kind_per_month": "{amount} a month",
 	"kind_unchanged": "unchanged",
 	"insights_customize": "Customize insights",

@@ -1,5 +1,6 @@
 <script lang="ts">
-	// The fixed costs per category (#167, #188): each with its monthly average, a sparkline of its
+	// The fixed costs per category (#167, #188): each with what it comes to a month, and how often
+	// it's paid when that's not monthly, a sparkline of its
 	// months on its own scale (LayerChart), and how the latest compares to the one before
 	// (arrow, percent and words).
 	import { LineChart } from 'layerchart';
@@ -39,7 +40,8 @@
 			<span class="min-w-0">
 				<span class="block truncate font-medium">{categoryLabels[cost.category]()}</span>
 				<span class="block text-sm text-muted"
-					>{m.kind_per_month({ amount: money(cost.average) })}</span
+					>{m.kind_per_month({ amount: money(cost.average) })}{#if cost.everyMonths > 1}
+						· {m.kind_every_months({ count: cost.everyMonths })}{/if}</span
 				>
 			</span>
 			<div class="h-6 w-18" aria-hidden="true">
