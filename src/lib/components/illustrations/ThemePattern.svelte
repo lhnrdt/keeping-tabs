@@ -43,7 +43,7 @@
 	const GROUND_TOP = 176;
 
 	/** Snow is bright, but the header's text comes first */
-	const SNOW_STRENGTH = 0.6;
+	const SNOW_STRENGTH = 0.5;
 
 	const theme = useTheme();
 	const shownTheme = $derived(themeId ?? theme.id);
