@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { costPerKmOverTime, monthlyCost, type CarEntry } from './car-costs';
+import { carViews, costPerKmOverTime, monthlyCost, type CarEntry } from './car-costs';
 
 const entry = (
 	date: string,
@@ -33,19 +33,27 @@ describe('cost per km over time (#366)', () => {
 });
 
 describe('average monthly cost (#366)', () => {
-	it('is everything per month since the first expense, and without the purchase too', () => {
-		expect(monthlyCost(car, '2026-04-30')).toEqual({
-			all: Math.round(1_258_000 / 4),
-			running: Math.round(58_000 / 4),
-			purchase: true
-		});
+	it('is everything per month since the first expense', () => {
+		expect(monthlyCost(car, '2026-04-30')).toBe(Math.round(1_258_000 / 4));
 	});
 
 	it('counts the months up to today, also quiet ones', () => {
-		expect(monthlyCost([entry('2026-01-10', 12_000)], '2026-06-15')).toEqual({
-			all: 2_000,
-			running: 2_000,
-			purchase: false
-		});
+		expect(monthlyCost([entry('2026-01-10', 12_000)], '2026-06-15')).toBe(2_000);
+	});
+});
+
+describe('with or without the purchase', () => {
+	it('leaves the purchase out of every number, keeping its reading', () => {
+		const { withPurchase, withoutPurchase } = carViews(car, null, '2026-04-30');
+		expect(withPurchase.monthly).toBe(Math.round(1_258_000 / 4));
+		expect(withoutPurchase!.monthly).toBe(Math.round(58_000 / 4));
+		// 3,000 km from the purchase's reading on
+		expect(withoutPurchase!.driving!.drivenM).toBe(3_000_000);
+		expect(withoutPurchase!.driving!.centsPerKm).toBe(Math.round((58_000 * 1000) / 3_000_000));
+		expect(withoutPurchase!.perKm.at(-1)!.centsPerKm).toBe(Math.round((58_000 * 1000) / 3_000_000));
+	});
+
+	it('has nothing to leave out without a purchase', () => {
+		expect(carViews(car.slice(1), null, '2026-04-30').withoutPurchase).toBeNull();
 	});
 });

@@ -176,7 +176,7 @@
 	"car_cost_per_km_over_time": "Cost per km so far",
 	"car_cost_per_mile_over_time": "Cost per mile so far",
 	"car_monthly_cost": "Average a month",
-	"car_monthly_with_purchase": "Including the purchase",
+	"car_with_purchase": "Including the purchase price",
 	"driving_cost_per_km": "Cost per km",
 	"driving_consumption": "Per 100 km",
 	"driving_price_per_litre": "Price per litre",
