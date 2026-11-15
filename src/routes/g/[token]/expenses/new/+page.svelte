@@ -57,6 +57,7 @@
 		submitLabel={m.add_expense()}
 		canRepeat
 		kind={data.group.kind}
+		balances={data.balances}
 		offlineToken={data.group.shareToken}
 	/>
 </AppPage>

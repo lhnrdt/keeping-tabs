@@ -2,6 +2,7 @@ import { redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
 import { todayInputValue } from '#lib/dates.ts';
 import { isFrequency } from '#lib/expense/recurrence.ts';
+import { balancesFor } from '#lib/server/balances.ts';
 import { formContext } from '#lib/server/context.ts';
 import { addDueRecurring, startRecurring } from '#lib/server/recurring.ts';
 import { readExpenseForm, rememberDefaultSplit } from '#lib/server/group-forms.ts';
@@ -10,8 +11,12 @@ import { clientIdIn } from '#lib/validation.ts';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, parent }) => {
-	const { group } = await parent();
-	return { chosen: await listChosenCategories(locals.db, group.id) };
+	const { group, members } = await parent();
+	const [chosen, balances] = await Promise.all([
+		listChosenCategories(locals.db, group.id),
+		balancesFor(locals.db, group, members)
+	]);
+	return { chosen, balances };
 };
 
 export const actions: Actions = {

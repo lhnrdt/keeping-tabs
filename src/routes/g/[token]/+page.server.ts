@@ -8,6 +8,7 @@ import { currentTab, UNDO_PARAM } from '#lib/group/tabs.ts';
 import { groupInsights } from '#lib/insights/group.ts';
 import { defaultPeriod, parsePeriod } from '#lib/insights/period.ts';
 import { balances } from '#lib/money.ts';
+import { hasSealedMoney } from '#lib/server/balances.ts';
 import { settleTransfers } from '#lib/settle.ts';
 import {
 	formContext as context,
@@ -47,7 +48,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 	const deletedId = url.searchParams.get(UNDO_PARAM);
 	const onInsights = currentTab(url) === 'insights';
 	// Encrypted, or on its way: the browser works out the money from all entries (#110)
-	const sealedMoney = Boolean(group.keyId || group.transitionKey);
+	const sealedMoney = hasSealedMoney(group);
 	const [ledger, expenses, page, justDeleted, recurring] = await Promise.all([
 		listLedger(locals.db, group.id),
 		onInsights && !sealedMoney ? listExpenses(locals.db, group.id) : undefined,
