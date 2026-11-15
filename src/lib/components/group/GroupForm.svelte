@@ -12,7 +12,7 @@
 	import type { ErrorCode } from '#lib/errors.ts';
 	import { Submission } from '#lib/forms/submission.svelte.ts';
 	import { sealing } from '#lib/crypto/seal-form.ts';
-	import { keep, pendingId, type PendingKind } from '#lib/offline/outbox.ts';
+	import { keep, pendingId, type PendingKind, unreachable } from '#lib/offline/outbox.ts';
 	import { cueMoment, type Moment } from '#lib/motion/moments.ts';
 
 	type Props = {
@@ -50,9 +50,6 @@
 
 	const submission = new Submission();
 	let typed = new FormData();
-
-	/** The request never reached the server (no connection), as opposed to it saying no */
-	const unreachable = (failure: unknown) => failure instanceof TypeError || !navigator.onLine;
 
 	const submit: SubmitFunction = (input) => {
 		const after = submission.enhance(input) as Exclude<

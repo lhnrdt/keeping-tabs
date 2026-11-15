@@ -17,7 +17,10 @@ export function listComments(db: Db, expenseId: string) {
 		.orderBy(asc(expenseComments.createdAt));
 }
 
-/** Adds a comment by the acting member; the caller made sure the expense is the group's */
+/**
+ * Adds a comment by the acting member, once per id; the caller made sure the expense is the
+ * group's
+ */
 export async function addComment(
 	db: Db,
 	groupId: string,
@@ -26,6 +29,15 @@ export async function addComment(
 	body: string,
 	id?: string
 ) {
+	// Sent again after a lost connection (#55, #347): it's there already
+	if (id) {
+		const [known] = await db
+			.select({ id: expenseComments.id })
+			.from(expenseComments)
+			.where(eq(expenseComments.id, id))
+			.limit(1);
+		if (known) return;
+	}
 	await db.batch([
 		db.insert(expenseComments).values({ id, expenseId, memberId: actorId, body }),
 		log(db, groupId, actorId, 'comment.create', { expenseId })

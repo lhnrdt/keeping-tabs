@@ -116,3 +116,32 @@ test('offline, an expense is changed, another deleted and a payment recorded, al
 	await expect(page.getByRole('link', { name: /Milk/ })).toHaveCount(0);
 	await expect(page.getByRole('link', { name: /Bread/ })).toContainText('€6.00');
 });
+
+test('a comment written offline waits under its expense and goes out once online (#347)', async ({
+	page,
+	context
+}) => {
+	await createGroup(page, 'Flat', 'Anna', ['Ben']);
+	await page.getByRole('link', { name: 'Add expense' }).click();
+	await page.getByLabel('What was it for?').fill('Bread');
+	await page.getByLabel('Amount (€)').fill('4');
+	await page.getByRole('button', { name: 'Add expense' }).click();
+	await page.getByRole('link', { name: /Bread/ }).click();
+	await expect(page.getByLabel('Your comment')).toBeVisible();
+
+	await context.setOffline(true);
+	await page.getByLabel('Your comment').fill('Was the tip included?');
+	await page.getByRole('button', { name: 'Send' }).click();
+	const waiting = page.getByRole('list', { name: 'Not synced yet' });
+	await expect(waiting).toContainText('Was the tip included?');
+	await expect(waiting).toContainText('synced once you’re online');
+	await expect(page.getByLabel('Your comment')).toHaveValue('');
+
+	// Online again: it goes out, once
+	await context.setOffline(false);
+	await expect(waiting).toHaveCount(0, { timeout: 20_000 });
+	const comments = page.getByRole('region', { name: 'Comments' });
+	await expect(comments.getByText('Was the tip included?')).toHaveCount(1);
+	await page.reload();
+	await expect(comments.getByText('Was the tip included?')).toHaveCount(1);
+});

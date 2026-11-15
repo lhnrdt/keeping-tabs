@@ -1,11 +1,13 @@
 <script lang="ts">
 	// A short conversation under an expense (#49): "Was the tip included?". Oldest first, each
-	// with who wrote it and when; your own have a red Remove. Only members can write.
+	// with who wrote it and when; your own have a red Remove. Only members can write. Written
+	// without a connection, it waits on the device below the others and goes out once online (#347).
 	import { enhance } from '$app/forms';
 	import { entryOf, longPress } from '#lib/actions/long-press.ts';
 	import EntryMenu, { type MenuItem } from '#lib/components/EntryMenu.svelte';
 	import { copyText } from '#lib/clipboard.ts';
 	import Avatar from '#lib/components/Avatar.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 	import FormError from '#lib/components/FormError.svelte';
 	import PlainField from '#lib/components/fields/PlainField.svelte';
 	import SubmitButton from '#lib/components/SubmitButton.svelte';
@@ -15,6 +17,9 @@
 	import { m } from '#lib/paraglide/messages.js';
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import { LIMITS } from '#lib/validation.ts';
+	import { errorMessage } from '#lib/errors.ts';
+	import { drop, keep, unreachable } from '#lib/offline/outbox.ts';
+	import { watchPending } from '#lib/offline/pending.svelte.ts';
 
 	type Comment = { id: string; memberId: string; body: string; createdAt: Date };
 	type Author = { id: string; name: string; avatarId?: string; avatar?: string | null };
@@ -28,9 +33,18 @@
 		error?: ErrorCode;
 		/** What they wrote, kept when it couldn't be sent */
 		draft?: string;
+		/** The group's link token and the expense, so a comment can wait for the connection */
+		token: string;
+		expenseId: string;
 	};
 
-	let { comments, authors, me, error, draft = '' }: Props = $props();
+	let { comments, authors, me, error, draft = '', token, expenseId }: Props = $props();
+
+	const waiting = watchPending((items) =>
+		items.filter((item) => item.kind === 'comment' && item.target === expenseId)
+	);
+	const fieldsOf = (form: FormData) =>
+		[...form].map(([key, value]) => [key, String(value)]) as [string, string][];
 
 	const byId = $derived(new Map(authors.map((author) => [author.id, author])));
 	const when = (date: Date) =>
@@ -95,8 +109,47 @@
 				</li>
 			{/each}
 		</ul>
-	{:else}
+	{:else if waiting.items.length === 0}
 		<p class="text-sm text-muted">{m.comments_empty()}</p>
+	{/if}
+	{#if waiting.items.length && me}
+		{@const author = byId.get(me)}
+		<ul class="flex flex-col gap-3" aria-label={m.pending_title()}>
+			{#each waiting.items as item (item.id)}
+				<li class="flex gap-3" data-entry={item.id} transition:calmSlide>
+					<Avatar
+						id={author?.avatarId ?? me}
+						name={author?.name ?? '?'}
+						avatar={author?.avatar}
+						size="sm"
+					/>
+					<div class="min-w-0 flex-1">
+						<p class="flex flex-wrap items-baseline gap-x-2 text-sm">
+							<span class="font-medium">{author?.name ?? '?'}</span>
+							{#if item.failed}
+								<span class="text-xs tone-destructive"
+									>{m.pending_failed({ reason: errorMessage(item.failed) ?? '' })}</span
+								>
+							{:else}
+								<span class="flex items-center gap-1 text-xs text-muted" aria-live="polite"
+									><Icon name="offline" size={14} />{waiting.online
+										? m.pending_syncing()
+										: m.pending_waiting()}</span
+								>
+							{/if}
+						</p>
+						<p class="selectable text-sm break-words whitespace-pre-line text-muted">
+							{item.title}
+						</p>
+					</div>
+					<button
+						type="button"
+						class="min-h-8 text-sm font-medium tone-destructive"
+						onclick={() => drop(item.id)}>{m.comment_remove()}</button
+					>
+				</li>
+			{/each}
+		</ul>
 	{/if}
 
 	{#if me}
@@ -109,11 +162,32 @@
 				// Its id, made here: its sealed text says it belongs to this comment
 				const clientId = crypto.randomUUID();
 				input.formData.set('clientId', clientId);
+				const written = String(input.formData.get('comment') ?? '').trim();
 				return sealing(
 					['comment'],
-					() => {
+					(sealed) => {
 						sending = true;
-						return async ({ update }) => {
+						return async ({ result, update, formElement }) => {
+							// No connection: it waits on this device, shown below the others
+							if (result.type === 'error' && unreachable(result.error) && written) {
+								const kept = keep({
+									id: clientId,
+									kind: 'comment',
+									target: expenseId,
+									token,
+									action: sealed.action.href,
+									fields: fieldsOf(sealed.formData),
+									title: written,
+									amount: '',
+									date: '',
+									addedAt: Date.now()
+								});
+								if (kept) {
+									formElement.reset();
+									sending = false;
+									return;
+								}
+							}
 							await update();
 							sending = false;
 						};

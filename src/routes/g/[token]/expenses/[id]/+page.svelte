@@ -49,6 +49,8 @@
 		me={data.members.find((member) => member.mine)?.id ?? null}
 		error={form && 'commentError' in form ? form.commentError : undefined}
 		draft={form && 'comment' in form ? form.comment : undefined}
+		token={data.group.shareToken}
+		expenseId={data.expense.id}
 	/>
 	<DeleteEntry label={m.delete_expense()} question={m.delete_expense_confirm()} />
 </AppPage>

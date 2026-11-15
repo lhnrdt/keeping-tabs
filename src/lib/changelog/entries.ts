@@ -13,6 +13,17 @@ export type ChangelogEntry = {
 /** Newest first */
 export const CHANGELOG: ChangelogEntry[] = [
 	{
+		version: '0.24.0',
+		date: '',
+		items: [
+			{
+				icon: 'offline',
+				en: 'Comments work without a connection too: they wait on your phone under the expense and are sent once you’re online.',
+				de: 'Kommentare gehen jetzt auch ohne Verbindung: Sie warten auf deinem Handy unter der Ausgabe und werden gesendet, sobald du online bist.'
+			}
+		]
+	},
+	{
 		version: '0.23.0',
 		date: '2026-11-15',
 		items: [
