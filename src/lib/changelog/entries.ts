@@ -17,6 +17,11 @@ export const CHANGELOG: ChangelogEntry[] = [
 		date: '',
 		items: [
 			{
+				icon: 'kindCar',
+				en: 'The car insights remember whether you look at them with or without the purchase price.',
+				de: 'Die Auto-Insights merken sich, ob du sie mit oder ohne Kaufpreis ansiehst.'
+			},
+			{
 				icon: 'payment',
 				en: 'Recording a payment or settling up is instant too: it’s there the moment you save, and goes out in the background.',
 				de: 'Auch eine Zahlung einzutragen oder auszugleichen geht sofort: Sie ist beim Speichern da und wird im Hintergrund gesendet.'
