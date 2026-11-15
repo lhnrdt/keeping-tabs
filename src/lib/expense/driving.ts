@@ -87,7 +87,7 @@ export type Driving = {
 	odometerM: number | null;
 	/** Driven in the period, from the reading before it (or its first) to its last */
 	drivenM: number;
-	/** What the km driven cost: everything spent after the first reading, per km */
+	/** What the km driven cost: everything spent in the period (fuel, insurance, repairs, tax…), per km */
 	centsPerKm: number | null;
 	/** Per 100 km, from the fuel bought after the first reading: what was bought with it fuelled the km before */
 	litresPer100Km: number | null;
@@ -123,7 +123,8 @@ export function drivingOf(
 		entry.date <= end.date &&
 		(entry.date > start.date || (entry.odometerM ?? 0) > start.odometerM);
 	const driven = inPeriod.filter(afterStart);
-	const spent = driven.reduce((sum, entry) => sum + entry.amountCents, 0);
+	// All the car cost in the period, whenever in it it was paid
+	const spent = inPeriod.reduce((sum, entry) => sum + entry.amountCents, 0);
 	const burnt = driven.reduce((sum, entry) => sum + (entry.fuelMl ?? 0), 0);
 	const millilitres = fuel.reduce((sum, entry) => sum + entry.fuelMl!, 0);
 	const fuelSpent = fuel.reduce((sum, entry) => sum + entry.amountCents, 0);
