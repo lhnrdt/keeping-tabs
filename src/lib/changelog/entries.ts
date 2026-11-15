@@ -22,6 +22,11 @@ export const CHANGELOG: ChangelogEntry[] = [
 				de: 'In Autogruppen nimmt ein Schalter den Kaufpreis aus den Kosten pro km, ihrem Verlauf und den monatlichen Kosten heraus.'
 			},
 			{
+				icon: 'kindCar',
+				en: 'Car groups also show how far the car goes in a year on average, and how much of its cost goes on fuel.',
+				de: 'Autogruppen zeigen außerdem, wie weit das Auto im Schnitt pro Jahr fährt und wie viel der Kosten auf Sprit entfällt.'
+			},
+			{
 				icon: 'splitEqual',
 				en: 'A cent that doesn’t split evenly goes to whoever owes the least right now, so over time nobody keeps paying the extra cents.',
 				de: 'Ein Cent, der sich nicht gleichmäßig teilen lässt, geht an die Person, die gerade am wenigsten schuldet. So zahlt auf Dauer niemand immer die zusätzlichen Cents.'

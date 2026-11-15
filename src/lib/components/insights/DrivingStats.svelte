@@ -1,6 +1,7 @@
 <script lang="ts">
 	// A car group's driving as a dashboard: the latest reading on an odometer, the km driven, consumption on a dial, the
-	// price per litre on a fuel pump's display and what a km costs.
+	// price per litre on a fuel pump's display, how far it goes a year, how much goes on fuel and
+	// what a km costs.
 	import { page } from '$app/state';
 	import { formatDistance, perDistance, perFuel, type Driving } from '#lib/expense/driving.ts';
 	import { shownAmount } from '#lib/shown-money.ts';
@@ -14,6 +15,7 @@
 	const units = $derived(page.data.units);
 	const imperial = $derived(units === 'imperial');
 	const money = (cents: number) => shownAmount(cents, currency);
+	const percent = new Intl.NumberFormat(getLocale(), { style: 'percent' });
 </script>
 
 <div
@@ -49,6 +51,22 @@
 			<span class="text-base font-semibold tabular-nums"
 				>{formatDistance(driving.drivenM, getLocale(), units)}</span
 			>
+		</p>
+	{/if}
+	{#if driving.metresPerYear !== null}
+		<p class="flex items-baseline justify-between border-t border-current/10 pt-3 text-sm">
+			<span class="text-muted"
+				>{imperial ? m.driving_miles_per_year() : m.driving_km_per_year()}</span
+			>
+			<span class="text-base font-semibold tabular-nums"
+				>{formatDistance(driving.metresPerYear, getLocale(), units, 0)}</span
+			>
+		</p>
+	{/if}
+	{#if driving.fuelShare !== null}
+		<p class="flex items-baseline justify-between border-t border-current/10 pt-3 text-sm">
+			<span class="text-muted">{m.driving_fuel_share()}</span>
+			<span class="text-base font-semibold tabular-nums">{percent.format(driving.fuelShare)}</span>
 		</p>
 	{/if}
 	{#if driving.centsPerKm !== null}

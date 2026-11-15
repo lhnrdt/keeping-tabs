@@ -45,6 +45,9 @@ test('a car group notes the odometer and fuel with its expenses and sums them up
 	await expect(driving).toContainText('€0.15');
 	await expect(driving).toContainText('5 l');
 	await expect(driving).toContainText('€1.67');
+	// So far it all went on fuel; readings on one day say nothing about a year yet
+	await expect(driving).toContainText(/Spent on fuel\s*100%/);
+	await expect(driving).not.toContainText('a year on average');
 
 	// Both are optional: an expense without them goes through
 	await open(page, `${groupUrl}/expenses/new`);
