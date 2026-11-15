@@ -12,7 +12,7 @@
 	import type { ErrorCode } from '#lib/errors.ts';
 	import { Submission } from '#lib/forms/submission.svelte.ts';
 	import { sealing } from '#lib/crypto/seal-form.ts';
-	import { keep } from '#lib/offline/outbox.ts';
+	import { keep, pendingId, type PendingKind } from '#lib/offline/outbox.ts';
 	import { cueMoment, type Moment } from '#lib/motion/moments.ts';
 
 	type Props = {
@@ -30,6 +30,8 @@
 		onSaved?: () => Promise<string | void>;
 		/** Answered where it lands once it's saved, e.g. a new expense (#291) */
 		moment?: Moment;
+		/** What it is when kept offline, if not a new expense: an edit of an entry, a payment (#347) */
+		pendingAs?: { kind: PendingKind; target?: string };
 		children: Snippet;
 	};
 
@@ -42,6 +44,7 @@
 		announce,
 		onSaved,
 		moment,
+		pendingAs,
 		children
 	}: Props = $props();
 
@@ -64,8 +67,13 @@
 					string
 				][];
 				const field = (name: string) => String(typed.get(name) ?? '');
+				const kind = pendingAs?.kind ?? 'add';
 				const kept = keep({
-					id: field('clientId') || crypto.randomUUID(),
+					id: pendingAs?.target
+						? pendingId(kind, pendingAs.target)
+						: field('clientId') || crypto.randomUUID(),
+					kind,
+					target: pendingAs?.target,
 					token: offlineToken,
 					action: input.action.href,
 					fields,

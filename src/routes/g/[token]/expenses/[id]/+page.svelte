@@ -34,6 +34,7 @@
 		submitLabel={m.save()}
 		kind={data.group.kind}
 		expenseId={data.expense.id}
+		token={data.group.shareToken}
 	/>
 	<ExpenseReceipts
 		receipts={data.receipts}
