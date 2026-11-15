@@ -6,6 +6,8 @@
 	import { getLocale } from '#lib/paraglide/runtime.js';
 	import type { Insights } from '#lib/insights/insights.ts';
 	import type { Tile } from '#lib/insights/sections.ts';
+	import { TILE_ICONS } from '#lib/insights/insight-icons.ts';
+	import Icon from '#lib/components/Icon.svelte';
 
 	type Props = { insights: Insights; currency: string; tiles: readonly Tile[] };
 
@@ -77,13 +79,22 @@
 	}
 
 	// Tiles without a value here (e.g. no change yet) make room for the next in line
-	const shown = $derived(tiles.map(tile).filter((entry) => entry !== null));
+	const shown = $derived(
+		tiles
+			.map((id) => {
+				const entry = tile(id);
+				return entry && { ...entry, icon: TILE_ICONS[id] };
+			})
+			.filter((entry) => entry !== null)
+	);
 </script>
 
 <dl class="mx-4 grid grid-cols-2 gap-3">
 	{#each shown as entry, i (i)}
 		<div class="rounded-2xl bg-surface px-4 py-3 dark:bg-surface-night">
-			<dt class="text-sm text-muted">{entry.label}</dt>
+			<dt class="flex items-center gap-1.5 text-sm text-muted">
+				<Icon name={entry.icon} size={16} class="opacity-80" />{entry.label}
+			</dt>
 			<dd class="mt-1 text-xl font-semibold">{entry.value}</dd>
 		</div>
 	{/each}

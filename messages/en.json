@@ -179,7 +179,7 @@
 	"kind_everyday": "Everyday",
 	"kind_occasional": "Occasional",
 	"kind_big": "Big one-offs",
-	"kind_fixed_hint": "Monthly, at a steady amount",
+	"kind_fixed_hint": "Rent, utilities, internet, insurance",
 	"kind_everyday_hint": "Small and frequent",
 	"kind_occasional_hint": "Now and then",
 	"kind_big_hint": "Rare and large",

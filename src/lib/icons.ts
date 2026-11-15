@@ -3,6 +3,14 @@ import IconAccessible from '@tabler/icons-svelte-runes/icons/accessible';
 import IconBell from '@tabler/icons-svelte-runes/icons/bell';
 import IconLanguage from '@tabler/icons-svelte-runes/icons/language';
 import IconPalette from '@tabler/icons-svelte-runes/icons/palette';
+import IconChartDonut from '@tabler/icons-svelte-runes/icons/chart-donut';
+import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
+import IconBasket from '@tabler/icons-svelte-runes/icons/basket';
+import IconPackage from '@tabler/icons-svelte-runes/icons/package';
+import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
+import IconArrowsExchange from '@tabler/icons-svelte-runes/icons/arrows-exchange';
+import IconCalendarMonth from '@tabler/icons-svelte-runes/icons/calendar-month';
+import IconClock from '@tabler/icons-svelte-runes/icons/clock';
 import IconEqual from '@tabler/icons-svelte-runes/icons/equal';
 import IconCoins from '@tabler/icons-svelte-runes/icons/coins';
 import IconPercentage from '@tabler/icons-svelte-runes/icons/percentage';
@@ -124,6 +132,17 @@ export const icons = {
 	notifications: IconBell,
 	fast: IconBolt,
 	palette: IconPalette,
+	/** The insights' sections, tiles and kinds of costs */
+	byCategory: IconChartDonut,
+	budget: IconWallet,
+	trend: IconTrendingUp,
+	everyday: IconBasket,
+	bigOneOff: IconPackage,
+	overTime: IconChartLine,
+	settling: IconArrowsExchange,
+	you: IconUser,
+	month: IconCalendarMonth,
+	often: IconClock,
 	/** How an expense is split, and several people paying */
 	splitEqual: IconEqual,
 	splitExact: IconCoins,
