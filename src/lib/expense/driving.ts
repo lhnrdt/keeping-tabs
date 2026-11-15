@@ -57,8 +57,13 @@ const number = (value: number, locale: string, digits: number) =>
 export const distanceUnit = (units: Units) => (units === 'imperial' ? 'mi' : 'km');
 export const fuelUnit = (units: Units) => (units === 'imperial' ? 'gal' : 'l');
 
-export const formatDistance = (metres: number, locale: string, units: Units = 'metric') =>
-	`${number(metres / metresPer(units), locale, 1)} ${distanceUnit(units)}`;
+export const formatDistance = (
+	metres: number,
+	locale: string,
+	units: Units = 'metric',
+	/** Digits after the point at most: the tenth by default */
+	digits = 1
+) => `${number(metres / metresPer(units), locale, digits)} ${distanceUnit(units)}`;
 
 export const formatFuel = (millilitres: number, locale: string, units: Units = 'metric') =>
 	`${number(millilitres / millilitresPer(units), locale, 2)} ${fuelUnit(units)}`;
@@ -93,7 +98,28 @@ export type Driving = {
 	litresPer100Km: number | null;
 	/** What the expenses with litres cost, per litre */
 	centsPerLitre: number | null;
+	/** Driven a year on average, over all of its readings; null before they span a month */
+	metresPerYear: number | null;
+	/** How much of the period's car cost went on fuel, 0 to 1; null without any fuel */
+	fuelShare: number | null;
 };
+
+const DAY_MS = 86_400_000;
+/** Readings closer together than this say too little about a whole year */
+const MIN_DAYS_FOR_A_YEAR = 30;
+
+const daysBetween = (from: string, to: string) =>
+	(Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / DAY_MS;
+
+/** From the first reading to the last, scaled to a year */
+function perYear(readings: readonly Reading[]) {
+	const first = readings[0];
+	const last = readings.at(-1);
+	if (!first || !last) return null;
+	const days = daysBetween(first.date, last.date);
+	if (days < MIN_DAYS_FOR_A_YEAR) return null;
+	return Math.round(((last.odometerM - first.odometerM) * 365) / days);
+}
 
 type Reading = DrivingEntry & { odometerM: number };
 
@@ -133,7 +159,9 @@ export function drivingOf(
 		drivenM,
 		centsPerKm: drivenM ? Math.round((spent * 1000) / drivenM) : null,
 		litresPer100Km: drivenM && burnt ? (burnt / drivenM) * 100 : null,
-		centsPerLitre: millilitres ? Math.round((fuelSpent * 1000) / millilitres) : null
+		centsPerLitre: millilitres ? Math.round((fuelSpent * 1000) / millilitres) : null,
+		metresPerYear: perYear(readings),
+		fuelShare: fuel.length && spent > 0 ? fuelSpent / spent : null
 	};
 }
 
